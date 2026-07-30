@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — Sales Overview · Product Analysis</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div class="brand-name">Charmiss</div>
+    </div>
+    <div class="user-area">
+      <div id="navMenuMount"></div>
+      <div class="user-meta">
+        <div class="user-name">Nattapong V.</div>
+        <div class="user-role">VP of Sales</div>
+      </div>
+      <div class="avatar">NV</div>
+      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Sales Overview — Product Analysis</h1>
+      <p class="page-subtitle">What sells well, in which channel — Product/Category performance across MT, TT, and Ecom.</p>
+    </div>
+    <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
+  </div>
+
+  <nav class="tabs">
+    <a class="tab tab-link" href="sales_overview_executive_summary.html">Executive Summary</a>
+    <a class="tab tab-link" href="sales_overview_breakdown.html">Breakdown</a>
+    <a class="tab active tab-link" href="sales_overview_product_analysis.html">Product Analysis</a>
+  </nav>
+
+  <div class="placeholder-card">
+    <h2>โครงหน้านี้พร้อมแล้ว — รอเติมเนื้อหาจริง</h2>
+    <p>หน้านี้จะวิเคราะห์ Product/Category ในภาพรวม ข้าม 3 Channel รายละเอียด Metric ที่วางแผนไว้:</p>
+    <ul class="placeholder-list">
+      <li>Top Category (Company-wide) / Fastest Growing Category — KPI Card</li>
+      <li>Best Category per Channel — Callout Card ×3</li>
+      <li>Category × Channel Heatmap — Category ไหนขายดีใน Channel ไหน</li>
+      <li>Channel Index by Category — Category ไหน Over/Under-index ใน Channel ไหน</li>
+      <li>Category Portfolio Matrix (Company-wide, Growth-Share 4 Quadrant)</li>
+      <li>Category Share of Sales Over Time (Company-wide, 18 เดือน)</li>
+      <li>Sales by Category พร้อม Toggle แยกตาม Channel</li>
+    </ul>
+  </div>
+
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('so-product', 'Sales Overview · Product Analysis'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initThemeToggle();
+</script>
+</body>
+</html>
