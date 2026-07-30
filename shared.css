@@ -241,3 +241,8 @@ button,select{font-family:inherit;}
 .callout-text{background:var(--wash);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
 .callout-text b{color:var(--ink-1);}
 
+.section-label-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
+.level-select-wrap{display:flex;align-items:center;gap:8px;}
+.level-select-note{font-size:10.5px;color:var(--ink-3);max-width:280px;line-height:1.4;}
+@media (max-width:768px){ .level-select-note{display:none;} }
+

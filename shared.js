@@ -262,18 +262,23 @@ function buildGroupedBarSVG(containerId, opts){
   const height = opts.height || 220;
   const labels = opts.labels, series = opts.series; // series: [{name, color, values:[...]}]
   const yFormatter = opts.yFormatter || (v=>v);
-  const padL=44, padR=10, padT=10, padB=30;
+  const baseline = opts.referenceValue !== undefined ? opts.referenceValue : 0;
+  const padL=44, padR=10, padT=18, padB=30;
   const plotW = width-padL-padR, plotH = height-padT-padB;
 
   let allVals = [];
   series.forEach(s => s.values.forEach(v => allVals.push(v)));
-  if(allVals.length===0) allVals=[0,1];
-  let yMin = Math.min(0, ...allVals), yMax = Math.max(0, ...allVals);
+  if(allVals.length===0) allVals=[baseline, baseline+1];
+  // Domain is centered around the baseline (0, or 100 for a diverging-from-100
+  // index chart) rather than always forcing 0 in — otherwise a chart whose
+  // values cluster around 100 would render as a sliver at the very top of a
+  // 0-130 range instead of a proper diverging chart.
+  let yMin = Math.min(baseline, ...allVals), yMax = Math.max(baseline, ...allVals);
   if(yMax===yMin) yMax = yMin+1;
-  const pad = (yMax-yMin)*0.15;
-  yMax += pad; if(yMin<0) yMin -= pad*0.4;
+  const pad = (yMax-yMin)*0.18;
+  yMax += pad; yMin -= pad;
   const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
-  const zeroY = yAt(0);
+  const baseY = yAt(baseline);
 
   const hairline = cssVar('--hairline') || '#e1e0d9';
   const inkTertiary = cssVar('--ink-3') || '#898781';
@@ -292,32 +297,32 @@ function buildGroupedBarSVG(containerId, opts){
   const groupW = plotW/Math.max(1,groupCount);
   const barGap = 3;
   const barW = Math.max(2, (groupW - barGap*(seriesCount+1))/seriesCount);
+  const valueLabelFormatter = opts.valueLabelFormatter || yFormatter;
 
-  let bars = '', xLabels = '';
+  let bars = '', xLabels = '', valueLabels = '';
   labels.forEach((lb,gi)=>{
     const groupX = padL + gi*groupW;
     series.forEach((s,si)=>{
       const val = s.values[gi];
       const barX = groupX + barGap + si*(barW+barGap);
       const y1 = yAt(val);
-      const y0 = Math.min(y1, zeroY);
-      const h = Math.max(0.5, Math.abs(y1-zeroY));
+      const y0 = Math.min(y1, baseY);
+      const h = Math.max(0.5, Math.abs(y1-baseY));
       const color = opts.colorFn ? opts.colorFn(s, val) : s.color;
       bars += '<rect x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"/>';
+      if(opts.showValueLabels){
+        const above = val >= baseline;
+        const ly = above ? (y1-4) : (y1+11);
+        valueLabels += '<text x="'+(barX+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+color+'">'+valueLabelFormatter(val)+'</text>';
+      }
     });
     xLabels += '<text x="'+(groupX+groupW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
   });
 
-  let refLine = '';
-  if(opts.referenceValue !== undefined){
-    const ry = yAt(opts.referenceValue);
-    refLine = '<line x1="'+padL+'" y1="'+ry.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+ry.toFixed(1)+'" stroke="'+inkOne+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
-  } else {
-    refLine = '<line x1="'+padL+'" y1="'+zeroY.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+zeroY.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1.3"/>';
-  }
+  const refLine = '<line x1="'+padL+'" y1="'+baseY.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+baseY.toFixed(1)+'" stroke="'+(opts.referenceValue!==undefined?inkOne:hairline)+'" stroke-width="1.3" stroke-dasharray="'+(opts.referenceValue!==undefined?'4,3':'none')+'"/>';
 
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+xLabels+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+valueLabels+xLabels+'</svg>';
 }
 
 /* ---------- Scatter plot with median-split quadrant lines — used for
@@ -332,7 +337,7 @@ function buildScatterSVG(containerId, points, opts){
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 480;
   const height = opts.height || 260;
-  const padL=54, padR=18, padT=18, padB=36;
+  const padL=58, padR=18, padT=18, padB=38;
   const plotW = width-padL-padR, plotH = height-padT-padB;
   const xFormatter = opts.xFormatter || (v=>v);
   const yFormatter = opts.yFormatter || (v=>v);
@@ -340,7 +345,7 @@ function buildScatterSVG(containerId, points, opts){
   const xs = points.map(p=>p.x), ys = points.map(p=>p.y);
   let xMin = Math.min(...xs), xMax = Math.max(...xs);
   let yMin = Math.min(...ys), yMax = Math.max(...ys);
-  const xPad = (xMax-xMin)*0.18 || 1, yPad = (yMax-yMin)*0.18 || 1;
+  const xPad = (xMax-xMin)*0.18 || Math.abs(xMax)*0.2 || 1, yPad = (yMax-yMin)*0.18 || Math.abs(yMax)*0.2 || 1;
   xMin -= xPad; xMax += xPad; yMin -= yPad; yMax += yPad;
   const xAt = v => padL + (v-xMin)/(xMax-xMin)*plotW;
   const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
@@ -351,10 +356,24 @@ function buildScatterSVG(containerId, points, opts){
   const inkTertiary = cssVar('--ink-3') || '#898781';
   const inkTwo = cssVar('--ink-2') || '#52514e';
 
-  const mx = xAt(medX), my = yAt(medY);
   let svg = '';
-  svg += '<line x1="'+mx.toFixed(1)+'" y1="'+padT+'" x2="'+mx.toFixed(1)+'" y2="'+(height-padB)+'" stroke="'+hairline+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
-  svg += '<line x1="'+padL+'" y1="'+my.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+my.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
+  /* --- Axis gridlines + tick values (Y on the left, X along the bottom) --- */
+  const gridCount = 4;
+  for(let g=0; g<=gridCount; g++){
+    const yv = yMin + (yMax-yMin)*(g/gridCount);
+    const gy = yAt(yv);
+    svg += '<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+gy.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    svg += '<text x="'+(padL-6)+'" y="'+(gy+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(yv)+'</text>';
+    const xv = xMin + (xMax-xMin)*(g/gridCount);
+    const gx = xAt(xv);
+    svg += '<line x1="'+gx.toFixed(1)+'" y1="'+padT+'" x2="'+gx.toFixed(1)+'" y2="'+(height-padB)+'" stroke="'+hairline+'" stroke-width="0.6" opacity="0.5"/>';
+    svg += '<text x="'+gx.toFixed(1)+'" y="'+(height-padB+14)+'" font-size="9" text-anchor="middle" fill="'+inkTertiary+'">'+xFormatter(xv)+'</text>';
+  }
+
+  /* --- Median-split quadrant lines (emphasized, dashed) --- */
+  const mx = xAt(medX), my = yAt(medY);
+  svg += '<line x1="'+mx.toFixed(1)+'" y1="'+padT+'" x2="'+mx.toFixed(1)+'" y2="'+(height-padB)+'" stroke="'+inkTertiary+'" stroke-width="1.4" stroke-dasharray="4,3"/>';
+  svg += '<line x1="'+padL+'" y1="'+my.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+my.toFixed(1)+'" stroke="'+inkTertiary+'" stroke-width="1.4" stroke-dasharray="4,3"/>';
 
   if(opts.quadrantLabels){
     const ql = opts.quadrantLabels;
@@ -369,10 +388,6 @@ function buildScatterSVG(containerId, points, opts){
     svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"/>';
     svg += '<text x="'+cx.toFixed(1)+'" y="'+(cy-10).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
   });
-
-  // axis value ticks at min/max/median for orientation
-  svg += '<text x="'+padL+'" y="'+(height-padB+16)+'" font-size="9" text-anchor="start" fill="'+inkTertiary+'">'+xFormatter(xMin+xPad)+'</text>';
-  svg += '<text x="'+(width-padR)+'" y="'+(height-padB+16)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+xFormatter(xMax-xPad)+'</text>';
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';

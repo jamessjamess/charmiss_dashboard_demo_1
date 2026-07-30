@@ -91,19 +91,32 @@
   </div>
 
   <!-- ===== Zone B: Cross-Channel Analysis ===== -->
-  <div class="section-label">Cross-Channel Analysis</div>
+  <div class="section-label-row">
+    <div class="section-label" style="margin:0;">Cross-Channel Analysis</div>
+    <div class="level-select-wrap">
+      <span class="filter-label">Level</span>
+      <select class="level-select" id="hierarchyLevelSelect">
+        <option value="0">Category</option>
+        <option value="1">Sub-Category</option>
+        <option value="2">Type</option>
+        <option value="3">Series</option>
+      </select>
+      <span class="level-select-note">Controls Heatmap, Channel Index, Portfolio Matrix, Share Over Time, and Sales by Category together</span>
+    </div>
+  </div>
   <div class="chart-grid">
     <div class="card">
       <div class="card-head">
-        <span class="card-title">Category × Channel Heatmap</span>
-        <button class="info-icon" data-info-title="Category × Channel Heatmap" data-info-text="แถว = Category, คอลัมน์ = MT/TT/Ecom, ค่าใน Cell = ยอดขาย + % ของยอดขาย Category นั้นที่มาจาก Channel นั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
+        <span class="card-title"><span id="heatmapLevelLabel" class="sub-label" style="display:inline;">Category</span> × Channel Heatmap</span>
+        <button class="info-icon" data-info-title="Category × Channel Heatmap" data-info-text="แถว = Category/Sub-Category/Type/Series ตามระดับที่เลือก (Top 10), คอลัมน์ = MT/TT/Ecom, ค่าใน Cell = ยอดขาย + % ที่มาจาก Channel นั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
       </div>
       <table class="heatmap-table" id="heatmapTable"></table>
     </div>
+
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Channel Index by Category</span>
+          <span class="chart-title">Channel Index by <span id="indexLevelLabel" class="sub-label" style="display:inline;">Category</span></span>
           <button class="info-icon" data-info-title="Channel Index by Category" data-info-text="Index = (สัดส่วนยอดขาย Category X ใน Channel Y) ÷ (สัดส่วนยอดขาย Category X ในยอดขายรวมบริษัท) × 100 — ค่า >100 หมายถึง Category นั้นขายดีเป็นพิเศษใน Channel นั้น เทียบค่าเฉลี่ยรวม, <100 คือขายต่ำกว่าค่าเฉลี่ย">i</button>
         </div>
         <div class="toolbar">
@@ -154,16 +167,11 @@
         <button class="info-icon" data-info-title="Sales by Category" data-info-text="เลือกระดับได้ 4 ชั้น (Category → Sub-Category → Type → Series) แสดงแบบจัดอันดับ Top View ข้าม Category ทั้งหมด (ไม่ใช่ Breadcrumb Drill) — ชื่อ Category แม่กำกับใต้ชื่อด้วยตัวเล็กสีจาง">i</button>
       </div>
       <div class="toolbar">
-        <select class="level-select" id="deepDiveLevelSelect">
-          <option value="0">Category</option>
-          <option value="1">Sub-Category</option>
-          <option value="2">Type</option>
-          <option value="3">Series</option>
-        </select>
         <button class="tool-btn" id="deepDiveDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="deepDiveExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
+    <div class="chart-subtitle" id="deepDiveLevelHint" style="margin-bottom:8px;">Level controlled by the selector above (Cross-Channel Analysis)</div>
     <div class="toggle-group" id="channelToggleGroup" style="margin-bottom:14px;">
       <button class="toggle-btn active" data-ch="All">All</button>
       <button class="toggle-btn" data-ch="MT">MT</button>
@@ -416,10 +424,12 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
   renderAll(currentPeriodKey, currentCustom);
 });
 
-/* ---------- Zone D controls: hierarchy level + channel toggle (drives Zone C sync) ---------- */
+/* ---------- Unified hierarchy level (Zone B header) + channel toggle
+   (Zone D only — Heatmap/Channel Index always show all channels by design,
+   so the channel filter intentionally does not affect them) ---------- */
 let currentLevel = 0;
 let currentChannelFilter = 'All';
-document.getElementById('deepDiveLevelSelect').addEventListener('change', (e)=>{
+document.getElementById('hierarchyLevelSelect').addEventListener('change', (e)=>{
   currentLevel = parseInt(e.target.value,10);
   renderAll(currentPeriodKey, currentCustom);
 });
@@ -466,11 +476,24 @@ function renderAll(periodKey, custom){
       + '</div>';
   }).join('');
 
-  /* === Zone B: Category × Channel Heatmap === */
-  const maxMix = Math.max(...catLevel0.flatMap(n=>groupKeys.map(ch=>n.channelMix[ch])));
-  let heatHtml = '<thead><tr><th>Category</th>' + groupKeys.map(ch=>'<th>'+ch+'</th>').join('') + '</tr></thead><tbody>';
-  catLevel0.forEach(n=>{
-    heatHtml += '<tr><td>'+n.name+'</td>' + groupKeys.map(ch=>{
+  /* === Zone B: Category × Channel Heatmap + Channel Index — both level-aware,
+     driven by the single #hierarchyLevelSelect at the top of this section.
+     Capped to Top 10 (Heatmap) / Top 8 (Index chart) at deeper levels so the
+     table/chart stays readable once there are 12/24/48 nodes. === */
+  const levelNodesAll = enumerateLevel(currentLevel);
+  const heatmapNodes = levelNodesAll.slice(0,10);
+  const indexNodes = levelNodesAll.slice(0,8);
+  document.getElementById('heatmapLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+  document.getElementById('indexLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+
+  const channelTotalsAtLevel = {};
+  groupKeys.forEach(ch=>{ channelTotalsAtLevel[ch] = levelNodesAll.reduce((sum,n)=> sum+categoryChannelValue(n,ch,companyTotal), 0); });
+
+  const maxMix = Math.max(...heatmapNodes.flatMap(n=>groupKeys.map(ch=>n.channelMix[ch])));
+  let heatHtml = '<thead><tr><th>'+LEVEL_NAMES[currentLevel]+'</th>' + groupKeys.map(ch=>'<th>'+ch+'</th>').join('') + '</tr></thead><tbody>';
+  heatmapNodes.forEach(n=>{
+    const nameCell = n.name + (n.parent ? '<span class="sub-label">'+n.parent+'</span>' : '');
+    heatHtml += '<tr><td>'+nameCell+'</td>' + groupKeys.map(ch=>{
       const val = categoryChannelValue(n,ch,companyTotal);
       const sharePct = n.channelMix[ch]*100;
       const intensity = n.channelMix[ch]/maxMix;
@@ -482,23 +505,23 @@ function renderAll(periodKey, custom){
   heatHtml += '</tbody>';
   document.getElementById('heatmapTable').innerHTML = heatHtml;
 
-  /* === Zone B: Channel Index by Category === */
-  const good = cssVar('--good-text')||'#006300', bad = cssVar('--critical')||'#d03b3b';
+  /* --- Channel Index: diverging bar, baseline = index 100, channel-identity
+     colors (not green/red), index value labeled on every bar tip --- */
   const indexSeries = groupKeys.map(ch=>({
-    name: ch,
-    values: catLevel0.map(n=>{
-      const shareInChannel = channelTotals[ch] ? categoryChannelValue(n,ch,companyTotal)/channelTotals[ch] : 0;
+    name: ch, color: groupColorVar[ch],
+    values: indexNodes.map(n=>{
+      const shareInChannel = channelTotalsAtLevel[ch] ? categoryChannelValue(n,ch,companyTotal)/channelTotalsAtLevel[ch] : 0;
       const shareOverall = n.pct/100;
       return shareOverall ? (shareInChannel/shareOverall*100) : 100;
     })
   }));
   buildGroupedBarSVG('indexChart', {
-    labels: catLevel0.map(n=>n.name), series: indexSeries, yFormatter: v=>v.toFixed(0),
-    referenceValue: 100, colorFn: (s,v)=> v>=100 ? good : bad
+    labels: indexNodes.map(n=>n.name), series: indexSeries, yFormatter: v=>v.toFixed(0),
+    referenceValue: 100, showValueLabels: true, valueLabelFormatter: v=>v.toFixed(0)
   });
-  document.getElementById('indexLegend').innerHTML =
-    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>Over-index (>100)</span>'
-    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+bad+'"></span>Under-index (<100)</span>';
+  document.getElementById('indexLegend').innerHTML = groupKeys.map(ch=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[ch]+'"></span>'+ch+'</span>'
+  ).join('') + '<span class="chart-legend-item" style="opacity:.75;">Dashed line = index 100 (company-wide average)</span>';
 
   /* === Zone C: Portfolio Matrix + Share Over Time (level & channel-filter synced with Zone D) === */
   const syncedAll = getSyncedNodes();
