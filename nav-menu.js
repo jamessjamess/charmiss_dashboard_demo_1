@@ -17,10 +17,10 @@ const MODULE_MAP = [
   },
   {
     group: 'MT Overview',
-    ready: false,
+    ready: true,
     items: [
-      { key:'mt-exec',      label:'Executive Summary', href:'module_mt.html#executive' },
-      { key:'mt-breakdown', label:'Breakdown',          href:'module_mt.html#breakdown' },
+      { key:'mt-exec',      label:'Executive Summary', href:'module_mt_executive_summary.html' },
+      { key:'mt-breakdown', label:'Breakdown',          href:'module_mt_breakdown.html' },
     ],
   },
   {
