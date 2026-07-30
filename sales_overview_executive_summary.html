@@ -77,11 +77,11 @@
         <span class="card-title">Total Net Sales</span>
         <button class="info-icon" data-info-title="Total Net Sales" data-info-text="ผลรวมยอดขายสุทธิ (หลังหักคืน/ส่วนลด) ในช่วงเวลาที่เลือก รวมทุก Channel (MT, TT, Ecom)">i</button>
       </div>
-      <div><span class="kpi-value tnum" id="kpiTotalSalesValue">–</span><span class="kpi-unit" id="kpiTotalSalesUnit">THB</span></div>
+      <div><span class="kpi-value" id="kpiTotalSalesValue">–</span><span class="kpi-unit" id="kpiTotalSalesUnit">THB</span></div>
       <div class="kpi-caption" id="kpiTotalSalesCaption">Year to Date</div>
       <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value tnum" id="kpiTotalSalesMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value tnum" id="kpiTotalSalesYoy">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiTotalSalesMom">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiTotalSalesYoy">–</span></div>
       </div>
       <div id="kpiTotalSalesSpark"></div>
     </div>
@@ -91,11 +91,11 @@
         <span class="card-title">Target Attainment %</span>
         <button class="info-icon" data-info-title="Target Attainment %" data-info-text="(ยอดขายจริง ÷ เป้าหมายยอดขาย) × 100 ในช่วงเวลาเดียวกัน คำนวณจากผลรวมทุก Channel">i</button>
       </div>
-      <div><span class="kpi-value tnum" id="kpiAttainValue">–</span></div>
+      <div><span class="kpi-value" id="kpiAttainValue">–</span></div>
       <div class="kpi-caption" id="kpiAttainCaption">Year to Date</div>
       <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value tnum" id="kpiAttainMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value tnum" id="kpiAttainYoy">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAttainMom">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAttainYoy">–</span></div>
       </div>
       <div id="kpiAttainSpark"></div>
     </div>
@@ -105,7 +105,7 @@
         <span class="card-title">Growth YoY</span>
         <button class="info-icon" data-info-title="Growth YoY" data-info-text="(ยอดขายเดือนล่าสุด − ยอดขายเดือนเดียวกันปีก่อน) ÷ ยอดขายเดือนเดียวกันปีก่อน × 100 — อิงเดือนปิดล่าสุดเสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน">i</button>
       </div>
-      <div><span class="kpi-value tnum" id="kpiFixedYoyValue">–</span></div>
+      <div><span class="kpi-value" id="kpiFixedYoyValue">–</span></div>
       <div class="kpi-caption" id="kpiFixedYoyCaption">vs Jun 25 · latest closed month</div>
       <div id="kpiFixedYoySpark" style="margin-top:14px;"></div>
     </div>
@@ -115,7 +115,7 @@
         <span class="card-title">Growth MoM</span>
         <button class="info-icon" data-info-title="Growth MoM" data-info-text="(ยอดขายเดือนล่าสุด − ยอดขายเดือนก่อนหน้า) ÷ ยอดขายเดือนก่อนหน้า × 100 — อิงเดือนปิดล่าสุดเสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน">i</button>
       </div>
-      <div><span class="kpi-value tnum" id="kpiFixedMomValue">–</span></div>
+      <div><span class="kpi-value" id="kpiFixedMomValue">–</span></div>
       <div class="kpi-caption" id="kpiFixedMomCaption">vs May 26 · latest closed month</div>
       <div id="kpiFixedMomSpark" style="margin-top:14px;"></div>
     </div>
@@ -145,7 +145,7 @@
         </div>
       </div>
       <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
-      <div class="chart-headline tnum" id="revenueHeadline">–</div>
+      <div class="chart-headline" id="revenueHeadline">–</div>
       <div class="chart-legend">
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
         <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
@@ -168,7 +168,7 @@
         </div>
       </div>
       <div class="chart-subtitle">Same month, year over year</div>
-      <div class="chart-headline tnum" id="growthHeadline">–</div>
+      <div class="chart-headline" id="growthHeadline">–</div>
       <div class="canvas-wrap" id="growCanvasWrap"><div id="growthChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="growTableWrap"></div>
     </div>
@@ -191,7 +191,7 @@
         <div class="donut-canvas-wrap">
           <div id="donutChart" style="width:100%;height:100%;"></div>
           <div class="donut-center">
-            <div class="donut-center-value tnum" id="donutCenterValue">–</div>
+            <div class="donut-center-value" id="donutCenterValue">–</div>
             <div class="donut-center-label">Total</div>
           </div>
         </div>
@@ -219,24 +219,6 @@
       <div class="chart-subtitle">Category · company-wide</div>
       <div class="cat-bars" id="catBars"></div>
     </div>
-  </div>
-
-  <div class="card table-card">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Sales Ranking by Channel / Platform</span>
-        <button class="info-icon" data-info-title="Sales Ranking by Channel/Platform" data-info-text="จัดอันดับยอดขายสุทธิของแต่ละ Channel/Platform ในช่วงเวลาที่เลือก พร้อม Target Attainment และ Growth YoY ของช่วงเวลาเดียวกัน">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="rankDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="rankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle" style="margin-bottom:10px;">Top 5 by Net Sales, this period</div>
-    <table>
-      <thead><tr><th>#</th><th>Channel / Platform</th><th>Net Sales</th><th>Target Attainment</th><th>Growth YoY</th></tr></thead>
-      <tbody id="rankingBody"></tbody>
-    </table>
   </div>
 
 </div>
@@ -496,29 +478,9 @@ function renderAll(periodKey, custom){
       + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct+'%</span></div></div></div>';
   }).join('');
 
-  const prevS = s - 12, prevE = e - 12;
-  const rankRows = channelDefs.map(c=>{
-    const net = sumRange(c.actual, s, e);
-    const tgt = sumRange(c.target, s, e);
-    const att = tgt ? (net/tgt*100) : 0;
-    const prevNet = (prevS>=0) ? sumRange(c.actual, prevS, prevE) : null;
-    const growth = prevNet ? pctChange(net, prevNet) : null;
-    return {label:c.label, color:c.color, net, att, growth};
-  }).sort((a,b)=> b.net - a.net);
-  document.getElementById('rankingBody').innerHTML = rankRows.map((r,i)=>{
-    const attClass = r.att>=100?'pos':(r.att<90?'neg':'');
-    const growthHtml = r.growth===null ? '–' : '<span class="'+deltaClass(r.growth)+'">'+fmtSignedPct(r.growth)+'</span>';
-    return '<tr><td class="rank-num">'+(i+1)+'</td>'
-      + '<td><div class="channel-name-cell"><span class="channel-dot" style="background:'+r.color+'"></span>'+r.label+'</div></td>'
-      + '<td class="tnum">'+fmtTHB(r.net)+'</td>'
-      + '<td class="tnum '+attClass+'">'+fmtPct(r.att,0)+'</td>'
-      + '<td class="tnum">'+growthHtml+'</td></tr>';
-  }).join('');
-
   latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
   latestData.growth = { labels: curYearLabels, values: growthYoYSeries };
   latestData.category = categoryShares.map(c=>({name:c.name, pct:c.pct, value: totalActual*c.pct/100}));
-  latestData.ranking = rankRows;
   latestData.donut = groupKeys.map(g=>({name:bestGroupNames[g], value:groupTotals[g]}));
 }
 
@@ -566,13 +528,6 @@ document.getElementById('catDownloadBtn').addEventListener('click', ()=>{
   downloadCSV(rows, 'sales_by_category.csv');
 });
 document.getElementById('catExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-
-document.getElementById('rankDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Rank','Channel/Platform','Net Sales (THB)','Target Attainment %','Growth YoY %']];
-  latestData.ranking.forEach((r,i)=> rows.push([i+1, r.label, Math.round(r.net), r.att.toFixed(1), r.growth===null?'':r.growth.toFixed(1)]));
-  downloadCSV(rows, 'sales_ranking.csv');
-});
-document.getElementById('rankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 /* ---------- Init ---------- */
 renderAll(currentPeriodKey, currentCustom);

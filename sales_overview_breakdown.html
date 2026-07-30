@@ -73,72 +73,30 @@
   <div class="channel-snapshot-grid" id="channelSnapshotGrid"></div>
 
   <div class="section-label">Compare Performance</div>
-  <div class="card" style="margin-bottom:20px;">
-    <div class="card-head">
-      <span class="card-title">Compare Performance Table</span>
-      <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
-    </div>
-    <table class="compare-table" id="compareTable"></table>
-  </div>
-
-  <div class="channel-toggle-row" id="channelToggleRow"></div>
-
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Revenue Trend by Channel</span>
-        <button class="info-icon" data-info-title="Revenue Trend by Channel" data-info-text="ยอดขายรายเดือนของแต่ละ Channel ทับกันเป็นเส้น เพื่อเทียบแนวโน้มโดยตรง">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="trendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="trendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-legend" id="trendLegend"></div>
-    <div class="canvas-wrap" id="trendCanvasWrap" style="height:240px;"><div id="trendChart" style="width:100%;height:100%;"></div></div>
-  </div>
-
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Growth YoY by Channel</span>
-          <button class="info-icon" data-info-title="Growth YoY by Channel" data-info-text="(ยอดขาย Channel นี้ในช่วงที่เลือก − ยอดขายช่วงเดียวกันปีก่อน) ÷ ยอดขายช่วงเดียวกันปีก่อน × 100">i</button>
+          <span class="chart-title">Revenue Trend by Channel</span>
+          <button class="info-icon" data-info-title="Revenue Trend by Channel" data-info-text="ยอดขายรายเดือนของแต่ละ Channel ทับกันเป็นเส้น เพื่อเทียบแนวโน้มโดยตรง">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="growthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="trendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="trendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">เทียบ % การเติบโตของแต่ละ Channel ในช่วงเวลาที่เลือก</div>
-      <div id="growthByChannelChart"></div>
+      <div class="channel-toggle-row" id="channelToggleRow"></div>
+      <div class="chart-legend" id="trendLegend"></div>
+      <div class="canvas-wrap" id="trendCanvasWrap" style="height:230px;"><div id="trendChart" style="width:100%;height:100%;"></div></div>
     </div>
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Target Attainment by Channel</span>
-          <button class="info-icon" data-info-title="Target Attainment by Channel" data-info-text="(ยอดขายจริง ÷ เป้าหมาย) × 100 ต่อ Channel เส้นประคือเส้นเป้าหมาย 100%">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="attainDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">เส้นประ = เป้าหมาย 100%</div>
-      <div id="attainByChannelChart"></div>
-    </div>
-  </div>
 
-  <div class="card">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Channel Mix Over Time</span>
-        <button class="info-icon" data-info-title="Channel Mix Over Time" data-info-text="สัดส่วน % ของยอดขายแต่ละ Channel ต่อยอดขายรวม ในแต่ละเดือน ย้อนหลัง 18 เดือน">i</button>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Compare Performance Table</span>
+        <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
       </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="mixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-      </div>
+      <table class="compare-table" id="compareTable"></table>
     </div>
-    <div class="chart-legend" id="mixLegend"></div>
-    <div id="mixChart" style="height:180px;"></div>
   </div>
 
 </div>
@@ -292,10 +250,8 @@ function renderAll(periodKey, custom){
     const att = tgt ? net/tgt*100 : 0;
     const prevNet = prevS>=0 ? sumRange(groupActual[g], prevS, prevE) : null;
     const growth = prevNet ? pctChange(net, prevNet) : null;
-    const arRate = g==='Ecom' ? null : (g==='MT'? 4.2 : 3.7); // illustrative placeholder ratio, see spec §4.3 mapping
     const returnRate = g==='Ecom' ? 6.8 : (g==='MT'? 3.1 : 3.7);
-    const activeUnits = g==='MT' ? 42 : (g==='TT' ? 405 : 3);
-    stats[g] = {net, tgt, att, growth, arRate, returnRate, activeUnits};
+    stats[g] = {net, tgt, att, growth, returnRate};
   });
 
   /* --- Channel Snapshot Cards --- */
@@ -303,7 +259,7 @@ function renderAll(periodKey, custom){
     const st = stats[g];
     const inner =
       '<div class="channel-snapshot-name">'+groupNames[g]+'<span class="arrow">'+(groupHref[g] ? '→' : '')+'</span></div>'
-      + '<div class="channel-snapshot-value tnum">'+fmtTHB(st.net)+'</div>'
+      + '<div class="channel-snapshot-value">'+fmtTHB(st.net)+'</div>'
       + '<div class="channel-snapshot-stats">'
       +   '<div><span class="channel-snapshot-stat-label">Attainment</span><span class="channel-snapshot-stat-value">'+fmtPct(st.att,0)+'</span></div>'
       +   '<div><span class="channel-snapshot-stat-label">Growth YoY</span><span class="channel-snapshot-stat-value '+(st.growth!==null?deltaClass(st.growth):'')+'">'+(st.growth!==null?fmtSignedPct(st.growth):'–')+'</span></div>'
@@ -324,16 +280,12 @@ function renderAll(periodKey, custom){
   const netVals = groupKeys.map(g=>stats[g].net);
   const attVals = groupKeys.map(g=>stats[g].att);
   const growthVals = groupKeys.map(g=>stats[g].growth);
-  const arVals = groupKeys.map(g=>stats[g].arRate);
   const retVals = groupKeys.map(g=>stats[g].returnRate);
-  const unitVals = groupKeys.map(g=>stats[g].activeUnits);
   let tableHtml = '<thead><tr><th>Metric</th>' + groupKeys.map(g=>'<th>'+g+'</th>').join('') + '</tr></thead><tbody>';
   tableHtml += '<tr><td>Net Sales</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(netVals,i,true)+'">'+fmtTHB(netVals[i])+'</td>').join('') + '</tr>';
   tableHtml += '<tr><td>Target Attainment %</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(attVals,i,true)+'">'+fmtPct(attVals[i],0)+'</td>').join('') + '</tr>';
   tableHtml += '<tr><td>Growth YoY</td>' + groupKeys.map((g,i)=>'<td class="tnum '+(growthVals[i]!==null?bestClass(growthVals,i,true):'')+'">'+(growthVals[i]!==null?fmtSignedPct(growthVals[i]):'–')+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>AR% (MT/TT only)</td>' + groupKeys.map((g,i)=>'<td class="tnum '+(arVals[i]!==null?bestClass(arVals,i,false):'')+'">'+(arVals[i]!==null?fmtPct(arVals[i],1):'—')+'</td>').join('') + '</tr>';
   tableHtml += '<tr><td>Return / Cancellation Rate</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(retVals,i,false)+'">'+fmtPct(retVals[i],1)+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>Active Units (Stores/Partners/Shops)</td>' + groupKeys.map((g,i)=>'<td class="tnum">'+unitVals[i]+'</td>').join('') + '</tr>';
   tableHtml += '</tbody>';
   document.getElementById('compareTable').innerHTML = tableHtml;
 
@@ -348,38 +300,11 @@ function renderAll(periodKey, custom){
   document.getElementById('trendLegend').innerHTML = groupKeys.map(g=>
     '<span class="chart-legend-item" style="'+(channelVisible[g]?'':'opacity:.35;')+'"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
   ).join('');
-
-  /* --- Growth YoY by Channel --- */
-  const growthItems = groupKeys.map(g=>({ label:g, value: stats[g].growth===null?0:stats[g].growth, color: stats[g].growth>=0? (cssVar('--good-text')||'#006300') : (cssVar('--critical')||'#d03b3b') }));
-  buildHBarCompareSVG('growthByChannelChart', growthItems, { width:440, rowHeight:46, formatValue:v=>fmtSignedPct(v), referenceValue:0 });
-
-  /* --- Target Attainment by Channel --- */
-  const attainItems = groupKeys.map(g=>({ label:g, value: stats[g].att, color: groupColorVar[g] }));
-  const attainMax = Math.max(110, ...attainItems.map(i=>i.value+10));
-  buildHBarCompareSVG('attainByChannelChart', attainItems, { width:440, rowHeight:46, formatValue:v=>fmtPct(v,0), referenceValue:100, domainMin:0, domainMax:attainMax });
-
-  /* --- Channel Mix Over Time (18 months, % stacked) --- */
-  const mixIdx = []; for(let i=TODAY-17;i<=TODAY;i++) mixIdx.push(i);
-  const mixLabels = mixIdx.map(i=>monthLabels[i]);
-  const totalsByMonth = mixIdx.map(i => groupKeys.reduce((a,g)=>a+groupActual[g][i],0));
-  const mixSeries = groupKeys.map(g => ({
-    color: groupColorVar[g],
-    values: mixIdx.map((i,mi) => totalsByMonth[mi] ? groupActual[g][i]/totalsByMonth[mi]*100 : 0)
-  }));
-  buildStackedAreaSVG('mixChart', { labels: mixLabels, series: mixSeries, height:180 });
-  document.getElementById('mixLegend').innerHTML = groupKeys.map(g=>
-    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
-  ).join('');
-
-  window._latestBreakdown = { trendSeries: {labels:curYearLabels, data: groupKeys.map(g=>({label:g, values: curYearIdx.map(i=>i<=TODAY?groupActual[g][i]:null)}))} };
 }
 
 /* --- Toolbar --- */
 document.getElementById('trendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('trendChart','revenue_trend_by_channel.svg'));
 document.getElementById('trendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('growthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('growthByChannelChart','growth_yoy_by_channel.svg'));
-document.getElementById('attainDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('attainByChannelChart','target_attainment_by_channel.svg'));
-document.getElementById('mixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mixChart','channel_mix_over_time.svg'));
 
 /* ---------- Init ---------- */
 renderAll(currentPeriodKey, currentCustom);

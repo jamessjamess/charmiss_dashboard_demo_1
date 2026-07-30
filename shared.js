@@ -60,7 +60,19 @@ function sparklineSVG(values, color, formatter){
 
 /* ---------- Custom line/area chart (no external chart library) ---------- */
 function buildLineChartSVG(containerId, opts){
-  const {width=520, height=210, labels, series, yFormatter} = opts;
+  const container = document.getElementById(containerId);
+  // Fix (2026-07-30): text/lines looked horizontally stretched whenever a
+  // card was rendered wider than the old fixed viewBox (520). The <svg> was
+  // set to width="100%" with preserveAspectRatio="none", so the browser
+  // scaled X and Y independently to fill the container — if the container's
+  // actual pixel width didn't match the viewBox width, everything (including
+  // text glyphs) got stretched non-uniformly. Fix: measure the container's
+  // real rendered width and use that as the viewBox width, so the scale
+  // factor is always 1:1 and nothing distorts.
+  const measuredWidth = container ? container.clientWidth : 0;
+  const width = opts.width || measuredWidth || 520;
+  const height = opts.height || 210;
+  const {labels, series, yFormatter} = opts;
   const padL=40, padR=10, padT=10, padB=20;
   const plotW = width-padL-padR, plotH = height-padT-padB;
   let allVals = [];
@@ -159,7 +171,9 @@ function buildDonutSVG(containerId, segments, size){
    Channel" (reference=100)) ---------- */
 function buildHBarCompareSVG(containerId, items, opts){
   opts = opts || {};
-  const width = opts.width || 480;
+  const container = document.getElementById(containerId);
+  const measuredWidth = container ? container.clientWidth : 0;
+  const width = opts.width || measuredWidth || 480;
   const rowHeight = opts.rowHeight || 44;
   const formatValue = opts.formatValue || (v => v);
   const labelW = opts.labelW || 90, valueW = 64, padX = 10;
@@ -192,7 +206,9 @@ function buildHBarCompareSVG(containerId, items, opts){
 /* ---------- Stacked area chart (percentage mix over time — used for
    "Channel Mix Over Time") ---------- */
 function buildStackedAreaSVG(containerId, opts){
-  const width = opts.width || 900, height = opts.height || 190;
+  const container = document.getElementById(containerId);
+  const measuredWidth = container ? container.clientWidth : 0;
+  const width = opts.width || measuredWidth || 900, height = opts.height || 190;
   const labels = opts.labels, series = opts.series; // series: [{color, values:[...]}]
   const padL=6, padR=6, padT=8, padB=18;
   const plotW = width-padL-padR, plotH = height-padT-padB;
