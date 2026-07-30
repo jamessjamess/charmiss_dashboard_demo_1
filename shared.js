@@ -151,19 +151,28 @@ function arcPath(cx,cy,r,a0,a1,strokeW){
   const largeArc = (end-a0) > 180 ? 1 : 0;
   return 'M '+x0.toFixed(2)+' '+y0.toFixed(2)+' A '+r+' '+r+' 0 '+largeArc+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2);
 }
-function buildDonutSVG(containerId, segments, size){
+function buildDonutSVG(containerId, segments, size, opts){
+  opts = opts || {};
   size = size || 140;
   const cx=size/2, cy=size/2, r=size/2-9, strokeW=15;
   const total = segments.reduce((a,s)=>a+s.value,0) || 1;
-  let angleStart = -90, paths = '';
+  let angleStart = -90, paths = '', labels = '';
+  const inkOne = cssVar('--ink-1') || '#0b0b0b';
   segments.forEach(seg=>{
     const angle = seg.value/total*360;
     if(angle>0){
       paths += '<path d="'+arcPath(cx,cy,r,angleStart,angleStart+angle,strokeW)+'" fill="none" stroke="'+seg.color+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>';
+      if(opts.showLabels && angle > 12){
+        const midAngle = angleStart + angle/2;
+        const labelR = r + strokeW/2 + 10;
+        const [lx,ly] = polarPoint(cx,cy,labelR,midAngle);
+        const pct = (seg.value/total*100).toFixed(0)+'%';
+        labels += '<text x="'+lx.toFixed(1)+'" y="'+(ly+3).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkOne+'">'+pct+'</text>';
+      }
     }
     angleStart += angle;
   });
-  document.getElementById(containerId).innerHTML = '<svg viewBox="0 0 '+size+' '+size+'" width="100%" height="100%">'+paths+'</svg>';
+  document.getElementById(containerId).innerHTML = '<svg viewBox="0 0 '+size+' '+size+'" width="100%" height="100%" overflow="visible">'+paths+labels+'</svg>';
 }
 
 /* ---------- Horizontal bar comparison (diverging from a reference value —
@@ -398,6 +407,112 @@ function buildTrajectorySparklineSVG(actualValues, projectedEndValue, color, for
     + '<circle cx="'+endPt[0].toFixed(1)+'" cy="'+endPt[1].toFixed(1)+'" r="3" fill="none" stroke="'+color+'" stroke-width="1.6"/>'
     + '<text x="'+lx+'" y="'+(height+11)+'" font-size="10" font-weight="700" fill="'+color+'" text-anchor="'+anchor+'">'+label+'</text>'
     + '</svg>';
+}
+
+/* ---------- Waterfall chart — used for "Growth Contribution Waterfall".
+   steps: [{label, value, type}] where type is 'start'|'end' (neutral/ink bar,
+   value is an absolute total) or 'delta' (value is a +/- contribution,
+   colored green/red). Each delta bar floats from the previous bar's top. ---------- */
+function buildWaterfallSVG(containerId, steps, opts){
+  opts = opts || {};
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 600;
+  const height = opts.height || 240;
+  const yFormatter = opts.yFormatter || (v=>v);
+  const padL=54, padR=16, padT=16, padB=34;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+
+  // running totals to know each bar's floating base/top
+  let running = 0;
+  const bars = steps.map(st=>{
+    if(st.type==='start'){ const base=0, top=st.value; running=st.value; return {base, top, value:st.value}; }
+    if(st.type==='end'){ return {base:0, top:st.value, value:st.value}; }
+    const base = running, top = running+st.value; running = top;
+    return {base, top, value:st.value};
+  });
+
+  const allEdges = bars.flatMap(b=>[b.base,b.top]);
+  let yMin = Math.min(0, ...allEdges), yMax = Math.max(0, ...allEdges);
+  if(yMax===yMin) yMax=yMin+1;
+  const pad = (yMax-yMin)*0.15; yMax+=pad; if(yMin<0) yMin-=pad*0.3;
+  const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
+
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkTertiary = cssVar('--ink-3')||'#898781', inkOne = cssVar('--ink-1')||'#0b0b0b';
+  const good = cssVar('--good-text')||'#006300', bad = cssVar('--critical')||'#d03b3b', neutral = cssVar('--ink-2')||'#52514e';
+
+  let gridSvg='';
+  const gridCount=4;
+  for(let g=0; g<=gridCount; g++){
+    const val = yMin+(yMax-yMin)*(g/gridCount);
+    const y = yAt(val);
+    gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(val)+'</text>';
+  }
+
+  const n = steps.length;
+  const slotW = plotW/n;
+  const barW = slotW*0.55;
+  let barsSvg='', connectorSvg='', xLabels='';
+  bars.forEach((b,i)=>{
+    const x = padL + i*slotW + (slotW-barW)/2;
+    const y0 = yAt(b.base), y1 = yAt(b.top);
+    const y = Math.min(y0,y1), h = Math.max(1,Math.abs(y1-y0));
+    const st = steps[i];
+    const color = st.type==='start'||st.type==='end' ? neutral : (st.value>=0 ? good : bad);
+    barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+color+'"/>';
+    const labelVal = st.type==='delta' ? (st.value>=0?'+':'') + yFormatter(st.value) : yFormatter(st.value);
+    barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+color+'">'+labelVal+'</text>';
+    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+st.label+'</text>';
+    if(i<bars.length-1){
+      const nextX = padL + (i+1)*slotW + (slotW-barW)/2;
+      const connectY = yAt(b.top);
+      connectorSvg += '<line x1="'+(x+barW).toFixed(1)+'" y1="'+connectY.toFixed(1)+'" x2="'+nextX.toFixed(1)+'" y2="'+connectY.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1.2" stroke-dasharray="3,3"/>';
+    }
+  });
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+connectorSvg+barsSvg+xLabels+'</svg>';
+}
+
+/* ---------- 100%-stacked vertical bar chart (per period bucket, e.g.
+   quarters) with % + value labels on each segment. Used for "Channel Mix
+   Over Time" (quarterly). ---------- */
+function buildStacked100BarSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 700;
+  const height = opts.height || 260;
+  const labels = opts.labels, series = opts.series; // series: [{name,color,values:[absolute per bucket]}]
+  const valueFormatter = opts.valueFormatter || (v=>v);
+  const padL=10, padR=10, padT=10, padB=28;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const n = labels.length;
+  const slotW = plotW/n;
+  const barW = slotW*0.6;
+  const inkTertiary = cssVar('--ink-3')||'#898781';
+
+  let bars='', xLabels='';
+  for(let i=0;i<n;i++){
+    const total = series.reduce((a,s)=>a+s.values[i],0) || 1;
+    let cum = 0;
+    const x = padL + i*slotW + (slotW-barW)/2;
+    series.forEach(s=>{
+      const val = s.values[i];
+      const segH = val/total*plotH;
+      const y = padT + (plotH - cum - segH);
+      bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"/>';
+      if(segH > 26){
+        const pct = (val/total*100).toFixed(0)+'%';
+        const cy = y+segH/2;
+        bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(cy-2).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="#fff">'+pct+'</text>';
+        bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(cy+11).toFixed(1)+'" font-size="9" text-anchor="middle" fill="#fff" opacity="0.9">'+valueFormatter(val)+'</text>';
+      }
+      cum += segH;
+    });
+    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+labels[i]+'</text>';
+  }
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+bars+xLabels+'</svg>';
 }
 
 function downloadSVGFromContainer(containerId, filename){

@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — Sales Overview · Executive Outlook</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div class="brand-name">Charmiss</div>
+      <div id="navMenuMount"></div>
+    </div>
+    <div class="user-area">
+      <div class="user-meta">
+        <div class="user-name">Nattapong V.</div>
+        <div class="user-role">VP of Sales</div>
+      </div>
+      <div class="avatar">NV</div>
+      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">Sales Overview — Executive Outlook</h1>
+      <p class="page-subtitle">A complete business snapshot for leadership — readable in 2–3 minutes — before drilling into any single channel's own Overview.</p>
+    </div>
+    <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
+  </div>
+
+  <nav class="tabs">
+    <a class="tab active tab-link" href="sales_overview.html">Executive Outlook</a>
+    <a class="tab tab-link" href="sales_overview_product_analysis.html">Product Analysis</a>
+  </nav>
+
+  <div class="filterbar">
+    <div class="filter-left">
+      <span class="filter-label">Period</span>
+      <button class="period-btn" id="periodBtn">
+        <span id="periodBtnLabel">Year to Date</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="period-dropdown" id="periodDropdown">
+        <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+        <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+        <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+        <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+        <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+        <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+        <div class="period-divider"></div>
+        <div class="custom-range-label">Custom Range</div>
+        <div class="custom-range-row">
+          <select id="customFrom"></select>
+          <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+          <select id="customTo"></select>
+        </div>
+        <button class="apply-btn" id="applyCustom">Apply</button>
+      </div>
+    </div>
+    <div class="filter-scope">Company-wide, all channels (MT, TT, Ecom)</div>
+  </div>
+
+  <!-- ===== SECTION 1: AT A GLANCE ===== -->
+  <div class="section-label">At a Glance</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Total Net Sales</span>
+        <button class="info-icon" data-info-title="Total Net Sales" data-info-text="ผลรวมยอดขายสุทธิ (หลังหักคืน/ส่วนลด) ในช่วงเวลาที่เลือก รวมทุก Channel (MT, TT, Ecom)">i</button>
+      </div>
+      <div><span class="kpi-value" id="kpiTotalSalesValue">–</span><span class="kpi-unit" id="kpiTotalSalesUnit">THB</span></div>
+      <div class="kpi-caption" id="kpiTotalSalesCaption">Year to Date</div>
+      <div class="kpi-delta-row">
+        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiTotalSalesMom">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiTotalSalesYoy">–</span></div>
+      </div>
+      <div id="kpiTotalSalesSpark"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Target Attainment %</span>
+        <button class="info-icon" data-info-title="Target Attainment %" data-info-text="(ยอดขายจริง ÷ เป้าหมายยอดขาย) × 100 ในช่วงเวลาเดียวกัน คำนวณจากผลรวมทุก Channel — Gap to Target ด้านล่างคือ Actual YTD − Target YTD (Calendar YTD เสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน)">i</button>
+      </div>
+      <div><span class="kpi-value" id="kpiAttainValue">–</span></div>
+      <div class="kpi-caption" id="kpiAttainCaption">Year to Date</div>
+      <div class="kpi-delta-row">
+        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAttainMom">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAttainYoy">–</span></div>
+      </div>
+      <div id="kpiAttainSpark"></div>
+      <div class="kpi-caption" id="kpiGapCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Full Year Forecast</span>
+        <button class="info-icon" data-info-title="Full Year Forecast" data-info-text="ประมาณการแบบ Run-rate อย่างง่าย: (ยอดขาย YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว) × 12 ÷ เป้าหมายทั้งปี × 100 — ยังไม่ปรับ Seasonality">i</button>
+      </div>
+      <div><span class="kpi-value" id="kpiForecastValue">–</span></div>
+      <div class="kpi-caption" id="kpiForecastCaption">Projected Attainment · full year</div>
+      <div id="kpiForecastSpark" style="margin-top:14px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 2: PERFORMANCE & COMPOSITION ===== -->
+  <div class="section-label">Performance &amp; Composition</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Revenue Trend</span>
+          <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายจริงรายเดือน เทียบกับเป้าหมายและยอดขายปีก่อนในเดือนเดียวกัน เส้น This Year จะแสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="revTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="revDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
+      <div class="chart-headline" id="revenueHeadline">–</div>
+      <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
+        <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
+      </div>
+      <div class="canvas-wrap" id="revCanvasWrap"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="revTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Channel</span>
+          <button class="info-icon" data-info-title="Sales by Channel" data-info-text="สัดส่วน % ของยอดขายแต่ละ Channel (MT/TT/Ecom) เทียบกับยอดขายรวมในช่วงเวลาที่เลือก — Best/Watch คือ Channel ที่มี Target Attainment สูงสุด/ต่ำสุด">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="donutDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="donutExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period, company-wide</div>
+      <div class="donut-layout">
+        <div class="donut-canvas-wrap">
+          <div id="donutChart" style="width:100%;height:100%;"></div>
+          <div class="donut-center">
+            <div class="donut-center-value" id="donutCenterValue">–</div>
+            <div class="donut-center-label">Total</div>
+          </div>
+        </div>
+        <div class="legend-list" id="channelLegend"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Channel Growth Comparison (YoY)</span>
+        <button class="info-icon" data-info-title="Channel Growth Comparison (YoY)" data-info-text="% การเปลี่ยนแปลงยอดขายรายเดือนเทียบเดือนเดียวกันปีก่อน แยกตาม Channel (MT/TT/Ecom) — ดูว่า Channel ไหน Outperform Channel ไหนในแต่ละเดือน">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="chGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="chGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="chGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Which channel is outperforming — same month, year over year, full 12 months</div>
+    <div class="chart-legend" id="chGrowthLegend"></div>
+    <div class="canvas-wrap" id="chGrowthCanvasWrap" style="height:220px;"><div id="chGrowthChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="chGrowthTableWrap"></div>
+  </div>
+
+  <div class="card">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Sales by Category</span>
+        <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ของยอดขายแต่ละหมวดหมู่สินค้า เทียบกับยอดขายรวม (Company-wide) ในช่วงเวลาที่เลือก">i</button>
+      </div>
+      <div class="toolbar">
+        <select class="level-select" id="catLevelSelect">
+          <option value="category">Category</option>
+          <option value="subcategory" disabled>Sub-Category (Coming soon)</option>
+          <option value="type" disabled>Type (Coming soon)</option>
+          <option value="series" disabled>Series (Coming soon)</option>
+        </select>
+        <button class="tool-btn" id="catDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="catExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Category · company-wide</div>
+    <div class="cat-bars" id="catBars"></div>
+  </div>
+
+  <!-- ===== SECTION 3: WHAT'S DRIVING IT ===== -->
+  <div class="section-label">What's Driving It</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Growth Contribution Waterfall</span>
+          <button class="info-icon" data-info-title="Growth Contribution Waterfall" data-info-text="แท่งเริ่ม = ยอดขาย YTD ปีก่อน, แท่งกลาง = ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของแต่ละ Channel ทีละแท่ง (เขียว=บวก, แดง=ลบ), แท่งจบ = ยอดขาย YTD ปีนี้รวม — บอกว่า Channel ไหน Contribute ต่อการเติบโตรวมเท่าไหร่ (Calendar YTD เสมอ)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="waterfallDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="waterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Last Year YTD → contribution by channel → This Year YTD</div>
+      <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:250px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Return / Cancellation Rate Trend</span>
+          <button class="info-icon" data-info-title="Return / Cancellation Rate Trend" data-info-text="Weighted average ของ (Credit Note มูลค่า MT+TT + Cancellation มูลค่า Ecom) ÷ ยอดขายรวม (Gross) × 100 รายเดือน — เป็นค่า Blend ข้าม 2 กลไกที่ต่างกัน: Credit Note (คืนสินค้า MT/TT) และ Cancellation (ยกเลิกออเดอร์ Ecom) เส้นประ = Threshold 5%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="retTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="retTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="retTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Blended MT+TT (Credit Note) and Ecom (Cancellation) · dashed = 5% threshold</div>
+      <div class="canvas-wrap" id="retTrendCanvasWrap" style="height:250px;"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="retTrendTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== SECTION 4: CHANNEL COMPARISON ===== -->
+  <div class="section-label">Channel Comparison</div>
+  <div class="channel-snapshot-grid" id="channelSnapshotGrid"></div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Compare Performance Table</span>
+        <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
+      </div>
+      <table class="compare-table" id="compareTable"></table>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Revenue Trend by Channel</span>
+          <button class="info-icon" data-info-title="Revenue Trend by Channel" data-info-text="ยอดขายรายเดือนของแต่ละ Channel ทับกันเป็นเส้น เพื่อเทียบแนวโน้มโดยตรง">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="trendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="trendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="channel-toggle-row" id="channelToggleRow"></div>
+      <div class="chart-legend" id="trendLegend"></div>
+      <div class="canvas-wrap" id="trendCanvasWrap" style="height:210px;"><div id="trendChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Channel Mix Over Time</span>
+        <button class="info-icon" data-info-title="Channel Mix Over Time" data-info-text="สัดส่วน % ของยอดขายแต่ละ Channel ต่อยอดขายรวม ราย Quarter (Q1/25 ถึงไตรมาสล่าสุด) — กดดูเป็นตารางเพื่อดูข้อมูลรายเดือนละเอียด">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="mixTableBtn" title="ดูเป็นตาราง (รายเดือน)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="mixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="mixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="callout-text" id="mixCallout">–</div>
+    <div class="chart-legend" id="mixLegend"></div>
+    <div class="canvas-wrap" id="mixCanvasWrap" style="height:280px;"><div id="mixChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="mixTableWrap"></div>
+  </div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ---------- Mock data (same seed/algorithm as other Sales Overview files) ---------- */
+const rand = mulberry32(20260630);
+const MONTHS_TOTAL = 36;
+const TODAY = 29;
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
+
+function genSeries(base, growthPerMonth){
+  const actual = [], target = [];
+  let level = base;
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const moy = i % 12;
+    let seasonal = 1;
+    if([9,10,11].includes(moy)) seasonal = 1.13;
+    if(moy === 1) seasonal = 0.9;
+    if(moy === 6 || moy === 7) seasonal = 0.96;
+    const noiseA = 0.94 + rand()*0.12;
+    const noiseT = 0.97 + rand()*0.05;
+    actual.push(Math.round(level * seasonal * noiseA));
+    target.push(Math.round(level * seasonal * noiseT));
+    level = level * (1 + growthPerMonth);
+  }
+  return {actual, target};
+}
+const channelDefs = [
+  {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT'},
+  {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:2000000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1700000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok Shop', color:'#7A5A2E', base:900000, growth:0.0270, group:'Ecom'}
+];
+channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.actual; c.target = s.target; });
+const groupKeys = ['MT','TT','Ecom'];
+const groupColorVar = {MT:'#8E1E4D', TT:'#3B7A7A', Ecom:'#A87C3F'};
+const groupNames = {MT:'Modern Trade (MT)', TT:'Traditional Trade (TT)', Ecom:'E-commerce'};
+const groupHref = {MT:null, TT:'module_tt.html#overview', Ecom:null};
+function groupSeries(groupKey, field){
+  const arr = new Array(MONTHS_TOTAL).fill(0);
+  channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });
+  return arr;
+}
+const groupActual = {}, groupTarget = {};
+groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
+const companyActual = [], companyTarget = [];
+for(let i=0;i<MONTHS_TOTAL;i++){
+  let a=0,t=0; groupKeys.forEach(g=>{ a+=groupActual[g][i]; t+=groupTarget[g][i]; });
+  companyActual.push(a); companyTarget.push(t);
+}
+
+/* Credit Note (MT+TT) / Cancellation (Ecom) mock series — illustrative
+   fractions of that group's monthly actual, with independent noise, used
+   only by the Return/Cancellation Rate Trend formula given in the spec. */
+const mtttCNRate = []; const ecomCancelRate = [];
+for(let i=0;i<MONTHS_TOTAL;i++){
+  mtttCNRate.push(0.032 + rand()*0.012);   // ~3.2%-4.4% of MT+TT actual
+  ecomCancelRate.push(0.065 + rand()*0.02); // ~6.5%-8.5% of Ecom actual
+}
+
+const categoryShares = [
+  {name:'Skin Care', pct:28.7}, {name:'Color Cosmetics', pct:19.5}, {name:'Hair Care', pct:17.6},
+  {name:'Personal Care', pct:16.3}, {name:'Fragrance', pct:9.8}, {name:'Accessories', pct:8.1}
+];
+
+function getPeriodRange(key, custom){
+  switch(key){
+    case 'thisMonth': return [TODAY, TODAY];
+    case 'lastMonth': return [TODAY-1, TODAY-1];
+    case 'thisQuarter': return [TODAY-2, TODAY];
+    case 'lastQuarter': return [TODAY-5, TODAY-3];
+    case 'trailing12': return [TODAY-11, TODAY];
+    case 'custom': return custom;
+    case 'ytd': default: return [24, TODAY];
+  }
+}
+function periodLabelText(key, custom){
+  switch(key){
+    case 'thisMonth': return 'Jun 2026';
+    case 'lastMonth': return 'May 2026';
+    case 'thisQuarter': return 'Q2 2026';
+    case 'lastQuarter': return 'Q1 2026';
+    case 'trailing12': return 'Trailing 12 Months';
+    case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
+    case 'ytd': default: return 'Year to Date';
+  }
+}
+
+/* ---------- Nav menu / popovers / theme ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('so-exec', 'Sales Overview · Executive Outlook'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
+
+/* ---------- Custom range selects ---------- */
+const customFromSel = document.getElementById('customFrom');
+const customToSel = document.getElementById('customTo');
+for(let i=0;i<=TODAY;i++){
+  const optF = document.createElement('option'); optF.value=i; optF.textContent=monthLabels[i]; customFromSel.appendChild(optF);
+  const optT = document.createElement('option'); optT.value=i; optT.textContent=monthLabels[i]; customToSel.appendChild(optT);
+}
+customFromSel.value = 24; customToSel.value = TODAY;
+
+/* ---------- Period dropdown ---------- */
+const periodBtn = document.getElementById('periodBtn');
+const periodDropdown = document.getElementById('periodDropdown');
+const periodBtnLabel = document.getElementById('periodBtnLabel');
+let currentPeriodKey = 'ytd';
+let currentCustom = [24, TODAY];
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderAll(currentPeriodKey, currentCustom);
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderAll(currentPeriodKey, currentCustom);
+});
+
+/* ---------- Channel visibility toggle (Section 4 Revenue Trend by Channel) ---------- */
+const channelVisible = {MT:true, TT:true, Ecom:true};
+document.getElementById('channelToggleRow').innerHTML = groupKeys.map(g=>
+  '<label class="channel-toggle-item"><input type="checkbox" checked data-ch="'+g+'"><span style="width:9px;height:9px;border-radius:2px;background:'+groupColorVar[g]+';display:inline-block;"></span>'+g+'</label>'
+).join('');
+document.querySelectorAll('#channelToggleRow input[type=checkbox]').forEach(cb=>{
+  cb.addEventListener('change', ()=>{ channelVisible[cb.dataset.ch] = cb.checked; renderAll(currentPeriodKey, currentCustom); });
+});
+
+/* ---------- Render ---------- */
+let latestData = {};
+
+function renderAll(periodKey, custom){
+  const [s,e] = getPeriodRange(periodKey, custom);
+  const label = periodLabelText(periodKey, custom);
+  const brand = cssVar('--brand') || '#8E1E4D';
+
+  const totalActual = sumRange(companyActual, s, e);
+  const totalTarget = sumRange(companyTarget, s, e);
+  const attainPct = totalTarget ? (totalActual/totalTarget*100) : 0;
+  const momGrowth = pctChange(companyActual[e], companyActual[e-1]);
+  const yoyGrowth = pctChange(companyActual[e], companyActual[e-12]);
+  const attainAt = i => companyTarget[i] ? (companyActual[i]/companyTarget[i]*100) : 0;
+  const attainMomPP = attainAt(e) - attainAt(e-1);
+  const attainYoyPP = attainAt(e) - attainAt(e-12);
+
+  /* === SECTION 1: At a Glance === */
+  document.getElementById('kpiTotalSalesValue').textContent = fmtTHB(totalActual);
+  document.getElementById('kpiTotalSalesCaption').textContent = label;
+  document.getElementById('kpiTotalSalesMom').innerHTML = '<span class="'+deltaClass(momGrowth)+'">'+fmtSignedPct(momGrowth)+'</span>';
+  document.getElementById('kpiTotalSalesYoy').innerHTML = '<span class="'+deltaClass(yoyGrowth)+'">'+fmtSignedPct(yoyGrowth)+'</span>';
+  const salesSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) salesSpark.push(companyActual[i]);
+  document.getElementById('kpiTotalSalesSpark').innerHTML = sparklineSVG(salesSpark, brand, fmtTHB);
+
+  document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
+  document.getElementById('kpiAttainCaption').textContent = label;
+  document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
+  document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
+  const attainSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
+  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG(attainSpark, brand, v=>fmtPct(v,0));
+
+  const ytdStart = 24;
+  const ytdActual = sumRange(companyActual, ytdStart, TODAY);
+  const ytdTarget = sumRange(companyTarget, ytdStart, TODAY);
+  const gapValue = ytdActual - ytdTarget;
+  const gapClass = gapValue>=0 ? 'pos' : 'neg';
+  document.getElementById('kpiGapCaption').innerHTML = 'Gap to Target: <span class="'+gapClass+'">'+(gapValue>=0?'+':'−')+fmtTHB(Math.abs(gapValue))+'</span> (Actual YTD vs Target YTD)';
+
+  const monthsElapsed = TODAY - ytdStart + 1;
+  const runRateAnnual = (ytdActual / monthsElapsed) * 12;
+  const fullYearTarget = sumRange(companyTarget, ytdStart, 35);
+  const projectedAttainPct = fullYearTarget ? (runRateAnnual / fullYearTarget * 100) : 0;
+  document.getElementById('kpiForecastValue').textContent = fmtPct(projectedAttainPct,0);
+  const forecastActualSeries = []; for(let i=ytdStart;i<=TODAY;i++) forecastActualSeries.push(attainAt(i));
+  document.getElementById('kpiForecastSpark').innerHTML = buildTrajectorySparklineSVG(forecastActualSeries, projectedAttainPct, brand, v=>fmtPct(v,0));
+
+  /* === SECTION 2: Performance & Composition === */
+  document.getElementById('revenueHeadline').textContent = fmtTHB(totalActual) + ' THB · ' + label + ', company-wide';
+  const curYearIdx = []; for(let i=24;i<36;i++) curYearIdx.push(i);
+  const curYearLabels = curYearIdx.map(i => monthNames[i%12]);
+  const revenueThisYear = curYearIdx.map(i => i<=TODAY ? companyActual[i] : null);
+  const revenueTarget = curYearIdx.map(i => companyTarget[i]);
+  const revenueLastYear = curYearIdx.map(i => companyActual[i-12]);
+  buildLineChartSVG('revenueChart', {
+    labels: curYearLabels, yFormatter: fmtTHB,
+    series:[
+      {data:revenueLastYear, color:cssVar('--baseline')||'#c3c2b7', width:1.6},
+      {data:revenueTarget, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
+      {data:revenueThisYear, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:fmtTHB}
+    ]
+  });
+
+  const groupTotals = {}, groupTargets = {}, groupAttain = {};
+  groupKeys.forEach(g=>{
+    groupTotals[g] = sumRange(groupActual[g], s, e);
+    groupTargets[g] = sumRange(groupTarget[g], s, e);
+    groupAttain[g] = groupTargets[g] ? (groupTotals[g]/groupTargets[g]*100) : 0;
+  });
+  const bestGroup = groupKeys.reduce((a,b)=> groupAttain[a] >= groupAttain[b] ? a : b);
+  const watchGroup = groupKeys.reduce((a,b)=> groupAttain[a] <= groupAttain[b] ? a : b);
+
+  buildDonutSVG('donutChart', groupKeys.map(g=>({value:groupTotals[g], color:groupColorVar[g]})), 140, {showLabels:true});
+  document.getElementById('donutCenterValue').textContent = fmtTHB(totalActual);
+  document.getElementById('channelLegend').innerHTML = groupKeys.map(g=>{
+    const pct = totalActual ? (groupTotals[g]/totalActual*100) : 0;
+    let badge = '';
+    if(g===bestGroup) badge = '<span class="legend-badge best">Best</span>';
+    else if(g===watchGroup) badge = '<span class="legend-badge watch">Watch</span>';
+    return '<div class="legend-row"><span class="legend-dot" style="background:'+groupColorVar[g]+'"></span>'
+      + '<span class="legend-name">'+groupNames[g]+badge+'</span>'
+      + '<span class="legend-value">'+fmtTHB(groupTotals[g])+' · '+pct.toFixed(1)+'%</span></div>';
+  }).join('');
+
+  const chGrowthSeries = groupKeys.map(g=>({
+    data: curYearIdx.map(i => i<=TODAY ? pctChange(groupActual[g][i], groupActual[g][i-12]) : null),
+    color: groupColorVar[g], width:2.2, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)
+  }));
+  buildLineChartSVG('chGrowthChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series: chGrowthSeries });
+  document.getElementById('chGrowthLegend').innerHTML = groupKeys.map(g=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+g+'</span>'
+  ).join('');
+
+  const maxShare = Math.max(...categoryShares.map(c=>c.pct));
+  document.getElementById('catBars').innerHTML = categoryShares.map(c=>{
+    const val = totalActual * c.pct/100;
+    const widthPct = (c.pct/maxShare*100).toFixed(1);
+    return '<div class="cat-row"><span class="cat-label">'+c.name+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct+'%</span></div></div></div>';
+  }).join('');
+
+  /* === SECTION 3: What's Driving It === */
+  const lastYearYTD = sumRange(companyActual, ytdStart-12, TODAY-12);
+  const channelDeltas = {};
+  groupKeys.forEach(g=>{
+    channelDeltas[g] = sumRange(groupActual[g], ytdStart, TODAY) - sumRange(groupActual[g], ytdStart-12, TODAY-12);
+  });
+  const waterfallSteps = [
+    {label:'Last Year YTD', value: lastYearYTD, type:'start'},
+    {label:'MT', value: channelDeltas.MT, type:'delta'},
+    {label:'TT', value: channelDeltas.TT, type:'delta'},
+    {label:'Ecom', value: channelDeltas.Ecom, type:'delta'},
+    {label:'This Year YTD', value: ytdActual, type:'end'}
+  ];
+  buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB });
+
+  const mtCNValue = curYearIdx.map(i => i<=TODAY ? groupActual.MT[i]*mtttCNRate[i] : null);
+  const ttCNValue = curYearIdx.map(i => i<=TODAY ? groupActual.TT[i]*mtttCNRate[i] : null);
+  const ecomCancelValue = curYearIdx.map(i => i<=TODAY ? groupActual.Ecom[i]*ecomCancelRate[i] : null);
+  const blendedRate = curYearIdx.map((i,idx) => i<=TODAY ? (mtCNValue[idx]+ttCNValue[idx]+ecomCancelValue[idx])/companyActual[i]*100 : null);
+  const thresholdSeries = curYearIdx.map(()=>5);
+  buildLineChartSVG('retTrendChart', {
+    labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
+    series:[
+      {data:thresholdSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
+      {data:blendedRate, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}
+    ]
+  });
+
+  /* === SECTION 4: Channel Comparison === */
+  document.getElementById('channelSnapshotGrid').innerHTML = groupKeys.map(g=>{
+    const inner =
+      '<div class="channel-snapshot-name">'+groupNames[g]+'<span class="arrow">'+(groupHref[g] ? '→' : '')+'</span></div>'
+      + '<div class="channel-snapshot-value">'+fmtTHB(groupTotals[g])+'</div>'
+      + '<div class="channel-snapshot-stats">'
+      +   '<div><span class="channel-snapshot-stat-label">Attainment</span><span class="channel-snapshot-stat-value">'+fmtPct(groupAttain[g],0)+'</span></div>'
+      +   '<div><span class="channel-snapshot-stat-label">Growth YoY</span><span class="channel-snapshot-stat-value '+deltaClass(pctChange(sumRange(groupActual[g],s,e), sumRange(groupActual[g],s-12,e-12)))+'">'+fmtSignedPct(pctChange(sumRange(groupActual[g],s,e), sumRange(groupActual[g],s-12,e-12)))+'</span></div>'
+      + '</div>';
+    if(groupHref[g]){
+      return '<a class="channel-snapshot-card" href="'+groupHref[g]+'" style="border-left-color:'+groupColorVar[g]+'">'+inner+'</a>';
+    }
+    return '<div class="channel-snapshot-card" style="border-left-color:'+groupColorVar[g]+';opacity:.6;cursor:default;" title="Module ยังไม่เปิดใช้งาน (Coming soon)">'+inner+'</div>';
+  }).join('');
+
+  function bestClass(values, idx, higherIsBetter){
+    const valid = values.map((v,i)=>({v,i})).filter(o=>o.v!==null);
+    if(!valid.length) return '';
+    const best = higherIsBetter ? Math.max(...valid.map(o=>o.v)) : Math.min(...valid.map(o=>o.v));
+    return values[idx]===best ? 'compare-best' : '';
+  }
+  const prevS = s-12, prevE = e-12;
+  const activeUnitLabel = {MT:'Active Partners', TT:'Active Stores', Ecom:'Active Shop Listings'};
+  const stats = {};
+  groupKeys.forEach(g=>{
+    const net = groupTotals[g], tgt = groupTargets[g], att = groupAttain[g];
+    const prevNet = prevS>=0 ? sumRange(groupActual[g], prevS, prevE) : null;
+    const growth = prevNet ? pctChange(net, prevNet) : null;
+    const momG = pctChange(groupActual[g][TODAY], groupActual[g][TODAY-1]);
+    let retRate;
+    if(g==='Ecom'){ retRate = sumRange(ecomCancelValueFull(),s,e) / net * 100; }
+    else { retRate = sumRange(mtttCNValueFull(g),s,e) / net * 100; }
+    const activeUnits = g==='MT' ? 42 : (g==='TT' ? 405 : 3);
+    stats[g] = {net, tgt, att, growth, momG, retRate, activeUnits};
+  });
+  function mtttCNValueFull(g){ return groupActual[g].map((v,i)=>v*mtttCNRate[i]); }
+  function ecomCancelValueFull(){ return groupActual.Ecom.map((v,i)=>v*ecomCancelRate[i]); }
+
+  const netVals = groupKeys.map(g=>stats[g].net);
+  const attVals = groupKeys.map(g=>stats[g].att);
+  const growthVals = groupKeys.map(g=>stats[g].growth);
+  const momVals = groupKeys.map(g=>stats[g].momG);
+  const retVals = groupKeys.map(g=>stats[g].retRate);
+  const unitVals = groupKeys.map(g=>stats[g].activeUnits);
+  let tableHtml = '<thead><tr><th>Metric</th>' + groupKeys.map(g=>'<th>'+g+'</th>').join('') + '</tr></thead><tbody>';
+  tableHtml += '<tr><td>Net Sales</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(netVals,i,true)+'">'+fmtTHB(netVals[i])+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Target Attainment %</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(attVals,i,true)+'">'+fmtPct(attVals[i],0)+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Growth YoY</td>' + groupKeys.map((g,i)=>'<td class="tnum '+(growthVals[i]!==null?bestClass(growthVals,i,true):'')+'">'+(growthVals[i]!==null?fmtSignedPct(growthVals[i]):'–')+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Growth MoM</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(momVals,i,true)+'">'+fmtSignedPct(momVals[i])+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Return / Cancellation Rate</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(retVals,i,false)+'">'+fmtPct(retVals[i],1)+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Active Units <button class="info-icon" style="display:inline-flex;vertical-align:middle;" data-info-title="Active Units" data-info-text="ต่างหน่วยกันตาม Channel: MT = Active Partners (คู่ค้า), TT = Active Stores (ร้านค้า), Ecom = Active Shop Listings (จำนวน Platform/Shop ที่เปิดขาย)">i</button></td>'
+    + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(unitVals,i,true)+'">'+unitVals[i]+'<span class="sub-label">'+activeUnitLabel[g]+'</span></td>').join('') + '</tr>';
+  tableHtml += '</tbody>';
+  document.getElementById('compareTable').innerHTML = tableHtml;
+
+  const trendSeries = groupKeys.filter(g=>channelVisible[g]).map(g=>({
+    data: curYearIdx.map(i => i<=TODAY ? groupActual[g][i] : null),
+    color: groupColorVar[g], width:2.2, showLastLabel:true, lastLabelFormatter:fmtTHB
+  }));
+  buildLineChartSVG('trendChart', { labels: curYearLabels, yFormatter: fmtTHB, series: trendSeries.length?trendSeries:[{data:curYearIdx.map(()=>0)}] });
+  document.getElementById('trendLegend').innerHTML = groupKeys.map(g=>
+    '<span class="chart-legend-item" style="'+(channelVisible[g]?'':'opacity:.35;')+'"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
+  ).join('');
+
+  /* --- Channel Mix Over Time (Quarterly 100% stacked bar, Q1/25 to latest quarter) --- */
+  const quarterDefs = [
+    {label:'Q1/25', idx:[12,13,14]}, {label:'Q2/25', idx:[15,16,17]}, {label:'Q3/25', idx:[18,19,20]},
+    {label:'Q4/25', idx:[21,22,23]}, {label:'Q1/26', idx:[24,25,26]}, {label:'Q2/26', idx:[27,28,29]}
+  ];
+  const quarterLabels = quarterDefs.map(q=>q.label);
+  const mixSeries = groupKeys.map(g=>({
+    name:g, color: groupColorVar[g],
+    values: quarterDefs.map(q => q.idx.reduce((sum,i)=>sum+groupActual[g][i],0))
+  }));
+  buildStacked100BarSVG('mixChart', { labels: quarterLabels, series: mixSeries, valueFormatter: fmtTHB });
+  document.getElementById('mixLegend').innerHTML = groupKeys.map(g=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
+  ).join('');
+  const firstQTotal = groupKeys.reduce((a,g)=>a+mixSeries.find(m=>m.name===g).values[0],0);
+  const lastQTotal = groupKeys.reduce((a,g)=>a+mixSeries.find(m=>m.name===g).values[mixSeries[0].values.length-1],0);
+  const calloutParts = groupKeys.map(g=>{
+    const s0 = mixSeries.find(m=>m.name===g);
+    const firstPct = firstQTotal ? s0.values[0]/firstQTotal*100 : 0;
+    const lastPct = lastQTotal ? s0.values[s0.values.length-1]/lastQTotal*100 : 0;
+    const delta = lastPct-firstPct;
+    return '<b>'+g+'</b>: '+firstPct.toFixed(0)+'% → '+lastPct.toFixed(0)+'% ('+(delta>=0?'+':'')+delta.toFixed(0)+'pp)';
+  });
+  document.getElementById('mixCallout').innerHTML = 'Q1/25 → Q2/26 channel mix shift — ' + calloutParts.join(' · ');
+
+  latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
+  latestData.chGrowth = { labels: curYearLabels, series: chGrowthSeries.map((s,i)=>({name:groupKeys[i], values:s.data})) };
+  latestData.retTrend = { labels: curYearLabels, values: blendedRate };
+  latestData.mixMonthly = { idx: [], };
+  const monthlyMixIdx = []; for(let i=12;i<=TODAY;i++) monthlyMixIdx.push(i);
+  latestData.mixMonthly = { labels: monthlyMixIdx.map(i=>monthLabels[i]), idxList: monthlyMixIdx };
+}
+
+/* --- Toolbar --- */
+document.getElementById('revDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('revenueChart', 'revenue_trend.svg'));
+document.getElementById('revExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('revTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('revTableWrap');
+  const canvasWrap = document.getElementById('revCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.revenue;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Last Year</th><th>Target</th><th>This Year</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtTHB(d.lastYear[i])+'</td><td>'+fmtTHB(d.target[i])+'</td><td>'+(d.thisYear[i]!==null?fmtTHB(d.thisYear[i]):'–')+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('donutDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('donutChart', 'sales_by_channel.svg'));
+document.getElementById('donutExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('chGrowthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('chGrowthChart', 'channel_growth_comparison.svg'));
+document.getElementById('chGrowthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('chGrowthTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('chGrowthTableWrap');
+  const canvasWrap = document.getElementById('chGrowthCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.chGrowth;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+(s.values[i]!==null?fmtSignedPct(s.values[i]):'–')+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('catDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Category','Share %','Value (THB)']];
+  categoryShares.forEach(c=> rows.push([c.name, c.pct, Math.round(sumRange(companyActual,...getPeriodRange(currentPeriodKey,currentCustom))*c.pct/100)]));
+  downloadCSV(rows, 'sales_by_category.csv');
+});
+document.getElementById('catExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('waterfallDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('waterfallChart', 'growth_contribution_waterfall.svg'));
+document.getElementById('waterfallExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('retTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('retTrendChart', 'return_cancellation_rate_trend.svg'));
+document.getElementById('retTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('retTrendTableWrap');
+  const canvasWrap = document.getElementById('retTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.retTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Blended Rate</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+(d.values[i]!==null?fmtPct(d.values[i],1):'–')+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('trendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('trendChart','revenue_trend_by_channel.svg'));
+document.getElementById('trendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('mixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mixChart', 'channel_mix_over_time.svg'));
+document.getElementById('mixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mixTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('mixTableWrap');
+  const canvasWrap = document.getElementById('mixCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.mixMonthly;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + groupKeys.map(g=>'<th>'+g+' %</th><th>'+g+' ฿</th>').join('') + '</tr></thead><tbody>';
+  d.idxList.forEach((i,mi)=>{
+    const total = groupKeys.reduce((a,g)=>a+groupActual[g][i],0) || 1;
+    html += '<tr><td>'+d.labels[mi]+'</td>' + groupKeys.map(g=>{
+      const v = groupActual[g][i]; return '<td>'+(v/total*100).toFixed(0)+'%</td><td>'+fmtTHB(v)+'</td>';
+    }).join('') + '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Init ---------- */
+renderAll(currentPeriodKey, currentCustom);
+</script>
+</body>
+</html>

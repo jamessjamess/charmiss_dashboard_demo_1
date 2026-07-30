@@ -750,30 +750,29 @@
         <div>
           <div class="brand-name">Charmiss</div>
         </div>
+        <div id="navMenuMount"></div>
       </div>
       <div class="breadcrumb" style="margin-top:14px;">
-        <a href="sales_overview_executive_summary.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
+        <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
       </div>
-      <div class="module-eyebrow">TT Overview</div>
-      <h1 id="pageHeaderTitle">Executive Summary</h1>
+      <h1 id="pageHeaderTitle">TT Overview — Executive Summary</h1>
       <p class="subhead" id="pageHeaderSubhead">Executive snapshot of revenue vs. target and overall business health across the Traditional Trade channel.</p>
     </div>
     <div class="topbar-right">
       <div class="user-badge-row">
-        <div id="navMenuMount"></div>
         <button class="user-badge" id="userBadgeTrigger" type="button" aria-haspopup="true" aria-expanded="false">
-          <span class="user-avatar-circle" id="userAvatarCircle">AS</span>
+          <span class="user-avatar-circle" id="userAvatarCircle">NV</span>
           <span class="user-badge-text">
-            <span class="user-name" id="userName">Anucha S.</span>
-            <span class="user-role" id="userRole">Sales Person</span>
+            <span class="user-name" id="userName">Nattapong V.</span>
+            <span class="user-role" id="userRole">VP of Sales</span>
           </span>
           <span class="caret">▾</span>
         </button>
         <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
         <div class="user-panel" id="userPanel" role="menu">
-          <div class="user-panel-name" id="userPanelName">Anucha S.</div>
-          <div class="user-panel-role" id="userPanelRole">Sales Person · Traditional Trade</div>
-          <div class="user-panel-note">Logged-in identity (mockup) — every page below is scoped to this person automatically.</div>
+          <div class="user-panel-name" id="userPanelName">Nattapong V.</div>
+          <div class="user-panel-role" id="userPanelRole">VP of Sales</div>
+          <div class="user-panel-note">Logged-in identity — the same session identity used across every page in the dashboard.</div>
         </div>
       </div>
       <div class="asof">Data as of Jun 30, 2026 (mock data)</div>
@@ -4897,7 +4896,12 @@
     const mIdx = spState.monthIdx;
     const m = actualMonths[mIdx];
     const prevIdx = mIdx>0 ? mIdx-1 : null;
-    syncUserBadge(rep);
+    // Note (2026-07-30): previously called syncUserBadge(rep) here, which
+    // overwrote the header's user badge with whichever rep is selected on
+    // this page. That's wrong — the header identity represents the logged-in
+    // session (constant across every page in the dashboard), not whoever's
+    // data is currently being viewed. This page's own "My ..." cards already
+    // make clear whose data is shown; the header must not change.
 
     // ---- Target Achievement hero ----
     const target = repTargetForMonth(rep.repId, mIdx);
@@ -6303,9 +6307,9 @@
      unchanged across pages, which no longer makes sense now each level has a distinct
      audience/purpose). ---- */
   const PAGE_TABS = {
-    overview: { tab:"pageTabAnalysis", view:"pageAnalysis", title:"Executive Summary", subhead:"Executive snapshot of revenue vs. target and overall business health across the Traditional Trade channel.", navKey:"tt-exec", navLabel:"TT Overview · Executive Summary" },
-    breakdown: { tab:"pageTabBreakdown", view:"pageBreakdown", title:"Breakdown", subhead:"Detailed portfolio quality, customer, product, and team performance for Sales Ops and Regional Managers.", navKey:"tt-breakdown", navLabel:"TT Overview · Breakdown" },
-    person: { tab:"pageTabPerson", view:"pageSalesPerson", title:"Sales Person", subhead:"Your targets, priority accounts, and daily performance — scoped to you automatically.", navKey:"tt-person", navLabel:"TT Overview · Sales Person" }
+    overview: { tab:"pageTabAnalysis", view:"pageAnalysis", title:"TT Overview — Executive Summary", subhead:"Executive snapshot of revenue vs. target and overall business health across the Traditional Trade channel.", navKey:"tt-exec", navLabel:"TT Overview · Executive Summary" },
+    breakdown: { tab:"pageTabBreakdown", view:"pageBreakdown", title:"TT Overview — Breakdown", subhead:"Detailed portfolio quality, customer, product, and team performance for Sales Ops and Regional Managers.", navKey:"tt-breakdown", navLabel:"TT Overview · Breakdown" },
+    person: { tab:"pageTabPerson", view:"pageSalesPerson", title:"TT Overview — Sales Person", subhead:"Your targets, priority accounts, and daily performance — scoped to you automatically.", navKey:"tt-person", navLabel:"TT Overview · Sales Person" }
   };
   function switchPage(activeKey){
     Object.entries(PAGE_TABS).forEach(([key, cfg]) => {
@@ -6408,7 +6412,7 @@
 
   updateMobileFilterBadge();
   // Deep-link support: a Navigation Menu link from another module file (e.g.
-  // sales_overview_executive_summary.html) points here as module_tt.html#breakdown
+  // sales_overview.html) points here as module_tt.html#breakdown
   // — open directly to that tab instead of always defaulting to Executive Summary.
   const initialTab = ["overview","breakdown","person"].includes(location.hash.replace("#",""))
     ? location.hash.replace("#","") : "overview";

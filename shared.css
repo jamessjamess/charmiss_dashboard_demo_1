@@ -234,3 +234,10 @@ button,select{font-family:inherit;}
 .see-all-link:hover{text-decoration:underline;}
 .sub-label{display:block;font-size:10px;color:var(--ink-3);font-weight:500;margin-top:1px;}
 
+.legend-badge{font-size:8.5px;font-weight:700;letter-spacing:.03em;padding:2px 6px;border-radius:20px;text-transform:uppercase;margin-left:6px;}
+.legend-badge.best{background:rgba(0,99,0,.12);color:var(--good-text);}
+.legend-badge.watch{background:rgba(208,59,59,.12);color:var(--critical);}
+
+.callout-text{background:var(--wash);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
+.callout-text b{color:var(--ink-1);}
+

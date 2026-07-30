@@ -11,9 +11,8 @@ const MODULE_MAP = [
     group: 'Sales Overview (Company-wide)',
     ready: true,
     items: [
-      { key:'so-exec',     label:'Executive Summary', href:'sales_overview_executive_summary.html' },
-      { key:'so-breakdown',label:'Breakdown',          href:'sales_overview_breakdown.html' },
-      { key:'so-product',  label:'Product Analysis',   href:'sales_overview_product_analysis.html' },
+      { key:'so-exec',    label:'Executive Outlook',  href:'sales_overview.html' },
+      { key:'so-product', label:'Product Analysis',   href:'sales_overview_product_analysis.html' },
     ],
   },
   {
