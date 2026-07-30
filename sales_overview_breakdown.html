@@ -75,6 +75,14 @@
   <div class="section-label">Compare Performance</div>
   <div class="chart-grid">
     <div class="card">
+      <div class="card-head">
+        <span class="card-title">Compare Performance Table</span>
+        <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
+      </div>
+      <table class="compare-table" id="compareTable"></table>
+    </div>
+
+    <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Revenue Trend by Channel</span>
@@ -89,14 +97,55 @@
       <div class="chart-legend" id="trendLegend"></div>
       <div class="canvas-wrap" id="trendCanvasWrap" style="height:230px;"><div id="trendChart" style="width:100%;height:100%;"></div></div>
     </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Growth YoY by Channel</span>
+          <button class="info-icon" data-info-title="Growth YoY by Channel" data-info-text="(ยอดขายเดือนนั้น − ยอดขายเดือนเดียวกันปีก่อน) ÷ ยอดขายเดือนเดียวกันปีก่อน × 100 ต่อ Channel ย้อนหลัง 6 เดือน">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="growthYoyTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="growthYoyDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="growthYoyExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="growthYoyLegend"></div>
+      <div class="canvas-wrap" id="growthYoyCanvasWrap" style="height:220px;"><div id="growthYoyChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="growthYoyTableWrap"></div>
+    </div>
 
     <div class="card">
-      <div class="card-head">
-        <span class="card-title">Compare Performance Table</span>
-        <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Target Attainment by Channel</span>
+          <button class="info-icon" data-info-title="Target Attainment by Channel" data-info-text="(ยอดขายจริง ÷ เป้าหมาย) × 100 ต่อ Channel ในช่วงเวลาที่เลือก เส้นประ = เป้าหมาย 100% สีเขียว ≥100%, ส้ม 90-99%, แดง <90%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="attainByChannelDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="attainByChannelExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
-      <table class="compare-table" id="compareTable"></table>
+      <div class="chart-subtitle">เส้นประ = เป้าหมาย 100%</div>
+      <div id="attainByChannelChart"></div>
     </div>
+  </div>
+
+  <div class="card">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Channel Mix Over Time</span>
+        <button class="info-icon" data-info-title="Channel Mix Over Time" data-info-text="สัดส่วน % ของยอดขายแต่ละ Channel ต่อยอดขายรวม ในแต่ละเดือน ย้อนหลัง 18 เดือน">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="mixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="mixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="mixLegend"></div>
+    <div id="mixChart" style="height:180px;"></div>
   </div>
 
 </div>
@@ -237,6 +286,7 @@ document.querySelectorAll('#channelToggleRow input[type=checkbox]').forEach(cb=>
 });
 
 /* ---------- Render ---------- */
+let latestData = {};
 function renderAll(periodKey, custom){
   const [s,e] = getPeriodRange(periodKey, custom);
   const label = periodLabelText(periodKey, custom);
@@ -250,9 +300,12 @@ function renderAll(periodKey, custom){
     const att = tgt ? net/tgt*100 : 0;
     const prevNet = prevS>=0 ? sumRange(groupActual[g], prevS, prevE) : null;
     const growth = prevNet ? pctChange(net, prevNet) : null;
+    const momGrowth = pctChange(groupActual[g][TODAY], groupActual[g][TODAY-1]); // latest closed month, fixed regardless of Period filter
     const returnRate = g==='Ecom' ? 6.8 : (g==='MT'? 3.1 : 3.7);
-    stats[g] = {net, tgt, att, growth, returnRate};
+    const activeUnits = g==='MT' ? 42 : (g==='TT' ? 405 : 3);
+    stats[g] = {net, tgt, att, growth, momGrowth, returnRate, activeUnits};
   });
+  const activeUnitLabel = {MT:'Active Partners', TT:'Active Stores', Ecom:'Active Shop Listings'};
 
   /* --- Channel Snapshot Cards --- */
   document.getElementById('channelSnapshotGrid').innerHTML = groupKeys.map(g=>{
@@ -280,14 +333,20 @@ function renderAll(periodKey, custom){
   const netVals = groupKeys.map(g=>stats[g].net);
   const attVals = groupKeys.map(g=>stats[g].att);
   const growthVals = groupKeys.map(g=>stats[g].growth);
+  const momVals = groupKeys.map(g=>stats[g].momGrowth);
   const retVals = groupKeys.map(g=>stats[g].returnRate);
+  const unitVals = groupKeys.map(g=>stats[g].activeUnits);
   let tableHtml = '<thead><tr><th>Metric</th>' + groupKeys.map(g=>'<th>'+g+'</th>').join('') + '</tr></thead><tbody>';
   tableHtml += '<tr><td>Net Sales</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(netVals,i,true)+'">'+fmtTHB(netVals[i])+'</td>').join('') + '</tr>';
   tableHtml += '<tr><td>Target Attainment %</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(attVals,i,true)+'">'+fmtPct(attVals[i],0)+'</td>').join('') + '</tr>';
   tableHtml += '<tr><td>Growth YoY</td>' + groupKeys.map((g,i)=>'<td class="tnum '+(growthVals[i]!==null?bestClass(growthVals,i,true):'')+'">'+(growthVals[i]!==null?fmtSignedPct(growthVals[i]):'–')+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Growth MoM</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(momVals,i,true)+'">'+fmtSignedPct(momVals[i])+'</td>').join('') + '</tr>';
   tableHtml += '<tr><td>Return / Cancellation Rate</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(retVals,i,false)+'">'+fmtPct(retVals[i],1)+'</td>').join('') + '</tr>';
+  tableHtml += '<tr><td>Active Units <button class="info-icon" style="display:inline-flex;vertical-align:middle;" data-info-title="Active Units" data-info-text="ต่างหน่วยกันตาม Channel: MT = Active Partners (คู่ค้า), TT = Active Stores (ร้านค้า), Ecom = Active Shop Listings (จำนวน Platform/Shop ที่เปิดขาย)">i</button></td>'
+    + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(unitVals,i,true)+'">'+unitVals[i]+'<span class="sub-label">'+activeUnitLabel[g]+'</span></td>').join('') + '</tr>';
   tableHtml += '</tbody>';
   document.getElementById('compareTable').innerHTML = tableHtml;
+  initInfoPopovers();
 
   /* --- Revenue Trend by Channel (multi-line, current year Jan-Dec) --- */
   const curYearIdx = []; for(let i=24;i<36;i++) curYearIdx.push(i);
@@ -300,11 +359,71 @@ function renderAll(periodKey, custom){
   document.getElementById('trendLegend').innerHTML = groupKeys.map(g=>
     '<span class="chart-legend-item" style="'+(channelVisible[g]?'':'opacity:.35;')+'"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
   ).join('');
+
+  /* --- Growth YoY by Channel (grouped bar, trailing 6 months, fixed window
+     regardless of Period filter — this is a monthly trend chart) --- */
+  const trail6 = []; for(let i=TODAY-5;i<=TODAY;i++) trail6.push(i);
+  const trail6Labels = trail6.map(i=>monthNames[i%12]);
+  const growthYoySeriesByChannel = groupKeys.map(g=>({
+    name:g, color:groupColorVar[g],
+    values: trail6.map(i=>pctChange(groupActual[g][i], groupActual[g][i-12]))
+  }));
+  buildGroupedBarSVG('growthYoyChart', { labels:trail6Labels, series:growthYoySeriesByChannel, yFormatter:v=>v.toFixed(0)+'%', referenceValue:0 });
+  document.getElementById('growthYoyLegend').innerHTML = groupKeys.map(g=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+g+'</span>'
+  ).join('');
+
+  /* --- Target Attainment by Channel (threshold-colored: green >=100, amber 90-99, red <90) --- */
+  const good = cssVar('--good-text')||'#006300', warn = cssVar('--warning')||'#fab219', bad = cssVar('--critical')||'#d03b3b';
+  const attainItems = groupKeys.map(g=>({
+    label:g, value: stats[g].att,
+    color: stats[g].att>=100 ? good : (stats[g].att>=90 ? warn : bad)
+  }));
+  const attainMax = Math.max(110, ...attainItems.map(i=>i.value+10));
+  buildHBarCompareSVG('attainByChannelChart', attainItems, { rowHeight:46, formatValue:v=>fmtPct(v,0), referenceValue:100, domainMin:0, domainMax:attainMax });
+
+  /* --- Channel Mix Over Time (18 months, % stacked, fixed window) --- */
+  const mixIdx = []; for(let i=TODAY-17;i<=TODAY;i++) mixIdx.push(i);
+  const mixLabels = mixIdx.map(i=>monthLabels[i]);
+  const totalsByMonth = mixIdx.map(i => groupKeys.reduce((a,g)=>a+groupActual[g][i],0));
+  const mixSeries = groupKeys.map(g => ({
+    color: groupColorVar[g],
+    values: mixIdx.map((i,mi) => totalsByMonth[mi] ? groupActual[g][i]/totalsByMonth[mi]*100 : 0)
+  }));
+  buildStackedAreaSVG('mixChart', { labels: mixLabels, series: mixSeries, height:180 });
+  document.getElementById('mixLegend').innerHTML = groupKeys.map(g=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
+  ).join('');
+
+  latestData.growthYoyByChannel = { labels: trail6Labels, series: growthYoySeriesByChannel };
 }
 
 /* --- Toolbar --- */
 document.getElementById('trendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('trendChart','revenue_trend_by_channel.svg'));
 document.getElementById('trendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('growthYoyDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('growthYoyChart','growth_yoy_by_channel.svg'));
+document.getElementById('growthYoyExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('growthYoyTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('growthYoyTableWrap');
+  const canvasWrap = document.getElementById('growthYoyCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.growthYoyByChannel;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{
+    html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtSignedPct(s.values[i])+'</td>').join('') + '</tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+  wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('attainByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('attainByChannelChart','target_attainment_by_channel.svg'));
+document.getElementById('attainByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('mixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mixChart','channel_mix_over_time.svg'));
+document.getElementById('mixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 /* ---------- Init ---------- */
 renderAll(currentPeriodKey, currentCustom);

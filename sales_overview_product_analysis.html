@@ -42,29 +42,527 @@
     <a class="tab active tab-link" href="sales_overview_product_analysis.html">Product Analysis</a>
   </nav>
 
-  <div class="placeholder-card">
-    <h2>โครงหน้านี้พร้อมแล้ว — รอเติมเนื้อหาจริง</h2>
-    <p>หน้านี้จะวิเคราะห์ Product/Category ในภาพรวม ข้าม 3 Channel รายละเอียด Metric ที่วางแผนไว้:</p>
-    <ul class="placeholder-list">
-      <li>Top Category (Company-wide) / Fastest Growing Category — KPI Card</li>
-      <li>Best Category per Channel — Callout Card ×3</li>
-      <li>Category × Channel Heatmap — Category ไหนขายดีใน Channel ไหน</li>
-      <li>Channel Index by Category — Category ไหน Over/Under-index ใน Channel ไหน</li>
-      <li>Category Portfolio Matrix (Company-wide, Growth-Share 4 Quadrant)</li>
-      <li>Category Share of Sales Over Time (Company-wide, 18 เดือน)</li>
-      <li>Sales by Category พร้อม Toggle แยกตาม Channel</li>
-    </ul>
+  <div class="filterbar">
+    <div class="filter-left">
+      <span class="filter-label">Period</span>
+      <button class="period-btn" id="periodBtn">
+        <span id="periodBtnLabel">Year to Date</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="period-dropdown" id="periodDropdown">
+        <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+        <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+        <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+        <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+        <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+        <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+        <div class="period-divider"></div>
+        <div class="custom-range-label">Custom Range</div>
+        <div class="custom-range-row">
+          <select id="customFrom"></select>
+          <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+          <select id="customTo"></select>
+        </div>
+        <button class="apply-btn" id="applyCustom">Apply</button>
+      </div>
+    </div>
+    <div class="filter-scope">Company-wide, all channels — Product/Category focus</div>
   </div>
 
+  <!-- ===== Zone A: Category Performance Overview ===== -->
+  <div class="section-label">Category Performance Overview</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Top Category (Company-wide)</span>
+        <button class="info-icon" data-info-title="Top Category" data-info-text="Category ที่มียอดขายสูงสุดของบริษัท ในช่วงเวลาที่เลือก">i</button>
+      </div>
+      <div class="kpi-sub-text" id="kpiTopCategoryName">–</div>
+      <div class="kpi-caption" id="kpiTopCategoryCaption">–</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Fastest Growing Category</span>
+        <button class="info-icon" data-info-title="Fastest Growing Category" data-info-text="Category ที่มี Growth YoY สูงสุด (แนวโน้มเชิงโครงสร้าง ไม่ผูกกับ Filter ช่วงเวลาด้านบน)">i</button>
+      </div>
+      <div class="kpi-sub-text" id="kpiFastestCategoryName">–</div>
+      <div class="kpi-caption" id="kpiFastestCategoryCaption">–</div>
+    </div>
+    <div class="callout-row" id="bestCategoryPerChannel" style="grid-column:span 3;"></div>
+  </div>
+
+  <!-- ===== Zone B: Cross-Channel Analysis ===== -->
+  <div class="section-label">Cross-Channel Analysis</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Category × Channel Heatmap</span>
+        <button class="info-icon" data-info-title="Category × Channel Heatmap" data-info-text="แถว = Category, คอลัมน์ = MT/TT/Ecom, ค่าใน Cell = ยอดขาย + % ของยอดขาย Category นั้นที่มาจาก Channel นั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
+      </div>
+      <table class="heatmap-table" id="heatmapTable"></table>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Channel Index by Category</span>
+          <button class="info-icon" data-info-title="Channel Index by Category" data-info-text="Index = (สัดส่วนยอดขาย Category X ใน Channel Y) ÷ (สัดส่วนยอดขาย Category X ในยอดขายรวมบริษัท) × 100 — ค่า >100 หมายถึง Category นั้นขายดีเป็นพิเศษใน Channel นั้น เทียบค่าเฉลี่ยรวม, <100 คือขายต่ำกว่าค่าเฉลี่ย">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="indexDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="indexLegend"></div>
+      <div id="indexChart" style="height:230px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== Zone C: Portfolio Strategy ===== -->
+  <div class="section-label">Portfolio Strategy</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title"><span id="matrixLevelLabel" class="sub-label" style="display:inline;">Category</span> Portfolio Matrix</span>
+          <button class="info-icon" data-info-title="Category Portfolio Matrix" data-info-text="แกน X = ยอดขาย, แกน Y = %Growth YoY แบ่ง 4 Quadrant ด้วยค่ามัธยฐาน (median) — Stars (โต+ขายดี) / Question Marks (โต+ขายน้อย) / Cash Cows (นิ่ง+ขายดี) / Dogs (นิ่ง+ขายน้อย)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="matrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div id="matrixChart" style="height:260px;"></div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title"><span id="shareLevelLabel" class="sub-label" style="display:inline;">Category</span> Share of Sales Over Time</span>
+          <button class="info-icon" data-info-title="Category Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขายของแต่ละ Category ต่อยอดขายรวม รายเดือน ย้อนหลัง 18 เดือน">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="shareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="shareLegend"></div>
+      <div id="shareChart" style="height:200px;"></div>
+    </div>
+  </div>
+
+  <!-- ===== Zone D: Category Deep-dive ===== -->
+  <div class="section-label">Category Deep-dive</div>
+  <div class="card">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Sales by Category</span>
+        <button class="info-icon" data-info-title="Sales by Category" data-info-text="เลือกระดับได้ 4 ชั้น (Category → Sub-Category → Type → Series) แสดงแบบจัดอันดับ Top View ข้าม Category ทั้งหมด (ไม่ใช่ Breadcrumb Drill) — ชื่อ Category แม่กำกับใต้ชื่อด้วยตัวเล็กสีจาง">i</button>
+      </div>
+      <div class="toolbar">
+        <select class="level-select" id="deepDiveLevelSelect">
+          <option value="0">Category</option>
+          <option value="1">Sub-Category</option>
+          <option value="2">Type</option>
+          <option value="3">Series</option>
+        </select>
+        <button class="tool-btn" id="deepDiveDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="deepDiveExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="toggle-group" id="channelToggleGroup" style="margin-bottom:14px;">
+      <button class="toggle-btn active" data-ch="All">All</button>
+      <button class="toggle-btn" data-ch="MT">MT</button>
+      <button class="toggle-btn" data-ch="TT">TT</button>
+      <button class="toggle-btn" data-ch="Ecom">Ecom</button>
+    </div>
+    <div class="cat-bars" id="deepDiveBars"></div>
+    <a href="javascript:void(0)" class="see-all-link" id="seeAllLink" style="display:none;"></a>
+  </div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
 </div>
 
 <script src="shared.js"></script>
 <script src="nav-menu.js"></script>
 <script>
+/* ---------- Channel mock data (same seed/algorithm as other Sales Overview
+   pages, so company totals agree across files) ---------- */
+const rand = mulberry32(20260630);
+const MONTHS_TOTAL = 36;
+const TODAY = 29;
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
+
+function genSeries(base, growthPerMonth){
+  const actual = [], target = [];
+  let level = base;
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const moy = i % 12;
+    let seasonal = 1;
+    if([9,10,11].includes(moy)) seasonal = 1.13;
+    if(moy === 1) seasonal = 0.9;
+    if(moy === 6 || moy === 7) seasonal = 0.96;
+    const noiseA = 0.94 + rand()*0.12;
+    const noiseT = 0.97 + rand()*0.05;
+    actual.push(Math.round(level * seasonal * noiseA));
+    target.push(Math.round(level * seasonal * noiseT));
+    level = level * (1 + growthPerMonth);
+  }
+  return {actual, target};
+}
+const channelDefs = [
+  {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT'},
+  {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:2000000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1700000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok Shop', color:'#7A5A2E', base:900000, growth:0.0270, group:'Ecom'}
+];
+channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.actual; c.target = s.target; });
+const groupKeys = ['MT','TT','Ecom'];
+const groupColorVar = {MT:'#8E1E4D', TT:'#3B7A7A', Ecom:'#A87C3F'};
+const groupNames = {MT:'Modern Trade (MT)', TT:'Traditional Trade (TT)', Ecom:'E-commerce'};
+function groupSeries(groupKey, field){
+  const arr = new Array(MONTHS_TOTAL).fill(0);
+  channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });
+  return arr;
+}
+const groupActual = {}, groupTarget = {};
+groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
+const companyActual = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ let a=0; groupKeys.forEach(g=>a+=groupActual[g][i]); companyActual.push(a); }
+
+function getPeriodRange(key, custom){
+  switch(key){
+    case 'thisMonth': return [TODAY, TODAY];
+    case 'lastMonth': return [TODAY-1, TODAY-1];
+    case 'thisQuarter': return [TODAY-2, TODAY];
+    case 'lastQuarter': return [TODAY-5, TODAY-3];
+    case 'trailing12': return [TODAY-11, TODAY];
+    case 'custom': return custom;
+    case 'ytd': default: return [24, TODAY];
+  }
+}
+function periodLabelText(key, custom){
+  switch(key){
+    case 'thisMonth': return 'Jun 2026';
+    case 'lastMonth': return 'May 2026';
+    case 'thisQuarter': return 'Q2 2026';
+    case 'lastQuarter': return 'Q1 2026';
+    case 'trailing12': return 'Trailing 12 Months';
+    case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
+    case 'ytd': default: return 'Year to Date';
+  }
+}
+
+/* ---------- Category hierarchy (4 levels: Category -> Sub-Category -> Type ->
+   Series). Percentages are relative to their PARENT, except Category.pct
+   which is already company-wide. channelMix / growthYoY are illustrative
+   mock figures set at the Category level and inherited by descendants
+   (with a small seeded jitter so nested nodes aren't perfectly identical). ---------- */
+const CATEGORY_COLOR = {'Skin Care':'var(--cat-1)','Color Cosmetics':'var(--cat-2)','Hair Care':'var(--cat-3)','Personal Care':'var(--cat-4)','Fragrance':'var(--cat-5)','Accessories':'var(--cat-6)'};
+const CATEGORY_TREE = {
+  'Skin Care': { pct:28.7, growthYoY:12.4, channelMix:{MT:.35,TT:.40,Ecom:.25}, subs:{
+    'Facial Care': { pct:60, types:{
+      'Cleanser': { pct:55, series:{'Foam Cleanser':60,'Micellar Water':40} },
+      'Moisturizer': { pct:45, series:{'Day Cream':55,'Night Cream':45} }
+    }},
+    'Body Care': { pct:40, types:{
+      'Lotion': { pct:60, series:{'Body Lotion':65,'Hand Cream':35} },
+      'Sunscreen': { pct:40, series:{'SPF30':50,'SPF50':50} }
+    }}
+  }},
+  'Color Cosmetics': { pct:19.5, growthYoY:8.1, channelMix:{MT:.25,TT:.30,Ecom:.45}, subs:{
+    'Face Makeup': { pct:55, types:{
+      'Foundation': { pct:60, series:{'Liquid Foundation':70,'Cushion':30} },
+      'Powder': { pct:40, series:{'Loose Powder':50,'Pressed Powder':50} }
+    }},
+    'Eye & Lip': { pct:45, types:{
+      'Lipstick': { pct:55, series:{'Matte':60,'Glossy':40} },
+      'Eyeliner': { pct:45, series:{'Pencil':50,'Liquid':50} }
+    }}
+  }},
+  'Hair Care': { pct:17.6, growthYoY:2.3, channelMix:{MT:.30,TT:.55,Ecom:.15}, subs:{
+    'Cleansing': { pct:65, types:{
+      'Shampoo': { pct:60, series:{'Anti-Dandruff':55,'Everyday':45} },
+      'Conditioner': { pct:40, series:{'Deep Repair':50,'Daily':50} }
+    }},
+    'Styling': { pct:35, types:{
+      'Serum': { pct:55, series:{'Anti-Frizz':60,'Heat Protect':40} },
+      'Spray': { pct:45, series:{'Hold Spray':50,'Shine Spray':50} }
+    }}
+  }},
+  'Personal Care': { pct:16.3, growthYoY:-1.5, channelMix:{MT:.45,TT:.40,Ecom:.15}, subs:{
+    'Oral Care': { pct:55, types:{
+      'Toothpaste': { pct:60, series:{'Whitening':55,'Sensitive':45} },
+      'Mouthwash': { pct:40, series:{'Fresh Mint':50,'Alcohol-Free':50} }
+    }},
+    'Bath': { pct:45, types:{
+      'Soap': { pct:50, series:{'Bar Soap':55,'Liquid Soap':45} },
+      'Shower Gel': { pct:50, series:{'Moisturizing':55,'Refreshing':45} }
+    }}
+  }},
+  'Fragrance': { pct:9.8, growthYoY:22.6, channelMix:{MT:.20,TT:.20,Ecom:.60}, subs:{
+    'Personal Fragrance': { pct:70, types:{
+      'Eau de Toilette': { pct:60, series:{'Floral':55,'Woody':45} },
+      'Body Mist': { pct:40, series:{'Citrus':50,'Fruity':50} }
+    }},
+    'Home Fragrance': { pct:30, types:{
+      'Diffuser': { pct:60, series:{'Reed Diffuser':55,'Electric Diffuser':45} },
+      'Spray': { pct:40, series:{'Room Spray':50,'Linen Spray':50} }
+    }}
+  }},
+  'Accessories': { pct:8.1, growthYoY:-4.2, channelMix:{MT:.25,TT:.25,Ecom:.50}, subs:{
+    'Application Tools': { pct:55, types:{
+      'Brush': { pct:60, series:{'Foundation Brush':55,'Powder Brush':45} },
+      'Sponge': { pct:40, series:{'Beauty Sponge':60,'Puff':40} }
+    }},
+    'Storage': { pct:45, types:{
+      'Pouch': { pct:55, series:{'Travel Pouch':55,'Everyday Pouch':45} },
+      'Organizer': { pct:45, series:{'Drawer Organizer':50,'Vanity Tray':50} }
+    }}
+  }}
+};
+const LEVEL_NAMES = ['Category','Sub-Category','Type','Series'];
+const LEVEL_NAMES_PLURAL = ['Categories','Sub-Categories','Types','Series'];
+
+/** Flat "Top View" ranking at a given depth (0-3), each node carrying its
+    absolute % of company-wide sales, parent-category color/channelMix/growth
+    for inheritance, and a breadcrumb-ish parent label for the sub-caption. */
+function enumerateLevel(depth){
+  const results = [];
+  Object.entries(CATEGORY_TREE).forEach(([catName,cat])=>{
+    if(depth===0){ results.push({name:catName, pct:cat.pct, parent:null, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:cat.growthYoY, rootCategory:catName}); return; }
+    Object.entries(cat.subs).forEach(([subName,sub])=>{
+      const subAbsPct = cat.pct * sub.pct/100;
+      if(depth===1){ results.push({name:subName, pct:subAbsPct, parent:catName, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:cat.growthYoY, rootCategory:catName}); return; }
+      Object.entries(sub.types).forEach(([typeName,type])=>{
+        const typeAbsPct = subAbsPct * type.pct/100;
+        if(depth===2){ results.push({name:typeName, pct:typeAbsPct, parent:subName, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:cat.growthYoY, rootCategory:catName}); return; }
+        Object.entries(type.series).forEach(([seriesName,seriesPct])=>{
+          const seriesAbsPct = typeAbsPct * seriesPct/100;
+          if(depth===3){ results.push({name:seriesName, pct:seriesAbsPct, parent:typeName, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:cat.growthYoY, rootCategory:catName}); }
+        });
+      });
+    });
+  });
+  return results.sort((a,b)=> b.pct-a.pct);
+}
+
+/* ---------- Helpers ---------- */
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16);
+  return [(num>>16)&255, (num>>8)&255, num&255];
+}
+function resolveColor(cssColorOrVar){
+  // Accepts either a literal hex or a "var(--x)" string; resolves the var via cssVar().
+  const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
+  return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+function categoryChannelValue(node, ch, companyTotal){ return node.pct/100 * companyTotal * node.channelMix[ch]; }
+function categoryTotalValue(node, companyTotal){ return node.pct/100 * companyTotal; }
+
+function getSyncedNodes(){
+  let nodes = enumerateLevel(currentLevel);
+  if(currentChannelFilter !== 'All'){
+    nodes = nodes.map(n => Object.assign({}, n, { pct: n.pct * n.channelMix[currentChannelFilter] }));
+  }
+  return nodes.sort((a,b)=>b.pct-a.pct);
+}
+
+/* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
   try { renderNavMenu('so-product', 'Sales Overview · Product Analysis'); } catch(e) { console.error('Nav menu render failed:', e); }
 }
-initThemeToggle();
+initInfoPopovers();
+initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
+
+/* ---------- Custom range selects ---------- */
+const customFromSel = document.getElementById('customFrom');
+const customToSel = document.getElementById('customTo');
+for(let i=0;i<=TODAY;i++){
+  const optF = document.createElement('option'); optF.value=i; optF.textContent=monthLabels[i]; customFromSel.appendChild(optF);
+  const optT = document.createElement('option'); optT.value=i; optT.textContent=monthLabels[i]; customToSel.appendChild(optT);
+}
+customFromSel.value = 24; customToSel.value = TODAY;
+
+/* ---------- Period dropdown ---------- */
+const periodBtn = document.getElementById('periodBtn');
+const periodDropdown = document.getElementById('periodDropdown');
+const periodBtnLabel = document.getElementById('periodBtnLabel');
+let currentPeriodKey = 'ytd';
+let currentCustom = [24, TODAY];
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderAll(currentPeriodKey, currentCustom);
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderAll(currentPeriodKey, currentCustom);
+});
+
+/* ---------- Zone D controls: hierarchy level + channel toggle (drives Zone C sync) ---------- */
+let currentLevel = 0;
+let currentChannelFilter = 'All';
+document.getElementById('deepDiveLevelSelect').addEventListener('change', (e)=>{
+  currentLevel = parseInt(e.target.value,10);
+  renderAll(currentPeriodKey, currentCustom);
+});
+document.querySelectorAll('#channelToggleGroup .toggle-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#channelToggleGroup .toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentChannelFilter = btn.dataset.ch;
+    renderAll(currentPeriodKey, currentCustom);
+  });
+});
+
+/* ---------- Render ---------- */
+let latestData = {};
+
+function renderAll(periodKey, custom){
+  const [s,e] = getPeriodRange(periodKey, custom);
+  const companyTotal = sumRange(companyActual, s, e);
+  const catLevel0 = enumerateLevel(0);
+
+  /* === Zone A: Category Performance Overview === */
+  const topCat = catLevel0.reduce((a,b)=> a.pct>=b.pct ? a : b);
+  document.getElementById('kpiTopCategoryName').textContent = topCat.name;
+  document.getElementById('kpiTopCategoryCaption').textContent = fmtTHB(categoryTotalValue(topCat, companyTotal)) + ' · ' + topCat.pct.toFixed(1) + '% of total';
+
+  const fastestCat = catLevel0.reduce((a,b)=> a.growthYoY>=b.growthYoY ? a : b);
+  document.getElementById('kpiFastestCategoryName').textContent = fastestCat.name;
+  document.getElementById('kpiFastestCategoryCaption').textContent = fmtSignedPct(fastestCat.growthYoY) + ' YoY';
+
+  const channelTotals = {};
+  groupKeys.forEach(ch=>{ channelTotals[ch] = catLevel0.reduce((sum,n)=> sum+categoryChannelValue(n,ch,companyTotal), 0); });
+  const bestPerChannel = {};
+  groupKeys.forEach(ch=>{
+    let best=catLevel0[0], bestVal=-1;
+    catLevel0.forEach(n=>{ const v=categoryChannelValue(n,ch,companyTotal); if(v>bestVal){bestVal=v;best=n;} });
+    bestPerChannel[ch] = { node:best, value:bestVal, share: channelTotals[ch]? bestVal/channelTotals[ch]*100 : 0 };
+  });
+  document.getElementById('bestCategoryPerChannel').innerHTML = groupKeys.map(ch=>{
+    const b = bestPerChannel[ch];
+    return '<div class="channel-snapshot-card" style="border-left-color:'+groupColorVar[ch]+';cursor:default;">'
+      + '<div class="channel-snapshot-name">'+groupNames[ch]+'</div>'
+      + '<div class="channel-snapshot-value">'+b.node.name+'</div>'
+      + '<div class="channel-snapshot-stats"><div><span class="channel-snapshot-stat-label">Share within '+ch+'</span><span class="channel-snapshot-stat-value">'+b.share.toFixed(1)+'%</span></div></div>'
+      + '</div>';
+  }).join('');
+
+  /* === Zone B: Category × Channel Heatmap === */
+  const maxMix = Math.max(...catLevel0.flatMap(n=>groupKeys.map(ch=>n.channelMix[ch])));
+  let heatHtml = '<thead><tr><th>Category</th>' + groupKeys.map(ch=>'<th>'+ch+'</th>').join('') + '</tr></thead><tbody>';
+  catLevel0.forEach(n=>{
+    heatHtml += '<tr><td>'+n.name+'</td>' + groupKeys.map(ch=>{
+      const val = categoryChannelValue(n,ch,companyTotal);
+      const sharePct = n.channelMix[ch]*100;
+      const intensity = n.channelMix[ch]/maxMix;
+      const rgb = hexToRgb(resolveColor('var(--brand)'));
+      const bg = 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(0.12+intensity*0.55).toFixed(2)+')';
+      return '<td><div class="heatmap-cell" style="background:'+bg+'">'+fmtTHB(val)+'<span class="hm-pct">'+sharePct.toFixed(0)+'%</span></div></td>';
+    }).join('') + '</tr>';
+  });
+  heatHtml += '</tbody>';
+  document.getElementById('heatmapTable').innerHTML = heatHtml;
+
+  /* === Zone B: Channel Index by Category === */
+  const good = cssVar('--good-text')||'#006300', bad = cssVar('--critical')||'#d03b3b';
+  const indexSeries = groupKeys.map(ch=>({
+    name: ch,
+    values: catLevel0.map(n=>{
+      const shareInChannel = channelTotals[ch] ? categoryChannelValue(n,ch,companyTotal)/channelTotals[ch] : 0;
+      const shareOverall = n.pct/100;
+      return shareOverall ? (shareInChannel/shareOverall*100) : 100;
+    })
+  }));
+  buildGroupedBarSVG('indexChart', {
+    labels: catLevel0.map(n=>n.name), series: indexSeries, yFormatter: v=>v.toFixed(0),
+    referenceValue: 100, colorFn: (s,v)=> v>=100 ? good : bad
+  });
+  document.getElementById('indexLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>Over-index (>100)</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+bad+'"></span>Under-index (<100)</span>';
+
+  /* === Zone C: Portfolio Matrix + Share Over Time (level & channel-filter synced with Zone D) === */
+  const syncedAll = getSyncedNodes();
+  const syncedTop6 = syncedAll.slice(0,6);
+  document.getElementById('matrixLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+  document.getElementById('shareLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+
+  const matrixPoints = syncedTop6.map(n=>({
+    x: n.pct/100*companyTotal, y: n.growthYoY, label: n.name, color: resolveColor(n.color)
+  }));
+  buildScatterSVG('matrixChart', matrixPoints, {
+    xFormatter: fmtTHB, yFormatter: v=>fmtSignedPct(v),
+    quadrantLabels: { topRight:'Stars', topLeft:'Question Marks', bottomRight:'Cash Cows', bottomLeft:'Dogs' }
+  });
+
+  const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
+  const shareLabels = shareIdx.map(i=>monthLabels[i]);
+  const shareSeries = syncedTop6.map(n=>({
+    color: resolveColor(n.color),
+    values: shareIdx.map((i,mi)=>{
+      const jitter = 1 + (rand()-0.5)*0.1;
+      return n.pct * jitter;
+    })
+  }));
+  buildStackedAreaSVG('shareChart', { labels: shareLabels, series: shareSeries, height:200 });
+  document.getElementById('shareLegend').innerHTML = syncedTop6.map(n=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+resolveColor(n.color)+'"></span>'+n.name+'</span>'
+  ).join('');
+
+  /* === Zone D: Sales by Category (Top View ranking, synced from the same controls) === */
+  const top10 = syncedAll.slice(0,10);
+  const maxPct = Math.max(...top10.map(n=>n.pct));
+  document.getElementById('deepDiveBars').innerHTML = top10.map(n=>{
+    const val = n.pct/100*companyTotal;
+    const widthPct = maxPct ? (n.pct/maxPct*100).toFixed(1) : 0;
+    const subLabel = n.parent ? '<span class="sub-label">'+n.parent+'</span>' : '';
+    return '<div class="cat-row"><span class="cat-label">'+n.name+subLabel+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+resolveColor(n.color)+'"><span class="cat-fill-label">'+fmtTHB(val)+' · '+n.pct.toFixed(1)+'%</span></div></div></div>';
+  }).join('');
+  const seeAllLink = document.getElementById('seeAllLink');
+  if(syncedAll.length>10){
+    seeAllLink.style.display = 'inline-block';
+    seeAllLink.textContent = 'See all ' + syncedAll.length + ' ' + LEVEL_NAMES_PLURAL[currentLevel].toLowerCase() + ' →';
+  } else {
+    seeAllLink.style.display = 'none';
+  }
+
+  latestData.deepDive = top10;
+}
+
+/* --- Toolbar --- */
+document.getElementById('indexDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('indexChart','channel_index_by_category.svg'));
+document.getElementById('matrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('matrixChart','category_portfolio_matrix.svg'));
+document.getElementById('shareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('shareChart','category_share_over_time.svg'));
+document.getElementById('deepDiveExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('deepDiveDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Name','Parent','Share %','Value (THB)']];
+  latestData.deepDive.forEach(n=> rows.push([n.name, n.parent||'', n.pct.toFixed(2), Math.round(n.pct/100* sumRange(companyActual,...getPeriodRange(currentPeriodKey,currentCustom)))]));
+  downloadCSV(rows, 'sales_by_category.csv');
+});
+
+/* ---------- Init ---------- */
+renderAll(currentPeriodKey, currentCustom);
 </script>
 </body>
 </html>

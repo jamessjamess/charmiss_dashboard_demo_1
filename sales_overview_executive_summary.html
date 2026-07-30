@@ -102,31 +102,32 @@
 
     <div class="card">
       <div class="card-head">
-        <span class="card-title">Growth YoY</span>
-        <button class="info-icon" data-info-title="Growth YoY" data-info-text="(ยอดขายเดือนล่าสุด − ยอดขายเดือนเดียวกันปีก่อน) ÷ ยอดขายเดือนเดียวกันปีก่อน × 100 — อิงเดือนปิดล่าสุดเสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน">i</button>
+        <span class="card-title">Full Year Forecast</span>
+        <button class="info-icon" data-info-title="Full Year Forecast" data-info-text="ประมาณการแบบ Run-rate อย่างง่าย: (ยอดขาย YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว) × 12 ÷ เป้าหมายทั้งปี × 100 — ยังไม่ปรับ Seasonality จึงเป็นตัวเลขคร่าวๆ ไม่ใช่การพยากรณ์ละเอียด">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiFixedYoyValue">–</span></div>
-      <div class="kpi-caption" id="kpiFixedYoyCaption">vs Jun 25 · latest closed month</div>
-      <div id="kpiFixedYoySpark" style="margin-top:14px;"></div>
+      <div><span class="kpi-value" id="kpiForecastValue">–</span></div>
+      <div class="kpi-caption" id="kpiForecastCaption">Projected Attainment · full year</div>
+      <div id="kpiForecastSpark" style="margin-top:14px;"></div>
     </div>
 
     <div class="card">
       <div class="card-head">
-        <span class="card-title">Growth MoM</span>
-        <button class="info-icon" data-info-title="Growth MoM" data-info-text="(ยอดขายเดือนล่าสุด − ยอดขายเดือนก่อนหน้า) ÷ ยอดขายเดือนก่อนหน้า × 100 — อิงเดือนปิดล่าสุดเสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน">i</button>
+        <span class="card-title">Gap to Target</span>
+        <button class="info-icon" data-info-title="Gap to Target" data-info-text="ยอดขายจริง YTD − เป้าหมาย YTD (คำนวณจากเส้น Target เดียวกับใน Revenue Trend) สีเขียว = เกินเป้า, สีแดง = ต่ำกว่าเป้า">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiFixedMomValue">–</span></div>
-      <div class="kpi-caption" id="kpiFixedMomCaption">vs May 26 · latest closed month</div>
-      <div id="kpiFixedMomSpark" style="margin-top:14px;"></div>
+      <div><span class="kpi-value" id="kpiGapValue">–</span></div>
+      <div class="kpi-caption" id="kpiGapCaption">Actual YTD vs Target YTD</div>
+      <div id="kpiGapSpark" style="margin-top:14px;"></div>
     </div>
 
     <div class="card">
       <div class="card-head">
-        <span class="card-title">Best-performing Channel</span>
-        <button class="info-icon" data-info-title="Best-performing Channel" data-info-text="Channel ที่มี Target Attainment % สูงสุดในช่วงเวลาที่เลือก เทียบกันระหว่าง MT, TT และ Ecom">i</button>
+        <span class="card-title">Best / Watch-performing Channel</span>
+        <button class="info-icon" data-info-title="Best / Watch-performing Channel" data-info-text="Best = Channel ที่มี Target Attainment % สูงสุด, Watch = Channel ที่มี Target Attainment % ต่ำสุด ในช่วงเวลาที่เลือก เทียบกันระหว่าง MT, TT และ Ecom">i</button>
       </div>
       <div class="kpi-sub-text" id="kpiBestChannelName">–</div>
       <div class="kpi-caption" id="kpiBestChannelCaption">highest Target Attainment this period</div>
+      <div class="kpi-caption" id="kpiWatchChannelCaption" style="margin-top:-6px;">–</div>
       <div class="mini-bars" id="kpiBestChannelBars"></div>
     </div>
   </div>
@@ -172,6 +173,23 @@
       <div class="canvas-wrap" id="growCanvasWrap"><div id="growthChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="growTableWrap"></div>
     </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Target Attainment Trend by Month</span>
+        <button class="info-icon" data-info-title="Target Attainment Trend by Month" data-info-text="% Attainment รายเดือน (ยอดขายจริง ÷ เป้าหมาย × 100) ตัดที่เดือนปิดล่าสุด เส้นประแนวนอน = เป้าหมาย 100%">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="attainTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="attainTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="attainTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Company-wide, by month · dashed line = 100% target</div>
+    <div class="canvas-wrap" id="attainTrendCanvasWrap" style="height:200px;"><div id="attainTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="attainTrendTableWrap"></div>
   </div>
 
   <div class="chart-grid">
@@ -405,16 +423,26 @@ function renderAll(periodKey, custom){
   for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
   document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG(attainSpark, brand, v=>fmtPct(v,0));
 
-  const fixedYoy = pctChange(companyActual[TODAY], companyActual[TODAY-12]);
-  const fixedMom = pctChange(companyActual[TODAY], companyActual[TODAY-1]);
-  document.getElementById('kpiFixedYoyValue').innerHTML = '<span class="'+deltaClass(fixedYoy)+'">'+fmtSignedPct(fixedYoy)+'</span>';
-  document.getElementById('kpiFixedMomValue').innerHTML = '<span class="'+deltaClass(fixedMom)+'">'+fmtSignedPct(fixedMom)+'</span>';
-  const yoySeries12 = [];
-  for(let i=TODAY-11;i<=TODAY;i++) yoySeries12.push(pctChange(companyActual[i], companyActual[i-12]));
-  const momSeries12 = [];
-  for(let i=TODAY-11;i<=TODAY;i++) momSeries12.push(pctChange(companyActual[i], companyActual[i-1]));
-  document.getElementById('kpiFixedYoySpark').innerHTML = sparklineSVG(yoySeries12, brand, v=>fmtSignedPct(v,1));
-  document.getElementById('kpiFixedMomSpark').innerHTML = sparklineSVG(momSeries12, brand, v=>fmtSignedPct(v,1));
+  /* --- Full Year Forecast (run-rate, always calendar-YTD basis regardless of Period filter) --- */
+  const ytdStart = 24, ytdActual = sumRange(companyActual, ytdStart, TODAY);
+  const monthsElapsed = TODAY - ytdStart + 1;
+  const runRateAnnual = (ytdActual / monthsElapsed) * 12;
+  const fullYearTarget = sumRange(companyTarget, ytdStart, 35);
+  const projectedAttainPct = fullYearTarget ? (runRateAnnual / fullYearTarget * 100) : 0;
+  document.getElementById('kpiForecastValue').innerHTML = fmtPct(projectedAttainPct,0);
+  const forecastActualSeries = [];
+  for(let i=ytdStart;i<=TODAY;i++) forecastActualSeries.push(attainAt(i));
+  document.getElementById('kpiForecastSpark').innerHTML = buildTrajectorySparklineSVG(forecastActualSeries, projectedAttainPct, brand, v=>fmtPct(v,0));
+
+  /* --- Gap to Target (Actual YTD - Target YTD, calendar-YTD basis) --- */
+  const ytdTarget = sumRange(companyTarget, ytdStart, TODAY);
+  const gapValue = ytdActual - ytdTarget;
+  const gapClass = gapValue>=0 ? 'pos' : 'neg';
+  document.getElementById('kpiGapValue').innerHTML = '<span class="'+gapClass+'">'+(gapValue>=0?'+':'−')+fmtTHB(Math.abs(gapValue))+'</span>';
+  const gapSeries = [];
+  for(let i=TODAY-11;i<=TODAY;i++) gapSeries.push(companyActual[i]-companyTarget[i]);
+  const gapColor = gapValue>=0 ? (cssVar('--good-text')||'#006300') : (cssVar('--critical')||'#d03b3b');
+  document.getElementById('kpiGapSpark').innerHTML = sparklineSVG(gapSeries, gapColor, v=>(v>=0?'+':'−')+fmtTHB(Math.abs(v)));
 
   const groupTotals = {}, groupTargets = {}, groupAttain = {};
   groupKeys.forEach(g=>{
@@ -423,9 +451,11 @@ function renderAll(periodKey, custom){
     groupAttain[g] = groupTargets[g] ? (groupTotals[g]/groupTargets[g]*100) : 0;
   });
   const bestGroup = groupKeys.reduce((a,b)=> groupAttain[a] >= groupAttain[b] ? a : b);
+  const watchGroup = groupKeys.reduce((a,b)=> groupAttain[a] <= groupAttain[b] ? a : b);
   const bestGroupNames = {MT:'Modern Trade (MT)', TT:'Traditional Trade (TT)', Ecom:'E-commerce'};
   document.getElementById('kpiBestChannelName').textContent = bestGroupNames[bestGroup];
-  document.getElementById('kpiBestChannelCaption').textContent = 'Target Attainment ' + fmtPct(groupAttain[bestGroup],0) + ' — highest this period';
+  document.getElementById('kpiBestChannelCaption').textContent = 'Best: ' + bestGroupNames[bestGroup] + ' — ' + fmtPct(groupAttain[bestGroup],0);
+  document.getElementById('kpiWatchChannelCaption').textContent = 'Watch: ' + bestGroupNames[watchGroup] + ' — ' + fmtPct(groupAttain[watchGroup],0);
   const barsHtml = groupKeys.map(g=>{
     const pct = Math.min(100, groupAttain[g]);
     return '<div class="mini-bar-row"><span class="mini-bar-label">'+g+'</span>'
@@ -435,7 +465,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiBestChannelBars').innerHTML = barsHtml;
 
   document.getElementById('revenueHeadline').textContent = fmtTHB(totalActual) + ' THB · ' + label + ', company-wide';
-  document.getElementById('growthHeadline').textContent = fmtSignedPct(fixedYoy) + ' vs ' + monthLabels[TODAY-12] + ' · latest closed month';
+  document.getElementById('growthHeadline').textContent = fmtSignedPct(pctChange(companyActual[TODAY], companyActual[TODAY-12])) + ' vs ' + monthLabels[TODAY-12] + ' · latest closed month';
 
   const curYearIdx = []; for(let i=24;i<36;i++) curYearIdx.push(i);
   const curYearLabels = curYearIdx.map(i => monthNames[i%12]);
@@ -461,6 +491,19 @@ function renderAll(periodKey, custom){
     ]
   });
 
+  /* --- Target Attainment Trend by Month (100% reference line reuses the
+     line-chart series mechanism as a flat dashed series, no new builder needed) --- */
+  const attainTrendSeries = curYearIdx.map(i => i<=TODAY ? attainAt(i) : null);
+  const refLineSeries = curYearIdx.map(()=>100);
+  buildLineChartSVG('attainTrendChart', {
+    labels: curYearLabels,
+    yFormatter: v=>v.toFixed(0)+'%',
+    series:[
+      {data:refLineSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
+      {data:attainTrendSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,0)}
+    ]
+  });
+
   buildDonutSVG('donutChart', groupKeys.map(g=>({value:groupTotals[g], color:groupColorVar[g]})), 140);
   document.getElementById('donutCenterValue').textContent = fmtTHB(totalActual);
   document.getElementById('channelLegend').innerHTML = groupKeys.map(g=>{
@@ -480,6 +523,7 @@ function renderAll(periodKey, custom){
 
   latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
   latestData.growth = { labels: curYearLabels, values: growthYoYSeries };
+  latestData.attainTrend = { labels: curYearLabels, values: attainTrendSeries };
   latestData.category = categoryShares.map(c=>({name:c.name, pct:c.pct, value: totalActual*c.pct/100}));
   latestData.donut = groupKeys.map(g=>({name:bestGroupNames[g], value:groupTotals[g]}));
 }
@@ -518,6 +562,24 @@ document.getElementById('growTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html;
   wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
+
+document.getElementById('attainTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('attainTrendChart', 'target_attainment_trend.svg'));
+document.getElementById('attainTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('attainTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('attainTrendTableWrap');
+  const canvasWrap = document.getElementById('attainTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.attainTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Attainment %</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{
+    html += '<tr><td>'+lb+'</td><td>'+(d.values[i]!==null?fmtPct(d.values[i],0):'–')+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html;
+  wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
 
 document.getElementById('donutDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('donutChart', 'sales_by_channel.svg'));
 document.getElementById('donutExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));

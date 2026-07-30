@@ -61,7 +61,7 @@ button,select{font-family:inherit;}
 .filter-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase;}
 .period-btn{border:1px solid var(--border-2);background:var(--card);color:var(--ink-1);padding:8px 12px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:inherit;}
 .period-btn svg{width:12px;height:12px;opacity:.6;}
-.filter-scope{font-size:12px;color:var(--ink-3);}
+.filter-scope{font-size:11.5px;color:var(--ink-3);opacity:.8;}
 
 .period-dropdown{position:absolute;top:calc(100% + 8px);left:0;background:var(--card);border:1px solid var(--border-2);border-radius:var(--radius);box-shadow:var(--shadow);padding:6px;width:270px;z-index:60;display:none;}
 .period-dropdown.open{display:block;}
@@ -207,4 +207,30 @@ button,select{font-family:inherit;}
 .channel-toggle-row{display:flex;gap:14px;margin-bottom:12px;}
 .channel-toggle-item{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-2);cursor:pointer;user-select:none;}
 .channel-toggle-item input{accent-color:var(--brand);}
+
+/* ===================== Product Analysis-specific tokens & components =====================
+   New qualitative palette for Category series (distinct from the MT/TT/Ecom
+   channel colors above) — reusable by any future page that charts by
+   Category rather than by Channel. */
+:root{
+  --cat-1:#4C6FA5; --cat-2:#6E9B6E; --cat-3:#8C6FB0;
+  --cat-4:#C97B63; --cat-5:#B8925A; --cat-6:#75798C;
+}
+
+.toggle-group{display:flex;gap:4px;background:var(--wash);padding:3px;border-radius:9px;width:fit-content;}
+.toggle-btn{border:none;background:transparent;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;color:var(--ink-3);cursor:pointer;font-family:inherit;}
+.toggle-btn.active{background:var(--card);color:var(--ink-1);box-shadow:var(--shadow);}
+
+.heatmap-table{width:100%;border-collapse:collapse;}
+.heatmap-table th{text-align:center;font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);padding:8px 10px;font-weight:700;}
+.heatmap-table th:first-child{text-align:left;}
+.heatmap-table td{padding:0;text-align:center;border:3px solid var(--card);}
+.heatmap-table td:first-child{text-align:left;padding:8px 10px;color:var(--ink-2);font-weight:600;border:none;font-size:12.5px;}
+.heatmap-cell{padding:10px 8px;border-radius:6px;font-size:12px;font-weight:700;color:var(--ink-1);}
+.heatmap-cell .hm-pct{display:block;font-size:10px;font-weight:600;color:var(--ink-2);margin-top:1px;}
+
+.callout-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.see-all-link{display:inline-block;margin-top:10px;font-size:12px;font-weight:700;color:var(--brand);text-decoration:none;}
+.see-all-link:hover{text-decoration:underline;}
+.sub-label{display:block;font-size:10px;color:var(--ink-3);font-weight:500;margin-top:1px;}
 

@@ -244,6 +244,162 @@ function buildStackedAreaSVG(containerId, opts){
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+paths+xLabels+'</svg>';
 }
 
+/* ---------- Grouped (clustered) vertical bar chart — used for "Growth YoY by
+   Channel" (grouped by month) and "Channel Index by Category" (grouped by
+   category) ---------- */
+function buildGroupedBarSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 520;
+  const height = opts.height || 220;
+  const labels = opts.labels, series = opts.series; // series: [{name, color, values:[...]}]
+  const yFormatter = opts.yFormatter || (v=>v);
+  const padL=44, padR=10, padT=10, padB=30;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+
+  let allVals = [];
+  series.forEach(s => s.values.forEach(v => allVals.push(v)));
+  if(allVals.length===0) allVals=[0,1];
+  let yMin = Math.min(0, ...allVals), yMax = Math.max(0, ...allVals);
+  if(yMax===yMin) yMax = yMin+1;
+  const pad = (yMax-yMin)*0.15;
+  yMax += pad; if(yMin<0) yMin -= pad*0.4;
+  const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
+  const zeroY = yAt(0);
+
+  const hairline = cssVar('--hairline') || '#e1e0d9';
+  const inkTertiary = cssVar('--ink-3') || '#898781';
+  const inkOne = cssVar('--ink-1') || '#0b0b0b';
+
+  let gridSvg = '';
+  const gridCount = 4;
+  for(let g=0; g<=gridCount; g++){
+    const val = yMin + (yMax-yMin)*(g/gridCount);
+    const y = yAt(val);
+    gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(val)+'</text>';
+  }
+
+  const groupCount = labels.length, seriesCount = series.length;
+  const groupW = plotW/Math.max(1,groupCount);
+  const barGap = 3;
+  const barW = Math.max(2, (groupW - barGap*(seriesCount+1))/seriesCount);
+
+  let bars = '', xLabels = '';
+  labels.forEach((lb,gi)=>{
+    const groupX = padL + gi*groupW;
+    series.forEach((s,si)=>{
+      const val = s.values[gi];
+      const barX = groupX + barGap + si*(barW+barGap);
+      const y1 = yAt(val);
+      const y0 = Math.min(y1, zeroY);
+      const h = Math.max(0.5, Math.abs(y1-zeroY));
+      const color = opts.colorFn ? opts.colorFn(s, val) : s.color;
+      bars += '<rect x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"/>';
+    });
+    xLabels += '<text x="'+(groupX+groupW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
+  });
+
+  let refLine = '';
+  if(opts.referenceValue !== undefined){
+    const ry = yAt(opts.referenceValue);
+    refLine = '<line x1="'+padL+'" y1="'+ry.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+ry.toFixed(1)+'" stroke="'+inkOne+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
+  } else {
+    refLine = '<line x1="'+padL+'" y1="'+zeroY.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+zeroY.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1.3"/>';
+  }
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+xLabels+'</svg>';
+}
+
+/* ---------- Scatter plot with median-split quadrant lines — used for
+   "Category Portfolio Matrix" (Growth-Share) ---------- */
+function median(arr){
+  const s = [...arr].sort((a,b)=>a-b);
+  const mid = Math.floor(s.length/2);
+  return s.length % 2 ? s[mid] : (s[mid-1]+s[mid])/2;
+}
+function buildScatterSVG(containerId, points, opts){
+  opts = opts || {};
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 480;
+  const height = opts.height || 260;
+  const padL=54, padR=18, padT=18, padB=36;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const xFormatter = opts.xFormatter || (v=>v);
+  const yFormatter = opts.yFormatter || (v=>v);
+
+  const xs = points.map(p=>p.x), ys = points.map(p=>p.y);
+  let xMin = Math.min(...xs), xMax = Math.max(...xs);
+  let yMin = Math.min(...ys), yMax = Math.max(...ys);
+  const xPad = (xMax-xMin)*0.18 || 1, yPad = (yMax-yMin)*0.18 || 1;
+  xMin -= xPad; xMax += xPad; yMin -= yPad; yMax += yPad;
+  const xAt = v => padL + (v-xMin)/(xMax-xMin)*plotW;
+  const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
+
+  const medX = opts.medianX !== undefined ? opts.medianX : median(xs);
+  const medY = opts.medianY !== undefined ? opts.medianY : median(ys);
+  const hairline = cssVar('--hairline') || '#e1e0d9';
+  const inkTertiary = cssVar('--ink-3') || '#898781';
+  const inkTwo = cssVar('--ink-2') || '#52514e';
+
+  const mx = xAt(medX), my = yAt(medY);
+  let svg = '';
+  svg += '<line x1="'+mx.toFixed(1)+'" y1="'+padT+'" x2="'+mx.toFixed(1)+'" y2="'+(height-padB)+'" stroke="'+hairline+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
+  svg += '<line x1="'+padL+'" y1="'+my.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+my.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
+
+  if(opts.quadrantLabels){
+    const ql = opts.quadrantLabels;
+    svg += '<text x="'+(width-padR-4)+'" y="'+(padT+12)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'" font-weight="700">'+(ql.topRight||'')+'</text>';
+    svg += '<text x="'+(padL+4)+'" y="'+(padT+12)+'" font-size="9.5" text-anchor="start" fill="'+inkTertiary+'" font-weight="700">'+(ql.topLeft||'')+'</text>';
+    svg += '<text x="'+(width-padR-4)+'" y="'+(height-padB-6)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'" font-weight="700">'+(ql.bottomRight||'')+'</text>';
+    svg += '<text x="'+(padL+4)+'" y="'+(height-padB-6)+'" font-size="9.5" text-anchor="start" fill="'+inkTertiary+'" font-weight="700">'+(ql.bottomLeft||'')+'</text>';
+  }
+
+  points.forEach(p=>{
+    const cx = xAt(p.x), cy = yAt(p.y);
+    svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"/>';
+    svg += '<text x="'+cx.toFixed(1)+'" y="'+(cy-10).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
+  });
+
+  // axis value ticks at min/max/median for orientation
+  svg += '<text x="'+padL+'" y="'+(height-padB+16)+'" font-size="9" text-anchor="start" fill="'+inkTertiary+'">'+xFormatter(xMin+xPad)+'</text>';
+  svg += '<text x="'+(width-padR)+'" y="'+(height-padB+16)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+xFormatter(xMax-xPad)+'</text>';
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+}
+
+/* ---------- Trajectory sparkline — solid line through actual months, dashed
+   glide-path from the latest actual point to a projected year-end value.
+   Used for the "Full Year Forecast" KPI card. ---------- */
+function buildTrajectorySparklineSVG(actualValues, projectedEndValue, color, formatter){
+  const totalMonths = 12, width=140, height=36, padX=2, padY=6;
+  const allForRange = actualValues.concat([projectedEndValue]);
+  const min = Math.min(...allForRange), max = Math.max(...allForRange);
+  const range = (max-min) || 1;
+  const stepX = (width-padX*2)/(totalMonths-1);
+  const xAt = i => padX + i*stepX;
+  const yAt = v => padY + (1-(v-min)/range)*(height-padY*2);
+
+  const actualPts = actualValues.map((v,i)=>[xAt(i), yAt(v)]);
+  const dSolid = actualPts.map((p,i)=>(i===0?'M':'L')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const lastActual = actualPts[actualPts.length-1];
+  const endPt = [xAt(totalMonths-1), yAt(projectedEndValue)];
+  const dDash = 'M'+lastActual[0].toFixed(1)+','+lastActual[1].toFixed(1)+' L'+endPt[0].toFixed(1)+','+endPt[1].toFixed(1);
+
+  const label = formatter(projectedEndValue);
+  const anchor = endPt[0] > width-42 ? 'end' : 'start';
+  const lx = anchor==='end' ? width-2 : Math.min(endPt[0]+6, width-2);
+
+  return '<svg viewBox="0 0 '+width+' '+(height+13)+'" width="100%" height="'+(height+13)+'" preserveAspectRatio="none">'
+    + '<path d="'+dSolid+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>'
+    + '<path d="'+dDash+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-dasharray="3,3" stroke-linecap="round" opacity="0.6"/>'
+    + '<circle cx="'+lastActual[0].toFixed(1)+'" cy="'+lastActual[1].toFixed(1)+'" r="2.6" fill="'+color+'"/>'
+    + '<circle cx="'+endPt[0].toFixed(1)+'" cy="'+endPt[1].toFixed(1)+'" r="3" fill="none" stroke="'+color+'" stroke-width="1.6"/>'
+    + '<text x="'+lx+'" y="'+(height+11)+'" font-size="10" font-weight="700" fill="'+color+'" text-anchor="'+anchor+'">'+label+'</text>'
+    + '</svg>';
+}
+
 function downloadSVGFromContainer(containerId, filename){
   const svgEl = document.getElementById(containerId).querySelector('svg');
   if(!svgEl) return;
@@ -270,16 +426,21 @@ function toggleFullscreen(cardEl){
 }
 
 /* ---------- Information-icon popover (generic, works off data-info-title /
-   data-info-text attributes on any .info-icon button already in the DOM) ---------- */
+   data-info-text attributes on any .info-icon button — including ones
+   created dynamically after a table/chart re-renders). Uses event
+   delegation on document so it only ever needs to be called once per page,
+   regardless of how many times new .info-icon buttons get added later. ---------- */
 function initInfoPopovers(){
   const popoverEl = document.getElementById('popover');
-  if(!popoverEl) return;
+  if(!popoverEl || popoverEl.dataset.wired) return; // idempotent: safe to call more than once
+  popoverEl.dataset.wired = '1';
   const popoverTitleEl = document.getElementById('popoverTitle');
   const popoverTextEl = document.getElementById('popoverText');
   let activeInfoIcon = null;
   function closePopover(){ popoverEl.classList.remove('open'); activeInfoIcon = null; }
-  document.querySelectorAll('.info-icon').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{
+  document.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.info-icon');
+    if(btn){
       e.stopPropagation();
       if(activeInfoIcon === btn){ closePopover(); return; }
       activeInfoIcon = btn;
@@ -292,9 +453,10 @@ function initInfoPopovers(){
       if(left + pw > window.innerWidth - 12) left = window.innerWidth - pw - 12;
       popoverEl.style.left = Math.max(12,left) + 'px';
       popoverEl.style.top = (rect.bottom + 8) + 'px';
-    });
+      return;
+    }
+    if(activeInfoIcon && !popoverEl.contains(e.target)) closePopover();
   });
-  document.addEventListener('click', (e)=>{ if(activeInfoIcon && !popoverEl.contains(e.target)) closePopover(); });
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePopover(); });
 }
 
