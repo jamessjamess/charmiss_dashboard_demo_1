@@ -110,6 +110,7 @@
         <span class="card-title"><span id="heatmapLevelLabel" class="sub-label" style="display:inline;">Category</span> × Channel Heatmap</span>
         <button class="info-icon" data-info-title="Category × Channel Heatmap" data-info-text="แถว = Category/Sub-Category/Type/Series ตามระดับที่เลือก (Top 10), คอลัมน์ = MT/TT/Ecom, ค่าใน Cell = ยอดขาย + % ที่มาจาก Channel นั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
         <div class="toolbar" style="margin-left:auto;">
+          <button class="tool-btn" id="heatmapDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
           <button class="tool-btn" id="heatmapExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
@@ -179,6 +180,7 @@
         <button class="info-icon" data-info-title="Sales by Category" data-info-text="เลือกระดับได้ 4 ชั้น (Category → Sub-Category → Type → Series) แสดงแบบจัดอันดับ Top View ข้าม Category ทั้งหมด (ไม่ใช่ Breadcrumb Drill) — ชื่อ Category แม่กำกับใต้ชื่อด้วยตัวเล็กสีจาง">i</button>
       </div>
       <div class="toolbar">
+        <button class="tool-btn" id="deepDiveTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
         <button class="tool-btn" id="deepDiveDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="deepDiveExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
@@ -191,6 +193,7 @@
       <button class="toggle-btn" data-ch="Ecom">Ecom</button>
     </div>
     <div class="cat-bars" id="deepDiveBars"></div>
+    <div class="data-table-wrap" id="deepDiveTableWrap"></div>
     <a href="javascript:void(0)" class="see-all-link" id="seeAllLink" style="display:none;"></a>
   </div>
 
@@ -482,7 +485,7 @@ function renderAll(periodKey, custom){
   document.getElementById('bestCategoryPerChannel').innerHTML = groupKeys.map(ch=>{
     const b = bestPerChannel[ch];
     return '<div class="channel-snapshot-card" style="border-left-color:'+groupColorVar[ch]+';cursor:default;">'
-      + '<div class="channel-snapshot-name">'+groupNames[ch]+'</div>'
+      + '<div class="channel-snapshot-name">'+groupNames[ch]+'<button class="info-icon" data-info-title="Best Category — '+groupNames[ch]+'" data-info-text="Category ที่มียอดขายสูงสุดภายใน Channel นี้ (ไม่ใช่เทียบทั้งบริษัท) พร้อม % สัดส่วนของ Category นี้ต่อยอดขายรวมของ '+ch+' เอง">i</button></div>'
       + '<div class="channel-snapshot-value">'+b.node.name+'</div>'
       + '<div class="channel-snapshot-stats"><div><span class="channel-snapshot-stat-label">Share within '+ch+'</span><span class="channel-snapshot-stat-value">'+b.share.toFixed(1)+'%</span></div></div>'
       + '</div>';
@@ -516,6 +519,11 @@ function renderAll(periodKey, custom){
   });
   heatHtml += '</tbody>';
   document.getElementById('heatmapTable').innerHTML = heatHtml;
+  latestData.heatmap = heatmapNodes.map(n=>{
+    const row = { name: n.name };
+    groupKeys.forEach(ch=>{ row[ch+'_value'] = categoryChannelValue(n,ch,companyTotal); row[ch+'_pct'] = n.channelMix[ch]*100; });
+    return row;
+  });
 
   /* --- Channel Index: diverging bar, baseline = index 100, channel-identity
      colors (not green/red), index value labeled on every bar tip --- */
@@ -547,6 +555,7 @@ function renderAll(periodKey, custom){
   }));
   buildScatterSVG('matrixChart', matrixPoints, {
     xFormatter: fmtTHB, yFormatter: v=>fmtSignedPct(v),
+    xAxisTitle: 'Net Sales (฿)', yAxisTitle: 'Growth YoY (%)',
     quadrantLabels: { topRight:'Stars', topLeft:'Question Marks', bottomRight:'Cash Cows', bottomLeft:'Dogs' }
   });
   latestData.matrix = matrixPoints;
@@ -630,6 +639,25 @@ document.getElementById('shareTableBtn').addEventListener('click', ()=>{
   d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+s.values[i].toFixed(1)+'%</td>').join('') + '</tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+document.getElementById('heatmapDownloadBtn').addEventListener('click', ()=>{
+  const rows = [[LEVEL_NAMES[currentLevel], ...groupKeys.flatMap(ch=>[ch+' (฿)', ch+' (%)'])]];
+  latestData.heatmap.forEach(r=> rows.push([r.name, ...groupKeys.flatMap(ch=>[Math.round(r[ch+'_value']), r[ch+'_pct'].toFixed(1)])]));
+  downloadCSV(rows, 'category_channel_heatmap.csv');
+});
+document.getElementById('deepDiveTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('deepDiveTableWrap');
+  const bars = document.getElementById('deepDiveBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  const d = latestData.deepDive;
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentLevel]+'</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
+  d.forEach(n=>{
+    const value = Math.round(n.pct/100 * sumRange(companyActual,...getPeriodRange(currentPeriodKey,currentCustom)));
+    html += '<tr><td>'+n.name+(n.parent?' <span class="sub-label" style="display:inline;">('+n.parent+')</span>':'')+'</td><td>'+fmtTHB(value)+'</td><td>'+n.pct.toFixed(1)+'%</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
 });
 document.getElementById('deepDiveExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('deepDiveDownloadBtn').addEventListener('click', ()=>{

@@ -337,7 +337,12 @@ function buildScatterSVG(containerId, points, opts){
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 480;
   const height = opts.height || 260;
-  const padL=58, padR=18, padT=18, padB=38;
+  // Axis titles (opts.xAxisTitle / opts.yAxisTitle) are optional — when present,
+  // reserve extra room so the title sits in its own row/column rather than
+  // overlapping the tick labels. Padding stays at the old defaults when no
+  // title is passed, so existing callers render unchanged.
+  const hasXTitle = !!opts.xAxisTitle, hasYTitle = !!opts.yAxisTitle;
+  const padL = 58 + (hasYTitle?16:0), padR=18, padT=18, padB = 38 + (hasXTitle?16:0);
   const plotW = width-padL-padR, plotH = height-padT-padB;
   const xFormatter = opts.xFormatter || (v=>v);
   const yFormatter = opts.yFormatter || (v=>v);
@@ -388,6 +393,17 @@ function buildScatterSVG(containerId, points, opts){
     svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"/>';
     svg += '<text x="'+cx.toFixed(1)+'" y="'+(cy-10).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
   });
+
+  /* --- Axis titles: real chart-axis labels, not a caption floated outside the
+     plot. X-title sits centered under the tick-label row; Y-title is rotated
+     -90deg and sits left of the tick-label column. --- */
+  if(hasXTitle){
+    svg += '<text x="'+(padL+plotW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+opts.xAxisTitle+'</text>';
+  }
+  if(hasYTitle){
+    const tx = 14, ty = padT+plotH/2;
+    svg += '<text x="'+tx+'" y="'+ty.toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'" transform="rotate(-90 '+tx+' '+ty.toFixed(1)+')">'+opts.yAxisTitle+'</text>';
+  }
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
