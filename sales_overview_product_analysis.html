@@ -109,6 +109,9 @@
       <div class="card-head">
         <span class="card-title"><span id="heatmapLevelLabel" class="sub-label" style="display:inline;">Category</span> × Channel Heatmap</span>
         <button class="info-icon" data-info-title="Category × Channel Heatmap" data-info-text="แถว = Category/Sub-Category/Type/Series ตามระดับที่เลือก (Top 10), คอลัมน์ = MT/TT/Ecom, ค่าใน Cell = ยอดขาย + % ที่มาจาก Channel นั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
+        <div class="toolbar" style="margin-left:auto;">
+          <button class="tool-btn" id="heatmapExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
       <table class="heatmap-table" id="heatmapTable"></table>
     </div>
@@ -120,11 +123,14 @@
           <button class="info-icon" data-info-title="Channel Index by Category" data-info-text="Index = (สัดส่วนยอดขาย Category X ใน Channel Y) ÷ (สัดส่วนยอดขาย Category X ในยอดขายรวมบริษัท) × 100 — ค่า >100 หมายถึง Category นั้นขายดีเป็นพิเศษใน Channel นั้น เทียบค่าเฉลี่ยรวม, <100 คือขายต่ำกว่าค่าเฉลี่ย">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="indexTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="indexDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="indexExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
       <div class="chart-legend" id="indexLegend"></div>
-      <div id="indexChart" style="height:230px;"></div>
+      <div class="canvas-wrap" id="indexCanvasWrap" style="height:230px;"><div id="indexChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="indexTableWrap"></div>
     </div>
   </div>
 
@@ -138,10 +144,13 @@
           <button class="info-icon" data-info-title="Category Portfolio Matrix" data-info-text="แกน X = ยอดขาย, แกน Y = %Growth YoY แบ่ง 4 Quadrant ด้วยค่ามัธยฐาน (median) — Stars (โต+ขายดี) / Question Marks (โต+ขายน้อย) / Cash Cows (นิ่ง+ขายดี) / Dogs (นิ่ง+ขายน้อย)">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="matrixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="matrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="matrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div id="matrixChart" style="height:260px;"></div>
+      <div class="canvas-wrap" id="matrixCanvasWrap" style="height:260px;"><div id="matrixChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="matrixTableWrap"></div>
     </div>
     <div class="card">
       <div class="chart-card-head">
@@ -150,11 +159,14 @@
           <button class="info-icon" data-info-title="Category Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขายของแต่ละ Category ต่อยอดขายรวม รายเดือน ย้อนหลัง 18 เดือน">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="shareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="shareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="shareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
       <div class="chart-legend" id="shareLegend"></div>
-      <div id="shareChart" style="height:200px;"></div>
+      <div class="canvas-wrap" id="shareCanvasWrap" style="height:200px;"><div id="shareChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="shareTableWrap"></div>
     </div>
   </div>
 
@@ -522,6 +534,7 @@ function renderAll(periodKey, custom){
   document.getElementById('indexLegend').innerHTML = groupKeys.map(ch=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[ch]+'"></span>'+ch+'</span>'
   ).join('') + '<span class="chart-legend-item" style="opacity:.75;">Dashed line = index 100 (company-wide average)</span>';
+  latestData.index = { labels: indexNodes.map(n=>n.name), series: indexSeries };
 
   /* === Zone C: Portfolio Matrix + Share Over Time (level & channel-filter synced with Zone D) === */
   const syncedAll = getSyncedNodes();
@@ -536,11 +549,12 @@ function renderAll(periodKey, custom){
     xFormatter: fmtTHB, yFormatter: v=>fmtSignedPct(v),
     quadrantLabels: { topRight:'Stars', topLeft:'Question Marks', bottomRight:'Cash Cows', bottomLeft:'Dogs' }
   });
+  latestData.matrix = matrixPoints;
 
   const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
   const shareLabels = shareIdx.map(i=>monthLabels[i]);
   const shareSeries = syncedTop6.map(n=>({
-    color: resolveColor(n.color),
+    name: n.name, color: resolveColor(n.color),
     values: shareIdx.map((i,mi)=>{
       const jitter = 1 + (rand()-0.5)*0.1;
       return n.pct * jitter;
@@ -550,6 +564,7 @@ function renderAll(periodKey, custom){
   document.getElementById('shareLegend').innerHTML = syncedTop6.map(n=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+resolveColor(n.color)+'"></span>'+n.name+'</span>'
   ).join('');
+  latestData.share = { labels: shareLabels, series: shareSeries };
 
   /* === Zone D: Sales by Category (Top View ranking, synced from the same controls) === */
   const top10 = syncedAll.slice(0,10);
@@ -573,9 +588,49 @@ function renderAll(periodKey, custom){
 }
 
 /* --- Toolbar --- */
+document.getElementById('heatmapExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
 document.getElementById('indexDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('indexChart','channel_index_by_category.svg'));
+document.getElementById('indexExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('indexTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('indexTableWrap');
+  const canvasWrap = document.getElementById('indexCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.index;
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentLevel]+'</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+s.values[i].toFixed(0)+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
 document.getElementById('matrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('matrixChart','category_portfolio_matrix.svg'));
+document.getElementById('matrixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('matrixTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('matrixTableWrap');
+  const canvasWrap = document.getElementById('matrixCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.matrix;
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentLevel]+'</th><th>Sales</th><th>Growth YoY</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.x)+'</td><td>'+fmtSignedPct(p.y)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
 document.getElementById('shareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('shareChart','category_share_over_time.svg'));
+document.getElementById('shareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('shareTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('shareTableWrap');
+  const canvasWrap = document.getElementById('shareCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.share;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+s.values[i].toFixed(1)+'%</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
 document.getElementById('deepDiveExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('deepDiveDownloadBtn').addEventListener('click', ()=>{
   const rows = [['Name','Parent','Share %','Value (THB)']];

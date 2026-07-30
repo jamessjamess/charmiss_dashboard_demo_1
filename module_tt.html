@@ -6414,9 +6414,18 @@
   // Deep-link support: a Navigation Menu link from another module file (e.g.
   // sales_overview.html) points here as module_tt.html#breakdown
   // — open directly to that tab instead of always defaulting to Executive Summary.
-  const initialTab = ["overview","breakdown","person"].includes(location.hash.replace("#",""))
-    ? location.hash.replace("#","") : "overview";
-  switchPage(initialTab);
+  function tabKeyFromHash(){
+    const key = location.hash.replace("#","");
+    return ["overview","breakdown","person"].includes(key) ? key : "overview";
+  }
+  switchPage(tabKeyFromHash());
+  // Bug fix (2026-07-30): clicking a TT tab from the Nav Menu WHILE ALREADY on
+  // module_tt.html (any tab) only changes the URL's #hash — same document, so
+  // the browser does not reload the page, and switchPage() above (which only
+  // runs once, at initial load) never re-fires. Without this listener the tab
+  // never visually changes even though the address bar hash does. This is
+  // exactly the "clicking Breakdown / Sales Person does nothing" bug.
+  window.addEventListener("hashchange", () => switchPage(tabKeyFromHash()));
   render();
   renderSalesPersonPage();
 })();

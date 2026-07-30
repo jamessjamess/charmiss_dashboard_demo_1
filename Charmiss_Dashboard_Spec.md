@@ -10,14 +10,14 @@
 ### 1.1 วัตถุประสงค์
 Enterprise Dashboard สำหรับ Charmiss เพื่อติดตาม **Sales Performance เทียบกับ Target** ครอบคลุม 3 Channel หลัก — MT (Modern Trade), TT (Traditional Trade), Ecom (Lazada / Shopee / TikTok Shop)
 
-ระบบต้องตอบโจทย์ 2 มุมมองพร้อมกัน:
-1. **มุมมองบริษัท (Company-wide)** — ผู้บริหารดูภาพรวมยอดขายเทียบเป้าทั้งบริษัท เปรียบเทียบ Performance ระหว่าง 3 Channel และวิเคราะห์ Product ข้าม Channel
-2. **มุมมองเฉพาะ Channel** — แต่ละ Channel มี Dashboard เจาะลึกของตัวเอง (Executive Summary + Breakdown เฉพาะทาง) และ TT มีมุมมองรายบุคคล (Sales Person) เพิ่มอีกชั้น
+ระบบตอบโจทย์ 2 มุมมองพร้อมกัน:
+1. **มุมมองบริษัท (Company-wide)** — ผู้บริหารดูภาพรวมยอดขายเทียบเป้าทั้งบริษัท, เปรียบเทียบ Performance ระหว่าง Channel, วิเคราะห์ Product ข้าม Channel, และเข้าใจว่าอะไรกำลัง "Drive" การเติบโต
+2. **มุมมองเฉพาะ Channel** — แต่ละ Channel มี Dashboard เจาะลึกของตัวเอง (Executive Summary + Breakdown) และ TT มีมุมมองรายบุคคล (Sales Person) เพิ่มอีกชั้น
 
 ### 1.2 กลุ่มผู้ใช้งาน
 | กลุ่มผู้ใช้ | ใช้มุมมองไหน |
 |---|---|
-| ผู้บริหารระดับสูง (C-level / Sales Director) | Sales Overview (Executive Summary, Breakdown, Product Analysis) |
+| ผู้บริหารระดับสูง (VP of Sales) | Sales Overview → Executive Outlook, Product Analysis |
 | Sales Ops / Regional Manager / Trade Marketing | Breakdown ของแต่ละ Channel Overview (MT/TT/Ecom) |
 | Sales Rep รายบุคคล (TT) | Sales Person |
 
@@ -30,31 +30,40 @@ Enterprise Dashboard สำหรับ Charmiss เพื่อติดตา�
 ```
 Sales Overview  (Company-wide — รวมทุก Channel)
 │
-├── Executive Summary        ภาพรวมบริษัท อ่านได้ใน 30 วินาที
-├── Breakdown                 เปรียบเทียบ Performance ระหว่าง 3 Channel + จุดเชื่อมไปแต่ละ Channel
-├── Product Analysis          วิเคราะห์ Product/Category ข้าม 3 Channel
+├── Executive Outlook          ภาพรวมบริษัทครบทุกมุม อ่านจบใน 2-3 นาที
+│     ├── At a Glance            (KPI สรุปด่วน)
+│     ├── Performance & Composition
+│     ├── What's Driving It
+│     └── Channel Comparison
 │
-├── ▸ MT Overview
+└── Product Analysis           วิเคราะห์ Product/Category ข้าม 3 Channel
+      ├── Category Performance Overview
+      ├── Cross-Channel Analysis
+      ├── Portfolio Strategy
+      └── Category Deep-dive
+
+├── ▸ MT Overview                                    [ยังไม่เปิดใช้งาน]
 │     ├── Executive Summary
-│     └── Breakdown           ลงรายละเอียดข้อมูลคู่ค้า (Partner / Key Account)
+│     └── Breakdown (ข้อมูลคู่ค้า/Key Account)
 │
 ├── ▸ TT Overview
 │     ├── Executive Summary
-│     ├── Breakdown           ลงรายละเอียดข้อมูลร้านค้า (Store)
-│     └── Sales Person        มุมมองส่วนตัวของ Sales Rep แต่ละคน
+│     ├── Breakdown (ข้อมูลร้านค้า)
+│     └── Sales Person (มุมมองรายบุคคล)
 │
-└── ▸ ECOM Overview
+└── ▸ ECOM Overview                                  [ยังไม่เปิดใช้งาน]
       ├── Executive Summary
-      └── Breakdown           ลงรายละเอียดข้อมูล Ecom Shop (Lazada/Shopee/TikTok)
+      └── Breakdown (ข้อมูล Ecom Shop)
 ```
+
+> หมายเหตุ: "Executive Outlook" และ "Breakdown" เดิมของ Sales Overview ถูกรวมเป็นหน้าเดียวแล้ว (Executive Outlook มี 4 Section ครอบคลุมทั้งภาพรวมและรายละเอียดเปรียบเทียบ Channel) — Sales Overview จึงมีแค่ 2 มุมมองหลัก: Executive Outlook และ Product Analysis
 
 ### 2.2 หลักการ Navigation
 
-- **ชั้นบนสุด "Sales Overview"** มี 3 มุมมองเท่านั้น: Executive Summary / Breakdown / Product Analysis — ไม่มี MT/TT/Ecom โผล่มาปนที่ชั้นนี้
-- **หน้า Breakdown ของ Sales Overview** ทำหน้าที่ 2 อย่าง: (1) แสดงกราฟเปรียบเทียบ 3 Channel เอง (2) เป็นประตูเข้า (Gateway) ไปยัง MT Overview / TT Overview / ECOM Overview ผ่าน Card ที่คลิกได้
-- **แต่ละ Channel Overview** มีชุด Tab ของตัวเอง (Executive Summary / Breakdown / Sales Person เฉพาะ TT) และมี Breadcrumb กลับสู่ภาพรวมบริษัทเสมอ
-- **Navigation Menu** — มีเมนูกลางที่กดแล้วเห็นทุกหน้าในระบบจัดกลุ่มตาม Module พร้อมระบุหน้าปัจจุบัน ทำให้กระโดดจากหน้าไหนไปหน้าไหนก็ได้ในคลิกเดียว โดยไม่ต้องไล่ตามลำดับ Drill-in ทีละชั้น (เช่น จาก Sales Overview ไป TT Overview → Breakdown ได้ทันทีโดยไม่ต้องผ่าน Breakdown ของ Sales Overview ก่อน)
-- Header (Logo, User, Dark mode) คงที่ทุกหน้า เพื่อให้รู้สึกเป็นระบบเดียวต่อเนื่องกัน
+- **Navigation Menu** อยู่ที่มุมซ้ายบนของทุกหน้า (ข้าง Logo) กดแล้วเห็นรายการทุกหน้าในระบบ จัดกลุ่มตาม Module พร้อม Badge "Coming soon" สำหรับ Module ที่ยังไม่เปิดใช้งาน (MT, Ecom) — กดข้าม Section ไหนก็ได้ในคลิกเดียว ไม่ต้องไล่ตามลำดับ Drill-in ทีละชั้น (เช่น จาก Sales Overview ไป TT Overview → Breakdown ได้ทันที)
+- **Breadcrumb** "Sales Overview / [Module]" แสดงเฉพาะหน้า Channel Overview (MT/TT/Ecom) เพราะเป็นหน้าที่ Nested อยู่ใต้ Sales Overview — Sales Overview เองไม่มี Breadcrumb เพราะเป็นจุดบนสุดของ Hierarchy
+- **หัวข้อหน้า (H1)** ใช้รูปแบบเดียวกันทุกหน้า: "[ชื่อ Module] — [ชื่อมุมมอง]" เช่น "Sales Overview — Executive Outlook", "TT Overview — Breakdown"
+- แต่ละ Channel Overview มี Tab ของตัวเอง (Executive Summary / Breakdown / Sales Person เฉพาะ TT) โดย Filter เต็มรูปแบบ (Region/Category/Sales Person/My stores only) อยู่ที่ Breakdown เท่านั้น — Executive Summary มีแค่ Period filter
 
 ---
 
@@ -63,8 +72,8 @@ Sales Overview  (Company-wide — รวมทุก Channel)
 ### 3.1 แนวทางภาพรวม
 - Formal / Corporate — ไม่ใช้ Emoji ไม่ใช้สีฉูดฉาด
 - Layout แบบ Card-based บน Background สีอ่อน, การ์ดพื้นขาว เงาบางๆ
-- รองรับ Dark Mode ทุกหน้า
-- Responsive รองรับทั้ง Web และ Mobile
+- รองรับ Dark Mode ทุกหน้า, Responsive รองรับทั้ง Web และ Mobile
+- ไฟล์ทุกหน้าต้องเปิดใช้งานได้เองโดยไม่พึ่งพาอินเทอร์เน็ตหรือบริการภายนอกใดๆ (วาดกราฟด้วย SVG ในไฟล์เอง ไม่ใช้ Library ภายนอก)
 
 ### 3.2 โทนสี (Color Tokens)
 
@@ -73,39 +82,40 @@ Sales Overview  (Company-wide — รวมทุก Channel)
 | Primary Accent (Logo, Active Tab, Primary Button, กราฟหลัก) | Wine / Berry tone |
 | Background | Off-white / Cream |
 | Card Background | White |
-| Text หลัก | เกือบดำ |
-| Text รอง | เทาอุ่น |
+| Text หลัก / รอง | เกือบดำ / เทาอุ่น |
 | Positive Delta / Hit Target | เขียว |
 | Negative Delta / Below Target | แดง |
 | Warning / ใกล้ Target | ส้ม/เหลือง |
-| Channel: MT / TT / Ecom | ใช้สีต่างกันชัดเจน 3 เฉด แยกจาก Primary Accent |
+| Channel: MT / TT / Ecom | Wine (เข้ม) / Teal / ทอง — ใช้แยกจาก Primary Accent อย่างสม่ำเสมอทุกกราฟที่เทียบ Channel |
+| Category (Product Analysis) | Palette เฉพาะ 6 สี (Blue/Green/Purple/Terracotta/Mustard/Slate) แยกชัดจากสี Channel เพื่อไม่ให้สับสนระหว่างมุมมอง "ตาม Channel" กับ "ตาม Category" |
 
-> หมายเหตุ: Wine/Berry เป็นสีตั้งต้น (Placeholder) รอสี Brand จริงของ Charmiss — เมื่อได้สีจริงมาให้เปลี่ยนแค่ค่าเดียวนี้ ระบบสีที่เหลือไม่กระทบ
+> Wine/Berry เป็นสีตั้งต้น (Placeholder) รอสี Brand จริงของ Charmiss — เปลี่ยนแค่ค่าเดียวนี้ ระบบสีที่เหลือไม่กระทบ
 
 ### 3.3 Typography
-ใช้ Font ที่ดูเป็นทางการ รองรับภาษาไทย ตัวเลขจัดคอลัมน์ตรงกัน (Tabular numbers)
+Font ที่ดูเป็นทางการ รองรับภาษาไทย ตัวเลขเดี่ยว (KPI Headline) ใช้ Proportional numbers ตามปกติ — ใช้ Tabular numbers เฉพาะใน Table ที่ต้องจัดคอลัมน์ตัวเลขให้ตรงกันจริงๆ เท่านั้น (ใช้ผิดที่จะทำให้ตัวเลขดูยืดผิดปกติ)
 
 ### 3.4 Component Pattern มาตรฐาน
 
 **KPI Card:** Title + Information Icon → ตัวเลขใหญ่ + หน่วย/ช่วงเวลา → แถว MoM/YoY (สีเขียว/แดง) → Sparkline แนวโน้ม
+- บางการ์ดอาจมีบรรทัดเสริมใต้ Sparkline (เช่น "Gap to Target" ใต้ Target Attainment) แทนการแยกเป็นการ์ดเดี่ยว หากเนื้อหาสัมพันธ์กันโดยตรงและไม่อยากให้ KPI Row ยาวเกินจำเป็น
 
-**Chart Card:** Title + Information Icon → Subtitle บอกขอบเขตข้อมูล → Toolbar (ดูเป็นตาราง / ดาวน์โหลด / ขยายเต็มจอ) → ตัวกราฟ
+**Chart Card:** Title + Information Icon → Subtitle บอกขอบเขตข้อมูล → Toolbar (ดูเป็นตาราง / ดาวน์โหลด / ขยายเต็มจอ) → ตัวกราฟ — **ทุก Chart Card ที่มีข้อมูลเชิงตาราง (ไม่ใช่แค่ Heatmap ที่เป็นตารางอยู่แล้ว) ต้องมีปุ่ม "ดูเป็นตาราง" ควบคู่ Download และ Expand เสมอ** เพื่อความสม่ำเสมอทั้งระบบ
 
-**Information Icon (ⓘ):** ทุก KPI Card และ Chart Card ต้องมี กดแล้วแสดง Popover อธิบายวิธีคำนวณของ Metric นั้นเป็นภาษาที่คนอ่านทั่วไปเข้าใจได้ (ดูสูตรทั้งหมดในข้อ 5)
+**Information Icon (ⓘ):** ทุก KPI Card และ Chart Card ต้องมี กดแล้วแสดง Popover อธิบายวิธีคำนวณของ Metric นั้นเป็นภาษาที่คนอ่านทั่วไปเข้าใจได้
 
 **Filter Bar:**
 - Period selector ทุกหน้า: This Month / Last Month / This Quarter / Last Quarter / Year to Date (default) / Trailing 12 Months / Custom Range
-- หน้า Breakdown มี Filter เพิ่มตามบริบท: Channel, Region, Category, Sales Person/Partner/Platform, "My stores only" (แสดงเฉพาะ MT/TT)
-- หน้า Executive Summary ระดับบริษัทมีแค่ Period อย่างเดียว (ไม่มี Filter ย่อย)
+- หน้า Breakdown (เฉพาะ Channel Overview) มี Filter เพิ่มตามบริบท: Region, Category, Sales Person, "My stores only"
+- หน้า Executive Summary / Executive Outlook / Product Analysis มีแค่ Period อย่างเดียว (ไม่มี Filter ย่อย)
 
-**หลักการ Sales by Category (ใช้ร่วมกันทุกที่ที่มี Category breakdown):**
-- เลือกระดับได้ 4 ชั้น: Category → Sub-Category → Type → Series
-- แสดงผลแบบ **"Top View" จัดอันดับแบบ Flat** — เมื่อเลือก Sub-Category จะเห็น Sub-Category ที่ขายดีที่สุด **ของทั้งหมดทุก Category รวมกัน** จัดอันดับตามยอดขาย (ไม่ใช่ต้องเลือก Category ก่อนแล้วดูเฉพาะลูกของอันนั้น) — ชื่อ Category แม่แสดงเป็นตัวอักษรเล็กสีจางกำกับไว้ใต้ชื่อเพื่อบอก Context
-- ถ้ารายการเกิน 10 อันดับ ให้ตัดโชว์ Top 10 พร้อมลิงก์ "See all N →" ไปดูตารางเต็ม
-- เมื่อเปลี่ยนระดับ ต้อง Sync ระดับเดียวกันไปยัง Category Portfolio Matrix และ Category Share of Sales Over Time ด้วยเสมอ
+**หลักการ Hierarchy Level Selector (Category → Sub-Category → Type → Series):**
+- ถ้าหน้าใดมีหลาย Component ที่ต้องมองข้อมูลที่ระดับเดียวกัน (เช่น Product Analysis: Heatmap, Channel Index, Portfolio Matrix, Share Over Time, Sales by Category) ให้ใช้ **Level Selector ตัวเดียวตัวเดียวที่จุดเดียว** ควบคุมทุก Component พร้อมกัน — **ห้ามมี Selector แยกในแต่ละการ์ด** เพื่อไม่ให้ข้อมูลระหว่างการ์ดไม่ตรงกัน
+- แสดงผลแบบ **"Top View" จัดอันดับแบบ Flat** — เมื่อเลือก Sub-Category จะเห็น Sub-Category ที่ขายดีที่สุด **ของทั้งหมดทุก Category รวมกัน** จัดอันดับตามยอดขาย (ไม่ใช่ Breadcrumb Drill ทีละชั้น) — ชื่อ Category แม่แสดงเป็นตัวอักษรเล็กสีจางกำกับไว้ใต้ชื่อเพื่อบอก Context
+- ระดับที่ลึกกว่า Category (Sub-Category/Type/Series มี 12/24/48 รายการ) ให้ตัดแสดงเฉพาะ Top N ตามความเหมาะสมของ Component นั้น (List/Table แสดงได้มากกว่า เช่น Top 10, ส่วน Chart ที่มีข้อจำกัดเรื่องความหนาแน่น เช่น Scatter/Stacked Area/Grouped Bar ควรจำกัดที่ Top 6-8) พร้อมลิงก์ "See all N →" ไปดูรายการเต็ม
 
-### 3.5 ความน่าเชื่อถือของระบบ
-Dashboard ต้องเปิดใช้งานได้ทันทีโดยไม่พึ่งพาอินเทอร์เน็ตหรือบริการภายนอกใดๆ เพื่อไม่ให้เกิดปัญหาข้อมูลไม่แสดงผล
+**หลักการ Diverging Bar Chart (ใช้ Baseline ที่ไม่ใช่ 0):** เมื่อกราฟ Bar ต้องเทียบกับค่าอ้างอิงที่ไม่ใช่ 0 (เช่น Index = 100) แท่งต้องยื่นขึ้น/ลงจาก**ค่าอ้างอิงนั้นโดยตรง** ไม่ใช่ยื่นจาก 0 เสมอ (ไม่งั้นกราฟจะดูเป็นแท่งสูงเท่ากันหมดกระจุกอยู่บนสุด ไม่สื่อความหมาย Over/Under ที่ต้องการ) และ Y-axis Domain ต้องคำนวณล้อมรอบค่าอ้างอิงนั้น ไม่ใช่บังคับรวม 0 เข้าไปเสมอ
+
+**Navigation ข้ามหน้าในไฟล์เดียวกัน (Tab ภายใน Module เดียว):** ต้องรองรับการเปลี่ยน Tab ผ่านการเปลี่ยน URL `#hash` แม้จะเป็นการเปลี่ยนจากภายในไฟล์เดียวกันเอง (เช่น กด Navigation Menu ข้าม Tab ในหน้าเดียวกัน) — ต้องมีการดักฟัง `hashchange` ไว้เสมอ ไม่ใช่แค่อ่าน Hash ตอนโหลดหน้าครั้งแรกครั้งเดียว (การเปลี่ยน Hash ในเอกสารเดียวกันไม่ทำให้หน้าโหลดใหม่ จึงต้องมี Listener แยกไว้รองรับ)
 
 ---
 
@@ -136,7 +146,7 @@ Charmiss Total Sales
 | Accessories | Application Tools | Brush, Sponge |
 | Accessories | Storage | Pouch, Organizer |
 
-แต่ละ Type แตกเป็น Series อีก 1 ชั้น (รวม Category → Sub-Category → Type → Series ทั้งหมด 4 ชั้น)
+แต่ละ Type แตกเป็น Series อีก 1 ชั้น (รวม Category → Sub-Category → Type → Series ทั้งหมด 4 ชั้น, 6 → 12 → 24 → 48 รายการ)
 
 ### 4.3 Channel-specific Metric Mapping
 
@@ -148,79 +158,90 @@ Charmiss Total Sales
 | ความครอบคลุม | Active Stores/Partners, Retention | Active Shop Listings |
 | ทีมงาน | Sales Rep, Visit Compliance (TT) / Key Account Manager (MT) | Platform Owner |
 | ราคาเฉลี่ย | — | Average Order Value (AOV), Conversion Rate |
+| Label "Active Units" ในตารางเทียบ Channel | MT = Active Partners, TT = Active Stores | Ecom = Active Shop Listings |
 
 ---
 
 ## 5. Metrics / KPI ต่อหน้า
 
-### 5.1 Sales Overview → Executive Summary
+### 5.1 Sales Overview → Executive Outlook
 
-| Metric/Chart | ประเภท | วิธีคำนวณ |
-|---|---|---|
-| Total Net Sales | KPI Card | ผลรวมยอดขายสุทธิ (หลังหักคืน/ส่วนลด) ทุก Channel ในช่วงเวลาที่เลือก |
-| Target Attainment % | KPI Card | (ยอดขายจริง ÷ เป้าหมาย) × 100 |
-| Growth YoY | KPI Card | (ยอดขายเดือนล่าสุด − เดือนเดียวกันปีก่อน) ÷ เดือนเดียวกันปีก่อน × 100 (อิงเดือนปิดล่าสุดเสมอ) |
-| Growth MoM | KPI Card | (ยอดขายเดือนล่าสุด − เดือนก่อนหน้า) ÷ เดือนก่อนหน้า × 100 (อิงเดือนปิดล่าสุดเสมอ) |
-| Best-performing Channel | KPI Card | Channel ที่มี Target Attainment % สูงสุดในช่วงเวลาที่เลือก |
-| Revenue Trend | Line Chart | ยอดขายจริงรายเดือน เทียบเป้าหมายและยอดขายปีก่อน |
-| Monthly YoY Growth % | Line Chart | % เปลี่ยนแปลงยอดขายรายเดือน เทียบเดือนเดียวกันปีก่อน |
-| Sales by Channel | Donut | สัดส่วน % ยอดขาย MT/TT/Ecom |
-| Sales by Category | Horizontal Bar | สัดส่วน % ยอดขายแต่ละ Category (รองรับ Sub-Category/Type/Series ตามข้อ 3.4) |
-| Sales Ranking by Channel/Platform | Table | จัดอันดับ MT, TT, Lazada, Shopee, TikTok ตามยอดขาย พร้อม Attainment% และ Growth YoY |
+**Section 1 — At a Glance (KPI):**
 
-### 5.2 Sales Overview → Breakdown
+| Metric | รายละเอียด/สูตร |
+|---|---|
+| Total Net Sales | ผลรวมยอดขายสุทธิ ทุก Channel ในช่วงเวลาที่เลือก + MoM/YoY + Sparkline |
+| Target Attainment % | (ยอดขายจริง ÷ เป้าหมาย) × 100 + MoM/YoY (pp) + Sparkline + **Gap to Target** (Actual YTD − Target YTD, Calendar YTD เสมอ ไม่ผูก Filter ด้านบน, สีเขียว/แดงตามเครื่องหมาย) |
+| Full Year Forecast | Run-rate: (ยอดขาย YTD ÷ จำนวนเดือนที่ผ่านมา) × 12 ÷ เป้าหมายทั้งปี × 100 (Calendar YTD เสมอ) + Sparkline แบบ Trajectory (เส้นทึบ = Actual ที่ผ่านมา, เส้นประ = ยื่นไปถึง Dec ตามค่าพยากรณ์) |
 
-| Metric/Chart | ประเภท | วิธีคำนวณ/รายละเอียด |
-|---|---|---|
-| Channel Snapshot Cards ×3 | Clickable Card | Net Sales, Attainment%, Growth YoY ต่อ Channel — คลิกเข้า Channel Overview นั้น |
-| **Compare Performance Table** | Table เปรียบเทียบ | แถว = Metric (Net Sales, Attainment%, Growth YoY, Growth MoM, AR%/Return-Cancellation Rate, Active Units), คอลัมน์ = MT/TT/Ecom — Highlight ค่าที่ดีที่สุดต่อแถว |
-| Revenue Trend by Channel | Multi-line Chart | เส้นยอดขายทับกัน 3 Channel |
-| Growth YoY by Channel | Grouped Bar | เทียบ % การเติบโตแต่ละ Channel |
-| Target Attainment by Channel | Bullet/Bar Chart | เทียบ % Attainment แต่ละ Channel |
-| Channel Mix Over Time | Stacked Area (18 เดือน) | สัดส่วนยอดขายแต่ละ Channel เปลี่ยนแปลงตามเวลา |
-
-### 5.3 Sales Overview → Product Analysis
-
-| Metric/Chart | ประเภท | วิธีคำนวณ/รายละเอียด |
-|---|---|---|
-| Top Category (Company-wide) | KPI Card | Category ที่ยอดขายสูงสุดของบริษัท |
-| Fastest Growing Category | KPI Card | Category ที่ Growth YoY สูงสุด |
-| Best Category per Channel | Callout Card ×3 | Category อันดับ 1 ของแต่ละ Channel พร้อม % สัดส่วน |
-| Category × Channel Heatmap | Heatmap Table | แถว = Category, คอลัมน์ = MT/TT/Ecom, ค่า = ยอดขาย + % ของ Category นั้นที่มาจาก Channel นั้น |
-| Channel Index by Category | Bar Chart (Index=100) | (สัดส่วนยอดขาย Category X ใน Channel Y) ÷ (สัดส่วนยอดขาย Category X ในยอดขายรวมบริษัท) × 100 — บอกว่า Category ไหน Over/Under-index ใน Channel ไหน |
-| Category Portfolio Matrix (Company-wide) | Scatter 4-Quadrant | แกน X = ยอดขาย (Volume), แกน Y = %Growth YoY แบ่ง Stars/Question Marks/Cash Cows/Dogs ด้วยค่ามัธยฐาน |
-| Category Share of Sales Over Time (Company-wide) | Stacked Area (18 เดือน) | สัดส่วน % ยอดขายแต่ละ Category ต่อยอดขายรวม รายเดือน |
-| Sales by Category (พร้อม Toggle แยกตาม Channel) | Horizontal Bar | เหมือนข้อ 5.1 แต่เพิ่ม Toggle แยกข้อมูลตาม Channel ได้ |
-
-### 5.4 MT Overview → Executive Summary
+**Section 2 — Performance & Composition:**
 
 | Metric/Chart | ประเภท |
 |---|---|
-| Net Sales (MT), Target Attainment %, Growth YoY, Growth MoM, AR%, Return Rate (CN) | KPI Card |
-| Revenue Trend (MT), Monthly YoY Growth % (MT) | Line Chart |
-| Sales by Key Account | Donut/Bar |
-| Sales by Category (MT) | Horizontal Bar |
-| Ranking — Top Key Accounts by Net Sales | Table |
+| Revenue Trend | Line Chart (This Year vs Last Year vs Target, by month) |
+| Channel Growth Comparison (YoY) | Line Chart 3 เส้น (MT/TT/Ecom), เต็ม 12 เดือน, Full-width |
+| Sales by Channel | Donut — มี % Label บนกราฟโดยตรง + Badge "Best"/"Watch" ที่ Legend (Channel ที่ Attainment สูงสุด/ต่ำสุด) |
+| Sales by Category | Horizontal Bar (รองรับ Sub-Category/Type/Series ตามหลักการ Level Selector ข้อ 3.4) |
 
-### 5.5 MT Overview → Breakdown (ข้อมูลคู่ค้า)
+**Section 3 — What's Driving It:**
 
-| Section | Metric/Chart |
+| Metric/Chart | ประเภท/สูตร |
 |---|---|
-| Portfolio Quality | Target vs Actual (รายเดือน), Return Rate (CN), AR Aging |
-| Partner Performance | Target vs Actual per Partner/Key Account, Top & Bottom Partner Ranking, Active Partners, Partner Concentration (Top 5 Partner = กี่ % ของยอดขายรวม) |
-| Product Coverage | Sales by Category, Category Portfolio Matrix, Category Share of Sales Over Time |
+| Growth Contribution Waterfall | Waterfall Chart: Last Year YTD (เริ่ม) → ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของ MT/TT/Ecom ทีละแท่ง (เขียว=บวก,แดง=ลบ) → This Year YTD (จบ) |
+| Return / Cancellation Rate Trend | Line Chart รายเดือน — Weighted average ของ (Credit Note มูลค่า MT+TT + Cancellation มูลค่า Ecom) ÷ ยอดขายรวม × 100, เส้นประ Threshold 5% |
 
-### 5.6 TT Overview → Executive Summary
+**Section 4 — Channel Comparison:**
 
 | Metric/Chart | ประเภท |
 |---|---|
-| Total Net Sales, Target Attainment, AR%, Return Rate (CN), Active Stores, Store Retention | KPI Card |
-| Revenue Trend, Monthly YoY Growth % | Line Chart |
-| Sales by Customer Group, Sales by Category | Chart |
-| Sales Ranking by Rep | Table |
+| Channel Snapshot Cards ×3 | คลิกเข้า Channel Overview นั้นได้ (TT พร้อมใช้งาน, MT/Ecom ยังกดไม่ได้) |
+| Compare Performance Table | 6 แถว: Net Sales, Target Attainment %, Growth YoY, Growth MoM, Return/Cancellation Rate, Active Units (Label ต่างกันตาม Channel — ดูข้อ 4.3) — Highlight ค่าที่ดีที่สุดต่อแถว |
+| Revenue Trend by Channel | Line Chart ทับกัน 3 Channel + Checkbox เลือกเปิด/ปิด Channel |
+| Channel Mix Over Time | 100% Stacked Bar **รายไตรมาส** (Q1/25 ถึงไตรมาสล่าสุด) — Data label ทั้ง % และ ฿ บนทุก Segment + Callout สรุป First-period vs Last-period ต่อ Channel + ปุ่มดูตารางรายเดือนละเอียด |
 
-### 5.7 TT Overview → Breakdown (ข้อมูลร้านค้า)
+### 5.2 Sales Overview → Product Analysis
 
+**Zone A — Category Performance Overview:**
+
+| Metric | รายละเอียด |
+|---|---|
+| Top Category (Company-wide) | Category ยอดขายสูงสุดของบริษัท |
+| Fastest Growing Category | Category ที่ Growth YoY สูงสุด |
+| Best Category per Channel ×3 | Callout Card, แถบซ้ายสีตาม Channel, แสดง Category อันดับ 1 + % สัดส่วนภายใน Channel นั้น |
+
+**Zone B — Cross-Channel Analysis** (ควบคุมด้วย Level Selector ตัวเดียวที่หัว Section — ดูหลักการข้อ 3.4):
+
+| Metric/Chart | ประเภท/สูตร |
+|---|---|
+| Category × Channel Heatmap | Table, แถว = ระดับที่เลือก (Top 10), คอลัมน์ = MT/TT/Ecom, Cell = ยอดขาย + % Row-normalized, สีเข้ม-อ่อนตาม % |
+| Channel Index by Category | **Diverging Bar Chart, Baseline = Index 100** (ไม่ใช่ 0) — แท่งยื่นขึ้น = Over-index, ยื่นลง = Under-index, สีแท่ง = Channel Identity (ไม่ใช่เขียว/แดง), มีเลข Index บนปลายแท่งทุกแท่ง, เส้นประ Reference ที่ 100 (Top 8) |
+
+**Zone C — Portfolio Strategy** (Sync ระดับเดียวกับ Zone B/D เสมอ):
+
+| Metric/Chart | ประเภท |
+|---|---|
+| Category Portfolio Matrix | Scatter 4-Quadrant — แกน X (ยอดขาย) และ Y (%Growth YoY) มี Gridline + Tick value จริง, เส้นแบ่ง Quadrant ที่ค่ามัธยฐาน, Label มุม Stars/Question Marks/Cash Cows/Dogs (Top 6) |
+| Category Share of Sales Over Time | Stacked Area 18 เดือน, ใช้ Category color palette เฉพาะ (Top 6) |
+
+**Zone D — Category Deep-dive:**
+
+| Metric/Chart | ประเภท |
+|---|---|
+| Sales by Category | Horizontal Bar, Top View จัดอันดับ Flat (Top 10 + See all N), มี Toggle All/MT/TT/Ecom เฉพาะ Component นี้ (Heatmap/Index ไม่ผูกกับ Channel Toggle นี้ เพราะโดยธรรมชาติต้องโชว์ครบทุก Channel เพื่อเปรียบเทียบ) |
+
+ทุก Chart Card ใน Product Analysis (Heatmap, Channel Index, Portfolio Matrix, Share Over Time) มี Toolbar ดูเป็นตาราง/ดาวน์โหลด/ขยายเต็มจอ ครบเหมือนหน้า Executive Outlook
+
+### 5.3 MT Overview [ยังไม่เปิดใช้งาน]
+
+**Executive Summary:** Net Sales (MT), Target Attainment %, Growth YoY, Growth MoM, AR%, Return Rate (CN) · Revenue Trend, Monthly YoY Growth % · Sales by Key Account · Sales by Category · Ranking Top Key Accounts
+
+**Breakdown (ข้อมูลคู่ค้า):** Portfolio Quality (Target vs Actual, Return Rate, AR Aging) · Partner Performance (Ranking, Active Partners, Partner Concentration) · Product Coverage (Category breakdown, Portfolio Matrix, Share Over Time)
+
+### 5.4 TT Overview
+
+**Executive Summary:** Total Net Sales, Target Attainment, AR%, Return Rate (CN), Active Stores, Store Retention (KPI) · Revenue Trend, Monthly YoY Growth % (Chart) · Sales by Customer Group, Sales by Category (Chart) · Sales Ranking by Rep (Table)
+
+**Breakdown (ข้อมูลร้านค้า):**
 | Section | Metric/Chart |
 |---|---|
 | Portfolio Quality | Target vs Actual, Return Rate (CN), High Return Rate Stores, AR Aging |
@@ -228,8 +249,7 @@ Charmiss Total Sales
 | Customer Coverage | Top & Bottom Performing Stores, Active Stores, New vs Inactive Stores, Sales by Region, Sales by Province (แผนที่ไทย) |
 | Product Coverage | Sales by Category, Category Portfolio Matrix, Category Share of Sales Over Time, Customer Group × Category |
 
-### 5.8 TT Overview → Sales Person (มุมมองส่วนตัวของ Sales Rep)
-
+**Sales Person** (มุมมองส่วนตัวของ Sales Rep แต่ละคน — Header ของระบบยังคงแสดง Session User เดิม "Nattapong V. / VP of Sales" เสมอ ไม่เปลี่ยนตาม Rep ที่กำลังดู):
 | Section | Metric/Chart |
 |---|---|
 | (บนสุด) | Target Achievement (KPI), This Month at a Glance |
@@ -238,20 +258,8 @@ Charmiss Total Sales
 | My Customers & Products | Top & Bottom Performing Stores, My Customer Group Mix, My Sales by Category |
 | Credit Notes (CN) | CN Record (ตาราง, ดาวน์โหลดได้) |
 
-### 5.9 ECOM Overview → Executive Summary
+### 5.5 ECOM Overview [ยังไม่เปิดใช้งาน]
 
-| Metric/Chart | ประเภท |
-|---|---|
-| Net Sales (Ecom), Target Attainment %, Growth YoY, Growth MoM, AOV, Conversion Rate | KPI Card |
-| Revenue Trend (Ecom), Monthly YoY Growth % (Ecom) | Line Chart |
-| Sales by Platform (Lazada/Shopee/TikTok) | Donut |
-| Sales by Category (Ecom) | Horizontal Bar |
-| Ranking by Platform | Table |
+**Executive Summary:** Net Sales (Ecom), Target Attainment %, Growth YoY, Growth MoM, AOV, Conversion Rate · Revenue Trend, Monthly YoY Growth % · Sales by Platform (Lazada/Shopee/TikTok) · Sales by Category · Ranking by Platform
 
-### 5.10 ECOM Overview → Breakdown (ข้อมูล Ecom Shop)
-
-| Section | Metric/Chart |
-|---|---|
-| Portfolio Quality | Target vs Actual per Platform, Return/Cancellation Rate, Return Rate Ranking by Platform |
-| Shop Performance | Target vs Actual per Shop/Platform, AOV by Platform, Conversion Rate by Platform, Ads Spend ROI (ถ้ามีข้อมูล) |
-| Product Coverage | Sales by Category, Category Portfolio Matrix, Category Share Over Time, Top/Bottom SKU |
+**Breakdown (ข้อมูล Ecom Shop):** Portfolio Quality (Target vs Actual per Platform, Return/Cancellation Rate) · Shop Performance (Target vs Actual per Shop, AOV, Conversion Rate, Ads Spend ROI) · Product Coverage (Category breakdown, Portfolio Matrix, Share Over Time, Top/Bottom SKU)
