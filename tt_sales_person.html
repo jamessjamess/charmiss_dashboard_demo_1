@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — TT Overview · Sales Person</title>
+<link rel="stylesheet" href="tt-shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div>
+      <div class="brand-block">
+        <div class="brand-mark">C</div>
+        <div>
+          <div class="brand-name">Charmiss</div>
+        </div>
+        <div id="navMenuMount"></div>
+      </div>
+      <div class="breadcrumb" style="margin-top:14px;">
+        <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
+      </div>
+      <h1>TT Overview — Sales Person</h1>
+      <p class="subhead">Your targets, priority accounts, and daily performance — scoped to you automatically.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="user-info-row">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="user-avatar-circle">NV</div>
+        <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
+      </div>
+      <div class="asof">Data as of Jun 30, 2026 (mock data)</div>
+    </div>
+  </div>
+
+  <div class="page-switcher" role="tablist">
+    <a class="page-tab tab-link" href="tt_executive_summary.html" role="tab">Executive Summary</a>
+    <a class="page-tab tab-link" href="tt_breakdown.html" role="tab">Breakdown</a>
+    <a class="page-tab active tab-link" href="tt_sales_person.html" role="tab" aria-selected="true">Sales Person</a>
+  </div>
+
+  <div id="pageSalesPerson" class="page-view">
+
+    <div class="sp-toolbar" id="spToolbar">
+      <div class="filter-group">
+        <span class="filter-label">Sales Person</span>
+        <select class="filter-input" id="spRepSelect"></select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Year</span>
+        <select class="filter-input" id="spYearSelect"></select>
+      </div>
+      <div class="filter-group">
+        <span class="filter-label">Month</span>
+        <select class="filter-input" id="spMonthSelect"></select>
+      </div>
+      <div class="filter-spacer"></div>
+      <div class="sp-identity-note">Auto-scoped to this Sales Person's assigned stores — no additional filtering needed</div>
+    </div>
+
+    <!-- Round 26 (direct request): sticky shortcut sub-nav, same pattern as Sales Breakdown's
+         #l2MiniNav (reuses its CSS classes directly — nothing L2-specific about them). -->
+    <div class="l2-mini-nav" id="l3MiniNav">
+      <a href="#l3Priority" class="l2-mini-nav-item">Priority Actions</a>
+      <a href="#l3Snapshot" class="l2-mini-nav-item">Sales Snapshot</a>
+      <a href="#l3Customers" class="l2-mini-nav-item">Customers &amp; Products</a>
+      <a href="#l3CN" class="l2-mini-nav-item">Credit Notes</a>
+    </div>
+
+    <div class="grid">
+      <!-- Round 31 direct feedback (Task 6): rebalanced from col-8/col-4 to col-6/col-6 now that
+           This Month at a Glance carries 6 metrics (was 3) — paired 2-per-row below keeps it 3
+           rows tall, same as before, so it stays roughly the same height as Target Achievement. -->
+      <div class="col-6 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Target Achievement
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดขายสุทธิของเดือนที่เลือก เทียบเป้าหมายที่จัดสรรให้ Sales Person คนนี้ (ตามสัดส่วนขนาดร้านค้าที่ดูแล ระบบเดียวกับ Target vs Actual (per rep) ใน Sales Breakdown) — แถบและตัวเลข % คือความคืบหน้าเทียบเป้าของเดือนนั้น ถ้าเกิน 100% แถบจะเต็มและตัวเลขขึ้นสีเขียว เส้นดำแนวตั้งบนแถบ = จำนวนวันที่ผ่านไปแล้วของเดือนนี้ (เทียบสัดส่วน) ใช้ดูว่าทำได้ทันเวลาหรือไม่</div>
+              </span>
+            </div>
+            <div class="card-sub" id="spHeroSub">—</div>
+          </div>
+        </div>
+        <div class="hero-pct" id="spHeroPct">—</div>
+        <div class="hero-progress-track">
+          <div class="hero-progress-fill" id="spHeroFill" style="width:0%;"></div>
+          <div class="hero-pace-marker" id="spHeroPaceMarker" style="left:0%;display:none;"></div>
+        </div>
+        <div class="hero-line" id="spHeroLine1">—</div>
+        <div class="hero-line" id="spHeroLine2">—</div>
+        <div class="hero-line" id="spHeroPaceLine" style="display:none;">—</div>
+      </div>
+      <div class="col-6 card">
+        <div class="card-title" style="margin-bottom:2px;">This Month at a Glance</div>
+        <div class="glance-row-pair">
+          <div class="glance-row">
+            <div class="glance-row-label">Net Sales
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดขายสุทธิ (หลังหักคืนสินค้า/CN) ของเดือนที่เลือก จากร้านค้าที่ดูแลทั้งหมด</div>
+              </span>
+            </div>
+            <div class="glance-row-figures">
+              <span class="glance-row-value" id="spNetVal">—</span>
+              <span class="glance-row-delta" id="spNetDelta">—</span>
+            </div>
+          </div>
+          <div class="glance-row">
+            <div class="glance-row-label">Active Customers
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">จำนวนร้านค้าที่ดูแล ที่มีคำสั่งซื้อในเดือนที่เลือก</div>
+              </span>
+            </div>
+            <div class="glance-row-figures">
+              <span class="glance-row-value" id="spActiveCustVal">—</span>
+              <span class="glance-row-delta" id="spActiveCustDelta">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="glance-row-pair">
+          <div class="glance-row">
+            <div class="glance-row-label">Return Rate (CN)
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">มูลค่าใบลดหนี้ (CN) ÷ ยอดขายก่อนหักคืน ของเดือนที่เลือก ยิ่งต่ำยิ่งดี</div>
+              </span>
+            </div>
+            <div class="glance-row-figures">
+              <span class="glance-row-value" id="spReturnVal">—</span>
+              <span class="glance-row-delta" id="spReturnDelta">—</span>
+            </div>
+          </div>
+          <div class="glance-row">
+            <div class="glance-row-label">Inactive Customers
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ร้านค้าที่เคย Active เดือนก่อน แต่เดือนนี้ไม่มีคำสั่งซื้อเลย (นิยามเดียวกับ Inactive Customers ด้านล่าง)</div>
+              </span>
+            </div>
+            <div class="glance-row-figures">
+              <span class="glance-row-value" id="spInactiveCustVal">—</span>
+              <span class="glance-row-delta" id="spInactiveCustDelta">—</span>
+            </div>
+          </div>
+        </div>
+        <div class="glance-row-pair">
+          <div class="glance-row">
+            <div class="glance-row-label">AR%
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดรับชำระหนี้ (รวมทั้งจ่ายสดและ Credit) ÷ มูลค่า Invoice ของเดือนที่เลือก ยิ่งสูงยิ่งดี (ปกติควรอยู่ราว 80–100%)</div>
+              </span>
+            </div>
+            <div class="glance-row-figures">
+              <span class="glance-row-value" id="spArVal">—</span>
+              <span class="glance-row-delta" id="spArDelta">—</span>
+            </div>
+          </div>
+          <div class="glance-row">
+            <div class="glance-row-label">New Customers
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ร้านค้าที่ไม่ Active เดือนก่อน แต่มีคำสั่งซื้อครั้งแรกในเดือนที่เลือก</div>
+              </span>
+            </div>
+            <div class="glance-row-figures">
+              <span class="glance-row-value" id="spNewCustVal">—</span>
+              <span class="glance-row-delta" id="spNewCustDelta">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Round 26 (direct request): My Priority Actions moved up here, right after the Target
+         Achievement/Glance hero and ahead of Sales Snapshot — action items before trend-watching,
+         nothing deleted, just reordered. -->
+    <div class="section-label" id="l3Priority">My Priority Actions</div>
+    <div class="grid">
+      <div class="col-4 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Stores Needing Attention
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ร้านค้าที่ดูแลซึ่งมีอัตราคืนสินค้า (CN) สูงผิดปกติ (เกิน 2% — เกณฑ์เดียวกับ High Return Rate Stores ในแท็บ Sales Breakdown) เรียงจากสูงไปต่ำ อาจสะท้อนปัญหาสต็อกล้นหรือสินค้าใกล้หมดอายุที่ควรเข้าไปพูดคุยกับร้าน</div>
+              </span>
+            </div>
+            <div class="card-sub">Elevated CN rate (&gt;2%), this month</div>
+          </div>
+        </div>
+        <div id="attentionList" class="store-list"></div>
+      </div>
+      <div class="col-4 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">AR By Due Date
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดลูกหนี้ของร้านค้าที่ดูแล สลับดูได้ 2 มุมมอง: "Overdue" คือยอดที่เกินกำหนดชำระแล้ว จัดกลุ่มตามจำนวนวันที่เลยกำหนด (เรียงจากเกินกำหนดนานสุดไปน้อยสุด) กับ "Within Due" คือยอดที่ยังไม่เกินกำหนด แบ่งเป็นใกล้ถึงกำหนด (≤7 วัน) และยังมีเวลาอีกพอสมควร (นิยามเดียวกับตาราง AR Aging ใน Sales Breakdown) — บัญชี Overdue ที่เกิน 30 วันควรได้รับความสำคัญก่อนระหว่างรอบเยี่ยมร้านถัดไป</div>
+              </span>
+            </div>
+            <div class="card-sub" id="collectionsSummary">Overdue AR, by days past due</div>
+          </div>
+          <div class="icon-toolbar" data-chart="collections"></div>
+        </div>
+        <!-- Round 32 direct feedback (Task 7): Within Due / Overdue toggle — same segmented-btn
+             pattern as the filter-shortcut buttons elsewhere, scoped to this card only. -->
+        <div class="ar-status-toggle" id="collectionsStatusToggle">
+          <button type="button" class="ar-status-btn" data-status="overdue" aria-pressed="true">Overdue</button>
+          <button type="button" class="ar-status-btn" data-status="withinDue" aria-pressed="false">Within Due</button>
+        </div>
+        <div id="collectionsList" class="store-list"></div>
+        <div id="collectionsTable" class="table-scroll" style="display:none;"></div>
+      </div>
+      <div class="col-4 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Inactive Customers
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ร้านค้าที่ดูแลซึ่งมีคำสั่งซื้อในเดือนก่อน แต่ยังไม่มีคำสั่งซื้อในเดือนที่เลือก — จุดที่ควรแวะเยี่ยมเพื่อสอบถามสาเหตุก่อนที่ร้านจะหายไปถาวร</div>
+              </span>
+            </div>
+            <div class="card-sub">Ordered last month, quiet this month</div>
+          </div>
+        </div>
+        <div id="inactiveList" class="store-list"></div>
+      </div>
+    </div>
+
+    <!-- Round 26 (direct request): Daily Sales + Target vs Actual vs Diff placed side by side as
+         one sub-group ("Sales Snapshot") instead of two separate stacked full-width sections —
+         both are "how sales are trending" views at different granularities (daily within-month,
+         monthly across months). -->
+    <div class="section-label" id="l3Snapshot">Sales Snapshot</div>
+    <div class="grid">
+      <div class="col-6 card card-fill">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Daily Sales
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดขายสุทธิรายวันของเดือนที่เลือก ประมาณการจากยอดขายรวมของเดือนนั้นจริง กระจายตามรูปแบบวันธรรมดา/วันหยุด (ผลรวมรายวันเท่ากับยอดขายสุทธิทั้งเดือนเป๊ะ ไม่ใช่ข้อมูลจำลองแยกอิสระ)</div>
+              </span>
+            </div>
+            <div class="card-sub" id="dailySalesSub">—</div>
+          </div>
+          <div class="icon-toolbar" data-chart="dailySales"></div>
+        </div>
+        <div class="card-topline" id="dailySalesTopline">—</div>
+        <div id="dailySalesChart" class="chart-mount-fill"></div>
+        <div id="dailySalesTable" class="table-scroll" style="display:none;"></div>
+      </div>
+      <div class="col-6 card card-fill bullet-compact">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Target vs Actual vs Diff
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">เป้าหมาย ยอดขายจริง และส่วนต่าง (Actual − Target) ของ 6 เดือนล่าสุดจนถึงเดือนที่เลือก ส่วนต่างสีเขียว = เกินเป้า สีแดง = ต่ำกว่าเป้า แท่งสีเขียว = เดือนนั้นทำได้ถึงเป้า แท่งสีแดง = ต่ำกว่าเป้า ตัวเลขบรรทัดล่างสุดคือ MoM/YoY ของยอดขายเดือนนั้น</div>
+              </span>
+            </div>
+            <div class="card-sub">Trailing 6 months ending at the selected month</div>
+          </div>
+          <div class="icon-toolbar" data-chart="spMonthly"></div>
+        </div>
+        <div id="spMonthlyChart" class="chart-mount-fill"></div>
+        <div id="spMonthlyTable" class="table-scroll" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- New Round 25 (direct request): "Top Customers This Month" replaced and this whole area
+         regrouped into its own section, separate from My Priority Actions above — per direct
+         feedback that Sales Person had no Customer/Product analysis view at all (My Priority
+         Actions is action-list-shaped, not analysis-shaped). Reuses the same components/logic as
+         Level 1/2's equivalents, scoped down to this rep's own stores. -->
+    <div class="section-label" id="l3Customers">My Customers &amp; Products</div>
+    <div class="grid row-gap">
+      <div class="col-12 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Top &amp; Bottom Performing Stores
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ร้านค้าที่ดูแลซึ่งทำยอดขายสุทธิสูงสุด/ต่ำสุดในเดือนที่เลือก — เวอร์ชันเดียวกับการ์ดชื่อเดียวกันใน Sales Breakdown แต่ scope เฉพาะร้านที่ดูแลเอง ใช้ดูทั้งลูกค้าหลักที่ควรรักษาความสัมพันธ์ไว้ และร้านที่อาจต้องการความสนใจเพิ่ม (แทนที่ "Top Customers This Month" เดิม — ตัดออกจาก My Priority Actions เพราะเป็นมุมมอง analysis ไม่ใช่ action list)</div>
+              </span>
+            </div>
+            <div class="card-sub" id="myStoresSub">Ranked by net sales, this month</div>
+          </div>
+          <div class="icon-toolbar" data-chart="myStores"></div>
+        </div>
+        <div id="myStoresChart" class="store-split"></div>
+        <div id="myStoresTable" class="table-scroll" style="display:none;"></div>
+      </div>
+    </div>
+    <div class="grid row-gap">
+      <!-- Round 31 direct feedback: swapped order — My Customer Group Mix now first, My Sales by
+           Category second (was reverse). -->
+      <div class="col-4 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">My Customer Group Mix
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">สัดส่วนยอดขายสุทธิของร้านที่ดูแลเอง ตามกลุ่มลูกค้า (Customer Group) เดือนที่เลือก — เวอร์ชันย่อของการ์ด Sales by Customer Group ใน Sales Overview scope เฉพาะร้านที่ดูแลเอง</div>
+              </span>
+            </div>
+            <div class="card-sub">This month, your stores only</div>
+          </div>
+        </div>
+        <div id="myCustomerGroupChart"></div>
+      </div>
+      <div class="col-8 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">My Sales by <span id="myCategoryLevelLabel">Category</span>
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดขายสุทธิของร้านที่ดูแลเอง แยกตามระดับสินค้าที่เลือกจาก dropdown เดือนที่เลือก — ประมาณการจากสัดส่วน Customer Group ของร้านที่ดูแล (ตารางเดียวกับที่ใช้ใน Customer Group × Category heatmap ของ Sales Breakdown) ผสมกับสัดส่วนจริงของแต่ละ node ภายใน Category ทั้งบริษัท เนื่องจากข้อมูลจริงไม่มี breakdown หมวดสินค้ารายร้าน ที่ระดับลึกกว่า Category จะแสดงเฉพาะ Top 10</div>
+              </span>
+            </div>
+            <div class="card-sub" id="myCategorySub">This month, your stores only</div>
+          </div>
+          <div class="icon-toolbar" data-chart="myCategory">
+            <select class="toolbar-select" id="myCategoryLevelSelect">
+              <option value="1" selected>Category</option>
+              <option value="2">Sub-Category</option>
+              <option value="3">Type</option>
+              <option value="4">Series</option>
+            </select>
+          </div>
+        </div>
+        <div id="myCategoryChart"></div>
+        <div id="myCategoryTable" class="table-scroll" style="display:none;"></div>
+      </div>
+    </div>
+
+    <!-- Round 32 direct feedback (Task 6): Credit Notes moved to the bottom of the page, below
+         My Customers & Products (was between Sales Snapshot and My Customers & Products). -->
+    <div class="section-label" id="l3CN">Credit Notes (CN)</div>
+    <div class="grid">
+      <div class="col-12 card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">CN Record
+              <span class="info-wrap"><button class="info-btn" type="button">i</button>
+                <div class="info-pop">ยอดใบลดหนี้ (CN) รายร้าน ย้อนหลัง 6 เดือน (ถึงเดือนที่เลือก) — Customer Type คือกลุ่มลูกค้าของร้าน (เดียวกับ Customer Group Mix ด้านบน) Return Rate คือ CN รวม 6 เดือน ÷ ยอดขายก่อนหักคืน 6 เดือน เรียงตามยอด CN รวมสูงสุดก่อน แสดง Top 10 ร้าน กด "See all" เพื่อดูร้านที่เหลือ</div>
+              </span>
+            </div>
+            <div class="card-sub" id="cnSummary">—</div>
+          </div>
+          <button class="icon-btn" id="cnDownloadBtn" type="button" title="Download data (CSV)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5v8"/><path d="M4.5 6.5L8 9.5l3.5-3"/><path d="M2 12v1.5A1 1 0 003 14.5h10a1 1 0 001-1V12"/></svg>
+          </button>
+        </div>
+        <div id="cnTable" class="table-scroll"></div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ============ /pageSalesPerson ============ -->
+
+</div>
+<!-- ============ /.shell ============ -->
+<div class="focus-backdrop" id="focusBackdrop"></div>
+
+<script src="tt-shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+(function(){
+  "use strict";
+  if (typeof renderNavMenu === "function") {
+    try { renderNavMenu("tt-person", "TT Overview · Sales Person"); } catch(e) { console.error("Nav menu render failed:", e); }
+  }
+
+  /* ---- Info popovers ---- */
+  document.querySelectorAll(".info-btn").forEach(btn => {
+    const pop = btn.nextElementSibling;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = !pop.classList.contains("open");
+      document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open"));
+      if (willOpen) pop.classList.add("open");
+    });
+  });
+
+  /* ---- Sales Person Analysis controls — Sales Person acts as an identity selector (simulates
+     "logged in as"), Month defaults to the latest closed month (This Month). Copied from the
+     original module_tt.html tail wiring, unchanged. ---- */
+  const spRepSel = document.getElementById("spRepSelect");
+  reps.forEach(r => {
+    const o = document.createElement("option"); o.value = r.repId; o.textContent = r.name;
+    spRepSel.appendChild(o);
+  });
+  spRepSel.value = spState.repId;
+  spRepSel.addEventListener("change", () => { spState.repId = spRepSel.value; renderSalesPersonPage(); });
+
+  const spYearSel = document.getElementById("spYearSelect");
+  const spMonthSel = document.getElementById("spMonthSelect");
+  const spYears = [...new Set(actualMonths.map(mo=>mo.year))].sort((a,b)=>b-a);
+  spYears.forEach(y => {
+    const o = document.createElement("option"); o.value = y; o.textContent = y;
+    spYearSel.appendChild(o);
+  });
+  function populateSpMonths(year){
+    spMonthSel.innerHTML = "";
+    actualMonths.filter(mo=>mo.year===year).forEach(mo => {
+      const o = document.createElement("option"); o.value = mo.idx;
+      o.textContent = mo.label + (mo.idx===actualMonths.length-1 ? " (This Month)" : "");
+      spMonthSel.appendChild(o);
+    });
+  }
+  const defaultMonth = actualMonths[spState.monthIdx];
+  spYearSel.value = defaultMonth.year;
+  populateSpMonths(defaultMonth.year);
+  spMonthSel.value = spState.monthIdx;
+  spYearSel.addEventListener("change", () => {
+    const year = parseInt(spYearSel.value,10);
+    populateSpMonths(year);
+    const monthsInYear = actualMonths.filter(mo=>mo.year===year);
+    const sameCalIdx = monthsInYear.find(mo=>mo.calIdx===actualMonths[spState.monthIdx].calIdx);
+    spState.monthIdx = (sameCalIdx || monthsInYear[monthsInYear.length-1]).idx;
+    spMonthSel.value = spState.monthIdx;
+    renderSalesPersonPage();
+  });
+  spMonthSel.addEventListener("change", () => { spState.monthIdx = parseInt(spMonthSel.value,10); renderSalesPersonPage(); });
+  document.getElementById("myCategoryLevelSelect").addEventListener("change", renderSalesPersonPage);
+  document.getElementById("cnDownloadBtn").addEventListener("click", () => downloadTableCsv(document.getElementById("cnTable"), "cn-record"));
+
+  /* ---- AR By Due Date: Within Due / Overdue toggle (missed in the first pass — this page's
+     own control, was wired in the original tail section). ---- */
+  document.querySelectorAll("#collectionsStatusToggle .ar-status-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (spState.arView === btn.dataset.status) return;
+      spState.arView = btn.dataset.status;
+      document.querySelectorAll("#collectionsStatusToggle .ar-status-btn").forEach(b =>
+        b.setAttribute("aria-pressed", String(b === btn)));
+      renderSalesPersonPage();
+    });
+  });
+
+  /* ---- Dark / Light mode toggle — adapted from the shared original: repaint via
+     renderSalesPersonPage() on this page instead of render() (which is Exec Summary/
+     Breakdown's orchestrator and doesn't touch this page's elements at all). ---- */
+  const MODE_ICONS = {
+    moon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>',
+    sun: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M2.5 8H1M15 8h-1.5M3.5 3.5l1 1M11.5 11.5l1 1M12.5 3.5l-1 1M4.5 11.5l-1 1"/></svg>',
+  };
+  let isDark = false;
+  const modeToggleBtn = document.getElementById("modeToggle");
+  modeToggleBtn.innerHTML = MODE_ICONS.moon;
+  modeToggleBtn.addEventListener("click", function(){
+    isDark = !isDark;
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    this.innerHTML = isDark ? MODE_ICONS.sun : MODE_ICONS.moon;
+    this.title = isDark ? "Switch to light mode" : "Switch to dark mode";
+    renderSalesPersonPage();
+    this.setAttribute("aria-label", this.title);
+  });
+
+  /* ---- User info is now plain, non-interactive text (2026-07-31) — no dropdown to wire up. ---- */
+  document.addEventListener("click", (e) => {
+    document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open"));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key==="Escape"){ document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open")); exitFocus(); }
+  });
+
+  renderSalesPersonPage();
+})();
+</script>
+</body>
+</html>

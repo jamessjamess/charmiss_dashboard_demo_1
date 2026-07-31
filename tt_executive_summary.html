@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — TT Overview · Executive Summary</title>
+<link rel="stylesheet" href="tt-shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="topbar">
+    <div>
+      <div class="brand-block">
+        <div class="brand-mark">C</div>
+        <div>
+          <div class="brand-name">Charmiss</div>
+        </div>
+        <div id="navMenuMount"></div>
+      </div>
+      <div class="breadcrumb" style="margin-top:14px;">
+        <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
+      </div>
+      <h1>TT Overview — Executive Summary</h1>
+      <p class="subhead">Executive snapshot of revenue vs. target and overall business health across the Traditional Trade channel.</p>
+    </div>
+    <div class="topbar-right">
+      <div class="user-info-row">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="user-avatar-circle">NV</div>
+        <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
+      </div>
+      <div class="asof">Data as of Jun 30, 2026 (mock data)</div>
+    </div>
+  </div>
+
+  <div class="page-switcher" role="tablist">
+    <a class="page-tab active tab-link" href="tt_executive_summary.html" role="tab" aria-selected="true">Executive Summary</a>
+    <a class="page-tab tab-link" href="tt_breakdown.html" role="tab">Breakdown</a>
+    <a class="page-tab tab-link" href="tt_sales_person.html" role="tab">Sales Person</a>
+  </div>
+
+  <!-- Executive-level page: Period only, no Region/Category/Sales Person filters (company-wide
+       totals always) — matching the same rule used on Sales Overview and MT Overview. -->
+  <div class="filter-row" id="filterRow" style="position:static;">
+    <div class="filter-group">
+      <span class="filter-label">Period</span>
+      <button class="date-trigger" id="dateTrigger" type="button" aria-haspopup="true" aria-expanded="false">
+        <span id="dateTriggerLabel">Year to Date</span><span class="caret">▾</span>
+      </button>
+      <div class="date-panel" id="datePanel" role="menu">
+        <div id="datePresetList"></div>
+        <div class="date-custom">
+          <div class="date-custom-label">Custom range</div>
+          <div class="date-custom-row">
+            <select id="customFrom"></select>
+            <span style="color:var(--ink-3);font-size:12px;">to</span>
+            <select id="customTo"></select>
+          </div>
+          <button class="date-apply" id="dateApply" type="button">Apply</button>
+        </div>
+      </div>
+    </div>
+    <div class="filter-spacer"></div>
+    <div class="filter-note">Company-wide, all regions/categories/reps</div>
+  </div>
+
+  <div id="pageAnalysis" class="page-view">
+  <!-- ============ HIDDEN STUBS — render() also writes to these ids as part of the other page's cards (Executive Summary and Breakdown are computed together by design, see tt-shared.js's header comment). Kept empty and display:none; never shown, just here so render() has a valid target and does not throw. ============ -->
+  <div class="card" style="display:none;" aria-hidden="true">
+    <div id="activeStoresChart"></div>
+    <div id="activeStoresTable"></div>
+    <div id="activeStoresTopline"></div>
+    <div id="arAgingTableMount"></div>
+    <div id="arAgingTopline"></div>
+    <div id="bulletChart"></div>
+    <div id="bulletSub"></div>
+    <div id="bulletTable"></div>
+    <div id="bulletTopline"></div>
+    <div id="categoryGrowthChart"></div>
+    <span id="categoryGrowthContext"></span>
+    <span id="categoryGrowthLevelLabel"></span>
+    <span id="categoryGrowthPeriodNote"></span>
+    <div id="categoryGrowthTable"></div>
+    <div id="customerCategoryHeatmapChart"></div>
+    <span id="customerCategoryHeatmapLevelLabel"></span>
+    <select id="customerCategoryHeatmapLevelSelect"><option value="1">1</option></select>
+    <div id="customerCategoryHeatmapSub"></div>
+    <div id="customerCategoryHeatmapTable"></div>
+    <div id="elevatedRiskChart"></div>
+    <div id="elevatedRiskTable"></div>
+    <div id="growthAxisInfoPop"></div>
+    <span id="growthAxisLabel"></span>
+    <div id="l2Quality"></div>
+    <div id="productRankingChart"></div>
+    <span id="productRankingLevelLabel"></span>
+    <div id="productRankingSub"></div>
+    <div id="productRankingTable"></div>
+    <div id="provinceMapChart"></div>
+    <div id="provinceMapTable"></div>
+    <div id="regionChart"></div>
+    <select id="regionLevelSelect"><option value="1">1</option></select>
+    <div id="regionTable"></div>
+    <div id="repBulletChart"></div>
+    <div id="repBulletSub"></div>
+    <div id="repBulletTable"></div>
+    <div id="repCoverageChart"></div>
+    <div id="repCoverageTable"></div>
+    <div id="repCoverageTopline"></div>
+    <div id="returnRateChart"></div>
+    <div id="returnRateTable"></div>
+    <div id="returnRateTopline"></div>
+    <div id="storeFlowChart"></div>
+    <div id="storeFlowPeriodNote"></div>
+    <div id="storeFlowTable"></div>
+    <div id="storeFlowTopline"></div>
+    <div id="visitTrendChart"></div>
+    <div id="visitTrendTable"></div>
+    <select id="categoryLevelSelect"><option value="1">1</option></select>
+    <div id="categoryChart"></div>
+    <div id="categoryTable"></div>
+    <div id="storesSub"></div>
+    <div id="storesChart"></div>
+    <div id="storesTable"></div>
+  </div>
+
+  <!-- ============ Risk Alert Banner (Round 27, Task 5.2) — auto-generated from thresholds
+       already used elsewhere on this page (RETURN_RATE_CEILING_PCT, the existing "30+ days" AR
+       bucket, the existing High Return Rate Stores flag) — not a new parallel mock signal.
+       Entirely hidden when nothing crosses a threshold; built in JS since chips are conditional.
+       Each chip jumps to Sales Breakdown's matching detail card. ============ -->
+  <div id="riskAlertBanner" class="risk-banner" style="display:none;"></div>
+
+  <!-- ============ I. EXECUTIVE SUMMARY — 6 tiles meant to stand alone: read this
+       row and understand where the business stands without opening anything else.
+       AR% added 2026-07-24 (merged in alongside Module 3's rep data). Store Retention added
+       Round 27 (Task 5.1) — reuses the exact retentionPct calc already computed in
+       renderStoreFlowChart for Customer Coverage's New vs Inactive Stores card, so this tile can
+       never silently disagree with that card's own retention figure. grid-exec6 replaces the
+       shared 12-col grid for this row only since a same-width row of 6 reads better as an
+       explicit override than as 6x col-2 (see grid-exec6 CSS comment). ============ -->
+  <div class="section-label">Executive Summary</div>
+  <div class="grid grid-exec6">
+    <div class="card">
+      <div class="stat-label">Total Net Sales
+        <span class="info-wrap"><button class="info-btn" type="button">i</button>
+          <div class="info-pop">ยอดขายสุทธิรวม (หลังหักคืนสินค้า/CN) ในช่วงเวลาที่เลือก (Period filter) ตามขอบเขต Region และ Category ที่กรองไว้ด้านบน ตัวเลข MoM/YoY ด้านล่างมาจากอนุกรมเดียวกันนี้ ตัวเลขกำกับปลาย sparkline คือยอดของเดือนล่าสุดในช่วงที่เลือก</div>
+        </span>
+      </div>
+      <div class="stat-value" id="kpiRevenue">—</div>
+      <div class="kpi-pair-deltas">
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">MoM</span>
+          <span class="kpi-pair-value" id="kpiMoM">—</span>
+          <span class="kpi-pair-compare" id="kpiMoMCompare"></span>
+        </div>
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">YoY</span>
+          <span class="kpi-pair-value" id="kpiYoY">—</span>
+          <span class="kpi-pair-compare" id="kpiYoYCompare"></span>
+        </div>
+      </div>
+      <div class="stat-spark" id="kpiRevenueSpark"></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Target Attainment
+        <span class="info-wrap"><button class="info-btn" type="button">i</button>
+          <div class="info-pop">ยอดขายจริงเทียบเป้าหมาย (Target) รวมตลอดช่วงเวลาที่เลือกไว้ด้านบน (Period filter) — ตัวเลขนี้เปลี่ยนตามช่วงเวลาที่เลือกเสมอ เหมือนการ์ด Total Net Sales MoM/YoY ด้านล่างคือส่วนต่าง attainment เป็นจุดเปอร์เซ็นต์ (pp) ของเดือนล่าสุดในช่วงที่เลือก เทียบเดือนก่อนและปีก่อน กราฟด้านล่างคือแนวโน้ม % ที่ทำได้ต่อเป้าของแต่ละเดือนในช่วงที่เลือก ตัวเลขกำกับท้ายเส้นคือค่าของเดือนล่าสุดในช่วงนั้น — เป้าหมายเป็นตัวเลขระดับบริษัทเสมอ ไม่ได้ปรับตามตัวกรอง Region/Category</div>
+        </span>
+      </div>
+      <div class="stat-value" id="kpiTarget">—</div>
+      <div class="kpi-pair-deltas">
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">MoM</span>
+          <span class="kpi-pair-value" id="kpiTargetMoM">—</span>
+          <span class="kpi-pair-compare" id="kpiTargetMoMCompare"></span>
+        </div>
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">YoY</span>
+          <span class="kpi-pair-value" id="kpiTargetYoY">—</span>
+          <span class="kpi-pair-compare" id="kpiTargetYoYCompare"></span>
+        </div>
+      </div>
+      <div class="stat-spark" id="kpiTargetSpark"></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">AR%
+        <span class="info-wrap"><button class="info-btn" type="button">i</button>
+          <div class="info-pop">AR% = ยอดรับชำระหนี้ (รวมทั้งจ่ายสดและ Credit) ÷ มูลค่า Invoice ทั้งหมด ของช่วงเวลาที่เลือก (Period filter) เดียวกัน (เช่น YTD, This Month, This Quarter) — เป็นอัตราการเก็บเงินได้ (Collection Rate) ปกติควรอยู่ราว 80–100% ตัวเลขนี้เปลี่ยนตามช่วงเวลาที่เลือกเสมอ เหมือนการ์ด Total Net Sales scope ตาม Region และ Sales Person ที่กรองไว้ได้ (ไม่ scope ตาม Category เพราะร้านค้าไม่มีมิติ Category แยกย่อย) ยิ่งสูงยิ่งดี (เก็บเงินได้ครบตามรอบ) ยิ่งต่ำยิ่งควรระวัง (สะท้อนปัญหาลูกหนี้ค้างชำระ ดูรายละเอียดที่ AR Aging ใน Sales Breakdown) MoM/YoY เป็นจุดเปอร์เซ็นต์ (pp) — เพิ่มขึ้น = ดี</div>
+        </span>
+      </div>
+      <div class="stat-value" id="kpiArPct">—</div>
+      <div class="kpi-pair-deltas">
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">MoM</span>
+          <span class="kpi-pair-value" id="kpiArMoM">—</span>
+          <span class="kpi-pair-compare" id="kpiArMoMCompare"></span>
+        </div>
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">YoY</span>
+          <span class="kpi-pair-value" id="kpiArYoY">—</span>
+          <span class="kpi-pair-compare" id="kpiArYoYCompare"></span>
+        </div>
+      </div>
+      <div class="stat-spark" id="kpiArSpark"></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Return Rate (CN)
+        <span class="info-wrap"><button class="info-btn" type="button">i</button>
+          <div class="info-pop">อัตราคืนสินค้า = Total CN (มูลค่าใบลดหนี้ทั้งหมด) ÷ Total Invoice (ยอดขายก่อนหักคืนทั้งหมด) ของเดือนเดียวกัน ไม่มีการหน่วงเดือน (no lag) ในช่วงเวลาที่เลือก (Period filter) — Amount คือมูลค่าคืนเป็นบาทของช่วงที่เลือก เส้นประบนกราฟเล็กคือเกณฑ์ 2% ของบริษัท (เส้นเดียวกับกราฟ Return Rate ใน Portfolio Quality) ดูแนวโน้มรายเดือนเต็มรูปแบบได้ที่ Portfolio Quality</div>
+        </span>
+      </div>
+      <div class="stat-value" id="kpiReturnRateQuick">—</div>
+      <div class="kpi-compare-text" id="kpiReturnAmountNote"></div>
+      <div class="kpi-pair-deltas">
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">MoM</span>
+          <span class="kpi-pair-value" id="kpiReturnMoM">—</span>
+          <span class="kpi-pair-compare" id="kpiReturnMoMCompare"></span>
+        </div>
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">YoY</span>
+          <span class="kpi-pair-value" id="kpiReturnYoY">—</span>
+          <span class="kpi-pair-compare" id="kpiReturnYoYCompare"></span>
+        </div>
+      </div>
+      <div class="stat-spark" id="kpiReturnRateQuickSpark"></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Active Stores
+        <span class="info-wrap"><button class="info-btn" type="button">i</button>
+          <div class="info-pop">จำนวนร้านค้าที่ Active ณ เดือนล่าสุดในช่วงเวลาที่เลือก (Period filter) — เป็นค่า ณ จุดเวลาหนึ่ง (snapshot ของเดือนล่าสุด) ไม่ใช่ผลรวมสะสมของทั้งช่วง เพราะงั้นตัวเลขนี้จะไม่ขยับตามความยาวของ Period ที่เลือกเหมือน tile อื่น (เช่น YTD กับ This Month ที่อยู่เดือนเดียวกันจะได้ค่าเท่ากัน) — นับสะสมทั้งช่วงจะทำให้ตัวเลขดูดีเกินจริงเมื่อเลือกช่วงยาว (ร้านที่ Active แค่เดือนเดียวจะถูกนับเท่าร้านที่ Active ทุกเดือน) MoM/YoY เทียบจำนวนร้าน Active เดือนต่อเดือนตามปกติ ดูรายละเอียดเต็มได้ที่ Customer Coverage</div>
+        </span>
+      </div>
+      <div class="stat-value" id="kpiActiveStores">—</div>
+      <div class="kpi-pair-deltas">
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">MoM</span>
+          <span class="kpi-pair-value" id="kpiActiveStoresMoM">—</span>
+          <span class="kpi-pair-compare" id="kpiActiveStoresMoMCompare"></span>
+        </div>
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">YoY</span>
+          <span class="kpi-pair-value" id="kpiActiveStoresYoY">—</span>
+          <span class="kpi-pair-compare" id="kpiActiveStoresYoYCompare"></span>
+        </div>
+      </div>
+      <div class="stat-spark" id="kpiActiveStoresSpark"></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Store Retention
+        <span class="info-wrap"><button class="info-btn" type="button">i</button>
+          <div class="info-pop">สัดส่วนร้านค้าที่ Active ในเดือนก่อนหน้า แล้วยังสั่งซื้อต่อในเดือนล่าสุด (100% − Inactive Rate) — ตัวเลขเดียวกับที่โชว์ในการ์ด New vs Inactive Stores (Customer Coverage) เป็นค่า snapshot ของเดือนล่าสุดเสมอ (เหมือนการ์ด Active Stores ด้านซ้าย) ไม่เปลี่ยนตามความยาวของ Period ที่เลือก บริษัทรวมทั้งหมดเสมอ ไม่ scope ตาม Region/Category/Sales Person เพราะข้อมูลร้านใหม่ไม่มี breakdown ระดับนั้น</div>
+        </span>
+      </div>
+      <div class="stat-value" id="kpiRetention">—</div>
+      <div class="kpi-pair-deltas">
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">MoM</span>
+          <span class="kpi-pair-value" id="kpiRetentionMoM">—</span>
+          <span class="kpi-pair-compare" id="kpiRetentionMoMCompare"></span>
+        </div>
+        <div class="kpi-pair-item">
+          <span class="kpi-pair-label">YoY</span>
+          <span class="kpi-pair-value" id="kpiRetentionYoY">—</span>
+          <span class="kpi-pair-compare" id="kpiRetentionYoYCompare"></span>
+        </div>
+      </div>
+      <div class="stat-spark" id="kpiRetentionSpark"></div>
+    </div>
+  </div>
+
+  <!-- ============ II. BUSINESS TREND & MIX — Level 1 charts (2026-07-26, revised again in Round
+       25 from detailed screenshot feedback). Row 1: Revenue Trend (col-6, height 170→204, +20%)
+       paired with Monthly YoY Growth % (Round 27 — replaced the Round 25 Growth Gauge dial with a
+       per-month trend line; see decision-log Round 27 for why. Originally the Growth Gauge
+       replaced the Customer Group donut here — donut moved down to pair with Sales by Category
+       instead). Row 2: Sales by Customer Group (col-6) + Sales by
+       Category (col-6, was col-12 — now half-width, which also naturally halves its rendered
+       height since it's a viewBox-scaled SVG, satisfying the "balance the heights" ask without
+       needing a separate row-height override). Row 3: Sales Ranking, Top 5 only (moved from
+       Level 2's Team Performance — see decision-log Round 25 for why the full table stayed on
+       L2 instead of being duplicated). Sales by Category still has the SAME full 4-level
+       drill-down as its Level 2 counterpart (own ids/state, not shared) — L1's earlier
+       "simplified, no drill-down" rule was relaxed specifically for this one chart per direct
+       request from Round 24. Level 1 always computes company-wide totals for everything in this
+       section regardless of Region/Category/Sales Person state (those filters are hidden on this
+       page's filter row) — see the state-override wrapper around this block's render() call.
+       ============ -->
+  <div class="grid row-gap">
+    <div class="col-6 card trend-compact">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Revenue Trend
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">เทียบยอดขายสุทธิรายเดือนของปีนี้กับช่วงเดียวกันของปีก่อน เส้นของปีนี้จะหยุดที่เดือนล่าสุดที่ปิดบัญชีแล้ว ส่วนปีก่อนแสดงเต็มปีเพื่อใช้อ้างอิง เส้นประ "Target" คือเป้าหมายรายเดือน (มีถึงแค่ H1 2026) เป็นเป้าระดับบริษัทเสมอ — รายละเอียดรายเดือนเทียบเป้าดูได้ที่การ์ด Target vs Actual ใน Sales Breakdown</div>
+            </span>
+          </div>
+          <div class="card-sub">This Year vs Last Year, by month</div>
+        </div>
+        <div class="icon-toolbar" data-chart="trend"></div>
+      </div>
+      <div class="card-topline" id="trendTopline">—</div>
+      <div id="trendChart"></div>
+      <div id="trendTable" class="table-scroll" style="display:none;"></div>
+    </div>
+    <div class="col-6 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Monthly YoY Growth %
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">อัตราการเติบโตของยอดขายสุทธิรายเดือน เทียบกับเดือนเดียวกันของปีก่อน (บริษัทรวมทั้งหมดเสมอ) เส้นประคือ 0% ครอบคลุมเฉพาะเดือนที่มีข้อมูลปีนี้ปิดบัญชีแล้ว — ช่วงเดือนเดียวกับเส้น "This Year" ใน Revenue Trend ด้านซ้าย</div>
+            </span>
+          </div>
+          <div class="card-sub">Same month, year over year</div>
+        </div>
+        <div class="icon-toolbar" data-chart="growthYoy"></div>
+      </div>
+      <div class="card-topline" id="growthYoyTopline">—</div>
+      <div id="growthYoyChart"></div>
+      <div id="growthYoyTable" class="table-scroll" style="display:none;"></div>
+    </div>
+  </div>
+  <div class="grid row-gap">
+    <div class="col-6 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Sales by Customer Group
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">สัดส่วนยอดขายสุทธิของทั้งบริษัทตามกลุ่มลูกค้า (Customer Group) ในช่วงเวลาที่เลือก — ภาพรวมบริษัททั้งหมดเสมอ ไม่ scope ตาม Region/Category/Sales Person</div>
+            </span>
+          </div>
+          <div class="card-sub">This period, company-wide</div>
+        </div>
+        <div class="icon-toolbar" data-chart="customerGroup"></div>
+      </div>
+      <div id="customerGroupChart"></div>
+      <div id="customerGroupTable" class="table-scroll" style="display:none;"></div>
+    </div>
+    <div class="col-6 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Sales by Category
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">จัดอันดับสินค้าที่ระดับที่เลือก (Category / Sub-Category / Type / Series) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown — ภาพรวมบริษัททั้งหมดเสมอ (Level 1 ไม่ scope ตาม Region/Sales Person)</div>
+            </span>
+          </div>
+          <div class="card-sub">Category → Sub-Category → Type → Series · company-wide</div>
+        </div>
+        <div class="icon-toolbar" data-chart="overviewCategory">
+          <select class="toolbar-select" id="overviewCategoryLevelSelect">
+            <option value="1" selected>Category</option>
+            <option value="2">Sub-Category</option>
+            <option value="3">Type</option>
+            <option value="4">Series</option>
+          </select>
+        </div>
+      </div>
+      <div id="overviewCategoryChart"></div>
+      <div id="overviewCategoryTable" class="table-scroll" style="display:none;"></div>
+    </div>
+  </div>
+  <div class="grid row-gap">
+    <div class="col-12 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Sales Ranking
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">Top 5 Sales Person เรียงตามยอดขายสุทธิในช่วงเวลาที่เลือก — ดูฉบับเต็มทุกคนพร้อม breakdown ทุกมิติได้ที่ Sales Breakdown → Team Performance</div>
+            </span>
+          </div>
+          <div class="card-sub">Top 5 by Net Sales, company-wide</div>
+        </div>
+        <div class="icon-toolbar">
+          <button class="icon-btn" id="overviewRankingDownloadBtn" type="button" title="Download data (CSV)">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5v8"/><path d="M4.5 6.5L8 9.5l3.5-3"/><path d="M2 12v1.5A1 1 0 003 14.5h10a1 1 0 001-1V12"/></svg>
+          </button>
+          <button class="icon-btn" id="overviewRankingFocusBtn" type="button" title="Expand" aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 5V3a1.5 1.5 0 011.5-1.5h2"/><path d="M14.5 5V3A1.5 1.5 0 0013 1.5h-2"/><path d="M1.5 11v2A1.5 1.5 0 003 14.5h2"/><path d="M14.5 11v2a1.5 1.5 0 01-1.5 1.5h-2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="overviewRankingTable" class="table-scroll"></div>
+    </div>
+  </div>
+
+  </div>
+  <!-- ============ /pageOverview (Level 1 — container id kept as "pageAnalysis" for JS continuity) ============ -->
+
+</div>
+<!-- ============ /.shell ============ -->
+<div class="focus-backdrop" id="focusBackdrop"></div>
+
+<script src="tt-shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+(function(){
+  "use strict";
+  if (typeof renderNavMenu === "function") {
+    try { renderNavMenu("tt-exec", "TT Overview · Executive Summary"); } catch(e) { console.error("Nav menu render failed:", e); }
+  }
+
+  /* ---- Info popovers ---- */
+  document.querySelectorAll(".info-btn").forEach(btn => {
+    const pop = btn.nextElementSibling;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = !pop.classList.contains("open");
+      document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open"));
+      if (willOpen) pop.classList.add("open");
+    });
+  });
+
+  /* ---- Date filter popover (Period is this page's only filter) ---- */
+  const dateTrigger = document.getElementById("dateTrigger");
+  const datePanel = document.getElementById("datePanel");
+  const datePresetList = document.getElementById("datePresetList");
+  const customFrom = document.getElementById("customFrom");
+  const customTo = document.getElementById("customTo");
+
+  PRESET_ORDER.forEach(key => {
+    const row = document.createElement("button");
+    row.type = "button"; row.className = "date-preset"; row.setAttribute("role","menuitemradio");
+    row.setAttribute("aria-selected", state.dateRange.mode==="preset" && state.dateRange.key===key ? "true":"false");
+    row.innerHTML = `<span class="check">✓</span><span>${PRESETS[key].label}</span>`;
+    row.addEventListener("click", () => {
+      state.dateRange = { mode:"preset", key };
+      datePresetList.querySelectorAll(".date-preset").forEach(r => r.setAttribute("aria-selected", r===row ? "true":"false"));
+      closeDatePanel();
+      render();
+    });
+    datePresetList.appendChild(row);
+  });
+  actualMonths.forEach(m => {
+    const o1 = document.createElement("option"); o1.value=m.idx; o1.textContent=m.key; customFrom.appendChild(o1);
+    const o2 = document.createElement("option"); o2.value=m.idx; o2.textContent=m.key; customTo.appendChild(o2);
+  });
+  customFrom.value = 6; customTo.value = 17;
+  function syncCustomRangeFields(){
+    const w = windowMonths();
+    if (w.length){ customFrom.value = w[0].idx; customTo.value = w[w.length-1].idx; }
+  }
+  function openDatePanel(){ syncCustomRangeFields(); datePanel.classList.add("open"); dateTrigger.setAttribute("aria-expanded","true"); }
+  function closeDatePanel(){ datePanel.classList.remove("open"); dateTrigger.setAttribute("aria-expanded","false"); }
+  dateTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    datePanel.classList.contains("open") ? closeDatePanel() : openDatePanel();
+  });
+  document.getElementById("dateApply").addEventListener("click", () => {
+    state.dateRange = { mode:"custom", from:parseInt(customFrom.value,10), to:parseInt(customTo.value,10) };
+    datePresetList.querySelectorAll(".date-preset").forEach(r => r.setAttribute("aria-selected","false"));
+    closeDatePanel();
+    render();
+  });
+
+  /* ---- This page's own standalone toolbar buttons (not covered by the generic
+     .icon-toolbar[data-chart] auto-wiring loop already run by tt-shared.js) ---- */
+  document.getElementById("overviewRankingDownloadBtn").addEventListener("click", () => downloadTableCsv(document.getElementById("overviewRankingTable"), "ranking"));
+  document.getElementById("overviewRankingFocusBtn").addEventListener("click", (e) => toggleFocus(e.currentTarget.closest(".card"), e.currentTarget));
+  document.getElementById("overviewCategoryLevelSelect").addEventListener("change", render);
+
+  /* ---- Dark / Light mode toggle ---- */
+  const MODE_ICONS = {
+    moon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>',
+    sun: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M2.5 8H1M15 8h-1.5M3.5 3.5l1 1M11.5 11.5l1 1M12.5 3.5l-1 1M4.5 11.5l-1 1"/></svg>',
+  };
+  let isDark = false;
+  const modeToggleBtn = document.getElementById("modeToggle");
+  modeToggleBtn.innerHTML = MODE_ICONS.moon;
+  modeToggleBtn.addEventListener("click", function(){
+    isDark = !isDark;
+    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+    this.innerHTML = isDark ? MODE_ICONS.sun : MODE_ICONS.moon;
+    this.title = isDark ? "Switch to light mode" : "Switch to dark mode";
+    render();
+    this.setAttribute("aria-label", this.title);
+  });
+
+  /* ---- User info is now plain, non-interactive text (2026-07-31) — no dropdown to wire up. ---- */
+  document.addEventListener("click", (e) => {
+    if (!datePanel.contains(e.target) && e.target!==dateTrigger && !dateTrigger.contains(e.target)) closeDatePanel();
+    document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open"));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key==="Escape"){ closeDatePanel(); document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open")); exitFocus(); }
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

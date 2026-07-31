@@ -245,4 +245,3 @@ button,select{font-family:inherit;}
 .level-select-wrap{display:flex;align-items:center;gap:8px;}
 .level-select-note{font-size:10.5px;color:var(--ink-3);max-width:280px;line-height:1.4;}
 @media (max-width:768px){ .level-select-note{display:none;} }
-

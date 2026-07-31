@@ -343,7 +343,7 @@ channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.a
 const groupKeys = ['MT','TT','Ecom'];
 const groupColorVar = {MT:'#8E1E4D', TT:'#3B7A7A', Ecom:'#A87C3F'};
 const groupNames = {MT:'Modern Trade (MT)', TT:'Traditional Trade (TT)', Ecom:'E-commerce'};
-const groupHref = {MT:'module_mt_executive_summary.html', TT:'module_tt.html#overview', Ecom:null};
+const groupHref = {MT:'module_mt_executive_summary.html', TT:'tt_executive_summary.html', Ecom:'module_ecom_executive_summary.html'};
 function groupSeries(groupKey, field){
   const arr = new Array(MONTHS_TOTAL).fill(0);
   channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });

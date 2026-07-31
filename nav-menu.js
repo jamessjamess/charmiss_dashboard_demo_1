@@ -27,17 +27,17 @@ const MODULE_MAP = [
     group: 'TT Overview',
     ready: true,
     items: [
-      { key:'tt-exec',      label:'Executive Summary', href:'module_tt.html#overview' },
-      { key:'tt-breakdown', label:'Breakdown',          href:'module_tt.html#breakdown' },
-      { key:'tt-person',    label:'Sales Person',       href:'module_tt.html#person' },
+      { key:'tt-exec',      label:'Executive Summary', href:'tt_executive_summary.html' },
+      { key:'tt-breakdown', label:'Breakdown',          href:'tt_breakdown.html' },
+      { key:'tt-person',    label:'Sales Person',       href:'tt_sales_person.html' },
     ],
   },
   {
     group: 'ECOM Overview',
-    ready: false,
+    ready: true,
     items: [
-      { key:'ecom-exec',      label:'Executive Summary', href:'module_ecom.html#executive' },
-      { key:'ecom-breakdown', label:'Breakdown',          href:'module_ecom.html#breakdown' },
+      { key:'ecom-exec',      label:'Executive Summary', href:'module_ecom_executive_summary.html' },
+      { key:'ecom-breakdown', label:'Breakdown',          href:'module_ecom_breakdown.html' },
     ],
   },
 ];
@@ -85,10 +85,11 @@ function renderNavMenu(currentKey, currentLabel){
 }
 
 /**
- * For module files that hold multiple tabs in one page (e.g. module_tt.html:
- * Executive Summary / Breakdown / Sales Person). Reads location.hash on load
- * so a Navigation Menu link from another file can deep-link straight to the
- * right tab. `tabConfig` is a map of hashKey -> switch function.
+ * For module files that hold multiple tabs in one page via hash routing (none currently use
+ * this — TT Overview was split into separate files on 2026-07-31, so this is unused there now,
+ * kept only for any future module built the same way TT originally was). Reads location.hash
+ * on load so a Navigation Menu link from another file can deep-link straight to the right tab.
+ * `tabConfig` is a map of hashKey -> switch function.
  */
 function initHashTabs(tabConfig, defaultKey){
   const hash = (window.location.hash || '').replace('#','');
