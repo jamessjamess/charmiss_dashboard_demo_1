@@ -202,49 +202,30 @@
     </div>
   </div>
 
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Sales by Key Account</span>
-          <button class="info-icon" data-info-title="Sales by Key Account" data-info-text="สัดส่วน % ยอดขาย MT แยกตามกลุ่มคู่ค้า (Key Account) ในช่วงเวลาที่เลือก — ชื่อกลุ่มเป็น Format ค้าปลีก (Placeholder mock data)">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="accountTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="accountDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="accountExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Sales by Key Account</span>
+        <button class="info-icon" data-info-title="Sales by Key Account" data-info-text="สัดส่วน % ยอดขาย MT แยกตามกลุ่มคู่ค้า (Key Account) ในช่วงเวลาที่เลือก — ชื่อกลุ่มเป็น Format ค้าปลีก (Placeholder mock data)">i</button>
       </div>
-      <div class="chart-subtitle">This period, MT channel</div>
-      <div class="donut-layout" id="accountLayout">
-        <div class="donut-canvas-wrap">
-          <div id="accountChart" style="width:100%;height:100%;"></div>
-          <div class="donut-center">
-            <div class="donut-center-value" id="accountCenterValue">–</div>
-            <div class="donut-center-label">Total</div>
-          </div>
-        </div>
-        <div class="legend-list" id="accountLegend"></div>
+      <div class="toolbar">
+        <button class="tool-btn" id="accountTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="accountDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="accountExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
-      <div class="data-table-wrap" id="accountTableWrap"></div>
     </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Sales by Category</span>
-          <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ยอดขาย MT แยกตามหมวดหมู่สินค้า ในช่วงเวลาที่เลือก">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="catTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="catDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="catExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+    <div class="chart-subtitle">This period, MT channel</div>
+    <div class="donut-layout" id="accountLayout">
+      <div class="donut-canvas-wrap">
+        <div id="accountChart" style="width:100%;height:100%;"></div>
+        <div class="donut-center">
+          <div class="donut-center-value" id="accountCenterValue">–</div>
+          <div class="donut-center-label">Total</div>
         </div>
       </div>
-      <div class="chart-subtitle">Category · MT channel</div>
-      <div class="cat-bars" id="catBars"></div>
-      <div class="data-table-wrap" id="catTableWrap"></div>
+      <div class="legend-list" id="accountLegend"></div>
     </div>
+    <div class="data-table-wrap" id="accountTableWrap"></div>
   </div>
 
   <div class="card table-card">
@@ -554,15 +535,6 @@ function renderAll(periodKey, custom){
   ).join('');
   latestData.accounts = keyAccounts.map(a=>({name:a.name, value: totalActual*a.pct/100, pct:a.pct}));
 
-  /* === Chart: Sales by Category (MT) === */
-  const maxCatShare = Math.max(...mtCategoryShares.map(c=>c.pct));
-  document.getElementById('catBars').innerHTML = mtCategoryShares.map(c=>{
-    const val = totalActual * c.pct/100;
-    const widthPct = (c.pct/maxCatShare*100).toFixed(1);
-    return '<div class="cat-row"><span class="cat-label">'+c.name+'</span>'
-      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct+'%</span></div></div></div>';
-  }).join('');
-
   /* === Table: Ranking — Top Key Accounts === */
   const rankRows = keyAccounts.map((a,i)=>({ name:a.name, net: totalActual*a.pct/100, attain: keyAccountStats[i].attain, ret: keyAccountStats[i].ret, ar: keyAccountStats[i].ar }))
     .sort((x,y)=>y.net-x.net);
@@ -614,23 +586,6 @@ document.getElementById('accountTableBtn').addEventListener('click', ()=>{
   d.forEach(a=>{ html += '<tr><td>'+a.name+'</td><td>'+fmtTHB(a.value)+'</td><td>'+a.pct.toFixed(1)+'%</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); layout.style.display='none';
-});
-
-document.getElementById('catDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Category','Share %','Value (THB)']];
-  mtCategoryShares.forEach(c=> rows.push([c.name, c.pct, Math.round(latestData.totalActual * c.pct/100)]));
-  downloadCSV(rows, 'mt_sales_by_category.csv');
-});
-document.getElementById('catExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('catTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('catTableWrap');
-  const bars = document.getElementById('catBars');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
-  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
-  mtCategoryShares.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtTHB(latestData.totalActual*c.pct/100)+'</td><td>'+c.pct+'%</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
 });
 
 document.getElementById('rankDownloadBtn').addEventListener('click', ()=>{

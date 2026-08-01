@@ -357,6 +357,22 @@ for(let i=0;i<MONTHS_TOTAL;i++){
 }
 const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee, TikTok Shop, in this order
 
+/* ecomAOVSeries / ecomConvSeries / ecomShopListingsSeries — byte-for-byte from
+   module_ecom_executive_summary.html, generated in the same order and at the
+   same position in the rand() sequence (right after ecomChannels, before any
+   Breakdown-only draws below) so ecomShopListingsSeries stays numerically
+   identical to the Executive Summary's. AOV/Conv aren't otherwise used on
+   this page but are kept here anyway so the sequence position matches.
+   Fix logged 2026-08-01, see Charmiss_Dashboard_Review_2026-07-31.md Task 1.4:
+   SHOP_COUNT used to be a hardcoded 24, independent of this series (18 at
+   TODAY), causing "Active Shop Listings" to disagree between the two pages. */
+const ecomAOVSeries = [];
+{ let level = 480; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.42)*14; level = Math.max(360, Math.min(640, level)); ecomAOVSeries.push(level); } }
+const ecomConvSeries = [];
+{ let level = 2.6; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.42)*0.18; level = Math.max(1.8, Math.min(4.6, level)); ecomConvSeries.push(level); } }
+const ecomShopListingsSeries = [];
+{ let level = 14; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.28; ecomShopListingsSeries.push(Math.round(level)); } }
+
 /* -------------------- Part 2: Breakdown-only mock data (new) -------------------- */
 
 /* Platform group weights derived from each platform's base level (not
@@ -365,7 +381,7 @@ const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee,
 const basesSum = ecomChannels.reduce((a,c)=>a+c.base,0);
 const PLATFORM_GROUPS = ecomChannels.map(c=>({ name:c.label, key:c.key, pct: c.base/basesSum*100 }));
 
-const SHOP_COUNT = 24;
+const SHOP_COUNT = ecomShopListingsSeries[TODAY];
 const shops = [];
 (function(){
   let assigned = 0;

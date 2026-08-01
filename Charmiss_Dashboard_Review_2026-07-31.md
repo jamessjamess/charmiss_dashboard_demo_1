@@ -12,27 +12,28 @@
 
 ## TL;DR — 6 เรื่องที่ควรพิจารณาก่อนสุด
 
-1. **[Cosmetic/Demo-polish — ไม่ใช่บั๊กข้อมูลจริง เพราะเป็น Mockup]** ECOM: "Active Shop Listings" เลขไม่ตรงกันระหว่าง Executive Summary (18) กับ Breakdown (24) — แนะนำปรับให้ตรงกันเพื่อความสวยงามตอน Demo เท่านั้น ไม่ใช่ความเสี่ยงข้อมูลจริง — ดู 1.4
-2. **[กราฟไม่สื่อความหมาย]** ECOM Breakdown: "Target vs Actual per Platform" ค่าทุก Platform ใกล้ 100% มาก แท่งเบี่ยงจน "มองไม่เห็นข้อมูล" — ดู 2.2 / 6.3
+1. **[✅ แก้แล้ว]** ECOM "Active Shop Listings" และ MT "Active Partners" เลขไม่ตรงกันข้ามหน้า — พบเป็น Bug ซ้ำแพทเทิร์นเดียวกัน 2 จุด แก้ทั้งคู่แล้วให้ผูกกับ Series เดียวกัน — ดู 1.4
+2. **[✅ แก้แล้ว]** ECOM Breakdown: "Target vs Actual per Platform" แท่งแทบมองไม่เห็น — Root cause จริงคือ Domain Bug ใน `buildHBarCompareSVG` (กระทบ MT/ECOM หลายกราฟ ไม่ใช่แค่จุดเดียว) — ดู 2.2 / 6.3
 3. **[Layout]** Category Portfolio Matrix (MT, ECOM, และ Product Analysis) — Label ของ Quadrant ชนกับ Label จุดข้อมูลจริง — ดู 2.1
 4. **[Data Gap]** ทั้ง Dashboard ไม่มีมิติ "กำไร/Margin" เลย มีแต่ยอดขาย — CEO จะถามแน่นอน — ดู 5, 6.1
 5. **[Filter Gap]** ECOM Breakdown ไม่มีทางกรองดูเฉพาะ Platform เดียว (Lazada/Shopee/TikTok) ทั้งที่ข้อมูลรองรับอยู่แล้ว — ดู 3.1
-6. **[ลำดับกราฟ]** Sales Overview: "Channel Snapshot Cards" (การ์ดพาไปแต่ละ Channel) และ "Compare Performance Table" อยู่ลึกเกินไป (ตำแหน่งที่ 8-9 จาก 11 การ์ด) ทั้งที่ควรเป็นจุดเริ่มต้นให้ User กดไปต่อ — ดู Task 8.1
+6. **[✅ แก้แล้ว]** Sales Overview: "Channel Snapshot Cards" และ "Compare Performance Table" เคยอยู่ลึกเกินไป (ตำแหน่งที่ 8-9 จาก 11 การ์ด) — ย้ายขึ้นมาไว้ทันทีหลัง KPI row แล้ว — ดู Task 8.1
 
 ---
 
 ## Task 1 — ความซ้ำซ้อนของกราฟระหว่างหน้า
 
-### 1.1 "Sales by Category" ปรากฏซ้ำใน Executive Summary กับ Breakdown (ทุก Channel) — ประเด็นคือการแสดงผลซ้ำ ไม่ใช่เรื่องตัวเลข
+### 1.1 [✅ แก้แล้ว 2026-08-01] "Sales by Category" ปรากฏซ้ำใน Executive Summary กับ Breakdown (ทุก Channel) — ประเด็นคือการแสดงผลซ้ำ ไม่ใช่เรื่องตัวเลข
 
 **ขอชี้แจงก่อน (ตามหมายเหตุต้นเอกสาร):** กราฟชื่อ "Sales by Category" ปรากฏทั้งใน Executive Summary และใน Breakdown (โซน Product Coverage) ของทั้ง 3 Channel ด้วยตัวเลขชุดเดียวกันเป๊ะ (เช่น MT: Skin Care 31.9%, Personal Care 23.2%; TT: Skin Care 28.7%, Color Cosmetics 19.5%; ECOM: Color Cosmetics 26.4%, Skin Care 24.8%) — **การที่ตัวเลขตรงกัน ไม่ใช่ปัญหาและไม่ใช่เรื่องแปลก** เพราะทั้งสองจุดดึงจาก Mock data สูตรเดียวกันโดยตั้งใจ ไม่มี Filter อะไรที่ควรทำให้ต่างกันอยู่แล้ว ณ ตอนนี้
 
 **ประเด็นที่แท้จริงคือเรื่อง Content/IA (การจัดวางข้อมูล) ล้วน ๆ:** การเอากราฟหน้าตาเดียวกันไปวางซ้ำ 2 จุดในคนละหน้า โดยไม่มีอะไรต่างกันเลย (ไม่ใช่คนละ scope แบบ 1.2/1.3) ทำให้เปลืองพื้นที่จอโดยไม่ได้ข้อมูลใหม่ให้ผู้ใช้ — นี่คือมุมมองการออกแบบหน้าจอ ไม่เกี่ยวกับความถูกต้องของข้อมูล
 
 **ระดับ:** Medium (เป็นเรื่อง UX/การจัดวาง ไม่ใช่บั๊กและไม่ใช่ความเสี่ยงข้อมูล)
-**ข้อเสนอ:** เลือกทางใดทางหนึ่ง
-- (a) ตัดออกจาก Executive Summary เหลือแค่ Breakdown (เพราะ Breakdown คือที่ที่ควร deep-dive อยู่แล้ว), หรือ
-- (b) เก็บไว้ทั้ง 2 ที่ แต่ทำให้เวอร์ชัน Breakdown ตอบสนอง Category-level filter เมื่อเปิด Sub-Category/Type/Series ใช้งานจริง (ตอนนี้ Disabled อยู่ — ดู 3.4) เพื่อให้มี "เหตุผลที่ต้องมี 2 จุด"
+**ข้อเสนอเดิม:** เลือกทางใดทางหนึ่ง — (a) ตัดออกจาก Executive Summary เหลือแค่ Breakdown, หรือ (b) เก็บไว้ทั้ง 2 ที่ แต่ทำให้เวอร์ชัน Breakdown ตอบสนอง Category-level filter เมื่อเปิด Sub-Category/Type/Series ใช้งานจริง (ยัง Disabled อยู่ — ดู 3.4)
+
+**สถานะ:** เลือก (a) — ตัดการ์ด "Sales by Category" ออกจาก Executive Summary แล้ว ทั้ง **MT** (`module_mt_executive_summary.html`) และ **ECOM** (`module_ecom_executive_summary.html`) เหลือไว้เฉพาะใน Breakdown (โซน Product Coverage) เพราะ (b) ต้องรอเปิดใช้งาน Sub-Category/Type/Series filter จริงก่อน (Task 3.4) ซึ่งเป็นงานคนละ Scope ใหญ่กว่านี้ — ลบทั้ง HTML card และ JS event listener ที่ผูกกับปุ่ม (`catTableBtn`/`catDownloadBtn`/`catExpandBtn`) ออกครบ ไม่มี id ค้าง, การ์ดที่เหลืออยู่เดี่ยว (Sales by Key Account / Sales by Platform) ปรับเป็น Standalone card แทน Grid 2 คอลัมน์ ไม่กระทบข้อมูลอื่นในหน้า
+**TT ไม่ได้แก้:** ไม่มีไฟล์ต้นฉบับ TT (`tt_executive_summary.html`) ในเซสชันนี้ — บล็อกเหมือนกับ Task 4.3/8.5 ต้องรอไฟล์จริงหรือให้ทีมแก้เองตาม pattern เดียวกัน
 
 ### 1.2 Revenue Trend / Growth ระดับ Company-wide vs ระดับ Channel — ไม่ใช่ปัญหา
 
@@ -43,22 +44,23 @@ Sales Overview แสดง Revenue Trend/Growth ระดับบริษั�
 ปรากฏทั้งใน Product Analysis (บริษัทรวม) และใน Breakdown ของแต่ละ Channel (เฉพาะ Channel) — ตัวเลขต่างกันจริงตาม scope จึงไม่ใช่ปัญหาซ้ำซ้อน แต่ผู้ใช้อาจงงว่า "อันนี้กับอันนั้นสัมพันธ์กันยังไง"
 **ข้อเสนอ:** ใส่ลิงก์เล็ก ๆ ("ดูภาพรวมทั้งบริษัท →" / "ดูเฉพาะ MT →") เชื่อมสองหน้านี้เข้าหากัน
 
-### 1.4 [Cosmetic/Demo-polish — ไม่ใช่บั๊กข้อมูลจริง เพราะเป็น Mockup] ECOM "Active Shop Listings" เลขไม่ตรงกันข้ามหน้า
+### 1.4 [✅ แก้แล้ว 2026-08-01] "Active Shop Listings" (ECOM) และ "Active Partners" (MT) เลขไม่ตรงกันข้ามหน้า — พบว่าเป็น Bug ซ้ำกัน 2 จุด ไม่ใช่จุดเดียว
 
-- Executive Summary KPI card: **18** shops (มาจาก series สุ่มที่โตต่อเนื่อง)
-- Breakdown KPI card: **24** shops (มาจาก SHOP_COUNT คงที่ที่ตั้งแยกไว้ในไฟล์ Breakdown)
+- **ECOM**: Executive Summary KPI card เดิม **18** shops (จาก `ecomShopListingsSeries`) vs Breakdown เดิม **24** shops (จาก `SHOP_COUNT` คงที่)
+- **MT** (พบเพิ่มทีหลัง ตอนไล่โค้ดจริงแทนที่จะดูแค่ Screenshot): Executive Summary `mtPartnersSeries` ให้ค่าประมาณ 38-40 ที่เดือนปัจจุบัน (Random walk) vs Breakdown เดิมใช้ `PARTNER_COUNT = 38` คงที่แยกต่างหาก — ตัวเลขบังเอิญใกล้กันมากจนดูจาก Screenshot เหมือนตรงกัน (เข้าใจผิดไปตอนตรวจรอบแรกว่า "ออกแบบมาให้ตรงกัน") แต่จริงๆ ไม่ได้ผูกกันเลย เป็น Bug ประเภทเดียวกับ ECOM เป๊ะ แค่ซ่อนตัวเก่งกว่าเพราะช่องว่างเล็กกว่า
 
 เทียบกับ MT ("Active Partners" = 38 ตรงกันทั้ง 2 หน้า) และ TT ("Active Stores" = 405 ตรงกันทั้ง 2 หน้า) ซึ่งบังเอิญออกมาตรงกัน — ECOM ไม่ตรงเพราะตอน build ผมตั้ง `SHOP_COUNT = 24` ในไฟล์ Breakdown แยกจาก `ecomShopListingsSeries` ในไฟล์ Executive Summary โดยไม่ได้ผูกให้เป็นค่าเดียวกัน
 
 **ข้อสำคัญ:** เนื่องจากทั้งหมดเป็น Mock Data ไม่ใช่ข้อมูลธุรกิจจริง จุดนี้**ไม่ใช่ความเสี่ยงข้อมูลระดับ Production** — แต่ยังคุ้มค่าที่จะแก้เพื่อความสวยงามตอน Demo (กันผู้ชมสงสัยเวลาสลับหน้าไปมาเจอเลขไม่ตรงกัน)
-**ระดับ:** Cosmetic (ลดจาก High เดิม เพราะเป็นแค่ Mock data)
-**ข้อเสนอ:** ถ้าจะแก้เพื่อความสวยงาม ให้ปรับ `SHOP_COUNT` ใน `module_ecom_breakdown.html` ให้อ้างอิงค่าปลายทางของ `ecomShopListingsSeries` (index ปัจจุบัน/TODAY) จาก Executive Summary แทนที่จะเป็นค่าคงที่แยกต่างหาก
+**สถานะ:** แก้แล้วทั้ง 2 จุด — เพิ่ม `mtPartnersSeries` (MT) และ `ecomAOVSeries`/`ecomConvSeries`/`ecomShopListingsSeries` (ECOM) เข้าไปในไฟล์ Breakdown แบบ byte-for-byte ที่ตำแหน่งเดียวกันใน rand() sequence กับไฟล์ Executive Summary แล้วเปลี่ยน `PARTNER_COUNT`/`SHOP_COUNT` จากค่าคงที่ให้อ้างอิง `[TODAY]` ของ Series แทน ทั้งสองไฟล์จึงแสดงค่าตรงกันเป๊ะแล้วตอนนี้
+
+**บทเรียน:** เนื่องจากเป็น Mock Data ไม่ใช่ข้อมูลจริง ความเสี่ยงเชิง Production ยังต่ำอยู่เหมือนเดิม แต่การที่พบ 2 จุดจากรูปแบบเดียวกัน (Dynamic series ใน Exec Summary คู่กับค่าคงที่แยกใน Breakdown) แปลว่าควรตรวจแพทเทิร์นนี้ซ้ำอีกครั้งหากมี Module ใหม่ในอนาคตที่มี KPI นับจำนวนหน่วยย่อยแบบเดียวกัน (Partner/Shop/Store/SKU count เป็นต้น)
 
 ---
 
 ## Task 2 — Layout ที่ดูเบี้ยว/ขัดกัน
 
-### 2.1 [ซ้ำ 3 จุด] Label ชนกันใน Category Portfolio Matrix (Scatter chart)
+### 2.1 [✅ แก้แล้ว 2026-08-01 — พบซ้ำ 3 จุด] Label ชนกันใน Category Portfolio Matrix (Scatter chart)
 
 - **MT Breakdown**: Label "Question Marks" (มุม Quadrant) ทับกับ Label ของจุดข้อมูล "Fragrance" พอดี
 - **ECOM Breakdown**: อาการเดียวกัน — "Question Marks" ทับกับจุด "Fragrance" (เพราะ Fragrance ทั้ง 2 Channel เป็น Category ยอดขายต่ำ+โตเร็ว ซึ่งตกอยู่มุมเดียวกับที่วาง Label Quadrant พอดี)
@@ -67,11 +69,15 @@ Sales Overview แสดง Revenue Trend/Growth ระดับบริษั�
 **Root cause เดียวกันทั้ง 3 จุด:** ฟังก์ชัน `buildScatterSVG` ใน `shared.js` ไม่มีระบบเลี่ยง Label ชนกัน (label collision avoidance) — ทั้งชนกับ Label กรอบ Quadrant คงที่ และชนกันเองระหว่างจุดข้อมูลที่ใกล้กัน
 
 **ระดับ:** Medium-High (เป็นกราฟที่ผู้บริหารดูบ่อย ความอ่านง่ายมีผลกับความน่าเชื่อถือ)
-**ข้อเสนอ:** แก้ที่ `shared.js` จุดเดียว จะได้ผลทั้ง 3 หน้าพร้อมกัน — (ก) ขยับตำแหน่ง Quadrant label ให้ชิดขอบกราฟจริง ๆ ไม่ใช่ลอยอยู่กลางโซน, (ข) ตรวจระยะห่างระหว่างจุดข้อมูลแบบง่าย ๆ (ถ้าใกล้กันเกิน threshold ให้สลับ offset บน/ล่าง)
+**สถานะ:** แก้แล้วที่ `buildScatterSVG` ใน `shared.js` จุดเดียว — เพิ่มระบบเลี่ยง Label ชนกัน (ถ้า Label จุดข้อมูลอยู่ใกล้ขอบบนเกิน 26px จากบริเวณ Quadrant label หรือใกล้ Label ที่วางไปแล้วเกิน Threshold จะสลับไปวางใต้จุดแทน) มีผลย้อนไปถึงทุกหน้าที่ใช้ `buildScatterSVG` ทันที (MT Breakdown, ECOM Breakdown, Product Analysis) ไม่ใช่แค่หน้าที่สร้างใหม่
 
-### 2.2 ECOM Breakdown: "Target vs Actual per Platform" แท่งแทบมองไม่เห็น
+### 2.2 [✅ แก้แล้ว 2026-08-01] ECOM Breakdown: "Target vs Actual per Platform" แท่งแทบมองไม่เห็น
 
-ค่า Attainment ของทั้ง 3 Platform อยู่ที่ 100%, 102%, 100% — ใกล้เส้น Baseline 100% มากจนแท่งเขียว/แดงแทบไม่มีความยาวให้เห็น ดูเผิน ๆ เหมือนกราฟว่างเปล่าไม่มีข้อมูล ทั้งที่จริงมีข้อมูลอยู่ (รายละเอียดวิธีแก้ ดู 6.3)
+ค่า Attainment ของทั้ง 3 Platform อยู่ที่ 100%, 102%, 100% — ใกล้เส้น Baseline 100% มากจนแท่งเขียว/แดงแทบไม่มีความยาวให้เห็น ดูเผิน ๆ เหมือนกราฟว่างเปล่าไม่มีข้อมูล ทั้งที่จริงมีข้อมูลอยู่
+
+**Root cause ที่แท้จริง (เจอตอนไล่โค้ด ไม่ใช่แค่ Mock data ไม่มี Spread ตามที่เข้าใจไว้แรก):** `buildHBarCompareSVG` ใน `shared.js` คำนวณ Domain เริ่มต้นด้วย `Math.min(0, ...values)`/`Math.max(0, ...values)` เสมอ **ไม่สนใจค่า `referenceValue` เลย** — พอ Chart นี้ใช้ `referenceValue:100` แต่ Domain ยังลาก 0 เข้ามาด้วย ทำให้พื้นที่กราฟส่วนใหญ่ (0-98) ว่างเปล่าไม่มีประโยชน์ เหลือพื้นที่จริงให้ตัวเลข 98-102 แสดงผลแค่เสี้ยวเดียวของกราฟทั้งหมด — บั๊กนี้เป็นปัญหาของฟังก์ชันกลาง ไม่ใช่แค่ข้อมูล Platform ระดับ Ecom เท่านั้น (กระทบ MT "Target vs Actual per Partner" และ ECOM "Target vs Actual per Shop" ด้วยเหมือนกัน แค่สังเกตเห็นน้อยกว่าเพราะ Spread ของข้อมูลกว้างกว่า)
+
+**สถานะ:** แก้ที่ `buildHBarCompareSVG` จุดเดียว — เปลี่ยน Domain เริ่มต้นให้ยึดจาก `referenceValue` แทนเลข 0 ตายตัว พร้อมเพิ่ม Padding 15% (ให้สอดคล้องกับ `buildGroupedBarSVG`) มีผลย้อนไปถึงทุกกราฟที่ใช้ฟังก์ชันนี้ทันที ไม่ใช่แค่ ECOM Breakdown
 
 ### 2.3 ECOM Breakdown: Filter Bar ดูโล่งกว่าหน้าอื่นเห็นได้ชัด
 
@@ -181,9 +187,9 @@ MT Breakdown มี 4 ตัวควบคุม (Period, Category, KAM, "My ac
 
 ### แก้ (Rendering/ค่าที่แปลก)
 
-1. **ECOM Active Shop Listings เลขไม่ตรงกัน (18 vs 24)** — Cosmetic เท่านั้นเพราะเป็น Mock data ไม่ใช่ Data risk จริง แต่แก้ได้ง่ายเพื่อความสวยงาม — อ้างอิง 1.4
-2. **ECOM Target vs Actual per Platform แท่งแทบมองไม่เห็น** — อ้างอิง 2.2 — แนะนำ 2 ทางเลือก: (ก) ปรับสูตร mock data ให้ attainment ระดับ Platform มี spread กว้างขึ้น (ตอนนี้คำนวณจาก sumRange(actual)/sumRange(target) ซึ่ง noise เดิมออกแบบมาสำหรับระดับ Series ไม่ใช่ระดับ Platform ที่มีแค่ 3 ค่า จึงเกาะกลุ่มใกล้ 100% เกินไป) หรือ (ข) เปลี่ยนวิธีนำเสนอเป็นตัวเลข + Indicator ลูกศรขึ้น/ลง แทนกราฟแท่งเทียบ Baseline
-3. **Label ชนกันใน Scatter chart** — อ้างอิง 2.1
+1. **[✅ แก้แล้ว] ECOM Active Shop Listings และ MT Active Partners เลขไม่ตรงกัน** — อ้างอิง 1.4
+2. **[✅ แก้แล้ว] ECOM Target vs Actual per Platform แท่งแทบมองไม่เห็น** — อ้างอิง 2.2 (แก้ที่ Root cause ใน `buildHBarCompareSVG` ไม่ใช่แค่ปรับ Mock data)
+3. **[✅ แก้แล้ว] Label ชนกันใน Scatter chart** — อ้างอิง 2.1
 4. **ปุ่ม Toolbar ที่อาจขาดใน TT Breakdown/Sales Person** — อ้างอิง 4.3 (ต้องเช็คในเบราว์เซอร์จริงก่อนสรุปว่าเป็นบั๊ก)
 
 ---
@@ -230,12 +236,13 @@ MT Breakdown มี 4 ตัวควบคุม (Period, Category, KAM, "My ac
 
 หลักที่ใช้ตรวจ: กราฟ/การ์ดในหน้าเดียวกันควรเรียงตามหลัก **"หยาบ → ละเอียด" (Coarse-to-fine)** คือ KPI สรุป → เทรนด์ภาพรวม → แยกตามมิติหลัก (เช่น Platform/Format) → รายละเอียด/อันดับตามหน่วยย่อย (เช่น Shop/Partner/Store) → มุมมองสินค้า/Category ปิดท้าย และการ์ดที่เป็น "ทางลัดไปหน้าอื่น" (navigation) ควรอยู่ต้น ๆ หน้า ไม่ใช่ฝังลึก
 
-### 8.1 [ควรแก้ — เห็นผลชัดเจนถ้าทำ] Sales Overview — Executive Outlook: การ์ดนำทางอยู่ลึกเกินไป
+### 8.1 [✅ แก้แล้ว 2026-08-01] Sales Overview — Executive Outlook: การ์ดนำทางอยู่ลึกเกินไป
 
-ลำดับปัจจุบัน (โดยประมาณ): KPI row → Revenue Trend → Sales by Channel → Channel Growth Comparison → Sales by Category → Growth Contribution Waterfall → Return/Cancellation Rate Trend → **Channel Snapshot Cards** (การ์ดพา MT/TT/ECOM) → **Compare Performance Table** → Revenue Trend by Channel → Channel Mix Over Time
+ลำดับเดิม (โดยประมาณ): KPI row → Revenue Trend → Sales by Channel → Channel Growth Comparison → Sales by Category → Growth Contribution Waterfall → Return/Cancellation Rate Trend → **Channel Snapshot Cards** (การ์ดพา MT/TT/ECOM) → **Compare Performance Table** → Revenue Trend by Channel → Channel Mix Over Time
 
-"Channel Snapshot Cards" เป็นการ์ดนำทาง (คลิกแล้วพาไปหน้า MT/TT/ECOM) — โดยธรรมชาติควรเป็นจุดที่ User เจอเร็ว ๆ เพื่อกดไปดูรายละเอียดต่อ แต่ตอนนี้อยู่ตำแหน่งที่ 8 จาก 11 (หลังกราฟวิเคราะห์เชิงลึกไปแล้วหลายอัน) เช่นเดียวกับ Compare Performance Table ที่เป็นตารางสรุปเทียบ Channel ซึ่งน่าจะอยู่ใกล้ต้นหน้ามากกว่า
-**ข้อเสนอ:** ย้าย Channel Snapshot Cards ขึ้นมาไว้ทันทีหลัง KPI row (ก่อนกราฟวิเคราะห์อื่น ๆ) ส่วน Compare Performance Table ย้ายมาไว้ใกล้ ๆ กัน เพื่อให้ผู้ใช้ที่เข้ามาแค่ "อยากรู้ภาพรวมแล้วไปต่อ" ทำได้เร็วโดยไม่ต้องเลื่อนผ่านกราฟวิเคราะห์ก่อน
+"Channel Snapshot Cards" เป็นการ์ดนำทาง (คลิกแล้วพาไปหน้า MT/TT/ECOM) — โดยธรรมชาติควรเป็นจุดที่ User เจอเร็ว ๆ เพื่อกดไปดูรายละเอียดต่อ แต่เดิมอยู่ตำแหน่งที่ 8 จาก 11 (หลังกราฟวิเคราะห์เชิงลึกไปแล้วหลายอัน) เช่นเดียวกับ Compare Performance Table ที่เป็นตารางสรุปเทียบ Channel ซึ่งน่าจะอยู่ใกล้ต้นหน้ามากกว่า
+
+**สถานะ:** แก้แล้วใน `sales_overview.html` — ย้าย Channel Snapshot Cards + Compare Performance Table ขึ้นมาเป็น Section 2 ทันทีหลัง KPI row (ก่อนกราฟวิเคราะห์อื่นทั้งหมด) ลำดับใหม่: KPI row → **Channel Snapshot Cards + Compare Performance Table** → Performance & Composition (Revenue Trend, Sales by Channel, Channel Growth Comparison, Sales by Category) → What's Driving It (Waterfall, Return/Cancellation Rate) → Channel Trends (Revenue Trend by Channel, Channel Mix Over Time). Revenue Trend by Channel และ Channel Mix Over Time ยังคงอยู่ท้ายหน้าตามเดิม เพราะเป็นกราฟวิเคราะห์เชิงลึกไม่ใช่การ์ดนำทาง จึงไม่จำเป็นต้องย้ายขึ้นตาม — ไม่มีการแก้ Mock data ใด ๆ (แก้แค่ตำแหน่ง HTML) จึงไม่กระทบตัวเลขหรือหน้าอื่น
 
 ### 8.2 [พบใหม่] ECOM Breakdown — สลับมิติ Platform/Shop ไปมา ทำให้ Flow ขาดช่วง
 

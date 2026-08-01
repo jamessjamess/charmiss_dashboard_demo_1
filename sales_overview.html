@@ -111,7 +111,23 @@
     </div>
   </div>
 
-  <!-- ===== SECTION 2: PERFORMANCE & COMPOSITION ===== -->
+  <!-- ===== SECTION 2: CHANNEL COMPARISON ===== -->
+  <div class="section-label">Channel Comparison</div>
+  <div class="channel-snapshot-grid" id="channelSnapshotGrid"></div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Compare Performance Table</span>
+      <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="compareDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="compareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <table class="compare-table" id="compareTable"></table>
+  </div>
+
+  <!-- ===== SECTION 3: PERFORMANCE & COMPOSITION ===== -->
   <div class="section-label">Performance &amp; Composition</div>
   <div class="chart-grid">
     <div class="card">
@@ -205,7 +221,7 @@
     <div class="data-table-wrap" id="catTableWrap"></div>
   </div>
 
-  <!-- ===== SECTION 3: WHAT'S DRIVING IT ===== -->
+  <!-- ===== SECTION 4: WHAT'S DRIVING IT ===== -->
   <div class="section-label">What's Driving It</div>
   <div class="chart-grid">
     <div class="card">
@@ -243,23 +259,10 @@
     </div>
   </div>
 
-  <!-- ===== SECTION 4: CHANNEL COMPARISON ===== -->
-  <div class="section-label">Channel Comparison</div>
-  <div class="channel-snapshot-grid" id="channelSnapshotGrid"></div>
+  <!-- ===== SECTION 5: CHANNEL TRENDS ===== -->
+  <div class="section-label">Channel Trends</div>
 
   <div class="chart-grid">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Compare Performance Table</span>
-        <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="compareDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="compareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <table class="compare-table" id="compareTable"></table>
-    </div>
-
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">

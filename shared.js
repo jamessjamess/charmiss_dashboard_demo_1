@@ -188,11 +188,26 @@ function buildHBarCompareSVG(containerId, items, opts){
   const labelW = opts.labelW || 90, valueW = 64, padX = 10;
   const plotW = width - labelW - valueW - padX*2;
   const height = items.length * rowHeight;
-  let minV = opts.domainMin !== undefined ? opts.domainMin : Math.min(0, ...items.map(i=>i.value));
-  let maxV = opts.domainMax !== undefined ? opts.domainMax : Math.max(0, ...items.map(i=>i.value));
-  if(maxV === minV) maxV = minV + 1;
-  const xAt = v => labelW + padX + ((v-minV)/(maxV-minV)) * plotW;
+  // Fix (2026-08-01, see Charmiss_Dashboard_Review_2026-07-31.md Task 2.2/6.3):
+  // the default domain used to always force 0 in as a boundary
+  // (Math.min(0,...)/Math.max(0,...)), regardless of where referenceValue
+  // sits. That's harmless when referenceValue is 0, but for a
+  // referenceValue:100 chart (Target Attainment %) whose values naturally
+  // cluster near 100, it dragged the domain all the way down to 0 anyway —
+  // wasting most of the plot width on empty space and leaving the actual
+  // bars as an almost invisible sliver. The domain now anchors on the
+  // reference value instead of a hardcoded 0, plus 15% padding (matching
+  // buildGroupedBarSVG's padding convention) so bars never sit flush against
+  // the plot edges or the reference line.
   const ref = opts.referenceValue !== undefined ? opts.referenceValue : 0;
+  let minV = opts.domainMin !== undefined ? opts.domainMin : Math.min(ref, ...items.map(i=>i.value));
+  let maxV = opts.domainMax !== undefined ? opts.domainMax : Math.max(ref, ...items.map(i=>i.value));
+  if(maxV === minV) maxV = minV + 1;
+  if(opts.domainMin === undefined && opts.domainMax === undefined){
+    const pad = (maxV - minV) * 0.15;
+    minV -= pad; maxV += pad;
+  }
+  const xAt = v => labelW + padX + ((v-minV)/(maxV-minV)) * plotW;
   const refX = xAt(ref);
 
   let rows = '';

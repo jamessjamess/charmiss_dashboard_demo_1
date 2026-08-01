@@ -316,6 +316,16 @@ for(let i=0;i<MONTHS_TOTAL;i++){
 }
 const mtARSeries = [];
 { let level = 86; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.5)*1.2; level = Math.max(78, Math.min(94, level)); mtARSeries.push(level); } }
+/* mtPartnersSeries — byte-for-byte from module_mt_executive_summary.html,
+   generated at the same position in the rand() sequence (right after
+   mtARSeries, before any Breakdown-only draws below) so this file's
+   Active Partners KPI stays numerically identical to the Executive
+   Summary's. Fix logged 2026-08-01 (see Charmiss_Dashboard_Review_2026-07-31.md
+   Task 1.4 / the MT instance of the same bug found during a later code pass):
+   PARTNER_COUNT used to be a hardcoded 38 that only coincidentally sat close
+   to this series' value instead of being derived from it. */
+const mtPartnersSeries = [];
+{ let level = 34; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.35; mtPartnersSeries.push(Math.round(level)); } }
 
 /* -------------------- Part 2: Breakdown-only mock data (new) -------------------- */
 const FORMAT_GROUPS = [
@@ -323,7 +333,7 @@ const FORMAT_GROUPS = [
   {name:'Hypermarket Chain', pct:17}, {name:'Convenience Chain', pct:12}
 ];
 const KAM_NAMES = ['Ployphat S.', 'Warut K.', 'Suchada P.'];
-const PARTNER_COUNT = 38;
+const PARTNER_COUNT = mtPartnersSeries[TODAY];
 const partners = [];
 (function(){
   let assigned = 0;
