@@ -28,6 +28,10 @@ Enterprise Dashboard สำหรับ Charmiss เพื่อติดตา�
 ### 2.1 แผนผังโครงสร้าง
 
 ```
+▸ P&L Overview                                       [Company-wide, คู่ขนานกับ Sales Overview — ไม่ใช่ลูกของมัน]
+      ├── Executive Summary
+      └── Breakdown (Margin by Channel/Category, Cost Structure)
+
 Sales Overview  (Company-wide — รวมทุก Channel)
 │
 ├── Executive Outlook          ภาพรวมบริษัทครบทุกมุม อ่านจบใน 2-3 นาที
@@ -58,12 +62,14 @@ Sales Overview  (Company-wide — รวมทุก Channel)
 
 > หมายเหตุ: "Executive Outlook" และ "Breakdown" เดิมของ Sales Overview ถูกรวมเป็นหน้าเดียวแล้ว (Executive Outlook มี 4 Section ครอบคลุมทั้งภาพรวมและรายละเอียดเปรียบเทียบ Channel) — Sales Overview จึงมีแค่ 2 มุมมองหลัก: Executive Outlook และ Product Analysis
 
-> หมายเหตุด้านไฟล์: MT Overview, ECOM Overview และ Sales Overview ทั้ง 2 มุมมอง ใช้ Component กลาง (`shared.css`/`shared.js`) ร่วมกัน แยกไฟล์ตาม 1 มุมมอง = 1 ไฟล์ (`module_mt_executive_summary.html`, `module_mt_breakdown.html`, `module_ecom_executive_summary.html`, `module_ecom_breakdown.html`, `sales_overview.html`, `sales_overview_product_analysis.html`) — ส่วน TT Overview เดิมเป็นไฟล์เดียวรวม 3 Tab ขนาดใหญ่มาก (~500KB) จึงแยกเป็น 3 ไฟล์อิสระ (`tt_executive_summary.html`, `tt_breakdown.html`, `tt_sales_person.html`) ใช้ Engine กลางของตัวเอง (`tt-shared.css`/`tt-shared.js`, แยกจาก `shared.css`/`shared.js` เพราะชื่อ Class ชนกัน) — `render()` ใน `tt-shared.js` คำนวณข้อมูลของ Executive Summary และ Breakdown พร้อมกันในรอบเดียวโดยตั้งใจ (ไม่แยก Mock Data ซ้ำสองชุด) ทั้ง 2 ไฟล์จึงเรียกฟังก์ชันเดียวกัน — ECOM Overview สร้างตาม Pattern เดียวกับ MT ตั้งแต่แรก (แยก 2 ไฟล์อิสระ ไม่มี Tab เดียวรวม #hash) เพราะมีโครงสร้างใกล้เคียง MT มากที่สุด (มีหน่วยขายย่อยหลายหน่วย คือ Platform Lazada/Shopee/TikTok Shop และไม่มี Region/Sales Person filter)
+> หมายเหตุเรื่องลำดับ: P&L Overview ถูกจัดให้ปรากฏ **ก่อน** Sales Overview ทั้งใน Nav Menu และหน้า Directory ของ `index.html` (ตามลำดับ `MODULE_MAP` ใน `nav-menu.js`) แต่ปุ่ม Hero CTA ของ `index.html` ("เข้าสู่ Sales Overview →") ยังคงพาไป Sales Overview เหมือนเดิมโดยไม่แตะ — ลำดับการแสดงผลกับ Entry point หลักเป็นคนละเรื่องกันโดยตั้งใจ
+
+> หมายเหตุด้านไฟล์: P&L Overview, MT Overview, ECOM Overview และ Sales Overview ทั้ง 2 มุมมอง ใช้ Component กลาง (`shared.css`/`shared.js`) ร่วมกัน แยกไฟล์ตาม 1 มุมมอง = 1 ไฟล์ (`pnl_executive_summary.html`, `pnl_breakdown.html`, `module_mt_executive_summary.html`, `module_mt_breakdown.html`, `module_ecom_executive_summary.html`, `module_ecom_breakdown.html`, `sales_overview.html`, `sales_overview_product_analysis.html`) — ส่วน TT Overview เดิมเป็นไฟล์เดียวรวม 3 Tab ขนาดใหญ่มาก (~500KB) จึงแยกเป็น 3 ไฟล์อิสระ (`tt_executive_summary.html`, `tt_breakdown.html`, `tt_sales_person.html`) ใช้ Engine กลางของตัวเอง (`tt-shared.css`/`tt-shared.js`, แยกจาก `shared.css`/`shared.js` เพราะชื่อ Class ชนกัน) — `render()` ใน `tt-shared.js` คำนวณข้อมูลของ Executive Summary และ Breakdown พร้อมกันในรอบเดียวโดยตั้งใจ (ไม่แยก Mock Data ซ้ำสองชุด) ทั้ง 2 ไฟล์จึงเรียกฟังก์ชันเดียวกัน — ECOM Overview สร้างตาม Pattern เดียวกับ MT ตั้งแต่แรก (แยก 2 ไฟล์อิสระ ไม่มี Tab เดียวรวม #hash) เพราะมีโครงสร้างใกล้เคียง MT มากที่สุด (มีหน่วยขายย่อยหลายหน่วย คือ Platform Lazada/Shopee/TikTok Shop และไม่มี Region/Sales Person filter)
 
 ### 2.2 หลักการ Navigation
 
 - **Navigation Menu** อยู่ที่มุมซ้ายบนของทุกหน้า (ข้าง Logo) กดแล้วเห็นรายการทุกหน้าในระบบ จัดกลุ่มตาม Module (Badge "Coming soon" สำหรับ Module ที่ยังไม่เปิดใช้งาน — ปัจจุบันทุก Module เปิดใช้งานครบแล้ว ไม่มี Module ค้าง) — กดข้าม Section ไหนก็ได้ในคลิกเดียว ไม่ต้องไล่ตามลำดับ Drill-in ทีละชั้น (เช่น จาก Sales Overview ไป TT Overview → Breakdown ได้ทันที)
-- **Breadcrumb** "Sales Overview / [Module]" แสดงเฉพาะหน้า Channel Overview (MT/TT/Ecom) เพราะเป็นหน้าที่ Nested อยู่ใต้ Sales Overview — Sales Overview เองไม่มี Breadcrumb เพราะเป็นจุดบนสุดของ Hierarchy
+- **Breadcrumb** "Sales Overview / [Module]" แสดงเฉพาะหน้า Channel Overview (MT/TT/Ecom) เพราะเป็นหน้าที่ Nested อยู่ใต้ Sales Overview — Sales Overview เองไม่มี Breadcrumb เพราะเป็นจุดบนสุดของ Hierarchy — P&L Overview ก็ไม่มี Breadcrumb เช่นกัน (แค่ "P&L Overview" เดี่ยวๆ) เพราะเป็นมุมมอง Company-wide คู่ขนานกับ Sales Overview ไม่ใช่ลูกของมัน
 - **หัวข้อหน้า (H1)** ใช้รูปแบบเดียวกันทุกหน้า: "[ชื่อ Module] — [ชื่อมุมมอง]" เช่น "Sales Overview — Executive Outlook", "TT Overview — Breakdown", "ECOM Overview — Executive Summary"
 - แต่ละ Channel Overview มี Tab ของตัวเอง (Executive Summary / Breakdown / Sales Person เฉพาะ TT) โดย Filter เต็มรูปแบบอยู่ที่ Breakdown เท่านั้น (รายละเอียด Filter ต่าง Channel ไม่เหมือนกัน — ดูข้อ 3.4) — Executive Summary มีแค่ Period filter
 
@@ -288,5 +294,28 @@ Filter Bar ของ Breakdown: Period, Category (ปัจจุบันใช
 Metric ที่ไม่มีใน MT/TT: ไม่มี AR% (ลูกค้าจ่ายผ่าน Platform โดยตรง ไม่มี Ledger ลูกหนี้แบบ MT/TT), ใช้ Return/Cancellation Rate แทน Return Rate (CN) เดี่ยวๆ, เพิ่ม AOV และ Conversion Rate ทั้งใน Executive Summary (Company-wide) และ Breakdown (แยกตาม Platform) — Ads Spend ROI ที่เคยพิจารณาไว้ในดราฟต์แรกถูกตัดออกจาก Scope รอบนี้
 
 Shop ระดับ Breakdown (24 Shop, กระจายตาม Platform ตามสัดส่วน Base ของ channelDefs — Lazada/Shopee/TikTok Shop) เป็นคนละชุดข้อมูลกับ Platform ระดับ Executive Summary เช่นเดียวกับหลักการ Partner/Key Account ของ MT
+
+### 5.6 P&L Overview
+
+Module Company-wide คู่ขนานกับ Sales Overview (ไม่ใช่ Channel Module แบบ MT/TT/ECOM) — ปิด Gap "ไม่มีมิติกำไร/Margin" ที่พบใน `Charmiss_Dashboard_Review_2026-07-31.md` (Task 5/6.1/7.3) ออกแบบไว้ที่ `Charmiss_Module_PnL_Spec.md` ก่อน Build
+
+**Executive Summary** (6 KPI Card — ตามหลักการเดียวกับทุก Module คือไม่มีการ์ด Growth แยกต่างหาก): Gross Profit, Gross Margin %, Net Profit, Net Margin %, Profit Target Attainment % (Net Profit เทียบเป้าหมายที่ตั้งจาก Net Sales Target × 22% Net Margin สมมติฐาน), OPEX Ratio % (Delta กลับทิศเหมือน Return/Cancellation Rate — ยิ่งต่ำยิ่งดี) · Profit Trend, Margin Trend (Chart, รายเดือน) · P&L Waterfall (Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → Net Profit) · Margin by Channel, Margin by Category (Grouped Bar เทียบ Gross %/Net %) · Ranking by Channel (Table)
+
+**Breakdown (Margin/Cost Structure เชิงลึก):**
+| Section | Metric/Chart |
+|---|---|
+| Margin Quality by Channel | Net Margin % Trend by Channel (Multi-line MT/TT/Ecom), Cost Structure by Channel (100%-Stacked Bar: COGS/Trade Spend/Logistics/Marketing&Ads/SG&A/Net Profit) |
+| Category Profitability | Highest/Lowest Margin Category (Callout), Margin by Category (ตอบสนอง Channel filter), Category Profit Matrix (Scatter — X: Net Profit Contribution ฿, Y: Net Margin % — Premium Stars/Volume Engines/Niche Premium/Needs Review), Category Profitability Ranking (Table ครบ 6 Category ไม่แบ่ง Top/Bottom เพราะมีแค่ 6 แถว) |
+| Cost Structure Over Time | OPEX Trend (Stacked Area, Trade Spend/Logistics/Marketing&Ads/SG&A ย้อนหลัง 18 เดือน, Company-wide), Marketing & Ads Spend by Channel |
+
+Filter Bar ของ Breakdown: Period, **Channel** (All/MT/TT/Ecom — Filter ใหม่ ไม่มีในหน้าอื่น scope เฉพาะ Zone Category Profitability), Category (ปัจจุบันใช้งานได้แค่ "All Categories" เหมือน Module อื่น) — ไม่มี Filter รายบุคคล เพราะ P&L เป็นมุมมอง Company/Channel-level ไม่มี Owner ต่อบุคคล
+
+Margin Model (สรุปจาก Spec — ดูรายละเอียดสูตรที่ `Charmiss_Module_PnL_Spec.md`): Effective Margin % = Category Base Margin % × Channel Adjustment Factor (MT ×0.90, TT ×1.00, Ecom ×0.93) — **ตัวเลขต้นทุน/กำไรทั้งหมดเป็นสมมติฐาน Mock ล้วนๆ ไม่ใช่ข้อมูลบัญชีจริง** ไม่มีระบบ COGS/Ledger จริงรองรับ — Net Sales ทุกตัวใน Module นี้อ้างอิง `groupActual`/`groupTarget` byte-for-byte จาก `sales_overview.html` เหมือนกับ MT/TT/ECOM ทุกประการ ไม่มีการสร้างยอดขายใหม่
+
+หมายเหตุความครบถ้วนของ Category Share ต้นทาง: `mtCategoryShares` และ `ecomCategoryShares` เป็นการ copy byte-for-byte จากไฟล์ MT/ECOM Executive Summary ตามหลักการเดียวกับ Net Sales — ส่วน `ttCategoryShares` เป็นการสร้างขึ้นใหม่จากค่าที่สังเกตได้ใน Screenshot การ Review (TT source files ไม่ได้ถูกส่งมาให้ Build แต่แรก มีแต่ Screenshot) จึงไม่ใช่ byte-for-byte copy เหมือนอีก 2 Channel — ควรตรวจทานกับไฟล์ TT จริงถ้ามีในอนาคต
+
+Module นี้ยังปิด Task 7.4 ของ Review บางส่วน (Marketing & Ads Spend by Channel = เวอร์ชัน Company/Channel-level ของแนวคิด "Ads Spend ROI" ที่เคยตัดออกจาก ECOM Breakdown — ยังไม่ลงถึงระดับ Platform รายตัว)
+
+ระหว่าง Build ได้แก้ `buildScatterSVG` ใน `shared.js` เพิ่ม Label-collision avoidance (ปิด Review Task 2.1) — มีผลย้อนไปถึง Category Portfolio Matrix ของ MT Breakdown, ECOM Breakdown, และ Product Analysis ด้วย ไม่ใช่แค่ P&L
 
 ---

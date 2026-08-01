@@ -8,6 +8,14 @@
    ============================================================================ */
 const MODULE_MAP = [
   {
+    group: 'P&L Overview',
+    ready: true,
+    items: [
+      { key:'pnl-exec',      label:'Executive Summary', href:'pnl_executive_summary.html' },
+      { key:'pnl-breakdown', label:'Breakdown',          href:'pnl_breakdown.html' },
+    ],
+  },
+  {
     group: 'Sales Overview (Company-wide)',
     ready: true,
     items: [

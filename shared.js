@@ -388,10 +388,24 @@ function buildScatterSVG(containerId, points, opts){
     svg += '<text x="'+(padL+4)+'" y="'+(height-padB-6)+'" font-size="9.5" text-anchor="start" fill="'+inkTertiary+'" font-weight="700">'+(ql.bottomLeft||'')+'</text>';
   }
 
+  // Label-collision avoidance (fix logged 2026-08-01, see
+  // Charmiss_Dashboard_Review_2026-07-31.md Task 2.1): labels used to always
+  // sit fixed just above each point, which collided with (a) the quadrant
+  // corner labels when a point landed near a corner, and (b) each other when
+  // two points landed close together. Placed labels are now tracked and any
+  // point whose default label would sit too close to the top edge (where the
+  // quadrant labels live) or too close to an already-placed label gets its
+  // label flipped below the point instead.
+  const placedLabels = [];
   points.forEach(p=>{
     const cx = xAt(p.x), cy = yAt(p.y);
+    let ly = cy - 10;
+    const nearTopEdge = (cy - padT) < 26;
+    const collidesWithPlaced = placedLabels.some(q => Math.abs(q.x-cx) < 46 && Math.abs(q.y-ly) < 14);
+    if(nearTopEdge || collidesWithPlaced) ly = cy + 16;
+    placedLabels.push({x:cx, y:ly});
     svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"/>';
-    svg += '<text x="'+cx.toFixed(1)+'" y="'+(cy-10).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
+    svg += '<text x="'+cx.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
   });
 
   /* --- Axis titles: real chart-axis labels, not a caption floated outside the
