@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — Enterprise Dashboard</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+<style>
+  .hero{ text-align:center; padding:36px 20px 8px; }
+  .hero-title{ font-size:28px; font-weight:700; margin:0 0 8px; letter-spacing:-.01em; }
+  .hero-subtitle{ font-size:14px; color:var(--ink-3); max-width:560px; margin:0 auto; line-height:1.6; }
+  .start-cta{
+    display:inline-flex; align-items:center; gap:8px; margin-top:20px;
+    background:var(--brand); color:#fff; text-decoration:none; font-weight:700;
+    font-size:14px; padding:12px 22px; border-radius:10px;
+  }
+  .start-cta:hover{ opacity:.92; }
+  .directory{ margin-top:40px; }
+  .module-card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+    box-shadow:var(--shadow); padding:18px 20px; margin-bottom:14px;
+  }
+  .module-card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .module-card-title{ font-size:14.5px; font-weight:700; }
+  .module-page-list{ display:flex; flex-wrap:wrap; gap:8px; }
+  .module-page-link{
+    display:flex; align-items:center; gap:6px; text-decoration:none; color:var(--ink-1);
+    background:var(--wash); border:1px solid var(--border); border-radius:8px;
+    padding:8px 12px; font-size:13px; font-weight:600;
+  }
+  .module-page-link:hover{ border-color:var(--brand); color:var(--brand); }
+  .module-page-link.disabled{ color:var(--ink-3); cursor:default; opacity:.65; pointer-events:none; }
+  .module-page-link .dot{ width:6px; height:6px; border-radius:50%; background:var(--baseline); flex:none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div class="brand-name">Charmiss</div>
+    </div>
+    <div class="user-area">
+      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1 class="hero-title">Enterprise Dashboard</h1>
+    <p class="hero-subtitle">Sales Performance เทียบ Target ครอบคลุม MT, TT และ Ecom — เริ่มจากภาพรวมบริษัท แล้วลงรายละเอียดเฉพาะ Channel ได้ตามต้องการ</p>
+    <a class="start-cta" href="sales_overview.html">เข้าสู่ Sales Overview →</a>
+  </div>
+
+  <div class="directory" id="directoryMount"></div>
+
+</div>
+
+<script src="nav-menu.js"></script>
+<script>
+if (typeof initThemeToggle === 'function') { try { initThemeToggle(); } catch(e){} }
+
+/* Build the same directory listing the Navigation Menu uses (MODULE_MAP from
+   nav-menu.js), rendered as a full-page list instead of a dropdown panel —
+   this page's whole purpose is being that directory, so no separate data
+   source is kept for it. */
+(function renderDirectory(){
+  const mount = document.getElementById('directoryMount');
+  if (typeof MODULE_MAP === 'undefined' || !mount) return;
+  let html = '';
+  MODULE_MAP.forEach(group => {
+    html += '<div class="module-card"><div class="module-card-head">'
+      + '<span class="module-card-title">' + group.group + '</span>'
+      + (group.ready ? '' : '<span class="badge-soon">Coming soon</span>')
+      + '</div><div class="module-page-list">';
+    group.items.forEach(item => {
+      const cls = group.ready ? 'module-page-link' : 'module-page-link disabled';
+      const tag = group.ready ? 'a' : 'span';
+      const hrefAttr = group.ready ? ' href="'+item.href+'"' : '';
+      html += '<'+tag+' class="'+cls+'"'+hrefAttr+'><span class="dot"></span>'+item.label+'</'+tag+'>';
+    });
+    html += '</div></div>';
+  });
+  mount.innerHTML = html;
+})();
+</script>
+</body>
+</html>

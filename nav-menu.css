@@ -1,0 +1,68 @@
+/* ===================== Navigation Menu (Module Switcher) =====================
+   New component (2026-07-30) for jumping directly between any page in the
+   Hierarchy from anywhere, without following the drill-in path each time.
+   Grouped by module (Sales Overview / MT Overview / TT Overview / ECOM
+   Overview); items not yet built are disabled with a "Coming soon" badge.
+
+   This file is intentionally self-contained (own .badge-soon definition
+   below) so it can be dropped into module_tt.html — which has its own large,
+   independent CSS system — WITHOUT also linking shared.css. Several class
+   names collide between shared.css and module_tt.html's internal styles
+   (.card, .card-title, .tabs, etc. mean different things in each), so
+   shared.css must never be linked into module_tt.html; only this file. */
+.badge-soon{ font-size:9px; font-weight:700; letter-spacing:.03em; background:var(--brand-wash); color:var(--brand); padding:2.5px 6px; border-radius:20px; text-transform:uppercase; }
+
+.navmenu-wrap{ position:relative; display:inline-block; }
+.navmenu-btn{
+  display:inline-flex; align-items:center; gap:8px;
+  background:var(--wash); border:1px solid var(--border-2); border-radius:10px;
+  padding:8px 12px; cursor:pointer; font-size:13px; font-weight:650; color:var(--ink-1);
+  font-family:inherit;
+}
+.navmenu-btn:hover{ background:var(--brand-wash); border-color:var(--brand); }
+.navmenu-btn .navmenu-caret{ font-size:9px; color:var(--brand); }
+.navmenu-panel{
+  position:absolute; top:calc(100% + 8px); left:0; z-index:80; width:320px;
+  background:var(--card); border:1px solid var(--border-2); border-radius:var(--radius);
+  box-shadow:var(--shadow); padding:8px; display:none; max-height:70vh; overflow:auto;
+}
+.navmenu-panel.open{ display:block; }
+.navmenu-group{
+  font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--ink-3); padding:9px 8px 4px; display:flex; align-items:center; gap:6px;
+}
+.navmenu-group:first-child{ padding-top:4px; }
+.navmenu-group .badge-soon{ font-size:8.5px; padding:2px 5px; }
+.navmenu-item{
+  display:flex; align-items:center; gap:8px; width:100%; text-align:left; border:none;
+  background:transparent; padding:8px; border-radius:8px; cursor:pointer; font-family:inherit;
+  color:var(--ink-1); font-size:13px;
+}
+.navmenu-item:hover:not(:disabled){ background:var(--wash); }
+.navmenu-item:disabled{ cursor:default; opacity:.5; }
+.navmenu-item-dot{ width:7px; height:7px; border-radius:50%; background:var(--border-2); flex:none; }
+.navmenu-item[aria-current="true"] .navmenu-item-dot{ background:var(--brand); }
+.navmenu-item[aria-current="true"]{ color:var(--brand); font-weight:700; }
+
+/* Breadcrumb back-link used at the top of Channel Overview modules */
+.breadcrumb{ display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--ink-3); margin-bottom:10px; }
+.breadcrumb a{ color:var(--ink-3); text-decoration:none; }
+.breadcrumb a:hover{ color:var(--brand); text-decoration:underline; }
+.breadcrumb .sep{ color:var(--baseline); }
+.breadcrumb .current{ color:var(--ink-1); font-weight:650; }
+
+/* Module eyebrow — small label above the H1 identifying which Channel Overview
+   this page belongs to (e.g. "TT OVERVIEW") */
+.module-eyebrow{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--brand); margin-bottom:2px; }
+
+/* Plain page-link tabs (used where tabs are separate files, not JS-switched) */
+.tab-link{ text-decoration:none; }
+
+/* Scaffolded "coming soon" placeholder page content */
+.placeholder-card{
+  background:var(--card); border:1px dashed var(--border-2); border-radius:var(--radius);
+  padding:48px 32px; text-align:center; color:var(--ink-3);
+}
+.placeholder-card h2{ color:var(--ink-1); font-size:18px; margin:0 0 8px; }
+.placeholder-card p{ font-size:13.5px; line-height:1.6; max-width:520px; margin:0 auto; }
+.placeholder-list{ text-align:left; max-width:480px; margin:18px auto 0; font-size:12.5px; line-height:1.9; color:var(--ink-2); }

@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — P&amp;L Overview · Breakdown</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div class="brand-name">Charmiss</div>
+      <div id="navMenuMount"></div>
+    </div>
+    <div class="user-area">
+      <div class="user-meta">
+        <div class="user-name">Nattapong V.</div>
+        <div class="user-role">VP of Sales</div>
+      </div>
+      <div class="avatar">NV</div>
+      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="breadcrumb"><span class="current">P&amp;L Overview</span></div>
+
+  <div class="page-head">
+    <div>
+      <h1 class="page-title">P&amp;L Overview — Breakdown</h1>
+      <p class="page-subtitle">Channel and category-level margin quality, profitability, and cost structure for Finance and Channel leads.</p>
+    </div>
+    <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
+  </div>
+
+  <nav class="tabs">
+    <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
+    <a class="tab active tab-link" href="pnl_breakdown.html">Breakdown</a>
+  </nav>
+
+  <div class="filterbar">
+    <div class="filter-left">
+      <span class="filter-label">Period</span>
+      <button class="period-btn" id="periodBtn">
+        <span id="periodBtnLabel">Year to Date</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="period-dropdown" id="periodDropdown">
+        <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+        <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+        <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+        <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+        <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+        <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+        <div class="period-divider"></div>
+        <div class="custom-range-label">Custom Range</div>
+        <div class="custom-range-row">
+          <select id="customFrom"></select>
+          <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+          <select id="customTo"></select>
+        </div>
+        <button class="apply-btn" id="applyCustom">Apply</button>
+      </div>
+      <span class="filter-label" style="margin-left:8px;">Channel</span>
+      <select class="level-select" id="channelFilterSelect">
+        <option value="all">All Channels</option>
+        <option value="MT">MT</option>
+        <option value="TT">TT</option>
+        <option value="Ecom">Ecom</option>
+      </select>
+      <span class="filter-label" style="margin-left:8px;">Category</span>
+      <select class="level-select" id="categoryFilterSelect">
+        <option value="all">All Categories</option>
+        <option value="skin" disabled>Skin Care (Coming soon)</option>
+        <option value="colorcos" disabled>Color Cosmetics (Coming soon)</option>
+      </select>
+    </div>
+    <div class="filter-scope" id="filterScopeNote">Channel filter scopes Category Profitability (Zone B) below</div>
+  </div>
+
+  <!-- ===== ZONE A: MARGIN QUALITY BY CHANNEL ===== -->
+  <div class="section-label">Margin Quality by Channel</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Net Margin % Trend by Channel</span>
+          <button class="info-icon" data-info-title="Net Margin % Trend by Channel" data-info-text="Net Margin % รายเดือนของ MT / TT / Ecom (this year)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="marginByChTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="marginByChTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="marginByChTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom</div>
+      <div class="chart-legend" id="marginByChTrendLegend"></div>
+      <div class="canvas-wrap" id="marginByChTrendCanvasWrap"><div id="marginByChTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="marginByChTrendTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Cost Structure by Channel</span>
+          <button class="info-icon" data-info-title="Cost Structure by Channel" data-info-text="สัดส่วน % ของ Net Sales แยกเป็น COGS / Trade Spend / Logistics / Marketing&Ads / SG&A / Net Profit ต่อ Channel ในช่วงเวลาที่เลือก">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="costStructTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="costStructDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="costStructExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period · % of each channel's own Net Sales</div>
+      <div class="canvas-wrap" id="costStructCanvasWrap" style="height:280px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="costStructTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== ZONE B: CATEGORY PROFITABILITY ===== -->
+  <div class="section-label">Category Profitability</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:14px;">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Highest Margin Category</span>
+        <button class="info-icon" data-info-title="Highest Margin Category" data-info-text="หมวดหมู่ที่มี Net Margin % สูงสุด ภายใต้ Channel filter ที่เลือก">i</button>
+      </div>
+      <div class="kpi-sub-text" id="kpiHighestCatValue">–</div>
+      <div class="kpi-caption" id="kpiHighestCatCaption">–</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Lowest Margin Category</span>
+        <button class="info-icon" data-info-title="Lowest Margin Category" data-info-text="หมวดหมู่ที่มี Net Margin % ต่ำสุด ภายใต้ Channel filter ที่เลือก">i</button>
+      </div>
+      <div class="kpi-sub-text" id="kpiLowestCatValue">–</div>
+      <div class="kpi-caption" id="kpiLowestCatCaption">–</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Margin by Category</span>
+          <button class="info-icon" data-info-title="Margin by Category" data-info-text="Gross Margin % และ Net Margin % ต่อหมวดหมู่สินค้า — ตอบสนอง Channel filter ด้านบน (All = Blended ทุก Channel)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="mByCategoryTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="mByCategoryDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="mByCategoryExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle" id="mByCategorySubtitle">This period · company-wide, by category</div>
+      <div class="canvas-wrap" id="mByCategoryCanvasWrap"><div id="mByCategoryChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="mByCategoryTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Category Profit Matrix</span>
+          <button class="info-icon" data-info-title="Category Profit Matrix" data-info-text="แกนนอน (X) = Net Profit Contribution (฿), แกนตั้ง (Y) = Net Margin % เส้นประคือค่ามัธยฐาน — Premium Stars/Volume Engines/Niche Premium/Needs Review">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="profitMatrixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="profitMatrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="profitMatrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period, by category</div>
+      <div class="canvas-wrap" id="profitMatrixCanvasWrap" style="height:280px;"><div id="profitMatrixChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="profitMatrixTableWrap"></div>
+    </div>
+  </div>
+
+  <div class="card table-card" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Category Profitability Ranking</span>
+      <button class="info-icon" data-info-title="Category Profitability Ranking" data-info-text="ทั้ง 6 หมวดหมู่ เรียงตาม Net Margin % จากมากไปน้อย ภายใต้ Channel filter ที่เลือก">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="catRankDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="catRankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <table id="catRankTable"></table>
+  </div>
+
+  <!-- ===== ZONE C: COST STRUCTURE OVER TIME ===== -->
+  <div class="section-label">Cost Structure Over Time</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">OPEX Trend</span>
+        <button class="info-icon" data-info-title="OPEX Trend" data-info-text="Trade Spend / Logistics / Marketing&Ads / SG&A รายเดือน Company-wide ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน)">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="opexTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="opexTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="opexTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="opexTrendLegend"></div>
+    <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:200px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="opexTrendTableWrap"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:6px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Marketing &amp; Ads Spend by Channel</span>
+        <button class="info-icon" data-info-title="Marketing & Ads Spend by Channel" data-info-text="Marketing/Ads Spend (฿) ต่อ Channel ในช่วงเวลาที่เลือก — ระดับ Company/Channel เท่านั้น ยังไม่ลงถึงระดับ Platform ของ Ecom (Lazada/Shopee/TikTok)">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="mktByChannelTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="mktByChannelDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="mktByChannelExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">This period · by channel</div>
+    <div class="canvas-wrap" id="mktByChannelCanvasWrap" style="height:140px;"><div id="mktByChannelChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="mktByChannelTableWrap"></div>
+  </div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — identical to pnl_executive_summary.html's shared block
+   (same seed, same order). Keep the two in sync.
+   ============================================================================ */
+const rand = mulberry32(20260630);
+const MONTHS_TOTAL = 36;
+const TODAY = 29;
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
+
+function genSeries(base, growthPerMonth){
+  const actual = [], target = [];
+  let level = base;
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const moy = i % 12;
+    let seasonal = 1;
+    if([9,10,11].includes(moy)) seasonal = 1.13;
+    if(moy === 1) seasonal = 0.9;
+    if(moy === 6 || moy === 7) seasonal = 0.96;
+    const noiseA = 0.94 + rand()*0.12;
+    const noiseT = 0.97 + rand()*0.05;
+    actual.push(Math.round(level * seasonal * noiseA));
+    target.push(Math.round(level * seasonal * noiseT));
+    level = level * (1 + growthPerMonth);
+  }
+  return {actual, target};
+}
+const channelDefs = [
+  {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT'},
+  {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:2000000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1700000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok Shop', color:'#7A5A2E', base:900000, growth:0.0270, group:'Ecom'}
+];
+channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.actual; c.target = s.target; });
+const groupKeys = ['MT','TT','Ecom'];
+function groupSeries(groupKey, field){
+  const arr = new Array(MONTHS_TOTAL).fill(0);
+  channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });
+  return arr;
+}
+const groupActual = {}, groupTarget = {};
+groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
+const companyActual = [], companyTarget = [];
+for(let i=0;i<MONTHS_TOTAL;i++){
+  let a=0,t=0; groupKeys.forEach(g=>{ a+=groupActual[g][i]; t+=groupTarget[g][i]; });
+  companyActual.push(a); companyTarget.push(t);
+}
+
+/* -------------------- Part 2: P&L-only mock data (kept in sync with pnl_executive_summary.html) -------------------- */
+const mtCategoryShares = [
+  {name:'Skin Care', pct:31.9}, {name:'Personal Care', pct:23.2}, {name:'Hair Care', pct:16.8},
+  {name:'Color Cosmetics', pct:15.4}, {name:'Accessories', pct:6.5}, {name:'Fragrance', pct:6.2}
+];
+const ttCategoryShares = [
+  {name:'Skin Care', pct:28.7}, {name:'Color Cosmetics', pct:19.5}, {name:'Hair Care', pct:17.6},
+  {name:'Personal Care', pct:16.3}, {name:'Fragrance', pct:9.8}, {name:'Accessories', pct:8.1}
+];
+const ecomCategoryShares = [
+  {name:'Color Cosmetics', pct:26.4}, {name:'Skin Care', pct:24.8}, {name:'Personal Care', pct:15.2},
+  {name:'Hair Care', pct:14.0}, {name:'Fragrance', pct:11.6}, {name:'Accessories', pct:8.0}
+];
+const categorySharesByChannel = { MT: mtCategoryShares, TT: ttCategoryShares, Ecom: ecomCategoryShares };
+const CATEGORY_NAMES = ['Skin Care','Color Cosmetics','Personal Care','Hair Care','Fragrance','Accessories'];
+const CAT_COLOR_INDEX = {}; CATEGORY_NAMES.forEach((c,i)=>{ CAT_COLOR_INDEX[c] = i+1; });
+
+const CATEGORY_BASE_MARGIN = { 'Fragrance':62, 'Color Cosmetics':58, 'Skin Care':54, 'Hair Care':46, 'Personal Care':42, 'Accessories':38 };
+const CHANNEL_MARGIN_FACTOR = { MT:0.90, TT:1.00, Ecom:0.93 };
+function effectiveMarginPct(channel, category){
+  const raw = CATEGORY_BASE_MARGIN[category] * CHANNEL_MARGIN_FACTOR[channel];
+  return Math.max(20, Math.min(75, raw));
+}
+const OPEX_RATES = {
+  MT:   { tradeSpend:0.10, logistics:0.02, marketing:0.015, sga:0.08 },
+  TT:   { tradeSpend:0.04, logistics:0.03, marketing:0.01,  sga:0.08 },
+  Ecom: { tradeSpend:0.02, logistics:0.07, marketing:0.05,  sga:0.08 }
+};
+const PNL_TARGET_NET_MARGIN = 0.22;
+const groupColor = { MT:'#8E1E4D', TT: cssVar('--tt')||'#3B7A7A', Ecom: cssVar('--ecom')||'#A87C3F' };
+
+function computeChannelMonthlySeries(channelKey){
+  const shares = categorySharesByChannel[channelKey];
+  const netSalesArr = groupActual[channelKey];
+  const rates = OPEX_RATES[channelKey];
+  const blendedMarginBase = shares.reduce((sum,c)=> sum + (c.pct/100) * effectiveMarginPct(channelKey, c.name), 0);
+  const grossProfit=[], cogs=[], tradeSpend=[], logistics=[], marketing=[], sga=[], netProfit=[];
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const netSales = netSalesArr[i];
+    const noise = (rand()-0.5)*3;
+    const marginPct = Math.max(15, Math.min(78, blendedMarginBase + noise));
+    const gp = netSales * marginPct/100;
+    const moy = i % 12;
+    const seasonalMktBoost = (moy===10 || moy===11) ? 0.02 : 0; // Nov=index 10, Dec=index 11 in monthNames
+    const ts = netSales * rates.tradeSpend;
+    const lg = netSales * rates.logistics;
+    const mk = netSales * (rates.marketing + seasonalMktBoost);
+    const sg = netSales * rates.sga;
+    const np = gp - ts - lg - mk - sg;
+    grossProfit.push(gp); cogs.push(netSales-gp); tradeSpend.push(ts); logistics.push(lg); marketing.push(mk); sga.push(sg); netProfit.push(np);
+  }
+  return {netSales:netSalesArr, grossProfit, cogs, tradeSpend, logistics, marketing, sga, netProfit};
+}
+const pnlByChannel = {}; groupKeys.forEach(g => { pnlByChannel[g] = computeChannelMonthlySeries(g); });
+
+function categoryNetSales(channel, catName, s, e){
+  const shares = categorySharesByChannel[channel];
+  const c = shares.find(x=>x.name===catName);
+  if(!c) return 0;
+  return sumRange(groupActual[channel], s, e) * c.pct/100;
+}
+function categoryOpexRateTotal(channel){
+  const r = OPEX_RATES[channel];
+  return r.tradeSpend + r.logistics + r.marketing + r.sga;
+}
+/* channelFilter: 'all' blends MT+TT+Ecom, otherwise a single channel key. Used
+   by every Zone B chart/table so they all respond consistently to the Channel
+   filter dropdown. */
+function categoryMarginsFor(catName, channelFilter, s, e){
+  const channels = channelFilter==='all' ? groupKeys : [channelFilter];
+  let netSalesSum=0, grossProfitSum=0, netProfitSum=0;
+  channels.forEach(channel=>{
+    const net = categoryNetSales(channel, catName, s, e);
+    const gp = net * effectiveMarginPct(channel, catName)/100;
+    const opex = net * categoryOpexRateTotal(channel);
+    netSalesSum += net; grossProfitSum += gp; netProfitSum += (gp - opex);
+  });
+  return { netSales:netSalesSum, grossMarginPct: netSalesSum?grossProfitSum/netSalesSum*100:0, netMarginPct: netSalesSum?netProfitSum/netSalesSum*100:0, netProfit: netProfitSum };
+}
+function resolveColor(cssColorOrVar){
+  const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
+  return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+
+function getPeriodRange(key, custom){
+  switch(key){
+    case 'thisMonth': return [TODAY, TODAY];
+    case 'lastMonth': return [TODAY-1, TODAY-1];
+    case 'thisQuarter': return [TODAY-2, TODAY];
+    case 'lastQuarter': return [TODAY-5, TODAY-3];
+    case 'trailing12': return [TODAY-11, TODAY];
+    case 'custom': return custom;
+    case 'ytd': default: return [24, TODAY];
+  }
+}
+function periodLabelText(key, custom){
+  switch(key){
+    case 'thisMonth': return 'Jun 2026';
+    case 'lastMonth': return 'May 2026';
+    case 'thisQuarter': return 'Q2 2026';
+    case 'lastQuarter': return 'Q1 2026';
+    case 'trailing12': return 'Trailing 12 Months';
+    case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
+    case 'ytd': default: return 'Year to Date';
+  }
+}
+
+/* ---------- Nav menu / popovers / theme ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('pnl-breakdown', 'P&L Overview · Breakdown'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+initThemeToggle(()=> renderAll());
+
+/* ---------- Custom range selects ---------- */
+const customFromSel = document.getElementById('customFrom');
+const customToSel = document.getElementById('customTo');
+for(let i=0;i<=TODAY;i++){
+  const optF = document.createElement('option'); optF.value=i; optF.textContent=monthLabels[i]; customFromSel.appendChild(optF);
+  const optT = document.createElement('option'); optT.value=i; optT.textContent=monthLabels[i]; customToSel.appendChild(optT);
+}
+customFromSel.value = 24; customToSel.value = TODAY;
+
+/* ---------- Period dropdown ---------- */
+const periodBtn = document.getElementById('periodBtn');
+const periodDropdown = document.getElementById('periodDropdown');
+const periodBtnLabel = document.getElementById('periodBtnLabel');
+let currentPeriodKey = 'ytd';
+let currentCustom = [24, TODAY];
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderAll();
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderAll();
+});
+document.getElementById('categoryFilterSelect').disabled = true; // only "All Categories" wired so far, matches every other Breakdown page
+document.getElementById('channelFilterSelect').addEventListener('change', renderAll);
+
+/* ---------- Render ---------- */
+let latestData = {};
+
+function renderAll(){
+  const [s,e] = getPeriodRange(currentPeriodKey, currentCustom);
+  const brand = cssVar('--brand') || '#8E1E4D';
+  const good = cssVar('--good') || '#0ca30c';
+  const baseline = cssVar('--baseline') || '#c3c2b7';
+  const channelFilter = document.getElementById('channelFilterSelect').value;
+
+  const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
+  const curYearLabels = curYearIdx.map(i=>monthLabels[i]);
+
+  /* === ZONE A1: Net Margin % Trend by Channel === */
+  document.getElementById('marginByChTrendLegend').innerHTML = groupKeys.map(g =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColor[g]+'"></span>'+g+'</span>'
+  ).join('');
+  const nmTrendSeries = groupKeys.map(g => ({
+    data: curYearIdx.map(i => i<=TODAY ? (pnlByChannel[g].netSales[i] ? pnlByChannel[g].netProfit[i]/pnlByChannel[g].netSales[i]*100 : 0) : null),
+    color: groupColor[g], width:2.2, showLastLabel:true, lastLabelFormatter: v=>fmtPct(v,1)
+  }));
+  buildLineChartSVG('marginByChTrendChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series: nmTrendSeries });
+  latestData.marginByChTrend = { labels: curYearLabels, channels: groupKeys, series: nmTrendSeries.map(s=>s.data) };
+
+  /* === ZONE A2: Cost Structure by Channel (stacked 100%) === */
+  const costLines = [
+    { key:'cogs', name:'COGS', color: baseline },
+    { key:'tradeSpend', name:'Trade Spend', color: resolveColor('var(--cat-1)') },
+    { key:'logistics', name:'Logistics', color: resolveColor('var(--cat-2)') },
+    { key:'marketing', name:'Marketing/Ads', color: resolveColor('var(--cat-3)') },
+    { key:'sga', name:'SG&A', color: resolveColor('var(--cat-4)') },
+    { key:'netProfit', name:'Net Profit', color: good }
+  ];
+  buildStacked100BarSVG('costStructChart', {
+    labels: groupKeys, height:280,
+    series: costLines.map(cl => ({ name:cl.name, color:cl.color, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })),
+    valueFormatter: fmtTHB
+  });
+  latestData.costStruct = { channels: groupKeys, lines: costLines.map(cl => ({ name:cl.name, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })) };
+
+  /* === ZONE B: Category margins under current Channel filter === */
+  const catMargins = CATEGORY_NAMES.map(cat => ({ name:cat, ...categoryMarginsFor(cat, channelFilter, s, e) }));
+  const sortedByNetMargin = [...catMargins].sort((a,b)=>b.netMarginPct-a.netMarginPct);
+  const highest = sortedByNetMargin[0], lowest = sortedByNetMargin[sortedByNetMargin.length-1];
+  document.getElementById('kpiHighestCatValue').textContent = highest.name;
+  document.getElementById('kpiHighestCatCaption').textContent = fmtPct(highest.netMarginPct,1) + ' Net Margin · ' + (channelFilter==='all'?'all channels':channelFilter);
+  document.getElementById('kpiLowestCatValue').textContent = lowest.name;
+  document.getElementById('kpiLowestCatCaption').textContent = fmtPct(lowest.netMarginPct,1) + ' Net Margin · ' + (channelFilter==='all'?'all channels':channelFilter);
+
+  document.getElementById('mByCategorySubtitle').textContent = 'This period · ' + (channelFilter==='all'?'company-wide (all channels)':channelFilter+' only') + ', by category';
+  buildGroupedBarSVG('mByCategoryChart', {
+    labels: CATEGORY_NAMES, yFormatter: v=>v.toFixed(0)+'%', referenceValue:0, showValueLabels:true,
+    series:[ {name:'Gross Margin %', color:brand, values:catMargins.map(c=>c.grossMarginPct)}, {name:'Net Margin %', color:good, values:catMargins.map(c=>c.netMarginPct)} ]
+  });
+  latestData.mByCategory = catMargins;
+
+  /* === ZONE B2: Category Profit Matrix === */
+  const matrixPoints = catMargins.map(c => ({
+    x: c.netProfit, y: c.netMarginPct, label: c.name, color: resolveColor('var(--cat-'+CAT_COLOR_INDEX[c.name]+')')
+  }));
+  buildScatterSVG('profitMatrixChart', matrixPoints, {
+    xFormatter: fmtTHB, yFormatter: v=>v.toFixed(0)+'%',
+    xAxisTitle: 'Net Profit Contribution (฿)', yAxisTitle: 'Net Margin (%)',
+    quadrantLabels: { topRight:'Premium Stars', topLeft:'Niche Premium', bottomRight:'Volume Engines', bottomLeft:'Needs Review' }
+  });
+  latestData.matrix = matrixPoints;
+
+  /* === ZONE B3: Category Profitability Ranking table === */
+  document.getElementById('catRankTable').innerHTML =
+    '<thead><tr><th>#</th><th>Category</th><th>Net Sales</th><th>Gross Margin %</th><th>Net Margin %</th><th>Net Profit</th></tr></thead><tbody>'
+    + sortedByNetMargin.map((c,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+c.name+'</td><td class="tnum">'+fmtTHB(c.netSales)+'</td><td class="tnum">'+fmtPct(c.grossMarginPct,1)+'</td><td class="tnum">'+fmtPct(c.netMarginPct,1)+'</td><td class="tnum">'+fmtTHB(c.netProfit)+'</td></tr>').join('')
+    + '</tbody>';
+  latestData.catRank = sortedByNetMargin;
+
+  /* === ZONE C1: OPEX Trend (trailing 18 months, company-wide, ignores Period/Channel filter) === */
+  const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
+  const shareLabels = shareIdx.map(i=>monthLabels[i]);
+  const opexLines = [
+    { name:'Trade Spend', color: resolveColor('var(--cat-1)'), key:'tradeSpend' },
+    { name:'Logistics', color: resolveColor('var(--cat-2)'), key:'logistics' },
+    { name:'Marketing/Ads', color: resolveColor('var(--cat-3)'), key:'marketing' },
+    { name:'SG&A', color: resolveColor('var(--cat-4)'), key:'sga' }
+  ];
+  const opexSeries = opexLines.map(l => ({
+    name:l.name, color:l.color,
+    values: shareIdx.map(i => groupKeys.reduce((sum,g)=> sum + pnlByChannel[g][l.key][i], 0))
+  }));
+  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:200 });
+  document.getElementById('opexTrendLegend').innerHTML = opexLines.map(l =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+l.color+'"></span>'+l.name+'</span>'
+  ).join('');
+  latestData.opexTrend = { labels: shareLabels, series: opexSeries };
+
+  /* === ZONE C2: Marketing & Ads Spend by Channel === */
+  const mktItems = groupKeys.map(g => ({ label:g, value: sumRange(pnlByChannel[g].marketing,s,e), color: groupColor[g] }));
+  buildHBarCompareSVG('mktByChannelChart', mktItems, { referenceValue:0, formatValue: fmtTHB, labelW:60, rowHeight:44 });
+  latestData.mktByChannel = mktItems;
+}
+
+/* --- Toolbar --- */
+document.getElementById('marginByChTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('marginByChTrendChart', 'pnl_net_margin_trend_by_channel.svg'));
+document.getElementById('marginByChTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('marginByChTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('marginByChTrendTableWrap');
+  const canvasWrap = document.getElementById('marginByChTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.marginByChTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.channels.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+(s[i]!==null?fmtPct(s[i],1):'–')+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('costStructDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('costStructChart', 'pnl_cost_structure_by_channel.svg'));
+document.getElementById('costStructExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('costStructTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('costStructTableWrap');
+  const canvasWrap = document.getElementById('costStructCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.costStruct;
+  let html = '<table class="mini-table"><thead><tr><th>Line</th>' + d.channels.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  d.lines.forEach(l=>{ html += '<tr><td>'+l.name+'</td>' + l.values.map(v=>'<td>'+fmtTHB(v)+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('mByCategoryDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Category','Net Sales','Gross Margin %','Net Margin %','Net Profit']];
+  latestData.mByCategory.forEach(c=> rows.push([c.name, Math.round(c.netSales), c.grossMarginPct.toFixed(1), c.netMarginPct.toFixed(1), Math.round(c.netProfit)]));
+  downloadCSV(rows, 'pnl_margin_by_category.csv');
+});
+document.getElementById('mByCategoryExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mByCategoryTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('mByCategoryTableWrap');
+  const canvasWrap = document.getElementById('mByCategoryCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.mByCategory;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Gross Margin %</th><th>Net Margin %</th></tr></thead><tbody>';
+  d.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtPct(c.grossMarginPct,1)+'</td><td>'+fmtPct(c.netMarginPct,1)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('profitMatrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('profitMatrixChart', 'pnl_category_profit_matrix.svg'));
+document.getElementById('profitMatrixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('profitMatrixTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('profitMatrixTableWrap');
+  const canvasWrap = document.getElementById('profitMatrixCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.matrix;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Net Profit</th><th>Net Margin %</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.x)+'</td><td>'+p.y.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('catRankDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['#','Category','Net Sales','Gross Margin %','Net Margin %','Net Profit']];
+  latestData.catRank.forEach((c,i)=> rows.push([i+1, c.name, Math.round(c.netSales), c.grossMarginPct.toFixed(1), c.netMarginPct.toFixed(1), Math.round(c.netProfit)]));
+  downloadCSV(rows, 'pnl_category_profitability_ranking.csv');
+});
+document.getElementById('catRankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('opexTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('opexTrendChart', 'pnl_opex_trend.svg'));
+document.getElementById('opexTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('opexTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('opexTrendTableWrap');
+  const canvasWrap = document.getElementById('opexTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.opexTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('mktByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mktByChannelChart', 'pnl_marketing_ads_spend_by_channel.svg'));
+document.getElementById('mktByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mktByChannelTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('mktByChannelTableWrap');
+  const canvasWrap = document.getElementById('mktByChannelCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.mktByChannel;
+  let html = '<table class="mini-table"><thead><tr><th>Channel</th><th>Marketing/Ads Spend</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.value)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Init ---------- */
+renderAll();
+</script>
+</body>
+</html>
