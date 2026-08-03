@@ -31,7 +31,6 @@
   <div class="page-head">
     <div>
       <h1 class="page-title">Sales Overview — Executive Outlook</h1>
-      <p class="page-subtitle">A complete business snapshot for leadership — readable in 2–3 minutes — before drilling into any single channel's own Overview.</p>
     </div>
     <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
   </div>
@@ -65,24 +64,34 @@
         <button class="apply-btn" id="applyCustom">Apply</button>
       </div>
     </div>
-    <div class="filter-scope">Company-wide, all channels (MT, TT, Ecom)</div>
   </div>
 
+  <nav class="section-nav">
+    <a href="#sec-glance">At a Glance</a>
+    <a href="#sec-performance">Performance &amp; Composition</a>
+    <a href="#sec-comparison">Channel Comparison</a>
+    <a href="#sec-driving">What's Driving It</a>
+  </nav>
+
   <!-- ===== SECTION 1: AT A GLANCE ===== -->
-  <div class="section-label">At a Glance</div>
+  <div class="section-label" id="sec-glance">At a Glance</div>
+  <div class="section-note">MoM = latest month vs previous month · YoY = latest month vs same month, last year</div>
   <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
     <div class="card">
       <div class="card-head">
         <span class="card-title">Total Net Sales</span>
         <button class="info-icon" data-info-title="Total Net Sales" data-info-text="ผลรวมยอดขายสุทธิ (หลังหักคืน/ส่วนลด) ในช่วงเวลาที่เลือก รวมทุก Channel (MT, TT, Ecom)">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiTotalSalesValue">–</span><span class="kpi-unit" id="kpiTotalSalesUnit">THB</span></div>
-      <div class="kpi-caption" id="kpiTotalSalesCaption">Year to Date</div>
+      <div class="kpi-value-line">
+        <span class="kpi-value" id="kpiTotalSalesValue">–</span><span class="kpi-unit" id="kpiTotalSalesUnit">THB</span>
+        <span class="kpi-caption-inline" id="kpiTotalSalesCaption">Year to Date</span>
+      </div>
       <div class="kpi-delta-row">
         <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiTotalSalesMom">–</span></div>
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiTotalSalesYoy">–</span></div>
       </div>
       <div id="kpiTotalSalesSpark"></div>
+      <div class="kpi-caption" id="kpiTopChannelCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
     </div>
 
     <div class="card">
@@ -90,8 +99,10 @@
         <span class="card-title">Target Attainment %</span>
         <button class="info-icon" data-info-title="Target Attainment %" data-info-text="(ยอดขายจริง ÷ เป้าหมายยอดขาย) × 100 ในช่วงเวลาเดียวกัน คำนวณจากผลรวมทุก Channel — Gap to Target ด้านล่างคือ Actual YTD − Target YTD (Calendar YTD เสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน)">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiAttainValue">–</span></div>
-      <div class="kpi-caption" id="kpiAttainCaption">Year to Date</div>
+      <div class="kpi-value-line">
+        <span class="kpi-value" id="kpiAttainValue">–</span>
+        <span class="kpi-caption-inline" id="kpiAttainCaption">Year to Date</span>
+      </div>
       <div class="kpi-delta-row">
         <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAttainMom">–</span></div>
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAttainYoy">–</span></div>
@@ -105,54 +116,41 @@
         <span class="card-title">Full Year Forecast</span>
         <button class="info-icon" data-info-title="Full Year Forecast" data-info-text="ประมาณการแบบ Run-rate อย่างง่าย: (ยอดขาย YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว) × 12 ÷ เป้าหมายทั้งปี × 100 — ยังไม่ปรับ Seasonality">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiForecastValue">–</span></div>
-      <div class="kpi-caption" id="kpiForecastCaption">Projected Attainment · full year</div>
+      <div class="kpi-value-line">
+        <span class="kpi-value" id="kpiForecastValue">–</span>
+        <span class="kpi-caption-inline" id="kpiForecastCaption">Projected Attainment · full year</span>
+      </div>
       <div id="kpiForecastSpark" style="margin-top:14px;"></div>
+      <div class="kpi-caption" id="kpiForecastGapCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
     </div>
   </div>
 
-  <!-- ===== SECTION 2: CHANNEL COMPARISON ===== -->
-  <div class="section-label">Channel Comparison</div>
-  <div class="channel-snapshot-grid" id="channelSnapshotGrid"></div>
-
+  <!-- ===== SECTION 2: PERFORMANCE & COMPOSITION ===== -->
+  <div class="section-label" id="sec-performance">Performance &amp; Composition</div>
   <div class="card" style="margin-bottom:14px;">
-    <div class="card-head">
-      <span class="card-title">Compare Performance Table</span>
-      <button class="info-icon" data-info-title="Compare Performance" data-info-text="เปรียบเทียบ Metric สำคัญของ MT, TT และ Ecom ในช่วงเวลาเดียวกัน ค่าที่ดีที่สุดของแต่ละแถวจะถูก Highlight">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="compareDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="compareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Revenue Trend</span>
+        <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายจริงรายเดือน เทียบกับเป้าหมายและยอดขายปีก่อนในเดือนเดียวกัน เส้น This Year จะแสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="revTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="revDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <table class="compare-table" id="compareTable"></table>
+    <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
+    <div class="chart-headline" id="revenueHeadline">–</div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
+      <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
+    </div>
+    <div class="canvas-wrap" id="revCanvasWrap" style="height:220px;"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="revTableWrap"></div>
   </div>
 
-  <!-- ===== SECTION 3: PERFORMANCE & COMPOSITION ===== -->
-  <div class="section-label">Performance &amp; Composition</div>
   <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Revenue Trend</span>
-          <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายจริงรายเดือน เทียบกับเป้าหมายและยอดขายปีก่อนในเดือนเดียวกัน เส้น This Year จะแสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="revTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="revDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
-      <div class="chart-headline" id="revenueHeadline">–</div>
-      <div class="chart-legend">
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
-        <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
-      </div>
-      <div class="canvas-wrap" id="revCanvasWrap"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="revTableWrap"></div>
-    </div>
-
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
@@ -165,7 +163,6 @@
           <button class="tool-btn" id="donutExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This period, company-wide</div>
       <div class="donut-layout" id="donutLayout">
         <div class="donut-canvas-wrap">
           <div id="donutChart" style="width:100%;height:100%;"></div>
@@ -178,89 +175,51 @@
       </div>
       <div class="data-table-wrap" id="donutTableWrap"></div>
     </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Category</span>
+          <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ของยอดขายแต่ละหมวดหมู่สินค้า เทียบกับยอดขายรวมในช่วงเวลาที่เลือก">i</button>
+        </div>
+        <div class="toolbar">
+          <select class="level-select" id="catLevelSelect">
+            <option value="category">Category</option>
+            <option value="subcategory" disabled>Sub-Category (Coming soon)</option>
+            <option value="type" disabled>Type (Coming soon)</option>
+            <option value="series" disabled>Series (Coming soon)</option>
+          </select>
+          <button class="tool-btn" id="catTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="catDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="catExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="cat-bars" id="catBars"></div>
+      <div class="data-table-wrap" id="catTableWrap"></div>
+    </div>
   </div>
+
+  <!-- ===== SECTION 3: CHANNEL COMPARISON ===== -->
+  <div class="section-label" id="sec-comparison">Channel Comparison</div>
+  <div class="channel-snapshot-grid" id="channelSnapshotGrid"></div>
 
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Channel Growth Comparison (YoY)</span>
-        <button class="info-icon" data-info-title="Channel Growth Comparison (YoY)" data-info-text="% การเปลี่ยนแปลงยอดขายรายเดือนเทียบเดือนเดียวกันปีก่อน แยกตาม Channel (MT/TT/Ecom) — ดูว่า Channel ไหน Outperform Channel ไหนในแต่ละเดือน">i</button>
+        <span class="chart-title">Net Sales: Last Year vs This Year vs Target</span>
+        <button class="info-icon" data-info-title="Actual vs Target vs Last Year" data-info-text="ยอดขายสุทธิของช่วงเวลาที่เลือกด้านบน (Period Filter) แยกตาม Channel (MT/TT/Ecom) — 3 แท่งต่อ Channel: Last Year (Net Sales), This Year (Net Sales + Growth YoY), Target (Attainment % + ส่วนต่างจาก Target) ยอดรวมทั้งบริษัทดูได้จาก KPI Card ด้านบนแทน (ไม่ใส่ในกราฟนี้เพื่อไม่ให้ Scale ถูกดึงสูงเกินไป) กดดูเป็นตารางเพื่อดูตัวเลขละเอียดทุก Metric ในที่เดียว (แทนที่ Compare Performance Table เดิม)">i</button>
       </div>
       <div class="toolbar">
-        <button class="tool-btn" id="chGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="chGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="chGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        <button class="tool-btn" id="periodCompareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="periodCompareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="periodCompareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Which channel is outperforming — same month, year over year, full 12 months</div>
-    <div class="chart-legend" id="chGrowthLegend"></div>
-    <div class="canvas-wrap" id="chGrowthCanvasWrap" style="height:220px;"><div id="chGrowthChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="chGrowthTableWrap"></div>
+    <div class="chart-subtitle" id="periodCompareSubtitle">Same range, previous year · by Channel</div>
+    <div class="chart-legend" id="periodCompareLegend"></div>
+    <div class="canvas-wrap" id="periodCompareCanvasWrap" style="height:320px;"><div id="periodCompareChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="periodCompareTableWrap"></div>
   </div>
-
-  <div class="card">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Sales by Category</span>
-        <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ของยอดขายแต่ละหมวดหมู่สินค้า เทียบกับยอดขายรวม (Company-wide) ในช่วงเวลาที่เลือก">i</button>
-      </div>
-      <div class="toolbar">
-        <select class="level-select" id="catLevelSelect">
-          <option value="category">Category</option>
-          <option value="subcategory" disabled>Sub-Category (Coming soon)</option>
-          <option value="type" disabled>Type (Coming soon)</option>
-          <option value="series" disabled>Series (Coming soon)</option>
-        </select>
-        <button class="tool-btn" id="catTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="catDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="catExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">Category · company-wide</div>
-    <div class="cat-bars" id="catBars"></div>
-    <div class="data-table-wrap" id="catTableWrap"></div>
-  </div>
-
-  <!-- ===== SECTION 4: WHAT'S DRIVING IT ===== -->
-  <div class="section-label">What's Driving It</div>
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Growth Contribution Waterfall</span>
-          <button class="info-icon" data-info-title="Growth Contribution Waterfall" data-info-text="แท่งเริ่ม = ยอดขาย YTD ปีก่อน, แท่งกลาง = ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของแต่ละ Channel ทีละแท่ง (เขียว=บวก, แดง=ลบ), แท่งจบ = ยอดขาย YTD ปีนี้รวม — บอกว่า Channel ไหน Contribute ต่อการเติบโตรวมเท่าไหร่ (Calendar YTD เสมอ)">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="waterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="waterfallDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="waterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Last Year YTD → contribution by channel → This Year YTD</div>
-      <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:250px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="waterfallTableWrap"></div>
-    </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Return / Cancellation Rate Trend</span>
-          <button class="info-icon" data-info-title="Return / Cancellation Rate Trend" data-info-text="Weighted average ของ (Credit Note มูลค่า MT+TT + Cancellation มูลค่า Ecom) ÷ ยอดขายรวม (Gross) × 100 รายเดือน — เป็นค่า Blend ข้าม 2 กลไกที่ต่างกัน: Credit Note (คืนสินค้า MT/TT) และ Cancellation (ยกเลิกออเดอร์ Ecom) เส้นประ = Threshold 5%">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="retTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="retTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="retTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Blended MT+TT (Credit Note) and Ecom (Cancellation) · dashed = 5% threshold</div>
-      <div class="canvas-wrap" id="retTrendCanvasWrap" style="height:250px;"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="retTrendTableWrap"></div>
-    </div>
-  </div>
-
-  <!-- ===== SECTION 5: CHANNEL TRENDS ===== -->
-  <div class="section-label">Channel Trends</div>
 
   <div class="chart-grid">
     <div class="card">
@@ -277,8 +236,26 @@
       </div>
       <div class="channel-toggle-row" id="channelToggleRow"></div>
       <div class="chart-legend" id="trendLegend"></div>
-      <div class="canvas-wrap" id="trendCanvasWrap" style="height:210px;"><div id="trendChart" style="width:100%;height:100%;"></div></div>
+      <div class="canvas-wrap" id="trendCanvasWrap" style="height:220px;"><div id="trendChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="trendTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Channel Growth Comparison (YoY)</span>
+          <button class="info-icon" data-info-title="Channel Growth Comparison (YoY)" data-info-text="% การเปลี่ยนแปลงยอดขายรายเดือนเทียบเดือนเดียวกันปีก่อน แยกตาม Channel (MT/TT/Ecom) — ดูว่า Channel ไหน Outperform Channel ไหนในแต่ละเดือน กราฟนี้แสดงเป็นรายเดือนเสมอ (เต็มทุกเดือนที่มีข้อมูลจริง) ไม่ผูกกับ Period Filter ด้านบนของหน้า — ต่างจาก Growth YoY ใน Snapshot Card/กราฟ Net Sales ที่ผูกกับ Period Filter">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="chGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="chGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="chGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle" id="chGrowthSubtitle">Each month vs same month last year</div>
+      <div class="chart-legend" id="chGrowthLegend"></div>
+      <div class="canvas-wrap" id="chGrowthCanvasWrap" style="height:220px;"><div id="chGrowthChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="chGrowthTableWrap"></div>
     </div>
   </div>
 
@@ -294,10 +271,51 @@
         <button class="tool-btn" id="mixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="callout-text" id="mixCallout">–</div>
     <div class="chart-legend" id="mixLegend"></div>
     <div class="canvas-wrap" id="mixCanvasWrap" style="height:280px;"><div id="mixChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="mixCallout">–</div>
     <div class="data-table-wrap" id="mixTableWrap"></div>
+  </div>
+
+  <!-- ===== SECTION 4: WHAT'S DRIVING IT ===== -->
+  <div class="section-label" id="sec-driving" style="margin-top:28px;">What's Driving It</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Growth Contribution Waterfall</span>
+          <button class="info-icon" data-info-title="Growth Contribution Waterfall" data-info-text="แท่งเริ่ม = ยอดขาย YTD ปีก่อน, แท่งกลาง = ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของแต่ละ Channel ทีละแท่ง (เขียว=บวก, แดง=ลบ), แท่งจบ = ยอดขาย YTD ปีนี้รวม — บอกว่า Channel ไหน Contribute ต่อการเติบโตรวมเท่าไหร่ (Calendar YTD เสมอ)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="waterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="waterfallDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="waterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle" id="waterfallSubtitle">Last Year YTD → contribution by channel → This Year YTD</div>
+      <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:250px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="waterfallCallout">–</div>
+      <div class="data-table-wrap" id="waterfallTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Return / Cancellation Rate Trend</span>
+          <button class="info-icon" data-info-title="Return / Cancellation Rate Trend" data-info-text="3 เส้นแยกอิสระต่อกัน: MT (Credit Note), TT (Credit Note), Ecom (Cancellation) — MT/TT เป็นกลไกคืนสินค้าแบบเดียวกันแต่คนละอัตรา ส่วน Ecom คือการยกเลิกออเดอร์ก่อนจัดส่ง (กลไกต่างกัน) ทั้งหมด Normalize เป็น % ของยอดขายช่องทางนั้น เส้นประ = Threshold 5% ตัวเลขที่จุดล่าสุดและใน Insight ด้านล่างแสดงทั้ง % และมูลค่า ฿ คู่กัน กดดูเป็นตารางเพื่อดู % และ ฿ รายเดือนแยกตาม Channel">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="retTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="retTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="retTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">MT vs TT vs Ecom · independent series · dashed = 5% threshold</div>
+      <div class="chart-legend" id="retTrendLegend"></div>
+      <div class="canvas-wrap" id="retTrendCanvasWrap" style="height:250px;"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="retTrendCallout">–</div>
+      <div class="data-table-wrap" id="retTrendTableWrap"></div>
+    </div>
   </div>
 
 </div>
@@ -360,13 +378,22 @@ for(let i=0;i<MONTHS_TOTAL;i++){
   companyActual.push(a); companyTarget.push(t);
 }
 
-/* Credit Note (MT+TT) / Cancellation (Ecom) mock series — illustrative
-   fractions of that group's monthly actual, with independent noise, used
-   only by the Return/Cancellation Rate Trend formula given in the spec. */
-const mtttCNRate = []; const ecomCancelRate = [];
+/* Credit Note (MT, TT) / Cancellation (Ecom) mock series — illustrative
+   fractions of that channel's monthly actual, with independent noise, used
+   only by the Return/Cancellation Rate Trend formula given in the spec.
+   Fix (2026-08-03): MT and TT used to share ONE rate series (mtttCNRate),
+   which meant any chart splitting them into separate lines would render two
+   perfectly identical lines — looked like a bug. Split into 2 independent
+   series (this changes how many rand() calls this block consumes, so this
+   exact same replacement must be made in module_mt_executive_summary.html,
+   module_mt_breakdown.html, module_ecom_executive_summary.html and
+   module_ecom_breakdown.html too, at this same relative position, to keep
+   all 5 files' rand() sequence in sync — see Charmiss_Dashboard_Spec.md §6). */
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
 for(let i=0;i<MONTHS_TOTAL;i++){
-  mtttCNRate.push(0.032 + rand()*0.012);   // ~3.2%-4.4% of MT+TT actual
-  ecomCancelRate.push(0.065 + rand()*0.02); // ~6.5%-8.5% of Ecom actual
+  mtCNRate.push(0.028 + rand()*0.014);      // ~2.8%-4.2% of MT actual (Credit Note)
+  ttCNRate.push(0.034 + rand()*0.016);      // ~3.4%-5.0% of TT actual (Credit Note)
+  ecomCancelRate.push(0.065 + rand()*0.02); // ~6.5%-8.5% of Ecom actual (Cancellation)
 }
 
 const categoryShares = [
@@ -474,14 +501,18 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiTotalSalesMom').innerHTML = '<span class="'+deltaClass(momGrowth)+'">'+fmtSignedPct(momGrowth)+'</span>';
   document.getElementById('kpiTotalSalesYoy').innerHTML = '<span class="'+deltaClass(yoyGrowth)+'">'+fmtSignedPct(yoyGrowth)+'</span>';
   const salesSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) salesSpark.push(companyActual[i]);
-  document.getElementById('kpiTotalSalesSpark').innerHTML = sparklineSVG(salesSpark, brand, fmtTHB);
+  document.getElementById('kpiTotalSalesSpark').innerHTML = sparklineSVG('kpiTotalSalesSpark', salesSpark, brand, fmtTHB);
+  const glanceGroupTotals = {}; groupKeys.forEach(g=> glanceGroupTotals[g] = sumRange(groupActual[g], s, e));
+  const topChannelKey = groupKeys.reduce((a,b)=> glanceGroupTotals[a] >= glanceGroupTotals[b] ? a : b);
+  const topChannelPct = totalActual ? (glanceGroupTotals[topChannelKey]/totalActual*100) : 0;
+  document.getElementById('kpiTopChannelCaption').innerHTML = 'Top Channel: <strong>'+groupNames[topChannelKey]+'</strong> ('+topChannelPct.toFixed(1)+'% of total)';
 
   document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
   document.getElementById('kpiAttainCaption').textContent = label;
   document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
   document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
   const attainSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
-  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG(attainSpark, brand, v=>fmtPct(v,0));
+  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', attainSpark, brand, v=>fmtPct(v,0));
 
   const ytdStart = 24;
   const ytdActual = sumRange(companyActual, ytdStart, TODAY);
@@ -496,10 +527,13 @@ function renderAll(periodKey, custom){
   const projectedAttainPct = fullYearTarget ? (runRateAnnual / fullYearTarget * 100) : 0;
   document.getElementById('kpiForecastValue').textContent = fmtPct(projectedAttainPct,0);
   const forecastActualSeries = []; for(let i=ytdStart;i<=TODAY;i++) forecastActualSeries.push(attainAt(i));
-  document.getElementById('kpiForecastSpark').innerHTML = buildTrajectorySparklineSVG(forecastActualSeries, projectedAttainPct, brand, v=>fmtPct(v,0));
+  document.getElementById('kpiForecastSpark').innerHTML = buildTrajectorySparklineSVG('kpiForecastSpark', forecastActualSeries, projectedAttainPct, brand, v=>fmtPct(v,0));
+  const fullYearGapValue = runRateAnnual - fullYearTarget;
+  const fullYearGapClass = fullYearGapValue>=0 ? 'pos' : 'neg';
+  document.getElementById('kpiForecastGapCaption').innerHTML = 'Projected Gap: <span class="'+fullYearGapClass+'">'+(fullYearGapValue>=0?'+':'−')+fmtTHB(Math.abs(fullYearGapValue))+'</span> (Full Year Actual vs Target)';
 
   /* === SECTION 2: Performance & Composition === */
-  document.getElementById('revenueHeadline').textContent = fmtTHB(totalActual) + ' THB · ' + label + ', company-wide';
+  document.getElementById('revenueHeadline').textContent = fmtTHB(totalActual) + ' THB · ' + label;
   const curYearIdx = []; for(let i=24;i<36;i++) curYearIdx.push(i);
   const curYearLabels = curYearIdx.map(i => monthNames[i%12]);
   const revenueThisYear = curYearIdx.map(i => i<=TODAY ? companyActual[i] : null);
@@ -536,11 +570,25 @@ function renderAll(periodKey, custom){
       + '<span class="legend-value">'+fmtTHB(groupTotals[g])+' · '+pct.toFixed(1)+'%</span></div>';
   }).join('');
 
+  // Fix (2026-08-03, James's feedback): used to always plot the full Jan-Dec
+  // frame with future months masked to null, which left a large empty stretch
+  // of blank canvas after the current month (no other reference line fills
+  // it in here, unlike Revenue Trend's Target/Last Year lines). Trimmed to
+  // just the months that actually have a YoY value.
+  const chGrowthIdx = curYearIdx.filter(i=>i<=TODAY);
+  const chGrowthLabels = chGrowthIdx.map(i=>monthNames[i%12]);
   const chGrowthSeries = groupKeys.map(g=>({
-    data: curYearIdx.map(i => i<=TODAY ? pctChange(groupActual[g][i], groupActual[g][i-12]) : null),
+    data: chGrowthIdx.map(i => pctChange(groupActual[g][i], groupActual[g][i-12])),
     color: groupColorVar[g], width:2.2, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)
   }));
-  buildLineChartSVG('chGrowthChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series: chGrowthSeries });
+  buildLineChartSVG('chGrowthChart', { labels: chGrowthLabels, yFormatter: v=>v.toFixed(0)+'%', series: chGrowthSeries });
+  // Fix (2026-08-03): folded the old standalone section-note ("Growth YoY on
+  // the cards/table above = selected Period vs same Period last year...")
+  // into this chart's own subtitle instead of a separate note below the grid.
+  // Further simplified per feedback — the "ignores Period filter" technical
+  // caveat moved into the info-icon popover so casual readers get a plain
+  // date range here, and anyone who wants the full explanation can tap ⓘ.
+  document.getElementById('chGrowthSubtitle').textContent = chGrowthLabels[0]+'–'+chGrowthLabels[chGrowthLabels.length-1]+' · each month vs same month last year';
   document.getElementById('chGrowthLegend').innerHTML = groupKeys.map(g=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+g+'</span>'
   ).join('');
@@ -553,12 +601,16 @@ function renderAll(periodKey, custom){
       + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct+'%</span></div></div></div>';
   }).join('');
 
-  /* === SECTION 3: What's Driving It === */
+  /* === SECTION 4: What's Driving It === */
   const lastYearYTD = sumRange(companyActual, ytdStart-12, TODAY-12);
   const channelDeltas = {};
   groupKeys.forEach(g=>{
     channelDeltas[g] = sumRange(groupActual[g], ytdStart, TODAY) - sumRange(groupActual[g], ytdStart-12, TODAY-12);
   });
+  // "YTD" here always means Calendar YTD (Jan through the latest closed
+  // month, currently Jun) — both bars cover the SAME Jan-Jun range, one year
+  // apart, not "last full year vs this partial year". Spelled out in full in
+  // the chart-subtitle below (kept short here so bar labels don't overflow).
   const waterfallSteps = [
     {label:'Last Year YTD', value: lastYearYTD, type:'start'},
     {label:'MT', value: channelDeltas.MT, type:'delta'},
@@ -566,21 +618,54 @@ function renderAll(periodKey, custom){
     {label:'Ecom', value: channelDeltas.Ecom, type:'delta'},
     {label:'This Year YTD', value: ytdActual, type:'end'}
   ];
+  const ytdRangeLabel = monthNames[ytdStart%12]+'–'+monthNames[TODAY%12];
+  document.getElementById('waterfallSubtitle').textContent = 'Last Year '+ytdRangeLabel+' ('+(2024+Math.floor((ytdStart-12)/12))+') → contribution by channel → This Year '+ytdRangeLabel+' ('+(2024+Math.floor(ytdStart/12))+')';
   buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB });
   latestData.waterfall = waterfallSteps;
 
-  const mtCNValue = curYearIdx.map(i => i<=TODAY ? groupActual.MT[i]*mtttCNRate[i] : null);
-  const ttCNValue = curYearIdx.map(i => i<=TODAY ? groupActual.TT[i]*mtttCNRate[i] : null);
-  const ecomCancelValue = curYearIdx.map(i => i<=TODAY ? groupActual.Ecom[i]*ecomCancelRate[i] : null);
-  const blendedRate = curYearIdx.map((i,idx) => i<=TODAY ? (mtCNValue[idx]+ttCNValue[idx]+ecomCancelValue[idx])/companyActual[i]*100 : null);
+  // Short insight caption (matches the Return/Cancellation Rate Trend card's
+  // pattern) — also fills the empty space this card used to have below the
+  // chart when its neighbor card grew taller.
+  const totalGrowthAmt = ytdActual - lastYearYTD;
+  const totalGrowthPct = lastYearYTD ? pctChange(ytdActual, lastYearYTD) : null;
+  const topContributor = groupKeys.reduce((a,b)=> channelDeltas[a] >= channelDeltas[b] ? a : b);
+  document.getElementById('waterfallCallout').innerHTML =
+    'Total growth: <span class="'+deltaClass(totalGrowthAmt)+'">'+(totalGrowthAmt>=0?'+':'')+fmtTHB(totalGrowthAmt)+' ('+(totalGrowthPct!==null?fmtSignedPct(totalGrowthPct):'–')+')</span>'
+    + ' · Top contributor: <b>'+topContributor+'</b> <span class="'+deltaClass(channelDeltas[topContributor])+'">('+(channelDeltas[topContributor]>=0?'+':'')+fmtTHB(channelDeltas[topContributor])+')</span>';
+
+  /* --- Return / Cancellation Rate Trend ---
+     Fix (2026-08-03, James's feedback round C item 2): the mock data used to
+     have ONE shared rate series for "MT+TT combined" (mtttCNRate), so a true
+     3-line split would have rendered MT and TT as identical lines — that's
+     why this used to be shown as 2 lines (MT+TT vs Ecom). Now that the
+     Compare Performance Table (the only other consumer of that shared value)
+     has been removed, mtCNRate/ttCNRate were split into genuinely independent
+     series (see the Part-1 mock-data block above), so this is now a true,
+     honest 3-line chart: MT, TT, Ecom. */
+  const mtRateSeries = curYearIdx.map(i => i<=TODAY ? mtCNRate[i]*100 : null);
+  const ttRateSeries = curYearIdx.map(i => i<=TODAY ? ttCNRate[i]*100 : null);
+  const ecomRateSeries = curYearIdx.map(i => i<=TODAY ? ecomCancelRate[i]*100 : null);
   const thresholdSeries = curYearIdx.map(()=>5);
+  // Fix (2026-08-03, James's feedback round C item 5): show the ฿ amount
+  // alongside the % on the chart's last-point label, not just the % — these
+  // parallel THB arrays line up index-for-index with the % series above.
+  const mtCNAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.MT[i]*mtCNRate[i] : null);
+  const ttCNAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.TT[i]*ttCNRate[i] : null);
+  const ecomCancelAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.Ecom[i]*ecomCancelRate[i] : null);
   buildLineChartSVG('retTrendChart', {
     labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
     series:[
       {data:thresholdSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
-      {data:blendedRate, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}
+      {data:mtRateSeries, color:groupColorVar.MT, width:2.2, showLastLabel:true, lastLabelFormatter:(v,i)=>fmtPct(v,1)+' ('+fmtTHB(mtCNAmountSeries[i])+')'},
+      {data:ttRateSeries, color:groupColorVar.TT, width:2.2, showLastLabel:true, lastLabelFormatter:(v,i)=>fmtPct(v,1)+' ('+fmtTHB(ttCNAmountSeries[i])+')'},
+      {data:ecomRateSeries, color:groupColorVar.Ecom, width:2.2, showLastLabel:true, lastLabelFormatter:(v,i)=>fmtPct(v,1)+' ('+fmtTHB(ecomCancelAmountSeries[i])+')'}
     ]
   });
+  document.getElementById('retTrendLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar.MT+'"></span>MT (Credit Note)</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar.TT+'"></span>TT (Credit Note)</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar.Ecom+'"></span>Ecom (Cancellation)</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dash"></span>5% Threshold</span>';
 
   /* === SECTION 4: Channel Comparison === */
   document.getElementById('channelSnapshotGrid').innerHTML = groupKeys.map(g=>{
@@ -597,45 +682,107 @@ function renderAll(periodKey, custom){
     return '<div class="channel-snapshot-card" style="border-left-color:'+groupColorVar[g]+';opacity:.6;cursor:default;" title="Module ยังไม่เปิดใช้งาน (Coming soon)">'+inner+'</div>';
   }).join('');
 
-  function bestClass(values, idx, higherIsBetter){
-    const valid = values.map((v,i)=>({v,i})).filter(o=>o.v!==null);
-    if(!valid.length) return '';
-    const best = higherIsBetter ? Math.max(...valid.map(o=>o.v)) : Math.min(...valid.map(o=>o.v));
-    return values[idx]===best ? 'compare-best' : '';
-  }
   const prevS = s-12, prevE = e-12;
-  const activeUnitLabel = {MT:'Active Partners', TT:'Active Stores', Ecom:'Active Shop Listings'};
+  // Fix (2026-08-03): unified MT/TT/Ecom rate-value helper now that each
+  // channel has its own independent rate series (mtCNRate/ttCNRate/ecomCancelRate).
+  function rateValueFull(g){
+    const rateArr = g==='MT' ? mtCNRate : (g==='TT' ? ttCNRate : ecomCancelRate);
+    return groupActual[g].map((v,i)=>v*rateArr[i]);
+  }
   const stats = {};
   groupKeys.forEach(g=>{
     const net = groupTotals[g], tgt = groupTargets[g], att = groupAttain[g];
     const prevNet = prevS>=0 ? sumRange(groupActual[g], prevS, prevE) : null;
     const growth = prevNet ? pctChange(net, prevNet) : null;
-    const momG = pctChange(groupActual[g][TODAY], groupActual[g][TODAY-1]);
-    let retRate;
-    if(g==='Ecom'){ retRate = sumRange(ecomCancelValueFull(),s,e) / net * 100; }
-    else { retRate = sumRange(mtttCNValueFull(g),s,e) / net * 100; }
+    // Fix (2026-08-03): was hardcoded to TODAY regardless of the Period
+    // filter (inconsistent with Growth YoY on the same row, and with the
+    // At a Glance KPI cards, which both use the period's own end month `e`).
+    const momG = pctChange(groupActual[g][e], groupActual[g][e-1]);
+    const retAmount = sumRange(rateValueFull(g),s,e);
+    const retRate = retAmount / net * 100;
     const activeUnits = g==='MT' ? 42 : (g==='TT' ? 405 : 3);
-    stats[g] = {net, tgt, att, growth, momG, retRate, activeUnits};
+    stats[g] = {net, tgt, att, growth, momG, retRate, retAmount, activeUnits};
   });
-  function mtttCNValueFull(g){ return groupActual[g].map((v,i)=>v*mtttCNRate[i]); }
-  function ecomCancelValueFull(){ return groupActual.Ecom.map((v,i)=>v*ecomCancelRate[i]); }
 
-  const netVals = groupKeys.map(g=>stats[g].net);
-  const attVals = groupKeys.map(g=>stats[g].att);
-  const growthVals = groupKeys.map(g=>stats[g].growth);
-  const momVals = groupKeys.map(g=>stats[g].momG);
-  const retVals = groupKeys.map(g=>stats[g].retRate);
-  const unitVals = groupKeys.map(g=>stats[g].activeUnits);
-  let tableHtml = '<thead><tr><th>Metric</th>' + groupKeys.map(g=>'<th>'+g+'</th>').join('') + '</tr></thead><tbody>';
-  tableHtml += '<tr><td>Net Sales</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(netVals,i,true)+'">'+fmtTHB(netVals[i])+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>Target Attainment %</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(attVals,i,true)+'">'+fmtPct(attVals[i],0)+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>Growth YoY</td>' + groupKeys.map((g,i)=>'<td class="tnum '+(growthVals[i]!==null?bestClass(growthVals,i,true):'')+'">'+(growthVals[i]!==null?fmtSignedPct(growthVals[i]):'–')+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>Growth MoM</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(momVals,i,true)+'">'+fmtSignedPct(momVals[i])+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>Return / Cancellation Rate</td>' + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(retVals,i,false)+'">'+fmtPct(retVals[i],2)+'</td>').join('') + '</tr>';
-  tableHtml += '<tr><td>Active Units <button class="info-icon" style="display:inline-flex;vertical-align:middle;" data-info-title="Active Units" data-info-text="ต่างหน่วยกันตาม Channel: MT = Active Partners (คู่ค้า), TT = Active Stores (ร้านค้า), Ecom = Active Shop Listings (จำนวน Platform/Shop ที่เปิดขาย)">i</button></td>'
-    + groupKeys.map((g,i)=>'<td class="tnum '+bestClass(unitVals,i,true)+'">'+unitVals[i]+'<span class="sub-label">'+activeUnitLabel[g]+'</span></td>').join('') + '</tr>';
-  tableHtml += '</tbody>';
-  document.getElementById('compareTable').innerHTML = tableHtml;
+
+  /* --- Return / Cancellation Rate Trend: short insight caption (replaces
+     what the removed Compare Performance Table used to convey for this row) --- */
+  const retTrendParts = groupKeys.map(g=>{
+    const over = stats[g].retRate >= 5;
+    return '<b>'+g+'</b>: <span class="'+(over?'neg':'pos')+'">'+fmtPct(stats[g].retRate,1)+' ('+fmtTHB(stats[g].retAmount)+')</span>';
+  });
+  const anyOver = groupKeys.some(g=>stats[g].retRate>=5);
+  document.getElementById('retTrendCallout').innerHTML = 'This period avg — ' + retTrendParts.join(' · ') + (anyOver ? ' · at least one channel at/above the 5% threshold' : ' · all channels within the 5% threshold');
+
+  /* --- Net Sales: Actual vs Target vs Last Year (redesigned, item 4) ---
+     Replaces both the removed Compare Performance Table (Net Sales, Growth
+     YoY, Target Attainment % now live as data labels directly on the bars)
+     and the old 2-bar "This Period vs Last Year" chart. An on-demand table
+     view (button above) still exists for exact figures across every metric
+     in one place.
+     Fix (2026-08-03, James's feedback): dropped the "Company" 4th group —
+     Company's totals are roughly 3x any single channel, which pulled the
+     Y-axis scale way up and squashed the MT/TT/Ecom bars (same class of
+     scale-distortion issue as the At a Glance sparklines). Company-level
+     Net Sales/Attainment/Growth are already visible in the At a Glance KPI
+     cards above, so nothing is lost by keeping this chart channel-only.
+     Also swapped the "This Year" bar's label order so Net Sales (the primary
+     $ value, like the big number on a KPI card) sits above Growth YoY (the
+     secondary delta, like the small MoM/YoY badges below a KPI card's big
+     number) — matches the KPI card convention instead of leading with the %. */
+  const pcGroups = groupKeys;
+  const pcLastYear = groupKeys.map(g=> prevS>=0 ? sumRange(groupActual[g], prevS, prevE) : 0);
+  const pcThisYear = groupKeys.map(g=> groupTotals[g]);
+  const pcTarget = groupKeys.map(g=> groupTargets[g]);
+  const pcGrowth = groupKeys.map(g=> stats[g].growth);
+  const pcAttain = groupKeys.map(g=> groupAttain[g]);
+  const pcDiff = pcThisYear.map((v,i)=> v - pcTarget[i]);
+  const good = cssVar('--good')||'#0ca30c', critical = cssVar('--critical')||'#d03b3b', warning = cssVar('--warning')||'#fab219', neutralInk = cssVar('--ink-2')||'#52514e';
+  buildGroupedBarSVG('periodCompareChart', {
+    labels: pcGroups,
+    series: [
+      {name:'Last Year', color:cssVar('--baseline')||'#c3c2b7', values: pcLastYear},
+      {name:'This Year', color:brand, values: pcThisYear},
+      {name:'Target', color:neutralInk, values: pcTarget}
+    ],
+    yFormatter: fmtTHB,
+    showValueLabels: true,
+    // Fix (2026-08-03, responsive pass): valueLabelFormatter now also
+    // receives barW (the actual rendered bar width). With 3 Channels × 3
+    // bars = 9 bars in one chart, a real mobile card can push barW down to
+    // ~20px — too narrow to fit even a single "฿61.5M"-length label without
+    // overlapping the next bar, no matter how small the font gets. Rather
+    // than paint garbled overlapping text on every bar, below ~28px this
+    // drops Last Year's and Target's labels entirely and keeps only This
+    // Year's Growth YoY (shortest, most essential number) — full detail is
+    // still one tap away via "view as table". shared.js's own generic
+    // fallback (blank below ~22px) is the last-resort safety net under that.
+    valueLabelFormatter: (val, ser, gi, barW) => {
+      const veryNarrow = barW < 28;
+      if(ser.name==='Last Year'){
+        return veryNarrow ? [] : [{text: fmtTHB(val), color: neutralInk}];
+      }
+      if(ser.name==='This Year'){
+        const g = pcGrowth[gi];
+        const growthLine = {text: g!==null ? fmtSignedPct(g) : '–', color: g===null ? neutralInk : (g>=0?good:critical)};
+        return veryNarrow ? [growthLine] : [{text: fmtTHB(val), color: neutralInk}, growthLine];
+      }
+      // Target bar
+      if(veryNarrow) return [];
+      const att = pcAttain[gi], diff = pcDiff[gi];
+      const attColor = att>=100 ? good : (att>=90 ? warning : critical);
+      return [
+        {text: fmtPct(att,0)+(barW>=45?' attain':''), color: attColor},
+        {text: (diff>=0?'+':'')+fmtTHB(diff), color: diff>=0?good:critical}
+      ];
+    }
+  });
+  document.getElementById('periodCompareSubtitle').textContent = label + ' · This Year vs Target vs same range last year · by Channel';
+  document.getElementById('periodCompareLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+(cssVar('--baseline')||'#c3c2b7')+'"></span>Last Year</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>This Year</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+neutralInk+'"></span>Target</span>';
+  latestData.periodCompare = { labels: pcGroups, lastYear: pcLastYear, thisYear: pcThisYear, target: pcTarget, growth: pcGrowth, attain: pcAttain, diff: pcDiff };
 
   const trendSeries = groupKeys.filter(g=>channelVisible[g]).map(g=>({
     data: curYearIdx.map(i => i<=TODAY ? groupActual[g][i] : null),
@@ -668,13 +815,17 @@ function renderAll(periodKey, custom){
     const firstPct = firstQTotal ? s0.values[0]/firstQTotal*100 : 0;
     const lastPct = lastQTotal ? s0.values[s0.values.length-1]/lastQTotal*100 : 0;
     const delta = lastPct-firstPct;
-    return '<b>'+g+'</b>: '+firstPct.toFixed(0)+'% → '+lastPct.toFixed(0)+'% ('+(delta>=0?'+':'')+delta.toFixed(0)+'pp)';
+    return '<b>'+g+'</b>: '+firstPct.toFixed(0)+'% → '+lastPct.toFixed(0)+'% <span class="'+deltaClass(delta)+'">('+(delta>=0?'+':'')+delta.toFixed(0)+'pp)</span>';
   });
-  document.getElementById('mixCallout').innerHTML = 'Q1/25 → Q2/26 channel mix shift — ' + calloutParts.join(' · ');
+  document.getElementById('mixCallout').innerHTML = 'Mix shift, Q1/25→Q2/26 — ' + calloutParts.join(' · ');
 
   latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
-  latestData.chGrowth = { labels: curYearLabels, series: chGrowthSeries.map((s,i)=>({name:groupKeys[i], values:s.data})) };
-  latestData.retTrend = { labels: curYearLabels, values: blendedRate };
+  latestData.chGrowth = { labels: chGrowthLabels, series: chGrowthSeries.map((s,i)=>({name:groupKeys[i], values:s.data})) };
+  latestData.retTrend = { labels: curYearLabels, series: [
+    {name:'MT', values: mtRateSeries, amounts: mtCNAmountSeries},
+    {name:'TT', values: ttRateSeries, amounts: ttCNAmountSeries},
+    {name:'Ecom', values: ecomRateSeries, amounts: ecomCancelAmountSeries}
+  ] };
   latestData.mixMonthly = { idx: [], };
   const monthlyMixIdx = []; for(let i=12;i<=TODAY;i++) monthlyMixIdx.push(i);
   latestData.mixMonthly = { labels: monthlyMixIdx.map(i=>monthLabels[i]), idxList: monthlyMixIdx };
@@ -767,22 +918,35 @@ document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.retTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Blended Rate</th></tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+(d.values[i]!==null?fmtPct(d.values[i],1):'–')+'</td></tr>'; });
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+' %</th><th>'+s.name+' ฿</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{
+    html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+(s.values[i]!==null?fmtPct(s.values[i],1):'–')+'</td><td>'+(s.amounts[i]!==null?fmtTHB(s.amounts[i]):'–')+'</td>').join('') + '</tr>';
+  });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('compareDownloadBtn').addEventListener('click', ()=>{
-  const table = document.getElementById('compareTable');
-  const rows = [...table.querySelectorAll('tr')].map(tr => [...tr.children].map(cell => {
-    const clone = cell.cloneNode(true);
-    clone.querySelectorAll('.info-icon').forEach(el=>el.remove());
-    return clone.textContent.trim();
-  }));
-  downloadCSV(rows, 'compare_performance.csv');
+document.getElementById('periodCompareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('periodCompareChart', 'net_sales_actual_vs_target_vs_last_year.svg'));
+document.getElementById('periodCompareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('periodCompareTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('periodCompareTableWrap');
+  const canvasWrap = document.getElementById('periodCompareCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.periodCompare;
+  // Table view absorbs what the removed Compare Performance Table used to
+  // show (Net Sales, Growth YoY, Target Attainment %), plus Target ฿ and
+  // Diff from Target which are new to this chart.
+  let html = '<table class="mini-table"><thead><tr><th>Channel</th><th>Last Year</th><th>This Year</th><th>Growth YoY</th><th>Target</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.labels.forEach((g,i)=>{
+    html += '<tr><td>'+g+'</td><td>'+fmtTHB(d.lastYear[i])+'</td><td>'+fmtTHB(d.thisYear[i])+'</td>'
+      + '<td>'+(d.growth[i]!==null?fmtSignedPct(d.growth[i]):'–')+'</td>'
+      + '<td>'+fmtTHB(d.target[i])+'</td><td>'+fmtPct(d.attain[i],0)+'</td>'
+      + '<td>'+(d.diff[i]>=0?'+':'')+fmtTHB(d.diff[i])+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
-document.getElementById('compareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 document.getElementById('trendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('trendChart','revenue_trend_by_channel.svg'));
 document.getElementById('trendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));

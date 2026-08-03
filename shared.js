@@ -36,8 +36,16 @@ function mulberry32(seed){
 
 /* ---------- Sparkline (inline SVG, colors baked in at render time — see
    dark-mode note in buildLineChartSVG below for why) ---------- */
-function sparklineSVG(values, color, formatter){
-  const width=140, height=36, padX=2, padY=6;
+function sparklineSVG(containerId, values, color, formatter){
+  // Fix (2026-08-03): same horizontal-stretch bug as buildLineChartSVG
+  // (fixed 2026-07-30) — fixed viewBox width=140 with width="100%" and
+  // preserveAspectRatio="none" meant the browser scaled X/Y independently
+  // whenever the actual container was wider than 140px (it almost always
+  // is, inside a KPI card). Fix: measure the real container width and use
+  // that as the viewBox width so the scale factor is 1:1 and nothing
+  // (path or text) gets stretched.
+  const container = document.getElementById(containerId);
+  const width = (container && container.clientWidth) || 140, height=36, padX=2, padY=6;
   const min = Math.min(...values), max = Math.max(...values);
   const range = (max-min)||1;
   const stepX = (width-padX*2)/(values.length-1 || 1);
@@ -58,6 +66,40 @@ function sparklineSVG(values, color, formatter){
     + '</svg>';
 }
 
+/* ---------- "Nice numbers for graph labels" (Heckbert) — used by
+   buildLineChartSVG so Y-axis ticks land on clean round numbers (0, 10, 20…)
+   instead of dividing the raw min/max into 4 arbitrary fractions, which used
+   to produce confusing ticks like 9.6 / 19.3. ---------- */
+function niceNum(range, round){
+  if(range <= 0) return 0;
+  const exponent = Math.floor(Math.log10(range));
+  const fraction = range / Math.pow(10, exponent);
+  let niceFraction;
+  if(round){
+    if(fraction < 1.5) niceFraction = 1;
+    else if(fraction < 3) niceFraction = 2;
+    else if(fraction < 7) niceFraction = 5;
+    else niceFraction = 10;
+  } else {
+    if(fraction <= 1) niceFraction = 1;
+    else if(fraction <= 2) niceFraction = 2;
+    else if(fraction <= 5) niceFraction = 5;
+    else niceFraction = 10;
+  }
+  return niceFraction * Math.pow(10, exponent);
+}
+function niceAxisTicks(rawMin, rawMax, targetTickCount){
+  targetTickCount = targetTickCount || 5;
+  if(rawMin === rawMax) rawMax = rawMin + 1;
+  const range = niceNum(rawMax - rawMin, false);
+  const spacing = niceNum(range / (targetTickCount - 1), true) || 1;
+  const niceMin = Math.floor(rawMin / spacing) * spacing;
+  const niceMax = Math.ceil(rawMax / spacing) * spacing;
+  const ticks = [];
+  for(let v = niceMin; v <= niceMax + spacing*0.001; v += spacing) ticks.push(Math.round(v/spacing)*spacing);
+  return { min: niceMin, max: niceMax, spacing, ticks };
+}
+
 /* ---------- Custom line/area chart (no external chart library) ---------- */
 function buildLineChartSVG(containerId, opts){
   const container = document.getElementById(containerId);
@@ -71,18 +113,28 @@ function buildLineChartSVG(containerId, opts){
   // factor is always 1:1 and nothing distorts.
   const measuredWidth = container ? container.clientWidth : 0;
   const width = opts.width || measuredWidth || 520;
-  const height = opts.height || 210;
+  // Fix (2026-08-03): same non-uniform-stretch bug as the width fix above,
+  // but on the vertical axis — if a card's canvas-wrap CSS height (e.g.
+  // 250px, 320px) didn't match this function's hardcoded height default
+  // (210) or whatever opts.height was passed, preserveAspectRatio="none"
+  // stretched Y independently of X, distorting text glyphs (letters looked
+  // oddly tall/expanded). Now measures the container's real rendered height
+  // the same way width is measured, so the two stay in sync automatically
+  // even if a card's CSS height is changed later without updating the JS call.
+  const measuredHeight = container ? container.clientHeight : 0;
+  const height = opts.height || measuredHeight || 210;
   const {labels, series, yFormatter} = opts;
   const padL=40, padR=10, padT=10, padB=20;
   const plotW = width-padL-padR, plotH = height-padT-padB;
   let allVals = [];
   series.forEach(s => s.data.forEach(v => { if(v!==null && v!==undefined) allVals.push(v); }));
   if(allVals.length===0) allVals = [0,1];
-  let yMin = Math.min(0, ...allVals);
-  let yMax = Math.max(...allVals);
+  const dataMin = Math.min(0, ...allVals);
+  const dataMax = Math.max(...allVals);
+  const headroom = (dataMax-dataMin)*0.08 || Math.abs(dataMax)*0.08 || 1;
+  const nice = niceAxisTicks(dataMin, dataMax + headroom, 5);
+  let yMin = nice.min, yMax = nice.max;
   if(yMax===yMin) yMax = yMin+1;
-  yMax += (yMax-yMin)*0.12;
-  if(yMin<0) yMin -= Math.abs(yMax-yMin)*0.08;
 
   const stepX = plotW/Math.max(1,(labels.length-1));
   const xAt = i => padL + i*stepX;
@@ -94,14 +146,15 @@ function buildLineChartSVG(containerId, opts){
   const hairline = cssVar('--hairline') || '#e1e0d9';
   const inkTertiary = cssVar('--ink-3') || '#898781';
 
+  // Fix (2026-08-03): Y-axis ticks now come from niceAxisTicks (clean round
+  // numbers) instead of splitting raw min/max into 4 even fractions, which
+  // used to print confusing ticks like "9.6M" / "19.3M".
   let gridSvg = '';
-  const gridCount = 4;
-  for(let g=0; g<=gridCount; g++){
-    const val = yMin + (yMax-yMin)*(g/gridCount);
+  nice.ticks.forEach(val=>{
     const y = yAt(val);
     gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
     gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(val)+'</text>';
-  }
+  });
   let xLabelSvg = '';
   const showEvery = labels.length>12 ? 2 : 1;
   labels.forEach((lb,i)=>{
@@ -126,7 +179,11 @@ function buildLineChartSVG(containerId, opts){
     seriesSvg += '<path d="'+d.trim()+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.width||2.2)+'" stroke-dasharray="'+(s.dash||'')+'" stroke-linecap="round" stroke-linejoin="round"/>';
     if(s.showLastLabel && lastIdx>=0){
       const x=xAt(lastIdx), y=yAt(s.data[lastIdx]);
-      const label = s.lastLabelFormatter(s.data[lastIdx]);
+      // Fix (2026-08-03): lastLabelFormatter now also receives the point's
+      // index, so callers can look up a parallel value (e.g. THB amount for
+      // a %-based line) via closure and show both in one label. Existing
+      // callers that only read the first arg are unaffected.
+      const label = s.lastLabelFormatter(s.data[lastIdx], lastIdx);
       const anchor = x>width-64 ? 'end' : 'start';
       const lx = anchor==='end' ? x-6 : x+6;
       seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+s.color+'"/>';
@@ -274,7 +331,11 @@ function buildStackedAreaSVG(containerId, opts){
 function buildGroupedBarSVG(containerId, opts){
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 520;
-  const height = opts.height || 220;
+  // Fix (2026-08-03): measure real container height (same fix as
+  // buildLineChartSVG) so a card's canvas-wrap CSS height always matches the
+  // SVG viewBox — otherwise preserveAspectRatio="none" stretches bars/text
+  // vertically whenever the CSS height and this default (220) disagree.
+  const height = opts.height || (container ? container.clientHeight : 0) || 220;
   const labels = opts.labels, series = opts.series; // series: [{name, color, values:[...]}]
   const yFormatter = opts.yFormatter || (v=>v);
   const baseline = opts.referenceValue !== undefined ? opts.referenceValue : 0;
@@ -288,10 +349,21 @@ function buildGroupedBarSVG(containerId, opts){
   // index chart) rather than always forcing 0 in — otherwise a chart whose
   // values cluster around 100 would render as a sliver at the very top of a
   // 0-130 range instead of a proper diverging chart.
-  let yMin = Math.min(baseline, ...allVals), yMax = Math.max(baseline, ...allVals);
+  let rawMin = Math.min(baseline, ...allVals), rawMax = Math.max(baseline, ...allVals);
+  if(rawMax===rawMin) rawMax = rawMin+1;
+  const span = rawMax-rawMin;
+  // Only pad *below* the baseline if some value actually sits below it (e.g.
+  // an index chart diverging under 100) — otherwise a plain 0-anchored bar
+  // chart (all values positive) would get a nonsensical negative tick like
+  // "-20M" from padding underneath a floor nothing ever reaches.
+  const padBelow = rawMin < baseline ? span*0.18 : 0;
+  const padAbove = span*0.18;
+  // Fix (2026-08-03): ticks now come from niceAxisTicks (clean round numbers)
+  // instead of splitting raw min/max into 4 even fractions — same fix as
+  // buildLineChartSVG, applied here too since this function shares the bug.
+  const nice = niceAxisTicks(rawMin-padBelow, rawMax+padAbove, 5);
+  let yMin = nice.min, yMax = nice.max;
   if(yMax===yMin) yMax = yMin+1;
-  const pad = (yMax-yMin)*0.18;
-  yMax += pad; yMin -= pad;
   const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
   const baseY = yAt(baseline);
 
@@ -300,23 +372,31 @@ function buildGroupedBarSVG(containerId, opts){
   const inkOne = cssVar('--ink-1') || '#0b0b0b';
 
   let gridSvg = '';
-  const gridCount = 4;
-  for(let g=0; g<=gridCount; g++){
-    const val = yMin + (yMax-yMin)*(g/gridCount);
+  nice.ticks.forEach(val=>{
     const y = yAt(val);
     gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
     gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(val)+'</text>';
-  }
+  });
 
   const groupCount = labels.length, seriesCount = series.length;
-  const groupW = plotW/Math.max(1,groupCount);
+  // Fix (2026-08-03): added explicit spacing between groups (e.g. MT / TT /
+  // Ecom) — previously groups had no gap beyond the same 3px used between
+  // bars within a group, so adjacent groups' bars visually ran together into
+  // one continuous block. groupGap is reserved off plotW up front so bar
+  // width/positions still fill each group's slot exactly as before.
+  // Responsive fix (2026-08-03): scale the group gap down on narrow
+  // containers (mobile) instead of a flat 14px always — a fixed 14px eats a
+  // disproportionate share of plotW when the chart itself is narrow, leaving
+  // even less room for bars/labels than necessary.
+  const groupGap = opts.groupGap !== undefined ? opts.groupGap : Math.max(6, Math.min(14, width/40));
+  const groupW = (plotW - groupGap*Math.max(0,groupCount-1))/Math.max(1,groupCount);
   const barGap = 3;
   const barW = Math.max(2, (groupW - barGap*(seriesCount+1))/seriesCount);
   const valueLabelFormatter = opts.valueLabelFormatter || yFormatter;
 
   let bars = '', xLabels = '', valueLabels = '';
   labels.forEach((lb,gi)=>{
-    const groupX = padL + gi*groupW;
+    const groupX = padL + gi*(groupW+groupGap);
     series.forEach((s,si)=>{
       const val = s.values[gi];
       const barX = groupX + barGap + si*(barW+barGap);
@@ -327,8 +407,38 @@ function buildGroupedBarSVG(containerId, opts){
       bars += '<rect x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"/>';
       if(opts.showValueLabels){
         const above = val >= baseline;
-        const ly = above ? (y1-4) : (y1+11);
-        valueLabels += '<text x="'+(barX+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+color+'">'+valueLabelFormatter(val)+'</text>';
+        // Fix (2026-08-03): valueLabelFormatter can now return either a plain
+        // string (old behavior, single line in the bar's own color) or an
+        // array of lines — each line either a string or a {text,color} object
+        // — so callers can stack multiple meaning-colored labels on one bar
+        // (e.g. "Growth YoY" + "Net Sales" on a single "This Year" bar).
+        // Extra args (s, gi, barW) are new; existing callers that only read
+        // the first arg are unaffected. barW is passed so a caller CAN adapt
+        // its own text (e.g. shorten "101% attain" to "101%") when bars are
+        // narrow, but this isn't required — the generic safety net below
+        // (compactLabels) protects any caller that doesn't bother.
+        const raw = valueLabelFormatter(val, s, gi, barW);
+        let lines = Array.isArray(raw) ? raw : [raw];
+        // Responsive fix (2026-08-03): on a narrow container (e.g. mobile),
+        // barW shrinks but font-size/text length don't, so stacked multi-line
+        // labels started overlapping neighboring bars. Below ~55px per bar,
+        // drop down to just the first (most important) line; below ~30px,
+        // also shrink the font further; below ~16px there's no width left
+        // that could render legible text at all, so skip labels on that bar
+        // entirely rather than paint illegible/overlapping glyphs — the
+        // "view as table" toggle still has the exact numbers.
+        const compactLabels = barW < 55;
+        if(compactLabels && lines.length>1) lines = [lines[0]];
+        if(barW < 22) lines = [];
+        const labelFontSize = barW < 30 ? 7.5 : 9;
+        const lineH = labelFontSize + 1;
+        lines.forEach((ln, li)=>{
+          const isObj = ln && typeof ln === 'object';
+          const text = isObj ? ln.text : ln;
+          const fillColor = isObj && ln.color ? ln.color : color;
+          const ly = above ? (y1-4-(lines.length-1-li)*lineH) : (y1+11+li*lineH);
+          valueLabels += '<text x="'+(barX+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+labelFontSize+'" font-weight="700" text-anchor="middle" fill="'+fillColor+'">'+text+'</text>';
+        });
       }
     });
     xLabels += '<text x="'+(groupX+groupW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
@@ -441,8 +551,11 @@ function buildScatterSVG(containerId, points, opts){
 /* ---------- Trajectory sparkline — solid line through actual months, dashed
    glide-path from the latest actual point to a projected year-end value.
    Used for the "Full Year Forecast" KPI card. ---------- */
-function buildTrajectorySparklineSVG(actualValues, projectedEndValue, color, formatter){
-  const totalMonths = 12, width=140, height=36, padX=2, padY=6;
+function buildTrajectorySparklineSVG(containerId, actualValues, projectedEndValue, color, formatter){
+  // Fix (2026-08-03): same fixed-viewBox stretch bug as sparklineSVG above —
+  // measure the real container width instead of hardcoding 140.
+  const container = document.getElementById(containerId);
+  const totalMonths = 12, width=(container && container.clientWidth) || 140, height=36, padX=2, padY=6;
   const allForRange = actualValues.concat([projectedEndValue]);
   const min = Math.min(...allForRange), max = Math.max(...allForRange);
   const range = (max-min) || 1;
@@ -477,7 +590,10 @@ function buildWaterfallSVG(containerId, steps, opts){
   opts = opts || {};
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 600;
-  const height = opts.height || 240;
+  // Fix (2026-08-03): same height-measurement fix as buildLineChartSVG/
+  // buildGroupedBarSVG — use the container's real rendered height instead of
+  // a hardcoded default, so it always matches the card's CSS canvas-wrap height.
+  const height = opts.height || (container ? container.clientHeight : 0) || 240;
   const yFormatter = opts.yFormatter || (v=>v);
   const padL=54, padR=16, padT=16, padB=34;
   const plotW = width-padL-padR, plotH = height-padT-padB;
@@ -492,22 +608,27 @@ function buildWaterfallSVG(containerId, steps, opts){
   });
 
   const allEdges = bars.flatMap(b=>[b.base,b.top]);
-  let yMin = Math.min(0, ...allEdges), yMax = Math.max(0, ...allEdges);
-  if(yMax===yMin) yMax=yMin+1;
-  const pad = (yMax-yMin)*0.15; yMax+=pad; if(yMin<0) yMin-=pad*0.3;
+  let rawMin = Math.min(0, ...allEdges), rawMax = Math.max(0, ...allEdges);
+  if(rawMax===rawMin) rawMax=rawMin+1;
+  const span = rawMax-rawMin;
+  const padBelow = rawMin < 0 ? span*0.15*0.3 : 0;
+  const padAbove = span*0.15;
+  // Fix (2026-08-03): same niceAxisTicks fix as buildLineChartSVG/buildGroupedBarSVG
+  // — clean round ticks instead of splitting raw min/max into 4 even fractions.
+  const nice = niceAxisTicks(rawMin-padBelow, rawMax+padAbove, 5);
+  let yMin = nice.min, yMax = nice.max;
+  if(yMax===yMin) yMax = yMin+1;
   const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
 
   const hairline = cssVar('--hairline')||'#e1e0d9', inkTertiary = cssVar('--ink-3')||'#898781', inkOne = cssVar('--ink-1')||'#0b0b0b';
   const good = cssVar('--good-text')||'#006300', bad = cssVar('--critical')||'#d03b3b', neutral = cssVar('--ink-2')||'#52514e';
 
   let gridSvg='';
-  const gridCount=4;
-  for(let g=0; g<=gridCount; g++){
-    const val = yMin+(yMax-yMin)*(g/gridCount);
+  nice.ticks.forEach(val=>{
     const y = yAt(val);
     gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
     gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(val)+'</text>';
-  }
+  });
 
   const n = steps.length;
   const slotW = plotW/n;
@@ -540,7 +661,11 @@ function buildWaterfallSVG(containerId, steps, opts){
 function buildStacked100BarSVG(containerId, opts){
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 700;
-  const height = opts.height || 260;
+  // Fix (2026-08-03): same container-height measurement fix as the other
+  // chart builders — this default (260) didn't match Channel Mix Over Time's
+  // actual CSS canvas-wrap height (280px), causing the same non-uniform
+  // vertical stretch on segment text.
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
   const labels = opts.labels, series = opts.series; // series: [{name,color,values:[absolute per bucket]}]
   const valueFormatter = opts.valueFormatter || (v=>v);
   const padL=10, padR=10, padT=10, padB=28;
@@ -549,6 +674,18 @@ function buildStacked100BarSVG(containerId, opts){
   const slotW = plotW/n;
   const barW = slotW*0.6;
   const inkTertiary = cssVar('--ink-3')||'#898781';
+
+  // Responsive fix (2026-08-03): labels used to always render both a % line
+  // and a ฿ sub-line whenever a segment was tall enough (segH>26), with no
+  // regard for how narrow the bar itself was — on a mobile-width container
+  // with several buckets (e.g. 6 quarters), barW shrinks a lot while the
+  // 2-line label didn't, so text overflowed past the segment on narrow
+  // screens. Now also gates on bar width: below ~34px wide, drop the ฿
+  // sub-line and shrink the % font; the % line alone is short enough to
+  // still fit almost any segment worth labeling at all.
+  const compact = barW < 34;
+  const fontPct = compact ? 8.5 : 10.5;
+  const fontVal = 9;
 
   let bars='', xLabels='';
   for(let i=0;i<n;i++){
@@ -560,15 +697,19 @@ function buildStacked100BarSVG(containerId, opts){
       const segH = val/total*plotH;
       const y = padT + (plotH - cum - segH);
       bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"/>';
-      if(segH > 26){
+      const showValueLine = !compact && segH > 40;
+      if(segH > 22){
         const pct = (val/total*100).toFixed(0)+'%';
         const cy = y+segH/2;
-        bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(cy-2).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="#fff">'+pct+'</text>';
-        bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(cy+11).toFixed(1)+'" font-size="9" text-anchor="middle" fill="#fff" opacity="0.9">'+valueFormatter(val)+'</text>';
+        const ly = showValueLine ? cy-2 : cy+3;
+        bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+fontPct+'" font-weight="700" text-anchor="middle" fill="#fff">'+pct+'</text>';
+        if(showValueLine){
+          bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(cy+11).toFixed(1)+'" font-size="'+fontVal+'" text-anchor="middle" fill="#fff" opacity="0.9">'+valueFormatter(val)+'</text>';
+        }
       }
       cum += segH;
     });
-    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+labels[i]+'</text>';
+    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="'+(compact?9:10)+'" text-anchor="middle" fill="'+inkTertiary+'">'+labels[i]+'</text>';
   }
 
   document.getElementById(containerId).innerHTML =

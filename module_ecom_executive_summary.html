@@ -306,9 +306,13 @@ for(let i=0;i<MONTHS_TOTAL;i++){
   let a=0,t=0; groupKeys.forEach(g=>{ a+=groupActual[g][i]; t+=groupTarget[g][i]; });
   companyActual.push(a); companyTarget.push(t);
 }
-const mtttCNRate = []; const ecomCancelRate = [];
+/* Fix (2026-08-03): split into mtCNRate/ttCNRate (was one shared mtttCNRate,
+   unused in this file but must stay in the exact same rand()-sequence
+   position as sales_overview.html) — see that file's comment for why. */
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
 for(let i=0;i<MONTHS_TOTAL;i++){
-  mtttCNRate.push(0.032 + rand()*0.012);
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
   ecomCancelRate.push(0.065 + rand()*0.02);
 }
 
@@ -436,7 +440,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiNetSalesMom').innerHTML = '<span class="'+deltaClass(momGrowth)+'">'+fmtSignedPct(momGrowth)+'</span>';
   document.getElementById('kpiNetSalesYoy').innerHTML = '<span class="'+deltaClass(yoyGrowth)+'">'+fmtSignedPct(yoyGrowth)+'</span>';
   const salesSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) salesSpark.push(groupActual.Ecom[i]);
-  document.getElementById('kpiNetSalesSpark').innerHTML = sparklineSVG(salesSpark, brand, fmtTHB);
+  document.getElementById('kpiNetSalesSpark').innerHTML = sparklineSVG('kpiNetSalesSpark', salesSpark, brand, fmtTHB);
 
   /* === KPI: Target Attainment % === */
   document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
@@ -444,7 +448,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
   document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
   const attainSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
-  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG(attainSpark, brand, v=>fmtPct(v,0));
+  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', attainSpark, brand, v=>fmtPct(v,0));
 
   /* === KPI: Return/Cancellation Rate === */
   const retAt = i => ecomCancelRate[i]*100;
@@ -459,7 +463,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiRetMom').innerHTML = '<span class="'+invDelta(retMomPP)+'">'+fmtSignedPP(retMomPP)+'</span>';
   document.getElementById('kpiRetYoy').innerHTML = '<span class="'+invDelta(retYoyPP)+'">'+fmtSignedPP(retYoyPP)+'</span>';
   const retSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) retSpark.push(retAt(i));
-  document.getElementById('kpiRetSpark').innerHTML = sparklineSVG(retSpark, brand, v=>fmtPct(v,1));
+  document.getElementById('kpiRetSpark').innerHTML = sparklineSVG('kpiRetSpark', retSpark, brand, v=>fmtPct(v,1));
 
   /* === KPI: AOV === */
   const aovAt = i => ecomAOVSeries[i];
@@ -471,7 +475,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAovMom').innerHTML = '<span class="'+deltaClass(aovMomPct)+'">'+fmtSignedPct(aovMomPct)+'</span>';
   document.getElementById('kpiAovYoy').innerHTML = '<span class="'+deltaClass(aovYoyPct)+'">'+fmtSignedPct(aovYoyPct)+'</span>';
   const aovSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) aovSpark.push(aovAt(i));
-  document.getElementById('kpiAovSpark').innerHTML = sparklineSVG(aovSpark, brand, fmtTHB);
+  document.getElementById('kpiAovSpark').innerHTML = sparklineSVG('kpiAovSpark', aovSpark, brand, fmtTHB);
 
   /* === KPI: Conversion Rate === */
   const convAt = i => ecomConvSeries[i];
@@ -483,7 +487,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiConvMom').innerHTML = '<span class="'+deltaClass(convMomPP)+'">'+fmtSignedPP(convMomPP)+'</span>';
   document.getElementById('kpiConvYoy').innerHTML = '<span class="'+deltaClass(convYoyPP)+'">'+fmtSignedPP(convYoyPP)+'</span>';
   const convSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) convSpark.push(convAt(i));
-  document.getElementById('kpiConvSpark').innerHTML = sparklineSVG(convSpark, brand, v=>fmtPct(v,1));
+  document.getElementById('kpiConvSpark').innerHTML = sparklineSVG('kpiConvSpark', convSpark, brand, v=>fmtPct(v,1));
 
   /* === KPI: Active Shop Listings === */
   const shopsAt = i => ecomShopListingsSeries[i];
@@ -494,7 +498,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiShopsMom').innerHTML = '<span class="'+deltaClass(shopsMomPct)+'">'+fmtSignedPct(shopsMomPct)+'</span>';
   document.getElementById('kpiShopsYoy').innerHTML = '<span class="'+deltaClass(shopsYoyPct)+'">'+fmtSignedPct(shopsYoyPct)+'</span>';
   const shopsSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) shopsSpark.push(shopsAt(i));
-  document.getElementById('kpiShopsSpark').innerHTML = sparklineSVG(shopsSpark, brand, v=>String(Math.round(v)));
+  document.getElementById('kpiShopsSpark').innerHTML = sparklineSVG('kpiShopsSpark', shopsSpark, brand, v=>String(Math.round(v)));
 
   /* === Chart: Revenue Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);

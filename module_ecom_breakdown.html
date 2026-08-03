@@ -350,9 +350,13 @@ function groupSeries(groupKey, field){
 }
 const groupActual = {}, groupTarget = {};
 groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
-const mtttCNRate = []; const ecomCancelRate = [];
+/* Fix (2026-08-03): split into mtCNRate/ttCNRate (was one shared mtttCNRate,
+   unused in this file but must stay in the exact same rand()-sequence
+   position as sales_overview.html) — see that file's comment for why. */
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
 for(let i=0;i<MONTHS_TOTAL;i++){
-  mtttCNRate.push(0.032 + rand()*0.012);
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
   ecomCancelRate.push(0.065 + rand()*0.02);
 }
 const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee, TikTok Shop, in this order
@@ -576,7 +580,7 @@ function renderAll(){
   document.getElementById('kpiActiveShopsValue').textContent = String(filteredShops.length);
   document.getElementById('kpiActiveShopsCaption').textContent = monthLabels[e] + ' · all shops';
   document.getElementById('activeShopsSpark').innerHTML = sparklineSVG(
-    curYearIdx.filter(i=>i<=TODAY).map(()=>filteredShops.length + Math.round((rand()-0.5)*2)), brand, v=>String(Math.round(v))
+    'activeShopsSpark', curYearIdx.filter(i=>i<=TODAY).map(()=>filteredShops.length + Math.round((rand()-0.5)*2)), brand, v=>String(Math.round(v))
   );
 
   const sortedByNet = [...filteredShops].sort((a,b)=>b.net-a.net);

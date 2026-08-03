@@ -535,7 +535,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiGPCaption').textContent = label;
   document.getElementById('kpiGPMom').innerHTML = '<span class="'+deltaClass(gpMom)+'">'+fmtSignedPct(gpMom)+'</span>';
   document.getElementById('kpiGPYoy').innerHTML = '<span class="'+deltaClass(gpYoy)+'">'+fmtSignedPct(gpYoy)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.grossProfit[i]); document.getElementById('kpiGPSpark').innerHTML = sparklineSVG(spark, brand, fmtTHB); }
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.grossProfit[i]); document.getElementById('kpiGPSpark').innerHTML = sparklineSVG('kpiGPSpark', spark, brand, fmtTHB); }
 
   /* === KPI: Gross Margin % === */
   const gmAt = i => pnlCompany.netSales[i] ? pnlCompany.grossProfit[i]/pnlCompany.netSales[i]*100 : 0;
@@ -544,7 +544,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiGMCaption').textContent = label;
   document.getElementById('kpiGMMom').innerHTML = '<span class="'+deltaClass(gmMomPP)+'">'+fmtSignedPP(gmMomPP)+'</span>';
   document.getElementById('kpiGMYoy').innerHTML = '<span class="'+deltaClass(gmYoyPP)+'">'+fmtSignedPP(gmYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(gmAt(i)); document.getElementById('kpiGMSpark').innerHTML = sparklineSVG(spark, brand, v=>fmtPct(v,0)); }
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(gmAt(i)); document.getElementById('kpiGMSpark').innerHTML = sparklineSVG('kpiGMSpark', spark, brand, v=>fmtPct(v,0)); }
 
   /* === KPI: Net Profit === */
   const npMom = pctChange(pnlCompany.netProfit[e], pnlCompany.netProfit[e-1]);
@@ -553,7 +553,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiNPCaption').textContent = label;
   document.getElementById('kpiNPMom').innerHTML = '<span class="'+deltaClass(npMom)+'">'+fmtSignedPct(npMom)+'</span>';
   document.getElementById('kpiNPYoy').innerHTML = '<span class="'+deltaClass(npYoy)+'">'+fmtSignedPct(npYoy)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.netProfit[i]); document.getElementById('kpiNPSpark').innerHTML = sparklineSVG(spark, brand, fmtTHB); }
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.netProfit[i]); document.getElementById('kpiNPSpark').innerHTML = sparklineSVG('kpiNPSpark', spark, brand, fmtTHB); }
 
   /* === KPI: Net Margin % === */
   const nmAt = i => pnlCompany.netSales[i] ? pnlCompany.netProfit[i]/pnlCompany.netSales[i]*100 : 0;
@@ -562,7 +562,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiNMCaption').textContent = label;
   document.getElementById('kpiNMMom').innerHTML = '<span class="'+deltaClass(nmMomPP)+'">'+fmtSignedPP(nmMomPP)+'</span>';
   document.getElementById('kpiNMYoy').innerHTML = '<span class="'+deltaClass(nmYoyPP)+'">'+fmtSignedPP(nmYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(nmAt(i)); document.getElementById('kpiNMSpark').innerHTML = sparklineSVG(spark, brand, v=>fmtPct(v,0)); }
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(nmAt(i)); document.getElementById('kpiNMSpark').innerHTML = sparklineSVG('kpiNMSpark', spark, brand, v=>fmtPct(v,0)); }
 
   /* === KPI: Profit Target Attainment % === */
   const attainAt = i => targetNetProfit[i] ? pnlCompany.netProfit[i]/targetNetProfit[i]*100 : 0;
@@ -571,7 +571,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAttainCaption').textContent = label;
   document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
   document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(attainAt(i)); document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG(spark, brand, v=>fmtPct(v,0)); }
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(attainAt(i)); document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', spark, brand, v=>fmtPct(v,0)); }
 
   /* === KPI: OPEX Ratio % (lower is better — inverted delta) === */
   const opexAt = i => pnlCompany.netSales[i] ? (pnlCompany.tradeSpend[i]+pnlCompany.logistics[i]+pnlCompany.marketing[i]+pnlCompany.sga[i])/pnlCompany.netSales[i]*100 : 0;
@@ -580,7 +580,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiOpexCaption').textContent = label;
   document.getElementById('kpiOpexMom').innerHTML = '<span class="'+invDelta(opexMomPP)+'">'+fmtSignedPP(opexMomPP)+'</span>';
   document.getElementById('kpiOpexYoy').innerHTML = '<span class="'+invDelta(opexYoyPP)+'">'+fmtSignedPP(opexYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(opexAt(i)); document.getElementById('kpiOpexSpark').innerHTML = sparklineSVG(spark, brand, v=>fmtPct(v,0)); }
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(opexAt(i)); document.getElementById('kpiOpexSpark').innerHTML = sparklineSVG('kpiOpexSpark', spark, brand, v=>fmtPct(v,0)); }
 
   /* === Chart: Profit Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);

@@ -309,9 +309,13 @@ function groupSeries(groupKey, field){
 }
 const groupActual = {}, groupTarget = {};
 groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
-const mtttCNRate = []; const ecomCancelRate = [];
+/* Fix (2026-08-03): split into mtCNRate/ttCNRate (was one shared mtttCNRate)
+   — byte-for-byte same replacement as sales_overview.html, see that file's
+   comment for why. */
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
 for(let i=0;i<MONTHS_TOTAL;i++){
-  mtttCNRate.push(0.032 + rand()*0.012);
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
   ecomCancelRate.push(0.065 + rand()*0.02);
 }
 const mtARSeries = [];
@@ -487,7 +491,7 @@ function renderAll(){
   latestData.target = { labels: curYearLabels, values: diffValues };
 
   /* === ZONE A: Return Rate (CN) trend, MT-wide === */
-  const retSeries = curYearIdx.map(i => i<=TODAY ? mtttCNRate[i]*100 : null);
+  const retSeries = curYearIdx.map(i => i<=TODAY ? mtCNRate[i]*100 : null);
   const thresholdSeries = curYearIdx.map(()=>4);
   buildLineChartSVG('retTrendChart', {
     labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
@@ -526,7 +530,7 @@ function renderAll(){
   document.getElementById('kpiActivePartnersValue').textContent = String(filteredPartners.length);
   document.getElementById('kpiActivePartnersCaption').textContent = monthLabels[e] + (filteredPartners.length!==partners.length ? ' · filtered' : ' · all partners');
   document.getElementById('activePartnersSpark').innerHTML = sparklineSVG(
-    curYearIdx.filter(i=>i<=TODAY).map(()=>filteredPartners.length + Math.round((rand()-0.5)*2)), brand, v=>String(Math.round(v))
+    'activePartnersSpark', curYearIdx.filter(i=>i<=TODAY).map(()=>filteredPartners.length + Math.round((rand()-0.5)*2)), brand, v=>String(Math.round(v))
   );
 
   const sortedByNet = [...filteredPartners].sort((a,b)=>b.net-a.net);

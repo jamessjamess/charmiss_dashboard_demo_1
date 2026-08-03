@@ -305,9 +305,13 @@ for(let i=0;i<MONTHS_TOTAL;i++){
   let a=0,t=0; groupKeys.forEach(g=>{ a+=groupActual[g][i]; t+=groupTarget[g][i]; });
   companyActual.push(a); companyTarget.push(t);
 }
-const mtttCNRate = []; const ecomCancelRate = [];
+/* Fix (2026-08-03): split into mtCNRate/ttCNRate (was one shared mtttCNRate)
+   — byte-for-byte same replacement as sales_overview.html, see that file's
+   comment for why. */
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
 for(let i=0;i<MONTHS_TOTAL;i++){
-  mtttCNRate.push(0.032 + rand()*0.012);
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
   ecomCancelRate.push(0.065 + rand()*0.02);
 }
 
@@ -444,7 +448,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiNetSalesMom').innerHTML = '<span class="'+deltaClass(momGrowth)+'">'+fmtSignedPct(momGrowth)+'</span>';
   document.getElementById('kpiNetSalesYoy').innerHTML = '<span class="'+deltaClass(yoyGrowth)+'">'+fmtSignedPct(yoyGrowth)+'</span>';
   const salesSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) salesSpark.push(groupActual.MT[i]);
-  document.getElementById('kpiNetSalesSpark').innerHTML = sparklineSVG(salesSpark, brand, fmtTHB);
+  document.getElementById('kpiNetSalesSpark').innerHTML = sparklineSVG('kpiNetSalesSpark', salesSpark, brand, fmtTHB);
 
   /* === KPI: Target Attainment % === */
   document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
@@ -452,7 +456,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
   document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
   const attainSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
-  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG(attainSpark, brand, v=>fmtPct(v,0));
+  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', attainSpark, brand, v=>fmtPct(v,0));
 
   /* === KPI: AR% === */
   const arAt = i => mtARSeries[i];
@@ -464,11 +468,11 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiArMom').innerHTML = '<span class="'+deltaClass(arMomPP)+'">'+fmtSignedPP(arMomPP)+'</span>';
   document.getElementById('kpiArYoy').innerHTML = '<span class="'+deltaClass(arYoyPP)+'">'+fmtSignedPP(arYoyPP)+'</span>';
   const arSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) arSpark.push(arAt(i));
-  document.getElementById('kpiArSpark').innerHTML = sparklineSVG(arSpark, brand, v=>fmtPct(v,0));
+  document.getElementById('kpiArSpark').innerHTML = sparklineSVG('kpiArSpark', arSpark, brand, v=>fmtPct(v,0));
 
   /* === KPI: Return Rate (CN) === */
-  const retAt = i => mtttCNRate[i]*100;
-  const mtCNValueFull = groupActual.MT.map((v,i)=>v*mtttCNRate[i]);
+  const retAt = i => mtCNRate[i]*100;
+  const mtCNValueFull = groupActual.MT.map((v,i)=>v*mtCNRate[i]);
   const retAmount = sumRange(mtCNValueFull,s,e);
   const retPeriod = totalActual ? (retAmount/totalActual*100) : 0;
   const retMomPP = retAt(e)-retAt(e-1), retYoyPP = retAt(e)-retAt(e-12);
@@ -479,7 +483,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiRetMom').innerHTML = '<span class="'+invDelta(retMomPP)+'">'+fmtSignedPP(retMomPP)+'</span>';
   document.getElementById('kpiRetYoy').innerHTML = '<span class="'+invDelta(retYoyPP)+'">'+fmtSignedPP(retYoyPP)+'</span>';
   const retSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) retSpark.push(retAt(i));
-  document.getElementById('kpiRetSpark').innerHTML = sparklineSVG(retSpark, brand, v=>fmtPct(v,1));
+  document.getElementById('kpiRetSpark').innerHTML = sparklineSVG('kpiRetSpark', retSpark, brand, v=>fmtPct(v,1));
 
   /* === KPI: Active Partners === */
   const partnersAt = i => mtPartnersSeries[i];
@@ -490,7 +494,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiPartnersMom').innerHTML = '<span class="'+deltaClass(partnersMomPct)+'">'+fmtSignedPct(partnersMomPct)+'</span>';
   document.getElementById('kpiPartnersYoy').innerHTML = '<span class="'+deltaClass(partnersYoyPct)+'">'+fmtSignedPct(partnersYoyPct)+'</span>';
   const partnersSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) partnersSpark.push(partnersAt(i));
-  document.getElementById('kpiPartnersSpark').innerHTML = sparklineSVG(partnersSpark, brand, v=>String(Math.round(v)));
+  document.getElementById('kpiPartnersSpark').innerHTML = sparklineSVG('kpiPartnersSpark', partnersSpark, brand, v=>String(Math.round(v)));
 
   /* === KPI: Partner Retention === */
   const retentionAt = i => mtRetentionSeries[i];
@@ -500,7 +504,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiRetentionMom').innerHTML = '<span class="'+deltaClass(retentionMomPP)+'">'+fmtSignedPP(retentionMomPP)+'</span>';
   document.getElementById('kpiRetentionYoy').innerHTML = '<span class="'+deltaClass(retentionYoyPP)+'">'+fmtSignedPP(retentionYoyPP)+'</span>';
   const retentionSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) retentionSpark.push(retentionAt(i));
-  document.getElementById('kpiRetentionSpark').innerHTML = sparklineSVG(retentionSpark, brand, v=>fmtPct(v,1));
+  document.getElementById('kpiRetentionSpark').innerHTML = sparklineSVG('kpiRetentionSpark', retentionSpark, brand, v=>fmtPct(v,1));
 
   /* === Chart: Revenue Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
