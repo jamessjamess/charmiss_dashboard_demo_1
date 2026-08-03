@@ -115,7 +115,11 @@ Font ที่ดูเป็นทางการ รองรับภาษ�
 
 **Grouped Bar Chart (`buildGroupedBarSVG`):** ต้องมีช่องว่างที่มองเห็นชัดระหว่างแต่ละกลุ่ม ควบคุมด้วย `opts.groupGap` (ไม่ใช่แค่ระยะห่างเท่ากับระหว่างแท่งในกลุ่มเดียวกัน ไม่งั้นกลุ่มติดกันจนดูเป็นแท่งเดียวยาว) รองรับ Data Label หลายบรรทัดต่อแท่ง แต่ละบรรทัดกำหนดสีเองได้ตามความหมาย (เช่น เขียว/แดงตาม Growth หรือ Attainment) เรียงบรรทัดแบบ "ค่าหลักก่อน (ใกล้ยอดแท่ง), Delta/รายละเอียดรองตามหลัง (ใกล้ตัวแท่ง)" ให้ตรงกับลำดับความสำคัญแบบเดียวกับ KPI Card (ตัวเลขใหญ่ก่อน ตามด้วย Badge เล็ก) — **ต้อง Responsive ตามความกว้างจริงของแท่ง**: แท่งแคบลงเมื่อไร Label ต้องลดความหนาแน่นตาม (ตัด Label รอง → เหลือ Label เดียว → ลดขนาดตัวอักษร → ซ่อน Label ทั้งหมดถ้าแคบเกินจะอ่านได้) ไม่ปล่อยให้ตัวอักษรทับกันข้ามแท่ง — รายละเอียดตัวเลขเต็มยังดูได้ผ่านปุ่ม "ดูเป็นตาราง" เสมอ
 
-**Chart Container Sizing (`buildLineChartSVG`/`buildGroupedBarSVG`/`buildWaterfallSVG`/`buildStacked100BarSVG`):** ทุกฟังก์ชันต้องวัดทั้งความกว้างและความสูงจริงของ Container (`clientWidth`/`clientHeight`) มาใช้เป็น SVG viewBox เสมอ ไม่ใช้ค่า Default ตายตัว — ถ้าค่าที่วัดได้กับ CSS Height ของ `.canvas-wrap` ไม่ตรงกัน จะเกิด Bug ตัวอักษร/แท่งกราฟ "ยืด" ผิดสัดส่วน (เพราะ `preserveAspectRatio="none"` ยืด X/Y อิสระจากกัน) เป็นกฎที่ต้องคุมทุกครั้งที่ปรับความสูง Canvas ของการ์ดไหนก็ตาม
+**Chart Container Sizing (`buildLineChartSVG`/`buildGroupedBarSVG`/`buildWaterfallSVG`/`buildStacked100BarSVG`/`buildScatterSVG`/`buildParetoSVG`):** ทุกฟังก์ชันต้องวัดทั้งความกว้างและความสูงจริงของ Container (`clientWidth`/`clientHeight`) มาใช้เป็น SVG viewBox เสมอ ไม่ใช้ค่า Default ตายตัว — ถ้าค่าที่วัดได้กับ CSS Height ของ `.canvas-wrap` ไม่ตรงกัน จะเกิด Bug ตัวอักษร/แท่งกราฟ "ยืด" ผิดสัดส่วน (เพราะ `preserveAspectRatio="none"` ยืด X/Y อิสระจากกัน) เป็นกฎที่ต้องคุมทุกครั้งที่ปรับความสูง Canvas ของการ์ดไหนก็ตาม
+
+**Axis Ticks (`buildLineChartSVG`/`buildGroupedBarSVG`/`buildWaterfallSVG`/`buildScatterSVG`):** ทุกฟังก์ชันต้องใช้ `niceAxisTicks()` สร้างเลขแกนแบบกลม (เช่น ฿10M/฿20M, +10%/+20%) แทนการหาร Min-Max ดิบเป็นเสี้ยวเท่าๆ กัน ซึ่งจะได้เลขแปลกๆ ที่อ่านไม่คุ้นตา — `buildScatterSVG` ใช้ทั้งแกน X และ Y (ต่างจากฟังก์ชันอื่นที่ใช้แค่แกน Y) เส้นแบ่ง Quadrant ที่ค่ามัธยฐานยังคำนวณจากข้อมูลดิบเหมือนเดิม ไม่ผูกกับเลขแกนที่ปัดกลมแล้ว
+
+**Chart Label Edge Clipping:** Label ที่วางด้วย `text-anchor="middle"` ที่ตำแหน่งขอบสุดของกราฟ (จุดแรก/จุดสุดท้าย) มีโอกาสโดนตัดขอบเพราะ Padding ซ้าย-ขวาไม่พอรองรับความกว้างข้อความที่จัดกึ่งกลาง — จุดขอบสองข้างควรใช้ `text-anchor="start"` (ซ้ายสุด) และ `"end"` (ขวาสุด) แทน `"middle"` เพื่อให้ข้อความโตเข้าด้านในกราฟเสมอ (`buildStackedAreaSVG` แก้ไปแล้ว จุดอื่นที่มี Pattern เดียวกันควรเช็คด้วย)
 
 **Header/Topbar (มุมขวาบนทุกหน้า):** Logo + Brand + Navigation Menu (ซ้าย) ↔ ชื่อ User + Role (Text ธรรมดา ชิดขวา) + Avatar วงกลม (พื้นหลัง Wine tone อ่อน `--brand-wash`, ตัวอักษร Wine เข้ม `--brand` — ไม่ใช่พื้นทึบตัวอักษรขาว) + ปุ่มสลับ Dark Mode (วงกลมเส้นขอบ) (ขวา) — เป็น Text/Icon แสดงผลอย่างเดียวทุกหน้า **ไม่มีปุ่มกดเปิด Dropdown** (TT Overview เคยมี "User Badge" เป็นปุ่มกดเปิด Panel มาก่อน ตัดออกเมื่อ 2026-07-31 พร้อมปรับสี Avatar และทรงปุ่ม Dark Mode ให้ตรงกับ Sales Overview/MT Overview เป๊ะ เพราะ Panel เดิมไม่มีเนื้อหาที่มีประโยชน์อีกต่อไปหลัง Sales Person แยกไฟล์) — ECOM Overview ใช้ Pattern เดียวกันเป๊ะตั้งแต่สร้าง ไม่เคยมี User Badge แบบเดิมของ TT
 
@@ -224,35 +228,46 @@ Layout: Waterfall + Return/Cancellation Rate Trend อยู่คู่กั�
 
 ### 5.2 Sales Overview → Product Analysis
 
+**Section Shortcut Nav:** แถบปุ่มลอย (Pill) ใต้ Filter Bar เหมือนหน้า Executive Outlook — กดแล้ว Scroll ตรงไปยัง Zone A/B/C/D โดยไม่ต้องเลื่อนผ่านทั้งหน้า
+
+**Filter Bar:** Period (เหมือนหน้าอื่น) + **Channel** (All/MT/TT/Ecom) + **Product Level** (Category/Sub-Category/Type/Series) + **Focus** — ทั้งหมดเป็น Filter ระดับหน้า (Page-level) อยู่แถวเดียวกับ Period ไม่ใช่ Control ย่อยในแต่ละการ์ด ควบคุม Zone C + D ทั้งหมด (Portfolio Matrix, Growth Contribution, Share Over Time, Sales by Category, Growth Ranking); Product Level ควบคุม Zone B (Heatmap, Channel Index) ด้วย แต่ **Channel Filter ไม่กระทบ Zone B โดยตั้งใจ** เพราะ Heatmap/Channel Index มีไว้เปรียบเทียบข้าม Channel จึงต้องโชว์ครบทุก Channel เสมอ — ข้อความสรุป Scope ปัจจุบัน (เช่น "MT · Sub-Category focus · Cleansing only") แสดงมุมขวาของ Filter Bar
+
+**Focus (Drill-down):** เลือก Node เดียวจากระดับที่ตั้งไว้ใน Product Level (เช่น Level = Sub-Category, Focus = "Cleansing") ตัวเลือกใน Dropdown จะเปลี่ยนตาม Level ที่เลือกเสมอ (Reset เป็น "All" ทุกครั้งที่เปลี่ยน Level) — แทนที่จะตัดกราฟทุกอันเหลือแค่ 1 Node (ซึ่งจะทำให้ Chart เปรียบเทียบอย่าง Portfolio Matrix/Heatmap ไม่มีความหมาย) ระบบจะ **Pin + Highlight** Node ที่ Focus ไว้ในทุก Component ที่เกี่ยวข้องแทน แม้ Node นั้นจะไม่ติด Top-N ตามปกติก็ตาม: คอลัมน์ Heatmap และแท่ง Channel Index Highlight สีพื้นหลัง/กรอบ, จุดใน Portfolio Matrix ใหญ่ขึ้น, แท่งใน Growth Contribution Waterfall และ Pareto / Concentration Analysis ถูก Pin เข้า Top 8 เสมอ, แถวใน Sales by Category/Growth Ranking/Return-Cancellation Rate by Category มีกรอบ Highlight — Zone A (KPI ภาพรวมบริษัท) ไม่ถูก Focus กระทบ เพราะเป็น Metric ระดับบริษัทโดยนิยาม
+
 **Zone A — Category Performance Overview:**
 
 | Metric | รายละเอียด |
 |---|---|
-| Top Category (Company-wide) | Category ยอดขายสูงสุดของบริษัท |
+| Top Category | Category ยอดขายสูงสุดของบริษัท |
 | Fastest Growing Category | Category ที่ Growth YoY สูงสุด |
 | Best Category per Channel ×3 | Callout Card, แถบซ้ายสีตาม Channel, แสดง Category อันดับ 1 + % สัดส่วนภายใน Channel นั้น |
 
-**Zone B — Cross-Channel Analysis** (ควบคุมด้วย Level Selector ตัวเดียวที่หัว Section — ดูหลักการข้อ 3.4):
+**Zone B — Cross-Channel Analysis** (Full width, เรียงเป็นแนวตั้งทีละการ์ด ไม่ใช่ 2 คอลัมน์คู่กันอีกต่อไป):
 
 | Metric/Chart | ประเภท/สูตร |
 |---|---|
-| Category × Channel Heatmap | Table, แถว = ระดับที่เลือก (Top 10), คอลัมน์ = MT/TT/Ecom, Cell = ยอดขาย + % Row-normalized, สีเข้ม-อ่อนตาม % |
-| Channel Index by Category | **Diverging Bar Chart, Baseline = Index 100** (ไม่ใช่ 0) — แท่งยื่นขึ้น = Over-index, ยื่นลง = Under-index, สีแท่ง = Channel Identity (ไม่ใช่เขียว/แดง), มีเลข Index บนปลายแท่งทุกแท่ง, เส้นประ Reference ที่ 100 (Top 8) |
+| Channel × [ระดับที่เลือก] Heatmap | Table **Transpose**: แถว = Channel (MT/TT/Ecom, คงที่ 3 แถว), คอลัมน์ = Node ตามระดับที่เลือก (เรียงยอดขายมากไปน้อย, สูงสุด 20 คอลัมน์) — เลื่อนดูแนวนอนได้เมื่อคอลัมน์เยอะ (ระดับ Type/Series), Cell = ยอดขาย + % Row-normalized, สีเข้ม-อ่อนตาม % |
+| Channel Index by [ระดับที่เลือก] | อยู่ใต้ Heatmap เสมอ, **Diverging Bar Chart, Baseline = Index 100** (ไม่ใช่ 0) — แท่งยื่นขึ้น = Over-index, ยื่นลง = Under-index, สีแท่ง = Channel Identity (ไม่ใช่เขียว/แดง), มีเลข Index บนปลายแท่งทุกแท่ง, เส้นประ Reference ที่ 100 (Top 8) + Insight Caption ใต้กราฟสรุป Node/Channel ที่ Over-index และ Under-index สูงสุด |
 
-**Zone C — Portfolio Strategy** (Sync ระดับเดียวกับ Zone B/D เสมอ):
-
-| Metric/Chart | ประเภท |
-|---|---|
-| Category Portfolio Matrix | Scatter 4-Quadrant — แกน X (ยอดขาย) และ Y (%Growth YoY) มี Gridline + Tick value จริง, เส้นแบ่ง Quadrant ที่ค่ามัธยฐาน, Label มุม Stars/Question Marks/Cash Cows/Dogs (Top 6) |
-| Category Share of Sales Over Time | Stacked Area 18 เดือน, ใช้ Category color palette เฉพาะ (Top 6) |
-
-**Zone D — Category Deep-dive:**
+**Zone C — Portfolio Strategy** (Sync Level + Channel Filter จาก Filter Bar ด้านบนเสมอ):
 
 | Metric/Chart | ประเภท |
 |---|---|
-| Sales by Category | Horizontal Bar, Top View จัดอันดับ Flat (Top 10 + See all N), มี Toggle All/MT/TT/Ecom เฉพาะ Component นี้ (Heatmap/Index ไม่ผูกกับ Channel Toggle นี้ เพราะโดยธรรมชาติต้องโชว์ครบทุก Channel เพื่อเปรียบเทียบ) |
+| Category Portfolio Matrix | Scatter 4-Quadrant — แกน X (ยอดขาย) และ Y (%Growth YoY) มี Gridline + Tick value กลม (niceAxisTicks), เส้นแบ่ง Quadrant ที่ค่ามัธยฐานจากข้อมูลดิบ, Label มุม Stars/Question Marks/Cash Cows/Dogs — จุดที่แสดง = **Top 6 by Sales บวก Node ที่ Growth สูงสุด/ต่ำสุด (ถ้ายังไม่ติดโผ)** ไม่ใช่ Top 6 by Sales ล้วนๆ เพราะ Node ยอดขายน้อยแต่โตเร็ว (ตัวจริงของ Quadrant "Question Marks") มักหลุด Top-N by Size ไปก่อน — Subtitle ใต้หัวกราฟบอกจำนวนจุดที่แสดงจริงเสมอ |
+| [ระดับที่เลือก] Growth Contribution | Waterfall — แทนที่ Category Share of Sales Over Time เดิม (ย้ายไป Full Width ด้านล่างแล้ว) แนวคิดเดียวกับ Growth Contribution Waterfall ของ Executive Outlook แต่เป็นระดับ Category/Sub-Category/Type/Series แทน Channel — "ปีก่อน" ต่อ Node ประมาณจากยอดขายปีนี้หารด้วย (1+%Growth YoY ของ Node นั้น) เพราะ Mock Data ไม่มี Time Series จริงระดับ Category (มีแต่ %Growth YoY เป็นค่าคงที่ต่อ Node) — คำนวณจาก `syncedAll` (Node Set เดียวกับที่ Sync Level+Channel Filter) เสมอ เพื่อให้ Start+ผลรวม Delta ตรงกับ End เป๊ะไม่ว่าจะกรอง Channel หรือไม่ — จำกัด Top 8 by \|Contribution\| + Focus Pin ที่เหลือรวมเป็นแท่ง "Other (N)" |
 
-ทุก Chart Card ใน Product Analysis (Heatmap, Channel Index, Portfolio Matrix, Share Over Time) มี Toolbar ดูเป็นตาราง/ดาวน์โหลด/ขยายเต็มจอ ครบเหมือนหน้า Executive Outlook
+**Category Share of Sales Over Time** (Full Width, อยู่ใต้ Chart Grid ของ Zone C ก่อนเข้า Zone D): ปรับ Design ให้ตรงกับ Channel Mix Over Time ของ Executive Outlook ทุกจุด — เปลี่ยนจาก Stacked Area เป็น **100%-Stacked Bar** (`buildStacked100BarSVG`) มีตัวเลข % และ ฿ บนแท่งตรงๆ ไม่ต้องเปิดดูตารางเพื่ออ่านค่าแม่นยำ, Insight Caption ใช้ Wording เดียวกัน ("Mix shift, [ช่วงแรก]→[ช่วงหลัง] — Node: a%→b% (Δpp) ...") — **แตกต่างจาก Channel Mix ตรงความถี่**: คงไว้ที่ระดับ**รายเดือน** (18 เดือน) ไม่ใช่รายไตรมาสแบบ Channel Mix เพราะการบริหาร Product มักต้องดูละเอียดกว่าระดับ Channel — Top 6 Node เท่าเดิม (ตาม Level ที่เลือก, บวก Focus Pin)
+
+**Zone D — Category Deep-dive** (Sync Level + Channel + Focus Filter เดียวกับ Zone C, จัดเป็น Chart Grid 2 คอลัมน์ ที่ห่อบรรทัดเป็น 2x2 เพราะมี 4 การ์ด):
+
+| Metric/Chart | ประเภท |
+|---|---|
+| Sales by Category | Horizontal Bar, Top View จัดอันดับตามขนาดยอดขาย Flat (Top 10 + See all N) |
+| Growth Ranking | Horizontal Bar จัดอันดับตาม **%Growth YoY** แทนขนาด (มุมมองคนละมิติจาก Sales by Category) — **แยก 2 กลุ่มทิศทางเดียวกัน** "Fastest Growing" (เขียว) กับ "Declining" (แดง) แทนแท่งเดียวที่มีทั้งบวกลบ เพื่อไม่ต้องตีความเครื่องหมาย — แต่ละกลุ่มจำกัด 5 Node (น้อยกว่านั้นถ้ามีไม่ครบ), หมายเลข Rank ที่กำกับคือ Rank จริงในภาพรวมทั้งหมด ไม่ใช่ลำดับในกลุ่มย่อย — **ความยาวแท่งคำนวณจาก Max \|Growth\| ตัวเดียวร่วมกันทั้ง 2 กลุ่ม** (ไม่ใช่ Max แยกต่อกลุ่ม) เพื่อให้ขนาดแท่งเทียบกันข้ามกลุ่มได้ตรงจริง (เช่น +22.6% ต้องยาวกว่า -4.2% เห็นชัด ไม่ใช่ทั้งคู่ยืดเต็มเพราะเป็นค่ามากสุดในกลุ่มตัวเอง) |
+| Pareto / Concentration Analysis | `buildParetoSVG` — แท่ง = %ยอดขายของแต่ละ Node ต่อยอดขายรวม (เรียงมากไปน้อย), เส้น = %สะสม (Cumulative) บนแกน 0-100% เดียวกัน, เส้นประ Reference ที่ 80% แท่งที่เลย 80% สะสมแล้วจะจางสี — ตอบคำถาม "กี่ Node ที่คิดเป็นสัดส่วนหลักของยอดขาย" จำกัด Top 8 by ยอดขาย + Focus Pin ที่เหลือรวมเป็นแท่ง "Other (N)" เพื่อให้เส้นสะสมยังจบที่ ~100% จริงแม้ที่ระดับ Type/Series ที่มี Node เยอะ |
+| Return / Cancellation Rate by Category | Horizontal Bar (Pattern เดียวกับ Sales by Category/Growth Ranking) จัดอันดับ %Return/Cancellation Rate จากสูงไปต่ำ (Top 10 + Focus Pin) — Rate เป็นค่าคงที่ต่อ Category (Mock Field `returnRate` บน `CATEGORY_TREE`) Inherit ลงไปทุกชั้นเหมือน `growthYoY`/`channelMix` — เส้นอ้างอิง 5% ตามมาตรฐานเดียวกับ Return/Cancellation Rate Trend ของ Executive Outlook, สีแท่งข้าม Threshold: เขียว (≤5%) / แดง (>5%) — ความยาวแท่งคำนวณจาก Max Rate ตัวเดียวร่วมกันทั้ง Node Set (บทเรียนเดียวกับ Growth Ranking) แต่ละแท่งแสดงทั้ง % และมูลค่า ฿ โดยประมาณ |
+
+ทุก Chart Card ใน Product Analysis (Heatmap, Channel Index, Portfolio Matrix, Growth Contribution, Share Over Time, Sales by Category, Growth Ranking, Pareto / Concentration Analysis, Return/Cancellation Rate by Category) มี Toolbar ดูเป็นตาราง/ดาวน์โหลด/ขยายเต็มจอ ครบเหมือนหน้า Executive Outlook
 
 ### 5.3 MT Overview
 
@@ -356,7 +371,7 @@ Module นี้ยังปิด Task 7.4 ของ Review บางส่ว�
 | Module / หน้า | ไฟล์ HTML | Content Dependency — ต้องเช็คคู่กับ | เอกสารอ้างอิง |
 |---|---|---|---|
 | Sales Overview → Executive Outlook | `sales_overview.html` | **เป็นไฟล์ต้นทาง (Master)** ของ Mock-data engine หลักทั้งระบบ — `mulberry32` seed, `channelDefs`, `genSeries()`, `groupActual`/`groupTarget`, `companyActual`/`companyTarget`, และ `mtCNRate`/`ttCNRate`/`ecomCancelRate` (Return/Cancellation Rate ต่อเดือน แยกอิสระต่อ Channel) ทุกไฟล์อื่นก็อบปี้ "Part 1" มาจากไฟล์นี้แบบ byte-for-byte — ถ้าแก้สูตรตรงนี้ ต้องไล่แก้ทุกไฟล์ในตารางนี้ ⚠️ **`mtCNRate`/`ttCNRate`/`ecomCancelRate` ต้องอยู่ตำแหน่ง rand()-sequence เดียวกันเป๊ะใน 5 ไฟล์**: `sales_overview.html`, `module_mt_executive_summary.html`, `module_mt_breakdown.html`, `module_ecom_executive_summary.html`, `module_ecom_breakdown.html` (2 ไฟล์ ECOM ไม่ได้ใช้ค่านี้จริง แต่ต้องคง Block เดิมไว้ตำแหน่งเดิมเพื่อรักษาลำดับ rand() ที่เหลือของไฟล์ให้ตรงกัน) | Spec §5.1 |
-| Sales Overview → Product Analysis | `sales_overview_product_analysis.html` | ⚠️ **ไฟล์นี้ไม่มีอยู่จริงใน Workspace ตอนนี้** — ถูกอ้างอิงจาก Tab ในหน้า Executive Outlook แต่ยังไม่เคย Build/แนบเข้าเซสชัน ถ้าจะแก้ต้องหาไฟล์จริงมาก่อน หรือแจ้งให้ Build ใหม่ | Spec §5.2 |
+| Sales Overview → Product Analysis | `sales_overview_product_analysis.html` | Part 1 = copy จาก `sales_overview.html` (`mulberry32` seed, `genSeries()`, `channelDefs`, `groupActual`/`companyActual` — เหมือนกันแบบ byte-for-byte จนถึงจุดที่ `companyActual` คำนวณเสร็จ) **แต่ไม่มี** `companyTarget`/`groupHref`/`mtCNRate`/`ttCNRate`/`ecomCancelRate` เพราะหน้านี้ไม่ใช้ค่าพวกนี้เลย — ไม่กระทบ rand()-sequence เพราะ Part 2 (`CATEGORY_TREE`) เป็นข้อมูล Hardcode ทั้งหมด ไม่มีการเรียก `rand()` เพิ่ม (ยกเว้น jitter เล็กน้อยใน Share Over Time ที่คำนวณทีหลังและไม่ผูกกับไฟล์อื่น) จึงไม่ต้องแก้ให้ตรงกับ Master แบบเป๊ะ ๆ; ใช้ `buildScatterSVG` (Category Portfolio Matrix), `buildWaterfallSVG` (Growth Contribution), `buildStacked100BarSVG` (Category Share Over Time), และ `buildParetoSVG` (Pareto / Concentration Analysis — ฟังก์ชันใหม่ใน `shared.js`, ปัจจุบันมีแค่ไฟล์นี้ไฟล์เดียวที่เรียกใช้) — `CATEGORY_TREE` มี Field `returnRate` (Mock, Static ต่อ Category) Inherit ผ่าน `enumerateLevel()` แบบเดียวกับ `growthYoY`/`channelMix` ใช้โดย Return/Cancellation Rate by Category chart | Spec §5.2 |
 | MT → Executive Summary | `module_mt_executive_summary.html` | Part 1 = copy จาก `sales_overview.html` (รวม `mtCNRate`/`ttCNRate`/`ecomCancelRate` Block — ไฟล์นี้ใช้ `mtCNRate` จริงสำหรับ KPI "Return Rate (CN)"); **เป็นไฟล์ต้นทาง** ของ `mtCategoryShares`, `mtARSeries`, `mtPartnersSeries` (Part 2) | Spec §5.3 |
 | MT → Breakdown | `module_mt_breakdown.html` | Part 1 = copy จาก `module_mt_executive_summary.html` (ไม่ใช่จาก sales_overview ตรงๆ, รวม `mtCNRate` Block ด้วย — ใช้จริงใน Return Rate (CN) Trend); `mtPartnersSeries` copy byte-for-byte จากไฟล์เดียวกัน — แก้ Active Partners ต้องแก้คู่ | Spec §5.3, Review 1.4 |
 | ECOM → Executive Summary | `module_ecom_executive_summary.html` | Part 1 = copy จาก `sales_overview.html` (รวม `mtCNRate`/`ttCNRate`/`ecomCancelRate` Block — ไฟล์นี้ **ไม่ได้ใช้ `mtCNRate`/`ttCNRate` จริง** แค่ต้องคง Block ไว้ตำแหน่งเดิมเพื่อรักษาลำดับ rand()); **เป็นไฟล์ต้นทาง** ของ `ecomCategoryShares`, `ecomAOVSeries`, `ecomConvSeries`, `ecomShopListingsSeries` (Part 2) | Spec §5.5 |

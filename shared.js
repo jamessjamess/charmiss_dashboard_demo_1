@@ -312,13 +312,20 @@ function buildStackedAreaSVG(containerId, opts){
     for(let i=0;i<n;i++){ const x=xAt(i), y=yAt(cum[i][si]); d += (i===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1)+' '; }
     for(let i=n-1;i>=0;i--){ const x=xAt(i); const yBase = si===0 ? (padT+plotH) : yAt(cum[i][si-1]); d += 'L'+x.toFixed(1)+','+yBase.toFixed(1)+' '; }
     d += 'Z';
-    paths += '<path d="'+d+'" fill="'+series[si].color+'" opacity="0.88"/>';
+    const hl = series[si].highlight;
+    paths += '<path d="'+d+'" fill="'+series[si].color+'" opacity="'+(hl?0.96:0.88)+'"'+(hl?' stroke="'+(cssVar('--ink-1')||'#2a2a28')+'" stroke-width="1.5"':'')+'/>';
   }
   let xLabels = '';
   const showEvery = n > 12 ? 3 : 1;
   labels.forEach((lb,i) => {
     if(i%showEvery !== 0 && i !== n-1) return;
-    xLabels += '<text x="'+xAt(i).toFixed(1)+'" y="'+(height-4)+'" font-size="9" text-anchor="middle" fill="'+cssVar('--ink-3')+'">'+lb+'</text>';
+    // Edge-aware anchor: a centered label at the very first/last point
+    // overflows past the viewBox (padL/padR are only 6px, nowhere near half
+    // a label's width) and gets clipped by the SVG viewport. Anchor the
+    // first label to grow rightward and the last to grow leftward instead,
+    // so both stay fully inside the plot regardless of padding.
+    const anchor = i===0 ? 'start' : (i===n-1 ? 'end' : 'middle');
+    xLabels += '<text x="'+xAt(i).toFixed(1)+'" y="'+(height-4)+'" font-size="9" text-anchor="'+anchor+'" fill="'+cssVar('--ink-3')+'">'+lb+'</text>';
   });
 
   document.getElementById(containerId).innerHTML =
@@ -461,7 +468,7 @@ function buildScatterSVG(containerId, points, opts){
   opts = opts || {};
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 480;
-  const height = opts.height || 260;
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
   // Axis titles (opts.xAxisTitle / opts.yAxisTitle) are optional — when present,
   // reserve extra room so the title sits in its own row/column rather than
   // overlapping the tick labels. Padding stays at the old defaults when no
@@ -473,10 +480,19 @@ function buildScatterSVG(containerId, points, opts){
   const yFormatter = opts.yFormatter || (v=>v);
 
   const xs = points.map(p=>p.x), ys = points.map(p=>p.y);
-  let xMin = Math.min(...xs), xMax = Math.max(...xs);
-  let yMin = Math.min(...ys), yMax = Math.max(...ys);
-  const xPad = (xMax-xMin)*0.18 || Math.abs(xMax)*0.2 || 1, yPad = (yMax-yMin)*0.18 || Math.abs(yMax)*0.2 || 1;
-  xMin -= xPad; xMax += xPad; yMin -= yPad; yMax += yPad;
+  const rawXMin = Math.min(...xs), rawXMax = Math.max(...xs);
+  const rawYMin = Math.min(...ys), rawYMax = Math.max(...ys);
+  const xPad = (rawXMax-rawXMin)*0.18 || Math.abs(rawXMax)*0.2 || 1, yPad = (rawYMax-rawYMin)*0.18 || Math.abs(rawYMax)*0.2 || 1;
+  // Fix: axis ticks now come from niceAxisTicks (clean round numbers) instead
+  // of splitting the padded raw min/max into 4 even fractions, which used to
+  // print confusing values like "฿7.3M" / "-9.0%". Same fix already applied
+  // to buildLineChartSVG/buildGroupedBarSVG/buildWaterfallSVG.
+  const niceX = niceAxisTicks(rawXMin-xPad, rawXMax+xPad, 5);
+  const niceY = niceAxisTicks(rawYMin-yPad, rawYMax+yPad, 5);
+  let xMin = niceX.min, xMax = niceX.max;
+  let yMin = niceY.min, yMax = niceY.max;
+  if(xMax===xMin) xMax = xMin+1;
+  if(yMax===yMin) yMax = yMin+1;
   const xAt = v => padL + (v-xMin)/(xMax-xMin)*plotW;
   const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
 
@@ -488,17 +504,16 @@ function buildScatterSVG(containerId, points, opts){
 
   let svg = '';
   /* --- Axis gridlines + tick values (Y on the left, X along the bottom) --- */
-  const gridCount = 4;
-  for(let g=0; g<=gridCount; g++){
-    const yv = yMin + (yMax-yMin)*(g/gridCount);
+  niceY.ticks.forEach(yv=>{
     const gy = yAt(yv);
     svg += '<line x1="'+padL+'" y1="'+gy.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+gy.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
     svg += '<text x="'+(padL-6)+'" y="'+(gy+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(yv)+'</text>';
-    const xv = xMin + (xMax-xMin)*(g/gridCount);
+  });
+  niceX.ticks.forEach(xv=>{
     const gx = xAt(xv);
     svg += '<line x1="'+gx.toFixed(1)+'" y1="'+padT+'" x2="'+gx.toFixed(1)+'" y2="'+(height-padB)+'" stroke="'+hairline+'" stroke-width="0.6" opacity="0.5"/>';
     svg += '<text x="'+gx.toFixed(1)+'" y="'+(height-padB+14)+'" font-size="9" text-anchor="middle" fill="'+inkTertiary+'">'+xFormatter(xv)+'</text>';
-  }
+  });
 
   /* --- Median-split quadrant lines (emphasized, dashed) --- */
   const mx = xAt(medX), my = yAt(medY);
@@ -714,6 +729,78 @@ function buildStacked100BarSVG(containerId, opts){
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+bars+xLabels+'</svg>';
+}
+
+/* ---------- Pareto / Concentration chart — individual-share bars + a
+   cumulative-share line, both plotted on the SAME 0-100% axis (no dual-axis
+   needed since both series are already percentages of the same total). Used
+   for "how concentrated is the portfolio" questions (e.g. "top 3 categories
+   = 80% of sales"). `items` must already be sorted descending by value —
+   this function only computes shares/cumulative, it doesn't sort for you,
+   since callers often want to keep their own Focus-pinned ordering. ---------- */
+function buildParetoSVG(containerId, items, opts){
+  opts = opts || {};
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 480;
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
+  const padL = 40, padR = 40, padT = 20, padB = 42;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const n = items.length;
+  const total = items.reduce((a,it)=>a+it.value,0) || 1;
+  let cum = 0;
+  const withPct = items.map(it=>{
+    const pct = it.value/total*100;
+    cum += pct;
+    return { label: it.label, color: it.color, pct: pct, cumPct: cum };
+  });
+  const yAt = v => padT + (1 - v/100) * plotH;
+  const groupW = n ? plotW/n : plotW;
+  const barW = Math.min(groupW*0.6, 56);
+  const barColor = opts.barColor || cssVar('--brand') || '#b23368';
+  const lineColor = opts.lineColor || cssVar('--ink-1') || '#0b0b0b';
+  const hairline = cssVar('--hairline') || '#e1e0d9';
+  const inkTertiary = cssVar('--ink-3') || '#898781';
+  const inkTwo = cssVar('--ink-2') || '#52514e';
+  const thresholdPct = opts.thresholdPct !== undefined ? opts.thresholdPct : 80;
+
+  let svg = '';
+  [0,20,40,60,80,100].forEach(v=>{
+    const y = yAt(v);
+    svg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    svg += '<text x="'+(padL-8)+'" y="'+(y+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+v+'%</text>';
+  });
+  if(thresholdPct){
+    const yT = yAt(thresholdPct);
+    svg += '<line x1="'+padL+'" y1="'+yT.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+yT.toFixed(1)+'" stroke="'+inkTertiary+'" stroke-width="1.4" stroke-dasharray="4,3"/>';
+    svg += '<text x="'+(width-padR)+'" y="'+(yT-5).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'" font-weight="700">'+thresholdPct+'%</text>';
+  }
+
+  withPct.forEach((it,i)=>{
+    const cx = padL + groupW*i + groupW/2;
+    const barX = cx - barW/2;
+    const barTop = yAt(it.pct);
+    const barH = (padT+plotH) - barTop;
+    svg += '<rect x="'+barX.toFixed(1)+'" y="'+barTop.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,barH).toFixed(1)+'" rx="3" fill="'+(it.color||barColor)+'" opacity="0.85"/>';
+    if(barH > 16){
+      svg += '<text x="'+cx.toFixed(1)+'" y="'+(barTop+13).toFixed(1)+'" font-size="9" text-anchor="middle" font-weight="700" fill="#fff">'+it.pct.toFixed(1)+'%</text>';
+    }
+    svg += '<text x="'+cx.toFixed(1)+'" y="'+(height-padB+16)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+it.label+'</text>';
+  });
+
+  let linePath = '';
+  withPct.forEach((it,i)=>{
+    const cx = padL + groupW*i + groupW/2, cy = yAt(it.cumPct);
+    linePath += (i===0?'M':'L') + cx.toFixed(1)+','+cy.toFixed(1)+' ';
+  });
+  svg += '<path d="'+linePath+'" fill="none" stroke="'+lineColor+'" stroke-width="2.2"/>';
+  withPct.forEach((it,i)=>{
+    const cx = padL + groupW*i + groupW/2, cy = yAt(it.cumPct);
+    svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="3.5" fill="'+lineColor+'"/>';
+    svg += '<text x="'+cx.toFixed(1)+'" y="'+(cy-9).toFixed(1)+'" font-size="9" text-anchor="middle" font-weight="700" fill="'+inkTwo+'">'+it.cumPct.toFixed(0)+'%</text>';
+  });
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
 }
 
 function downloadSVGFromContainer(containerId, filename){
