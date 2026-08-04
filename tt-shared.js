@@ -852,6 +852,17 @@
     if (attrs) for (const k in attrs) e.setAttribute(k, attrs[k]);
     return e;
   }
+  // Real rendered text width via a cached offscreen canvas — same technique
+  // shared.js's measureTextWidth() uses for buildScatterSVG's label-collision
+  // boxes. TT has no shared.js dependency (separate engine, see file header),
+  // so this is its own copy rather than a cross-file import.
+  let __ttMeasureCanvas = null;
+  function ttMeasureTextWidth(text, fontSize, fontWeight, fontFamily){
+    if(!__ttMeasureCanvas) __ttMeasureCanvas = document.createElement('canvas');
+    const ctx = __ttMeasureCanvas.getContext('2d');
+    ctx.font = fontWeight+' '+fontSize+'px '+fontFamily;
+    return ctx.measureText(text).width;
+  }
   function niceMax(v){
     if (v<=0) return 10;
     const mag = Math.pow(10, Math.floor(Math.log10(v)));
@@ -1250,6 +1261,9 @@
      card width, in any Period-filter wording, without re-fighting that bug. ---- */
   function renderScatterMatrix(mount, opts){
     mount.innerHTML = "";
+    // Real computed font family (not the CSS keyword "inherit" — canvas's
+    // ctx.font needs an actual family name to measure against).
+    const ttFontFamily = getComputedStyle(mount).fontFamily || 'sans-serif';
     const items = opts.items;
     if (!items.length){
       const empty = document.createElement("div");
@@ -1332,6 +1346,26 @@
     const qx = { left:(padL+medX)/2, right:(medX+W-padR)/2 };
     const qy = { top:padT+16, bottom:padT+plotH-10 };
     const ql = opts.quadrantLabels || {};
+    // Fix (2026-08-06, feedback): item labels below used to sit at a single
+    // fixed offset (cy-11) above every dot with no collision check at all —
+    // two categories close together in both Sales Volume and Growth % (the
+    // reported case: categories with similar size/growth) render their
+    // labels on top of each other, illegible. Ported the same real-bounding-
+    // box greedy placement shared.js's buildScatterSVG already uses for the
+    // Category/Partner/Platform Portfolio Matrix on the other 3 pages (Sales
+    // Overview → Product Analysis, MT Breakdown, ECOM Breakdown) — this file
+    // has its own separate rendering engine (see header comment) so those
+    // earlier fixes never reached this chart. Register the 4 quadrant
+    // watermark labels as already-placed boxes first so item labels avoid
+    // sitting on top of them too.
+    const placedBoxes = [];
+    const CANDIDATES = [
+      {dx:0, dy:-11}, {dx:0, dy:16},
+      {dx:34, dy:-11}, {dx:-34, dy:-11},
+      {dx:34, dy:16}, {dx:-34, dy:16},
+      {dx:0, dy:-27}, {dx:0, dy:32}
+    ];
+    function boxOverlaps(a,b){ return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0; }
     [[qx.right, qy.top, ql.tr], [qx.right, qy.bottom, ql.br], [qx.left, qy.top, ql.tl], [qx.left, qy.bottom, ql.bl]]
       .forEach(([qxv,qyv,text]) => {
         if (!text) return;
@@ -1339,6 +1373,8 @@
           opacity:0.55, "pointer-events":"none", "paint-order":"stroke fill", stroke:"var(--card)", "stroke-width":3});
         t.textContent = text;
         svg.appendChild(t);
+        const qHalfW = ttMeasureTextWidth(text, 11.5, '650', ttFontFamily)/2 + 4;
+        placedBoxes.push({x0:qxv-qHalfW, x1:qxv+qHalfW, y0:qyv-9, y1:qyv+5});
       });
 
     wrap.appendChild(svg);
@@ -1349,7 +1385,18 @@
       const dot = el("circle",{cx, cy, r:7, fill:"var(--brand)", stroke:"var(--card)", "stroke-width":1.5, tabindex:"0"});
       dot.style.cursor = "pointer";
       svg.appendChild(dot);
-      const lbl = el("text",{x:cx, y:cy-11, "text-anchor":"middle", class:"direct-label", "font-size":"10.5px",
+      const halfW = ttMeasureTextWidth(d.label, 11.5, '650', ttFontFamily)/2 + 3, halfH = 8;
+      let chosen = null;
+      for(const c of CANDIDATES){
+        const lx = cx+c.dx, ly = cy+c.dy;
+        const box = {x0:lx-halfW, x1:lx+halfW, y0:ly-halfH-2, y1:ly+halfH-2};
+        if(box.x0 < padL || box.x1 > W-padR || box.y0 < 2 || box.y1 > H-2) continue;
+        if(placedBoxes.some(pb => boxOverlaps(pb, box))) continue;
+        chosen = {lx, ly}; break;
+      }
+      if(!chosen){ const c = CANDIDATES[1]; chosen = {lx:cx+c.dx, ly:cy+c.dy}; }
+      placedBoxes.push({x0:chosen.lx-halfW, x1:chosen.lx+halfW, y0:chosen.ly-halfH-2, y1:chosen.ly+halfH-2});
+      const lbl = el("text",{x:chosen.lx, y:chosen.ly, "text-anchor":"middle", class:"direct-label", "font-size":"10.5px",
         "paint-order":"stroke fill", stroke:"var(--card)", "stroke-width":3, "pointer-events":"none"});
       lbl.textContent = d.label;
       svg.appendChild(lbl);

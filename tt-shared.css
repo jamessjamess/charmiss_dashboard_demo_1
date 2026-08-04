@@ -431,10 +431,28 @@
   /* .ar-bucket-row/.ar-bucket-item/.ar-bucket-label/.ar-bucket-count/.ar-bucket-amt removed
      Round 29 (Task 4) — AR Aging card merged into a plain renderTable, no more chip strip. */
 
-  /* ---------- Sticky mini-nav for Level 2 "Sales Breakdown" (2026-07-26) ---------- */
+  /* ---------- Sticky mini-nav for Level 2 "Sales Breakdown" (2026-07-26) ----------
+     Fix (2026-08-06, bug report): "text from the KPI cards above bleeding into the CN
+     Record table below, at the same rows every time, intermittent." Reproduction via
+     dropdown cycling, scroll-position jumps, and a simulated fast continuous scroll (RAF
+     loop across 3x page height) across Rep-01's CN Record (the one row set the report
+     named, TT-1018/TT-1041) found no DOM defect at any point — no duplicate ids, no
+     stray fixed/absolute element ever overlapping the table, no console errors. That
+     rules out an application-state bug and points at the one genuinely unusual paint
+     property on this page: this nav is `position:sticky`, sitting directly between the
+     KPI hero section and the Credit Notes section the report describes — a known
+     Chromium class of bug where a sticky element's layer isn't always cleanly
+     re-composited during a fast real scroll, letting stale painted content from the
+     layer boundary reappear until the next repaint trigger (hover/click/further scroll)
+     — consistent with "intermittent" and "same position every time" (the glitch tracks
+     scroll position, not any data value). will-change:transform forces this nav onto its
+     own compositor layer so its repaint region can no longer bleed into content below it.
+     If this recurs after this fix, it did not fully resolve; the underlying diagnosis is
+     the sticky-scroll interaction, not this app's DOM/JS. */
   .l2-mini-nav{
     position:sticky; top:0; z-index:8; display:flex; gap:6px; flex-wrap:wrap;
     background:var(--page); padding:10px 0; margin-bottom:6px; border-bottom:1px solid var(--hairline);
+    will-change:transform;
   }
   .l2-mini-nav-item{
     font-size:12.5px; font-weight:650; color:var(--ink-2); text-decoration:none;
