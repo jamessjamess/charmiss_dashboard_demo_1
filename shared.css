@@ -11,7 +11,7 @@
   --brand:#b23368; --brand-wash:rgba(178,51,104,.08);
   --shadow:0 1px 2px rgba(11,11,11,.04),0 6px 20px -8px rgba(11,11,11,.12);
   --radius:10px;
-  --tt:#3B7A7A; --ecom:#A87C3F; --lazada:#C99A5C; --shopee:#A87C3F; --tiktok:#7A5A2E;
+  --tt:#3B7A7A; --ecom:#A87C3F; --lazada:#C99A5C; --shopee:#A87C3F; --tiktok:#7A5A2E; --lineshop:#4C8C5C;
 }
 :root[data-theme="dark"]{
   --page:#0d0d0d; --card:#1a1a19;

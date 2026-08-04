@@ -356,9 +356,10 @@ function genSeries(base, growthPerMonth){
 const channelDefs = [
   {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT'},
   {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
-  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:2000000, growth:0.0175, group:'Ecom'},
-  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1700000, growth:0.0165, group:'Ecom'},
-  {key:'TikTok', label:'TikTok Shop', color:'#7A5A2E', base:900000, growth:0.0270, group:'Ecom'}
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:1800000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1550000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok', color:'#7A5A2E', base:850000, growth:0.0270, group:'Ecom'},
+  {key:'LineShop', label:'Line Shop', color:'#4C8C5C', base:400000, growth:0.0120, group:'Ecom'}
 ];
 channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.actual; c.target = s.target; });
 const groupKeys = ['MT','TT','Ecom'];

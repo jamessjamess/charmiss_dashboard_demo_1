@@ -75,7 +75,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">Net Sales (Ecom)</span>
-        <button class="info-icon" data-info-title="Net Sales (Ecom)" data-info-text="ยอดขายสุทธิของ Ecom Channel (Lazada + Shopee + TikTok Shop รวมกัน) ในช่วงเวลาที่เลือก">i</button>
+        <button class="info-icon" data-info-title="Net Sales (Ecom)" data-info-text="ยอดขายสุทธิของ Ecom Channel (Lazada + Shopee + TikTok + Line Shop รวมกัน) ในช่วงเวลาที่เลือก">i</button>
       </div>
       <div><span class="kpi-value" id="kpiNetSalesValue">–</span><span class="kpi-unit">THB</span></div>
       <div class="kpi-caption" id="kpiNetSalesCaption">Year to Date</div>
@@ -146,7 +146,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">Active Shop Listings</span>
-        <button class="info-icon" data-info-title="Active Shop Listings" data-info-text="จำนวนร้านค้า (Shop) ที่เปิดขายอยู่บน Lazada/Shopee/TikTok Shop รวมกัน ในเดือนล่าสุด">i</button>
+        <button class="info-icon" data-info-title="Active Shop Listings" data-info-text="จำนวนร้านค้า (Shop) ที่เปิดขายอยู่บน Lazada/Shopee/TikTok/Line Shop รวมกัน ในเดือนล่าสุด">i</button>
       </div>
       <div><span class="kpi-value" id="kpiShopsValue">–</span></div>
       <div class="kpi-caption" id="kpiShopsCaption">Jun 26</div>
@@ -206,7 +206,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Sales by Platform</span>
-          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok Shop) ในช่วงเวลาที่เลือก">i</button>
+          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="platformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -285,8 +285,8 @@
    Mock data — Part 1 is a byte-for-byte copy of sales_overview.html's
    channel-level generator (same seed 20260630, same channelDefs order/params)
    so that groupActual.Ecom / groupTarget.Ecom / the individual Lazada, Shopee,
-   TikTok Shop series come out identical to what Sales Overview already shows
-   for Ecom. Do NOT edit this block without also editing sales_overview.html's
+   TikTok, Line Shop series come out identical to what Sales Overview already
+   shows for Ecom. Do NOT edit this block without also editing sales_overview.html's
    matching block, or the pages will silently drift out of sync on Ecom's
    headline numbers. Part 2 (below the divider) is new Ecom-only mock data
    with no cross-file consistency requirement, since nothing else currently
@@ -319,9 +319,10 @@ function genSeries(base, growthPerMonth){
 const channelDefs = [
   {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT'},
   {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
-  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:2000000, growth:0.0175, group:'Ecom'},
-  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1700000, growth:0.0165, group:'Ecom'},
-  {key:'TikTok', label:'TikTok Shop', color:'#7A5A2E', base:900000, growth:0.0270, group:'Ecom'}
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:1800000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1550000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok', color:'#7A5A2E', base:850000, growth:0.0270, group:'Ecom'},
+  {key:'LineShop', label:'Line Shop', color:'#4C8C5C', base:400000, growth:0.0120, group:'Ecom'}
 ];
 channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.actual; c.target = s.target; });
 const groupKeys = ['MT','TT','Ecom'];
@@ -348,7 +349,7 @@ for(let i=0;i<MONTHS_TOTAL;i++){
 }
 
 /* -------------------- Part 2: Ecom-only mock data (new) -------------------- */
-const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee, TikTok Shop, in this order
+const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee, TikTok, Line Shop, in this order
 
 /* AOV (THB per order) and Conversion Rate (%) — company-wide Ecom trend series,
    independent from any single platform, used by the KPI cards above. */
@@ -360,17 +361,29 @@ const ecomShopListingsSeries = [];
 { let level = 14; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.28; ecomShopListingsSeries.push(Math.round(level)); } }
 
 /* Per-platform stats — a narrative split rather than derived math: TikTok
-   Shop skews toward lower AOV / higher conversion (livestream, impulse-
-   driven purchases), Lazada skews toward higher AOV / lower conversion
-   (more considered purchases). cancelFactor multiplies the shared
-   ecomCancelRate series per platform. Fix (2026-08-06): no longer displayed
-   directly in THIS file (the "Ranking — by Platform" table that used it was
-   removed) but must stay — module_ecom_breakdown.html copies this const
-   byte-for-byte for its own AOV/Conversion Rate by Platform charts. */
+   skews toward lower AOV / higher conversion (livestream, impulse-driven
+   purchases), Lazada skews toward higher AOV / lower conversion (more
+   considered purchases), Line Shop skews toward loyal chat-commerce repeat
+   buyers (higher AOV, lower conversion off browsing traffic, lower
+   cancellation). cancelFactor multiplies the shared ecomCancelRate series
+   per platform. Not displayed directly in THIS file — kept because
+   module_ecom_breakdown.html copies this const byte-for-byte for its own
+   AOV/Conversion Rate by Platform charts.
+   Fix (2026-08-06): aov/conv used to be flat hardcoded absolute values
+   (e.g. Lazada always exactly ฿560 AOV), so AOV/Conversion Rate by Platform
+   in Breakdown never changed when the Period filter changed — not a real
+   calculation, just a fixed label. Changed to INDEX multipliers instead:
+   Breakdown now computes each platform's AOV/Conversion as the real
+   period-averaged company-wide ecomAOVSeries/ecomConvSeries (which DO vary
+   by period) times that platform's index, so the chart is genuinely
+   period-sensitive while each platform's characteristic skew is preserved.
+   Indices are revenue-weighted to average out close to 1.0 across the 4
+   platforms so the blended company-wide series stays the reference. */
 const ecomPlatformStats = {
-  Lazada: { aov: 560, conv: 2.9, cancelFactor: 0.90 },
-  Shopee: { aov: 480, conv: 3.4, cancelFactor: 1.05 },
-  TikTok: { aov: 365, conv: 4.5, cancelFactor: 1.20 }
+  Lazada: { aovIndex: 1.15, convIndex: 0.90, cancelFactor: 0.90 },
+  Shopee: { aovIndex: 1.00, convIndex: 1.00, cancelFactor: 1.00 },
+  TikTok: { aovIndex: 0.75, convIndex: 1.35, cancelFactor: 1.20 },
+  LineShop: { aovIndex: 1.05, convIndex: 0.80, cancelFactor: 0.85 }
 };
 
 /* Category shares within Ecom — independently modeled mock shares (the

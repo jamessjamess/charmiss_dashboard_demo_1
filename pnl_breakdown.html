@@ -214,7 +214,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Marketing &amp; Ads Spend by Channel</span>
-        <button class="info-icon" data-info-title="Marketing & Ads Spend by Channel" data-info-text="Marketing/Ads Spend (฿) ต่อ Channel ในช่วงเวลาที่เลือก — ระดับ Company/Channel เท่านั้น ยังไม่ลงถึงระดับ Platform ของ Ecom (Lazada/Shopee/TikTok)">i</button>
+        <button class="info-icon" data-info-title="Marketing & Ads Spend by Channel" data-info-text="Marketing/Ads Spend (฿) ต่อ Channel ในช่วงเวลาที่เลือก — ระดับ Company/Channel เท่านั้น ยังไม่ลงถึงระดับ Platform ของ Ecom (Lazada/Shopee/TikTok/Line Shop)">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="mktByChannelTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -268,9 +268,10 @@ function genSeries(base, growthPerMonth){
 const channelDefs = [
   {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT'},
   {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
-  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:2000000, growth:0.0175, group:'Ecom'},
-  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1700000, growth:0.0165, group:'Ecom'},
-  {key:'TikTok', label:'TikTok Shop', color:'#7A5A2E', base:900000, growth:0.0270, group:'Ecom'}
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:1800000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1550000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok', color:'#7A5A2E', base:850000, growth:0.0270, group:'Ecom'},
+  {key:'LineShop', label:'Line Shop', color:'#4C8C5C', base:400000, growth:0.0120, group:'Ecom'}
 ];
 channelDefs.forEach(c => { const s = genSeries(c.base, c.growth); c.actual = s.actual; c.target = s.target; });
 const groupKeys = ['MT','TT','Ecom'];
