@@ -13,6 +13,7 @@ const MODULE_MAP = [
     items: [
       { key:'pnl-exec',      label:'Executive Summary', href:'pnl_executive_summary.html' },
       { key:'pnl-breakdown', label:'Breakdown',          href:'pnl_breakdown.html' },
+      { key:'pnl-cost',      label:'Cost Structure',     href:'pnl_cost_structure.html' },
     ],
   },
   {

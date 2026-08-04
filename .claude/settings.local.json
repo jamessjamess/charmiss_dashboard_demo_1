@@ -3,7 +3,9 @@
     "allow": [
       "Bash(powershell -Command \"Get-Content 'G:\\\\My Drive\\\\[Charmiss] - Sales Overview Dashboard\\\\Charmiss Dashboard Dev\\\\tt-shared.css' -Tail 5\")",
       "Read(//g/My Drive/**)",
-      "mcp__claude-in-chrome__tabs_context_mcp"
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "Bash(python -c \"print\\(1\\)\")",
+      "Bash(where python *)"
     ]
   }
 }

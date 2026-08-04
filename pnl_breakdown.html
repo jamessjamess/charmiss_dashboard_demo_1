@@ -41,6 +41,12 @@
   <nav class="tabs">
     <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
     <a class="tab active tab-link" href="pnl_breakdown.html">Breakdown</a>
+    <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+  </nav>
+
+  <nav class="section-nav">
+    <a href="#sec-margin-quality">Margin Quality by Channel</a>
+    <a href="#sec-category-profitability">Category Profitability</a>
   </nav>
 
   <div class="filterbar">
@@ -84,7 +90,7 @@
   </div>
 
   <!-- ===== ZONE A: MARGIN QUALITY BY CHANNEL ===== -->
-  <div class="section-label">Margin Quality by Channel</div>
+  <div class="section-label" id="sec-margin-quality">Margin Quality by Channel</div>
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -123,7 +129,7 @@
   </div>
 
   <!-- ===== ZONE B: CATEGORY PROFITABILITY ===== -->
-  <div class="section-label">Category Profitability</div>
+  <div class="section-label" id="sec-category-profitability">Category Profitability</div>
   <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:14px;">
     <div class="card">
       <div class="card-head">
@@ -189,42 +195,6 @@
       </div>
     </div>
     <table id="catRankTable"></table>
-  </div>
-
-  <!-- ===== ZONE C: COST STRUCTURE OVER TIME ===== -->
-  <div class="section-label">Cost Structure Over Time</div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">OPEX Trend</span>
-        <button class="info-icon" data-info-title="OPEX Trend" data-info-text="Trade Spend / Logistics / Marketing&Ads / SG&A รายเดือน Company-wide ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน)">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="opexTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="opexTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="opexTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-legend" id="opexTrendLegend"></div>
-    <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:200px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="opexTrendTableWrap"></div>
-  </div>
-
-  <div class="card" style="margin-bottom:6px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Marketing &amp; Ads Spend by Channel</span>
-        <button class="info-icon" data-info-title="Marketing & Ads Spend by Channel" data-info-text="Marketing/Ads Spend (฿) ต่อ Channel ในช่วงเวลาที่เลือก — ระดับ Company/Channel เท่านั้น ยังไม่ลงถึงระดับ Platform ของ Ecom (Lazada/Shopee/TikTok/Line Shop)">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="mktByChannelTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="mktByChannelDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="mktByChannelExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">This period · by channel</div>
-    <div class="canvas-wrap" id="mktByChannelCanvasWrap" style="height:160px;"><div id="mktByChannelChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="mktByChannelTableWrap"></div>
   </div>
 
 </div>
@@ -516,29 +486,6 @@ function renderAll(){
     + '</tbody>';
   latestData.catRank = sortedByNetMargin;
 
-  /* === ZONE C1: OPEX Trend (trailing 18 months, company-wide, ignores Period/Channel filter) === */
-  const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
-  const shareLabels = shareIdx.map(i=>monthLabels[i]);
-  const opexLines = [
-    { name:'Trade Spend', color: resolveColor('var(--cat-1)'), key:'tradeSpend' },
-    { name:'Logistics', color: resolveColor('var(--cat-2)'), key:'logistics' },
-    { name:'Marketing/Ads', color: resolveColor('var(--cat-3)'), key:'marketing' },
-    { name:'SG&A', color: resolveColor('var(--cat-4)'), key:'sga' }
-  ];
-  const opexSeries = opexLines.map(l => ({
-    name:l.name, color:l.color,
-    values: shareIdx.map(i => groupKeys.reduce((sum,g)=> sum + pnlByChannel[g][l.key][i], 0))
-  }));
-  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:200 });
-  document.getElementById('opexTrendLegend').innerHTML = opexLines.map(l =>
-    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+l.color+'"></span>'+l.name+'</span>'
-  ).join('');
-  latestData.opexTrend = { labels: shareLabels, series: opexSeries };
-
-  /* === ZONE C2: Marketing & Ads Spend by Channel === */
-  const mktItems = groupKeys.map(g => ({ label:g, value: sumRange(pnlByChannel[g].marketing,s,e), color: groupColor[g] }));
-  buildHBarCompareSVG('mktByChannelChart', mktItems, { referenceValue:0, formatValue: fmtTHB, labelW:60, rowHeight:44 });
-  latestData.mktByChannel = mktItems;
 }
 
 /* --- Toolbar --- */
@@ -608,34 +555,6 @@ document.getElementById('catRankDownloadBtn').addEventListener('click', ()=>{
   downloadCSV(rows, 'pnl_category_profitability_ranking.csv');
 });
 document.getElementById('catRankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-
-document.getElementById('opexTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('opexTrendChart', 'pnl_opex_trend.svg'));
-document.getElementById('opexTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('opexTrendTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('opexTrendTableWrap');
-  const canvasWrap = document.getElementById('opexTrendCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.opexTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('mktByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mktByChannelChart', 'pnl_marketing_ads_spend_by_channel.svg'));
-document.getElementById('mktByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('mktByChannelTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('mktByChannelTableWrap');
-  const canvasWrap = document.getElementById('mktByChannelCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.mktByChannel;
-  let html = '<table class="mini-table"><thead><tr><th>Channel</th><th>Marketing/Ads Spend</th></tr></thead><tbody>';
-  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.value)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
 
 /* ---------- Init ---------- */
 renderAll();

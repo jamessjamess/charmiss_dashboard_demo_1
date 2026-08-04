@@ -175,6 +175,21 @@ button,select{font-family:inherit;}
 .legend-value{font-weight:700;flex-shrink:0;}
 
 .cat-bars{display:flex;flex-direction:column;gap:9px;}
+/* Fix (2026-08-06, feedback): "Sales by Platform" (ECOM Breakdown, only 4
+   rows) paired in a .chart-grid next to a taller scatter-chart card (e.g.
+   Platform Portfolio Matrix, 280px canvas) looked like it "didn't fill the
+   frame" — CSS Grid stretches both cards to match the taller sibling's
+   height by default, but the 4 short rows stayed clumped at the top,
+   leaving a big empty gap below within the same card. Opt-in modifier
+   (added only to that specific .card, not a blanket change to every .card
+   site-wide — turning EVERY .card into a flex column risked subtly changing
+   margin-collapse spacing on cards elsewhere that were never touched or
+   visually re-checked this round) that makes the card itself a flex column
+   and lets its .cat-bars child absorb the stretched leftover height,
+   centering the rows within it so the extra space reads as intentional
+   breathing room instead of a rendering bug. */
+.card-vcenter-fill{display:flex;flex-direction:column;}
+.card-vcenter-fill .cat-bars{flex:1 1 auto;justify-content:center;}
 .cat-row{display:flex;align-items:center;gap:9px;}
 .cat-label{width:104px;font-size:11.5px;color:var(--ink-3);flex-shrink:0;}
 .cat-track{position:relative;flex:1;height:25px;background:var(--wash);border-radius:6px;overflow:hidden;}
@@ -203,6 +218,14 @@ button,select{font-family:inherit;}
 .table-card td{padding:11px 12px;font-size:13px;border-bottom:1px solid var(--hairline);text-align:right;}
 .table-card td:nth-child(1),.table-card td:nth-child(2){text-align:left;}
 .table-card tr:last-child td{border-bottom:none;}
+/* Fix (2026-08-06, P&L Income Statement): the th/td:nth-child(1)/(2) rules
+   above assume every .table-card table has a "Rank # | Name" pair as its
+   first 2 columns (true for every Ranking table in the system so far) —
+   a table with only ONE text label column (like Income Statement's "Line
+   Item") needs its 2nd column (a right-aligned ฿ figure) NOT forced left.
+   Opt-in modifier so existing Ranking tables are unaffected. */
+.table-card.single-label-col th:nth-child(2),.table-card.single-label-col td:nth-child(2){text-align:right;}
+.income-stmt-total td,.income-stmt-total th{font-weight:700;color:var(--ink-1);}
 .rank-num{color:var(--ink-3);font-weight:700;}
 .channel-name-cell{display:flex;align-items:center;gap:8px;font-weight:600;}
 .channel-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}

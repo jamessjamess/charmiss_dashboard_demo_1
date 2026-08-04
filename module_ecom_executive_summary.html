@@ -76,7 +76,7 @@
 
   <!-- ===== EXECUTIVE SUMMARY ===== -->
   <div class="section-label" id="sec-exec-summary">Executive Summary</div>
-  <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr);">
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
     <div class="card">
       <div class="card-head">
         <span class="card-title">Net Sales (Ecom)</span>
@@ -134,33 +134,6 @@
       <div id="kpiAovSpark"></div>
     </div>
 
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Conversion Rate</span>
-        <button class="info-icon" data-info-title="Conversion Rate" data-info-text="สัดส่วนผู้เข้าชมสินค้าที่ตัดสินใจสั่งซื้อ (Visit-to-Order) เฉลี่ยตลอดช่วงเวลาที่เลือก — ยิ่งสูงยิ่งดี">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiConvValue">–</span></div>
-      <div class="kpi-caption" id="kpiConvCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiConvMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiConvYoy">–</span></div>
-      </div>
-      <div id="kpiConvSpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Active Shop Listings</span>
-        <button class="info-icon" data-info-title="Active Shop Listings" data-info-text="จำนวนร้านค้า (Shop) ที่เปิดขายอยู่บน Lazada/Shopee/TikTok/Line Shop รวมกัน ในเดือนล่าสุด">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiShopsValue">–</span></div>
-      <div class="kpi-caption" id="kpiShopsCaption">Jun 26</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiShopsMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiShopsYoy">–</span></div>
-      </div>
-      <div id="kpiShopsSpark"></div>
-    </div>
   </div>
 
   <div class="section-label" id="sec-trends-mix">Trends &amp; Mix</div>
@@ -375,39 +348,41 @@ for(let i=0;i<MONTHS_TOTAL;i++){
 /* -------------------- Part 2: Ecom-only mock data (new) -------------------- */
 const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee, TikTok, Line Shop, in this order
 
-/* AOV (THB per order) and Conversion Rate (%) — company-wide Ecom trend series,
-   independent from any single platform, used by the KPI cards above. */
+/* AOV (THB per order) — company-wide Ecom trend series, independent from any
+   single platform, used by the KPI card above.
+   Fix (2026-08-06, feedback): Conversion Rate (KPI here, "Conversion Rate by
+   Platform" in Breakdown) and Active Shop Listings (KPI here) were both cut
+   — Conversion Rate couldn't be genuinely differentiated per platform beyond
+   a narrative skew, and Active Shop Listings rested on the same "many shops
+   per platform" premise already root-caused and removed from Breakdown
+   earlier (Charmiss runs exactly one storefront per platform). Removed
+   ecomConvSeries/ecomShopListingsSeries generation entirely along with them
+   (confirmed no other load-time code in this file or module_ecom_breakdown.html
+   reads rand() after this point, so deleting these loops doesn't shift any
+   cross-file rand()-sequence sync — see that file's matching removal). */
 const ecomAOVSeries = [];
 { let level = 480; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.42)*14; level = Math.max(360, Math.min(640, level)); ecomAOVSeries.push(level); } }
-const ecomConvSeries = [];
-{ let level = 2.6; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.42)*0.18; level = Math.max(1.8, Math.min(4.6, level)); ecomConvSeries.push(level); } }
-const ecomShopListingsSeries = [];
-{ let level = 14; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.28; ecomShopListingsSeries.push(Math.round(level)); } }
 
 /* Per-platform stats — a narrative split rather than derived math: TikTok
-   skews toward lower AOV / higher conversion (livestream, impulse-driven
-   purchases), Lazada skews toward higher AOV / lower conversion (more
-   considered purchases), Line Shop skews toward loyal chat-commerce repeat
-   buyers (higher AOV, lower conversion off browsing traffic, lower
-   cancellation). cancelFactor multiplies the shared ecomCancelRate series
-   per platform. Not displayed directly in THIS file — kept because
-   module_ecom_breakdown.html copies this const byte-for-byte for its own
-   AOV/Conversion Rate by Platform charts.
-   Fix (2026-08-06): aov/conv used to be flat hardcoded absolute values
-   (e.g. Lazada always exactly ฿560 AOV), so AOV/Conversion Rate by Platform
-   in Breakdown never changed when the Period filter changed — not a real
-   calculation, just a fixed label. Changed to INDEX multipliers instead:
-   Breakdown now computes each platform's AOV/Conversion as the real
-   period-averaged company-wide ecomAOVSeries/ecomConvSeries (which DO vary
-   by period) times that platform's index, so the chart is genuinely
-   period-sensitive while each platform's characteristic skew is preserved.
-   Indices are revenue-weighted to average out close to 1.0 across the 4
-   platforms so the blended company-wide series stays the reference. */
+   skews toward lower AOV (livestream, impulse-driven purchases), Lazada
+   skews toward higher AOV (more considered purchases), Line Shop skews
+   toward loyal chat-commerce repeat buyers (higher AOV, lower cancellation).
+   cancelFactor multiplies the shared ecomCancelRate series per platform. Not
+   displayed directly in THIS file — kept because module_ecom_breakdown.html
+   copies this const byte-for-byte for its own AOV by Platform chart.
+   Fix (2026-08-06): aov used to be a flat hardcoded absolute value (e.g.
+   Lazada always exactly ฿560 AOV), so AOV by Platform in Breakdown never
+   changed when the Period filter changed — not a real calculation, just a
+   fixed label. Changed to an INDEX multiplier instead: Breakdown now
+   computes each platform's AOV as the real period-averaged company-wide
+   ecomAOVSeries (which DOES vary by period) times that platform's index, so
+   the chart is genuinely period-sensitive while each platform's
+   characteristic skew is preserved. */
 const ecomPlatformStats = {
-  Lazada: { aovIndex: 1.15, convIndex: 0.90, cancelFactor: 0.90 },
-  Shopee: { aovIndex: 1.00, convIndex: 1.00, cancelFactor: 1.00 },
-  TikTok: { aovIndex: 0.75, convIndex: 1.35, cancelFactor: 1.20 },
-  LineShop: { aovIndex: 1.05, convIndex: 0.80, cancelFactor: 0.85 }
+  Lazada: { aovIndex: 1.15, cancelFactor: 0.90 },
+  Shopee: { aovIndex: 1.00, cancelFactor: 1.00 },
+  TikTok: { aovIndex: 0.75, cancelFactor: 1.20 },
+  LineShop: { aovIndex: 1.05, cancelFactor: 0.85 }
 };
 
 /* Category shares within Ecom — independently modeled mock shares (the
@@ -673,29 +648,6 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAovYoy').innerHTML = '<span class="'+deltaClass(aovYoyPct)+'">'+fmtSignedPct(aovYoyPct)+'</span>';
   const aovSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) aovSpark.push(aovAt(i));
   document.getElementById('kpiAovSpark').innerHTML = sparklineSVG('kpiAovSpark', aovSpark, brand, fmtTHB);
-
-  /* === KPI: Conversion Rate === */
-  const convAt = i => ecomConvSeries[i];
-  let convSum=0, convN=0; for(let i=s;i<=e;i++){ convSum+=convAt(i); convN++; }
-  const convPeriodAvg = convN ? convSum/convN : 0;
-  const convMomPP = convAt(e)-convAt(e-1), convYoyPP = convAt(e)-convAt(e-12);
-  document.getElementById('kpiConvValue').textContent = fmtPct(convPeriodAvg,1);
-  document.getElementById('kpiConvCaption').textContent = label;
-  document.getElementById('kpiConvMom').innerHTML = '<span class="'+deltaClass(convMomPP)+'">'+fmtSignedPP(convMomPP)+'</span>';
-  document.getElementById('kpiConvYoy').innerHTML = '<span class="'+deltaClass(convYoyPP)+'">'+fmtSignedPP(convYoyPP)+'</span>';
-  const convSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) convSpark.push(convAt(i));
-  document.getElementById('kpiConvSpark').innerHTML = sparklineSVG('kpiConvSpark', convSpark, brand, v=>fmtPct(v,1));
-
-  /* === KPI: Active Shop Listings === */
-  const shopsAt = i => ecomShopListingsSeries[i];
-  const shopsMomPct = pctChange(shopsAt(e), shopsAt(e-1));
-  const shopsYoyPct = pctChange(shopsAt(e), shopsAt(e-12));
-  document.getElementById('kpiShopsValue').textContent = String(shopsAt(e));
-  document.getElementById('kpiShopsCaption').textContent = monthLabels[e];
-  document.getElementById('kpiShopsMom').innerHTML = '<span class="'+deltaClass(shopsMomPct)+'">'+fmtSignedPct(shopsMomPct)+'</span>';
-  document.getElementById('kpiShopsYoy').innerHTML = '<span class="'+deltaClass(shopsYoyPct)+'">'+fmtSignedPct(shopsYoyPct)+'</span>';
-  const shopsSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) shopsSpark.push(shopsAt(i));
-  document.getElementById('kpiShopsSpark').innerHTML = sparklineSVG('kpiShopsSpark', shopsSpark, brand, v=>String(Math.round(v)));
 
   /* === Chart: Revenue Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);

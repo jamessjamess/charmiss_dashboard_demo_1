@@ -1,7 +1,14 @@
 # Charmiss Dashboard — Module Spec: P&L Overview
 
-**สถานะ:** Spec ออกแบบ ยังไม่ Build — ใช้เอกสารนี้เป็นแหล่งอ้างอิงตอนลงมือสร้างไฟล์จริง (แบบเดียวกับที่ ECOM Overview ใช้ Q&A ยืนยันโครงสร้างก่อน Build)
-**แยกจาก** `Charmiss_Dashboard_Spec.md` (Spec หลัก) และ `Charmiss_Dashboard_Review_2026-07-31.md` (Review) — เอกสารนี้เป็น Spec เฉพาะของ Module ใหม่เท่านั้น เมื่อ Build เสร็จค่อยเอาเนื้อหาไปเพิ่มใน Spec หลัก (เพิ่ม section ใหม่ ไม่ทับของเดิม)
+**สถานะ:** Build เสร็จแล้ว (3 ไฟล์: `pnl_executive_summary.html`, `pnl_breakdown.html`, `pnl_cost_structure.html`) — เอกสารนี้เหลือไว้เป็น Design Rationale/สูตร Mock Data อ้างอิงเชิงลึก ส่วนสถานะปัจจุบันของแต่ละหน้าให้ดูที่ `Charmiss_Dashboard_Spec.md` §5.6 (Sync กับโค้ดจริงเสมอ) — เนื้อหาด้านล่างที่พูดถึง "ยังไม่ Build"/"ตอนลงมือสร้างจริง" เป็นบริบทตอนออกแบบ ไม่ใช่สถานะปัจจุบัน
+**แยกจาก** `Charmiss_Dashboard_Spec.md` (Spec หลัก) และ `Charmiss_Dashboard_Review_2026-07-31.md` (Review)
+
+**ส่วนที่ Build จริงต่างจาก Spec เดิมด้านล่าง (2026-08, หลัง P&L Overview พื้นฐานเสร็จแล้ว):**
+- Executive Summary เพิ่ม KPI ที่ 7 "Full Year Profit Forecast" (Run-rate, ไม่มี MoM/YoY) + "Income Statement" Table ต่อจาก Waterfall (Reuse Sum ตัวแปรเดียวกับ Waterfall เป๊ะ) + เส้น "Last Year Net Profit" ใน Profit Trend
+- **ไม่มี** Sub-module "Revenue" ใน P&L — Sales Overview คุม Revenue Breakdown อยู่แล้ว
+- Breakdown ตัด Zone "Cost Structure Over Time" ออก (ย้ายไปแท็บใหม่)
+- เพิ่มไฟล์ที่ 3 `pnl_cost_structure.html` (3 Section: Cost Efficiency / Cost by Channel & Partner / Cost Efficiency Signal) — **Standing Guardrail:** ห้ามสร้าง Trade Spend/Cost Breakdown แยกอีกใน MT/TT/ECOM Breakdown, P&L เป็น Single Source of Truth
+- รายละเอียดทั้งหมดอยู่ที่ §5.6 ของ Spec หลัก ไม่ซ้ำที่นี่
 
 ที่มา: ต่อยอดจาก Review เอกสารก่อนหน้า — ปิดช่องว่างที่ระบุไว้ใน Task 5 ("กำไร/Margin ไม่มีหน้าไหนตอบได้เลย — Gap ใหญ่สุด"), Task 7.3 (Profitability/Margin Module) และครอบคลุมบางส่วนของ Task 7.4 (Ads Spend ที่ตัดออกจาก ECOM ไปก่อนหน้านี้ — ระดับ Company/Channel เท่านั้น)
 
@@ -191,4 +198,4 @@ Margin % ไม่ได้มีแนวโน้มเติบโตแบ�
 
 ---
 
-*จบเอกสาร Spec — เมื่อ Build เสร็จ ให้ย้ายสรุปมาไว้ใน `Charmiss_Dashboard_Spec.md` เป็น section ใหม่ (เช่น 5.6 P&L Overview) แบบเดียวกับที่ทำตอนปิด ECOM*
+*จบเอกสาร Spec — ย้ายสรุปไปไว้ใน `Charmiss_Dashboard_Spec.md` §5.6 แล้ว (รวมส่วนต่อขยาย Cost Structure ด้วย) — เอกสารนี้เหลือไว้อ้างอิงสูตร Mock Data เชิงลึกเท่านั้น*

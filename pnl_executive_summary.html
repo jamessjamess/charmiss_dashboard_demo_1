@@ -41,6 +41,7 @@
   <nav class="tabs">
     <a class="tab active tab-link" href="pnl_executive_summary.html">Executive Summary</a>
     <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
+    <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
   </nav>
 
   <div class="filterbar">
@@ -72,7 +73,7 @@
 
   <!-- ===== EXECUTIVE SUMMARY ===== -->
   <div class="section-label">Executive Summary</div>
-  <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr);">
+  <div class="kpi-grid" style="grid-template-columns:repeat(7,1fr);">
     <div class="card">
       <div class="card-head">
         <span class="card-title">Gross Profit</span>
@@ -145,6 +146,17 @@
 
     <div class="card">
       <div class="card-head">
+        <span class="card-title">Full Year Profit Forecast</span>
+        <button class="info-icon" data-info-title="Full Year Profit Forecast" data-info-text="ประมาณการแบบ Run-rate อย่างง่าย: (Net Profit YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว) × 12 ÷ Net Profit เป้าหมายทั้งปี × 100 — ยังไม่ปรับ Seasonality (Pattern เดียวกับ Full Year Forecast ของ Sales Overview) — ไม่มีแถว MoM/YoY เพราะเป็นค่าพยากรณ์เต็มปี ไม่ใช่ค่าจริงต่อเดือนที่เทียบ MoM/YoY ได้ตรงไปตรงมา (Sales Overview's Full Year Forecast ก็ไม่มีแถวนี้เช่นกัน)">i</button>
+      </div>
+      <div><span class="kpi-value" id="kpiForecastValue">–</span></div>
+      <div class="kpi-caption" id="kpiForecastCaption">Projected Attainment · full year</div>
+      <div id="kpiForecastSpark" style="margin-top:8px;"></div>
+      <div class="kpi-caption" id="kpiForecastGapCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
         <span class="card-title">OPEX Ratio %</span>
         <button class="info-icon" data-info-title="OPEX Ratio %" data-info-text="OPEX รวม (Trade Spend + Logistics + Marketing/Ads + SG&A) ÷ Net Sales × 100 — ยิ่งต่ำยิ่งดี (Delta กลับทิศเหมือน Return/Cancellation Rate)">i</button>
       </div>
@@ -171,9 +183,10 @@
           <button class="tool-btn" id="profitTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Gross Profit vs Net Profit vs Target, by month (this year)</div>
+      <div class="chart-subtitle">Gross Profit vs Net Profit vs Target vs Last Year, by month (this year)</div>
       <div class="chart-headline" id="profitTrendHeadline">–</div>
       <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year Net Profit</span>
         <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target Net Profit</span>
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Gross Profit</span>
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Net Profit</span>
@@ -220,6 +233,19 @@
     <div class="chart-subtitle">Net Sales to Net Profit bridge, this period · company-wide</div>
     <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:260px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="waterfallTableWrap"></div>
+  </div>
+
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Income Statement</span>
+      <button class="info-icon" data-info-title="Income Statement" data-info-text="ตัวเลขบรรทัดเดียวกับ P&L Waterfall ด้านบนทุกประการ (Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → Net Profit) แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Bridge — คอลัมน์ 'This Period' ตอบสนอง Period Filter เดียวกับ Waterfall เสมอ (ตัวเลขต้องตรงกันเป๊ะทุกแถว), 'Last Year' คือช่วงเวลาเดียวกันย้อนไป 12 เดือน — Net Sales อ้างอิงจาก Sales Overview โดยตรง ไม่มีการสร้างยอดขายใหม่ที่นี่">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="incomeStmtDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="incomeStmtExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle" id="incomeStmtSubtitle">Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data</div>
+    <table id="incomeStmtTable"></table>
   </div>
 
   <div class="chart-grid">
@@ -574,6 +600,20 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
   { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(attainAt(i)); document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', spark, brand, v=>fmtPct(v,0)); }
 
+  /* === KPI: Full Year Profit Forecast (always Calendar YTD, ignores period filter — same convention as Sales Overview's Full Year Forecast) === */
+  const fyfYtdStart = 24;
+  const fyfYtdActual = sumRange(pnlCompany.netProfit, fyfYtdStart, TODAY);
+  const fyfMonthsElapsed = TODAY - fyfYtdStart + 1;
+  const fyfRunRateAnnual = (fyfYtdActual / fyfMonthsElapsed) * 12;
+  const fyfFullYearTarget = sumRange(targetNetProfit, fyfYtdStart, 35);
+  const fyfProjectedAttainPct = fyfFullYearTarget ? (fyfRunRateAnnual / fyfFullYearTarget * 100) : 0;
+  document.getElementById('kpiForecastValue').textContent = fmtPct(fyfProjectedAttainPct,0);
+  const fyfActualSeries = []; for(let i=fyfYtdStart;i<=TODAY;i++) fyfActualSeries.push(attainAt(i));
+  document.getElementById('kpiForecastSpark').innerHTML = buildTrajectorySparklineSVG('kpiForecastSpark', fyfActualSeries, fyfProjectedAttainPct, brand, v=>fmtPct(v,0));
+  const fyfGapValue = fyfRunRateAnnual - fyfFullYearTarget;
+  const fyfGapClass = fyfGapValue>=0 ? 'pos' : 'neg';
+  document.getElementById('kpiForecastGapCaption').innerHTML = 'Projected Gap: <span class="'+fyfGapClass+'">'+(fyfGapValue>=0?'+':'−')+fmtTHB(Math.abs(fyfGapValue))+'</span> (Full Year Actual vs Target)';
+
   /* === KPI: OPEX Ratio % (lower is better — inverted delta) === */
   const opexAt = i => pnlCompany.netSales[i] ? (pnlCompany.tradeSpend[i]+pnlCompany.logistics[i]+pnlCompany.marketing[i]+pnlCompany.sga[i])/pnlCompany.netSales[i]*100 : 0;
   const opexMomPP = opexAt(e)-opexAt(e-1), opexYoyPP = opexAt(e)-opexAt(e-12);
@@ -587,18 +627,20 @@ function renderAll(periodKey, custom){
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
   const curYearLabels = curYearIdx.map(i=>monthLabels[i]);
   const targetSeries = curYearIdx.map(i=>targetNetProfit[i]);
+  const lastYearSeries = curYearIdx.map(i=>pnlCompany.netProfit[i-12]);
   const grossSeries = curYearIdx.map(i => i<=TODAY ? pnlCompany.grossProfit[i] : null);
   const netSeries = curYearIdx.map(i => i<=TODAY ? pnlCompany.netProfit[i] : null);
   document.getElementById('profitTrendHeadline').textContent = fmtTHB(netProfitSum) + ' Net Profit · ' + label + ', company-wide';
   buildLineChartSVG('profitTrendChart', {
     labels: curYearLabels, yFormatter: fmtTHB,
     series:[
+      {data:lastYearSeries, color:cssVar('--baseline')||'#c3c2b7', width:1.6},
       {data:targetSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
       {data:grossSeries, color:good, width:2, showLastLabel:true, lastLabelFormatter:fmtTHB},
       {data:netSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:fmtTHB}
     ]
   });
-  latestData.profitTrend = { labels: curYearLabels, target: targetSeries, gross: grossSeries, net: netSeries };
+  latestData.profitTrend = { labels: curYearLabels, lastYear: lastYearSeries, target: targetSeries, gross: grossSeries, net: netSeries };
 
   /* === Chart: Margin Trend === */
   const gmSeries = curYearIdx.map(i => i<=TODAY ? gmAt(i) : null);
@@ -628,6 +670,47 @@ function renderAll(periodKey, custom){
   ];
   buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:260 });
   latestData.waterfall = waterfallSteps;
+
+  /* === Table: Income Statement (new 2026-08-06) — same 8 line items, same
+     order, as the P&L Waterfall directly above. Deliberately reuses the
+     exact same sums just computed for waterfallSteps (netSalesSum,
+     cogsSum, grossProfitSum, tradeSpendSum, logisticsSum, marketingSum,
+     sgaSum, netProfitSum) rather than recomputing them independently — this
+     is the only way to *guarantee* the two components never drift apart
+     (the whole point of putting them side by side: same data, two views). */
+  const lyStart = s-12, lyEnd = e-12;
+  const lyNetSales = sumRange(pnlCompany.netSales, lyStart, lyEnd);
+  const lyGrossProfit = sumRange(pnlCompany.grossProfit, lyStart, lyEnd);
+  const lyCogs = lyNetSales - lyGrossProfit;
+  const lyTradeSpend = sumRange(pnlCompany.tradeSpend, lyStart, lyEnd);
+  const lyLogistics = sumRange(pnlCompany.logistics, lyStart, lyEnd);
+  const lyMarketing = sumRange(pnlCompany.marketing, lyStart, lyEnd);
+  const lySga = sumRange(pnlCompany.sga, lyStart, lyEnd);
+  const lyNetProfit = sumRange(pnlCompany.netProfit, lyStart, lyEnd);
+  const diffPct = (thisV, lastV) => lastV ? (thisV-lastV)/Math.abs(lastV)*100 : null;
+  const incomeStmtRows = [
+    { label:'Net Sales', thisPeriod:netSalesSum, lastYear:lyNetSales, series:pnlCompany.netSales, bold:true },
+    { label:'– COGS', thisPeriod:-cogsSum, lastYear:-lyCogs, series:pnlCompany.cogs.map(v=>-v) },
+    { label:'= Gross Profit', thisPeriod:grossProfitSum, lastYear:lyGrossProfit, series:pnlCompany.grossProfit, bold:true },
+    { label:'– Trade Spend', thisPeriod:-tradeSpendSum, lastYear:-lyTradeSpend, series:pnlCompany.tradeSpend.map(v=>-v) },
+    { label:'– Logistics', thisPeriod:-logisticsSum, lastYear:-lyLogistics, series:pnlCompany.logistics.map(v=>-v) },
+    { label:'– Marketing/Ads', thisPeriod:-marketingSum, lastYear:-lyMarketing, series:pnlCompany.marketing.map(v=>-v) },
+    { label:'– SG&A', thisPeriod:-sgaSum, lastYear:-lySga, series:pnlCompany.sga.map(v=>-v) },
+    { label:'= Net Profit', thisPeriod:netProfitSum, lastYear:lyNetProfit, series:pnlCompany.netProfit, bold:true }
+  ];
+  document.getElementById('incomeStmtSubtitle').innerHTML = label + ' vs same range last year · Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data';
+  document.getElementById('incomeStmtTable').innerHTML =
+    '<thead><tr><th>Line Item</th><th>' + label + '</th><th>Last Year</th><th>Diff %</th><th>Monthly Trend</th></tr></thead><tbody>'
+    + incomeStmtRows.map(r=>{
+        const d = diffPct(r.thisPeriod, r.lastYear);
+        const sparkVals = []; for(let i=Math.max(0,e-11); i<=e; i++) sparkVals.push(r.series[i]);
+        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+        return '<tr'+rowClass+'><td>'+r.label+'</td><td class="tnum">'+fmtTHB(r.thisPeriod)+'</td><td class="tnum">'+fmtTHB(r.lastYear)+'</td>'
+          + '<td class="tnum">'+(d!==null?'<span class="'+deltaClass(d)+'">'+fmtSignedPct(d,1)+'</span>':'–')+'</td>'
+          + '<td>'+sparklineSVG('incomeStmtSpark'+incomeStmtRows.indexOf(r), sparkVals, cssVar('--ink-3')||'#898781', fmtTHB)+'</td></tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.incomeStmt = incomeStmtRows.map(r=>({ label:r.label, thisPeriod:r.thisPeriod, lastYear:r.lastYear, diffPct: diffPct(r.thisPeriod, r.lastYear) }));
 
   /* === Chart: Margin by Channel === */
   const chLabels = groupKeys;
@@ -671,8 +754,8 @@ document.getElementById('profitTrendTableBtn').addEventListener('click', ()=>{
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.profitTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Target Net Profit</th><th>Gross Profit</th><th>Net Profit</th></tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtTHB(d.target[i])+'</td><td>'+(d.gross[i]!==null?fmtTHB(d.gross[i]):'–')+'</td><td>'+(d.net[i]!==null?fmtTHB(d.net[i]):'–')+'</td></tr>'; });
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Last Year Net Profit</th><th>Target Net Profit</th><th>Gross Profit</th><th>Net Profit</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtTHB(d.lastYear[i])+'</td><td>'+fmtTHB(d.target[i])+'</td><td>'+(d.gross[i]!==null?fmtTHB(d.gross[i]):'–')+'</td><td>'+(d.net[i]!==null?fmtTHB(d.net[i]):'–')+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
@@ -704,6 +787,13 @@ document.getElementById('waterfallTableBtn').addEventListener('click', ()=>{
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
+
+document.getElementById('incomeStmtDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Line Item','This Period','Last Year','Diff %']];
+  latestData.incomeStmt.forEach(r=> rows.push([r.label, Math.round(r.thisPeriod), Math.round(r.lastYear), r.diffPct!==null?r.diffPct.toFixed(1):'']));
+  downloadCSV(rows, 'pnl_income_statement.csv');
+});
+document.getElementById('incomeStmtExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 document.getElementById('mByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mByChannelChart', 'pnl_margin_by_channel.svg'));
 document.getElementById('mByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
