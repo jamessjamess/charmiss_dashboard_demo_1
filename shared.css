@@ -23,6 +23,10 @@
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
+/* Added (2026-08-05) for the new .section-nav jump-links used on MT Breakdown
+   (Sales Overview/Product Analysis already had .section-nav but relied on
+   the browser's default instant jump — smooth is a harmless global upgrade). */
+html{scroll-behavior:smooth;}
 body{background:var(--page);color:var(--ink-1);font-family:system-ui,-apple-system,"Segoe UI","Noto Sans Thai",sans-serif;-webkit-font-smoothing:antialiased;line-height:1.4;transition:background .15s,color .15s;}
 .tnum{font-variant-numeric:tabular-nums;}
 a{color:inherit;}
@@ -142,15 +146,32 @@ button,select{font-family:inherit;}
 .mini-table th:first-child,.mini-table td:first-child{text-align:left;}
 .mini-table td{padding:6px 8px;border-bottom:1px solid var(--hairline);text-align:right;}
 
-.donut-layout{display:flex;align-items:center;gap:18px;}
+/* Fix (2026-08-05): capping .legend-list's width (below) fixed the gap
+   *inside* each legend row, but left a new problem — .donut-layout is a
+   block-level flex container so it still spans the full card width, and
+   with no justify-content set its two children (fixed-width donut +
+   capped-width legend) just pack against the left edge, dumping all the
+   freed-up space into one big blank strip on the right instead. Centering
+   the whole donut+legend unit as a group distributes any leftover width
+   evenly on both sides instead of piling it on one side. */
+.donut-layout{display:flex;align-items:center;justify-content:center;gap:18px;}
 .donut-canvas-wrap{width:140px;height:140px;position:relative;flex-shrink:0;}
 .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
 .donut-center-value{font-size:15px;font-weight:700;}
 .donut-center-label{font-size:9px;color:var(--ink-3);margin-top:1px;}
-.legend-list{flex:1;display:flex;flex-direction:column;gap:11px;min-width:0;}
+/* Fix (2026-08-04): legend-list used to be flex:1 with no cap, so on a wide
+   card (e.g. a half-width chart-grid card) it stretched across the entire
+   remaining width — combined with legend-name's own flex:1, that dragged
+   each row's value all the way to the far-right edge, leaving a large
+   visually-empty gap between a short name (e.g. "WATSONS") and its value,
+   and making the donut look like it was "pushed out" to the left edge of
+   the card. Capped the whole legend block to a sane max-width so name+value
+   sit close together as a compact unit next to the donut, same as a KPI
+   card leaving unused space to the right — not a col-spanning list. */
+.legend-list{flex:1;display:flex;flex-direction:column;gap:11px;min-width:0;max-width:300px;}
 .legend-row{display:flex;align-items:center;gap:8px;font-size:12.5px;}
 .legend-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0;}
-.legend-name{flex:1;color:var(--ink-2);}
+.legend-name{flex:1;color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .legend-value{font-weight:700;flex-shrink:0;}
 
 .cat-bars{display:flex;flex-direction:column;gap:9px;}
@@ -187,7 +208,8 @@ button,select{font-family:inherit;}
   .app{padding:16px 14px 48px;}
   .kpi-grid{grid-template-columns:repeat(2,1fr);}
   .page-head{flex-direction:column;}
-  .donut-layout{flex-direction:column;align-items:stretch;}
+  .donut-layout{flex-direction:column;align-items:stretch;justify-content:flex-start;}
+  .legend-list{max-width:none;}
   .cat-label{width:88px;font-size:11px;}
   .filterbar{flex-direction:column;align-items:flex-start;}
   .user-meta{display:none;}
@@ -256,6 +278,14 @@ button,select{font-family:inherit;}
 .legend-badge{font-size:8.5px;font-weight:700;letter-spacing:.03em;padding:2px 6px;border-radius:20px;text-transform:uppercase;margin-left:6px;}
 .legend-badge.best{background:rgba(0,99,0,.12);color:var(--good-text);}
 .legend-badge.watch{background:rgba(208,59,59,.12);color:var(--critical);}
+/* Added (2026-08-05) for the 3-tier Account Health / Risk Signal flag (used
+   standalone, not as a margin-left:6px inline suffix like the two above —
+   see .risk-flag-badge below which resets that). "watch" above is reused
+   as the more severe "At Risk" tier (already red); this "caution" tier fills
+   the missing middle ground (amber) for the 1-negative-signal "Watch" flag. */
+.legend-badge.caution{background:rgba(250,178,25,.20);color:#8a5a00;}
+:root[data-theme="dark"] .legend-badge.caution{color:#fab219;}
+.risk-flag-badge{margin-left:0;display:inline-block;}
 
 .callout-text{background:var(--wash);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
 .callout-text b{color:var(--ink-1);}
@@ -264,3 +294,16 @@ button,select{font-family:inherit;}
 .level-select-wrap{display:flex;align-items:center;gap:8px;}
 .level-select-note{font-size:10.5px;color:var(--ink-3);max-width:280px;line-height:1.4;}
 @media (max-width:768px){ .level-select-note{display:none;} }
+
+/* ===================== Hover tooltip for buildStreamAreaSVG (shared.js) =====================
+   New (2026-08-05) — the first chart in this dashboard with real mouse-hover
+   interactivity (every other chart relies on the "view as table" toggle for
+   exact numbers instead). Single shared tooltip element, created lazily and
+   reused across every buildStreamAreaSVG instance on a page. */
+.chart-tooltip{position:fixed;background:var(--card);border:1px solid var(--border-2);border-radius:8px;box-shadow:var(--shadow);padding:9px 12px;font-size:11.5px;line-height:1.6;color:var(--ink-1);z-index:400;pointer-events:none;display:none;max-width:240px;}
+.chart-tooltip.show{display:block;}
+.chart-tooltip-title{font-weight:700;margin-bottom:4px;font-size:11.5px;}
+.chart-tooltip-row{display:flex;align-items:center;gap:6px;white-space:nowrap;}
+.chart-tooltip-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.chart-tooltip-name{flex:1;color:var(--ink-2);}
+.chart-tooltip-value{font-weight:700;margin-left:10px;}

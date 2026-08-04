@@ -33,7 +33,6 @@
   <div class="page-head">
     <div>
       <h1 class="page-title">MT Overview — Executive Summary</h1>
-      <p class="page-subtitle">Executive snapshot of revenue vs. target and overall business health across the Modern Trade channel.</p>
     </div>
     <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
   </div>
@@ -41,6 +40,7 @@
   <nav class="tabs">
     <a class="tab active tab-link" href="module_mt_executive_summary.html">Executive Summary</a>
     <a class="tab tab-link" href="module_mt_breakdown.html">Breakdown</a>
+    <a class="tab tab-link" href="module_mt_store.html">Store</a>
   </nav>
 
   <div class="filterbar">
@@ -70,21 +70,30 @@
     <div class="filter-scope">Company-wide, all key accounts</div>
   </div>
 
+  <nav class="section-nav">
+    <a href="#sec-exec-summary">Executive Summary</a>
+    <a href="#sec-key-account-portfolio">Key Account Portfolio</a>
+    <a href="#sec-store-performance">Store Performance</a>
+  </nav>
+
   <!-- ===== EXECUTIVE SUMMARY ===== -->
-  <div class="section-label">Executive Summary</div>
-  <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr);">
+  <div class="section-label" id="sec-exec-summary">Executive Summary</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
     <div class="card">
       <div class="card-head">
         <span class="card-title">Net Sales (MT)</span>
         <button class="info-icon" data-info-title="Net Sales (MT)" data-info-text="ยอดขายสุทธิของ Modern Trade Channel ในช่วงเวลาที่เลือก">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiNetSalesValue">–</span><span class="kpi-unit">THB</span></div>
-      <div class="kpi-caption" id="kpiNetSalesCaption">Year to Date</div>
+      <div class="kpi-value-line">
+        <span class="kpi-value" id="kpiNetSalesValue">–</span><span class="kpi-unit">THB</span>
+        <span class="kpi-caption-inline" id="kpiNetSalesCaption">Year to Date</span>
+      </div>
       <div class="kpi-delta-row">
         <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiNetSalesMom">–</span></div>
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiNetSalesYoy">–</span></div>
       </div>
       <div id="kpiNetSalesSpark"></div>
+      <div class="kpi-caption" id="kpiTopAccountCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
     </div>
 
     <div class="card">
@@ -92,27 +101,16 @@
         <span class="card-title">Target Attainment %</span>
         <button class="info-icon" data-info-title="Target Attainment %" data-info-text="(ยอดขายจริง ÷ เป้าหมายยอดขาย) × 100 ของ Modern Trade ในช่วงเวลาที่เลือก">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiAttainValue">–</span></div>
-      <div class="kpi-caption" id="kpiAttainCaption">Year to Date</div>
+      <div class="kpi-value-line">
+        <span class="kpi-value" id="kpiAttainValue">–</span>
+        <span class="kpi-caption-inline" id="kpiAttainCaption">Year to Date</span>
+      </div>
       <div class="kpi-delta-row">
         <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAttainMom">–</span></div>
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAttainYoy">–</span></div>
       </div>
       <div id="kpiAttainSpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">AR%</span>
-        <button class="info-icon" data-info-title="AR% (Collection Rate)" data-info-text="สัดส่วนยอดลูกหนี้ที่เก็บได้ตรงเวลา เทียบกับยอดขายที่ครบกำหนดชำระในช่วงเวลาที่เลือก — ยิ่งสูงยิ่งดี">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiArValue">–</span></div>
-      <div class="kpi-caption" id="kpiArCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiArMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiArYoy">–</span></div>
-      </div>
-      <div id="kpiArSpark"></div>
+      <div class="kpi-caption" id="kpiGapCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
     </div>
 
     <div class="card">
@@ -120,42 +118,92 @@
         <span class="card-title">Return Rate (CN)</span>
         <button class="info-icon" data-info-title="Return Rate (CN)" data-info-text="มูลค่า Credit Note (คืนสินค้า/ส่วนลดย้อนหลัง) ÷ ยอดขายสุทธิ ในช่วงเวลาที่เลือก — ยิ่งต่ำยิ่งดี">i</button>
       </div>
-      <div><span class="kpi-value" id="kpiRetValue">–</span></div>
-      <div class="kpi-caption" id="kpiRetCaption">Year to Date</div>
-      <div class="kpi-caption" id="kpiRetAmountCaption" style="margin-top:-6px;">–</div>
+      <div class="kpi-value-line">
+        <span class="kpi-value" id="kpiRetValue">–</span>
+        <span class="kpi-caption-inline" id="kpiRetCaption">Year to Date</span>
+      </div>
       <div class="kpi-delta-row">
         <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiRetMom">–</span></div>
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiRetYoy">–</span></div>
       </div>
       <div id="kpiRetSpark"></div>
+      <div class="kpi-caption" id="kpiRetAmountCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Revenue Trend</span>
+        <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายจริงรายเดือนของ MT เทียบกับเป้าหมายและยอดขายปีก่อนในเดือนเดียวกัน เส้น This Year แสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="revTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="revDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
+    <div class="chart-headline" id="revenueHeadline">–</div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
+      <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
+    </div>
+    <div class="canvas-wrap" id="revCanvasWrap" style="height:220px;"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="revTableWrap"></div>
+  </div>
+
+  <div class="section-label" id="sec-key-account-portfolio">Key Account Portfolio</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Key Account</span>
+          <button class="info-icon" data-info-title="Sales by Key Account" data-info-text="สัดส่วน % ยอดขาย MT แยกตามคู่ค้า (Key Account) ในช่วงเวลาที่เลือก — ใช้ชื่อร้านค้าปลีก/ห้างสรรพสินค้าจริงในไทยเพื่อความสมจริง แต่ตัวเลข % และสถิติเป็น Mock Data ทั้งหมด ไม่ใช่ข้อมูลจริงของคู่ค้า">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="accountTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="accountDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="accountExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period, MT channel</div>
+      <div class="donut-layout" id="accountLayout">
+        <div class="donut-canvas-wrap">
+          <div id="accountChart" style="width:100%;height:100%;"></div>
+          <div class="donut-center">
+            <div class="donut-center-value" id="accountCenterValue">–</div>
+            <div class="donut-center-label">Total</div>
+          </div>
+        </div>
+        <div class="legend-list" id="accountLegend"></div>
+      </div>
+      <div class="data-table-wrap" id="accountTableWrap"></div>
     </div>
 
     <div class="card">
-      <div class="card-head">
-        <span class="card-title">Active Partners</span>
-        <button class="info-icon" data-info-title="Active Partners" data-info-text="จำนวนคู่ค้า Modern Trade (เชนค้าปลีก/ห้างสรรพสินค้า) ที่มีการสั่งซื้อในเดือนล่าสุด">i</button>
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Category</span>
+          <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ยอดขาย MT แยกตามหมวดหมู่สินค้า ในช่วงเวลาที่เลือก — Company-wide MT เสมอ ไม่ผูกกับคู่ค้ารายใดรายหนึ่ง สลับ Product Level ได้ (Category/Sub-Category/Type/Series) ระดับลึกกว่า Category ประมาณการจากสัดส่วนภายในหมวดหมู่เดียวกับ Sales Overview — Product Analysis (ดูรายละเอียดเต็มที่นั่น)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="mtCatTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="mtCatDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="mtCatExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
-      <div><span class="kpi-value" id="kpiPartnersValue">–</span></div>
-      <div class="kpi-caption" id="kpiPartnersCaption">Jun 26</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiPartnersMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiPartnersYoy">–</span></div>
+      <div class="chart-subtitle">This period, MT channel</div>
+      <div class="toggle-group" id="mtCatLevelToggle" style="margin-bottom:10px;">
+        <button class="toggle-btn active" data-level="0">Category</button>
+        <button class="toggle-btn" data-level="1">Sub-Category</button>
+        <button class="toggle-btn" data-level="2">Type</button>
+        <button class="toggle-btn" data-level="3">Series</button>
       </div>
-      <div id="kpiPartnersSpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Partner Retention</span>
-        <button class="info-icon" data-info-title="Partner Retention" data-info-text="สัดส่วนคู่ค้าที่ยังคงสั่งซื้อต่อเนื่อง เทียบกับเดือนก่อนหน้า">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiRetentionValue">–</span></div>
-      <div class="kpi-caption" id="kpiRetentionCaption">Jun 26</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiRetentionMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiRetentionYoy">–</span></div>
-      </div>
-      <div id="kpiRetentionSpark"></div>
+      <div class="cat-bars" id="mtCatBars"></div>
+      <div class="kpi-caption" id="mtCatMoreCaption" style="margin-top:6px;"></div>
+      <div class="data-table-wrap" id="mtCatTableWrap"></div>
     </div>
   </div>
 
@@ -163,81 +211,79 @@
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Revenue Trend</span>
-          <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายจริงรายเดือนของ MT เทียบกับเป้าหมายและยอดขายปีก่อนในเดือนเดียวกัน เส้น This Year แสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
+          <span class="chart-title">Partner Concentration / Pareto</span>
+          <button class="info-icon" data-info-title="Partner Concentration / Pareto" data-info-text="แท่ง = สัดส่วน % ยอดขายของแต่ละคู่ค้าต่อยอดขายรวม (เรียงมากไปน้อย), เส้น = % สะสม (Cumulative) — เส้นประที่ 80% ช่วยดูว่ากี่คู่ค้าที่รวมกันคิดเป็น 80% ของยอดขาย (แท่งที่เลยเส้น 80% จะจางลง) ยิ่งเส้นชันเร็วเท่าไหร่ ยิ่งพอร์ตพึ่งพาคู่ค้ารายใหญ่ไม่กี่รายเท่านั้น">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="revTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="revDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+          <button class="tool-btn" id="partnerParetoTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="partnerParetoDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="partnerParetoExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
-      <div class="chart-headline" id="revenueHeadline">–</div>
-      <div class="chart-legend">
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
-        <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
-      </div>
-      <div class="canvas-wrap" id="revCanvasWrap"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="revTableWrap"></div>
+      <div class="chart-subtitle" id="partnerParetoSubtitle">Share of sales (bars) + cumulative share (line), ranked descending</div>
+      <div class="canvas-wrap" id="partnerParetoCanvasWrap" style="height:260px;"><div id="partnerParetoChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="partnerParetoCallout">–</div>
+      <div class="data-table-wrap" id="partnerParetoTableWrap"></div>
     </div>
 
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Monthly YoY Growth %</span>
-          <button class="info-icon" data-info-title="Monthly YoY Growth %" data-info-text="% การเปลี่ยนแปลงยอดขาย MT รายเดือน เทียบกับเดือนเดียวกันของปีก่อน">i</button>
+          <span class="chart-title">Key Account Growth Contribution</span>
+          <button class="info-icon" data-info-title="Key Account Growth Contribution" data-info-text="แท่งเริ่ม = ยอดขายปีก่อน (ประมาณจากยอดขายปีนี้หารด้วย 1+%Growth YoY ของแต่ละคู่ค้า), แท่งกลาง = ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของแต่ละคู่ค้าทีละแท่ง (เขียว=บวก, แดง=ลบ), แท่งจบ = ยอดขายรวมปีนี้ตามช่วงเวลาที่เลือก — บอกว่าคู่ค้ารายไหน Contribute ต่อการเติบโตรวมเท่าไหร่ในหน่วย ฿ จริง (คนละมุมกับ Sales by Key Account ที่เห็นแค่สัดส่วน ณ ปัจจุบัน ไม่เห็นว่าใครเป็นตัวขับเคลื่อนการเติบโต)">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="growthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="growthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="growthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+          <button class="tool-btn" id="partnerCwfTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="partnerCwfDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="partnerCwfExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Same month, year over year</div>
-      <div class="chart-headline" id="growthHeadline">–</div>
-      <div class="canvas-wrap" id="growthCanvasWrap"><div id="growthChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="growthTableWrap"></div>
+      <div class="chart-subtitle">Last Year → contribution by key account → This Year</div>
+      <div class="canvas-wrap" id="partnerCwfCanvasWrap" style="height:260px;"><div id="partnerCwfChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="partnerCwfCallout">–</div>
+      <div class="data-table-wrap" id="partnerCwfTableWrap"></div>
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Sales by Key Account</span>
-        <button class="info-icon" data-info-title="Sales by Key Account" data-info-text="สัดส่วน % ยอดขาย MT แยกตามกลุ่มคู่ค้า (Key Account) ในช่วงเวลาที่เลือก — ชื่อกลุ่มเป็น Format ค้าปลีก (Placeholder mock data)">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="accountTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="accountDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="accountExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">This period, MT channel</div>
-    <div class="donut-layout" id="accountLayout">
-      <div class="donut-canvas-wrap">
-        <div id="accountChart" style="width:100%;height:100%;"></div>
-        <div class="donut-center">
-          <div class="donut-center-value" id="accountCenterValue">–</div>
-          <div class="donut-center-label">Total</div>
+  <div class="section-label" id="sec-store-performance">Store Performance (5 of 9 Key Accounts)</div>
+  <div class="chart-subtitle" style="margin:-6px 0 14px;">WATSONS, EVEANDBOY, CJ Express, Beautrium, and Multy report sales by store location. Lotus's, 7-Eleven, KONVY, and Tsuruha currently send one lump-sum Sales Report per account with no store-level breakdown, so they're excluded from the two charts below.</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Avg Sales per Store by Partner</span>
+          <button class="info-icon" data-info-title="Avg Sales per Store by Partner" data-info-text="ยอดขายรวมของคู่ค้า (ตามช่วงเวลาที่เลือก) หารด้วยจำนวนสาขา — วัด 'ประสิทธิภาพต่อสาขา' แทน 'ขนาดรวม' คู่ค้าที่ยอดขายรวมน้อยกว่าอาจมี Avg/Store สูงกว่าได้ ถ้าเป็น Format เฉพาะทาง (Specialty) ที่ขายสินค้าความงามเข้มข้นกว่าต่อสาขา">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="avgStoreTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="avgStoreDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="avgStoreExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="legend-list" id="accountLegend"></div>
+      <div class="chart-subtitle">Net sales ÷ store count, over the selected period</div>
+      <div class="cat-bars" id="avgStoreBars"></div>
+      <div class="callout-text" id="avgStoreCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="avgStoreTableWrap"></div>
     </div>
-    <div class="data-table-wrap" id="accountTableWrap"></div>
-  </div>
 
-  <div class="card table-card">
-    <div class="card-head">
-      <span class="card-title">Ranking — Top Key Accounts by Net Sales</span>
-      <button class="info-icon" data-info-title="Top Key Accounts" data-info-text="จัดอันดับคู่ค้า MT ตามยอดขายสุทธิในช่วงเวลาที่เลือก">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="rankDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="rankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Store Productivity Distribution</span>
+          <button class="info-icon" data-info-title="Store Productivity Distribution" data-info-text="Histogram นับจำนวนสาขา (รวมทั้ง 5 คู่ค้าที่มีข้อมูลระดับสาขา) แบ่งตามช่วงยอดขายต่อสาขาในช่วงเวลาที่เลือก — บอกว่าสาขาส่วนใหญ่กระจุกอยู่โซนไหน มี Long-tail สาขาที่ยอดขายต่ำมากแค่ไหน — คลิกที่แท่งเพื่อดูรายชื่อสาขาในช่วงนั้น (Top 10 ต่อ Bucket)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="storeHistTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="storeHistDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="storeHistExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
+      <div class="chart-subtitle">Store count by net-sales-per-store bucket, over the selected period · click a bar to drill into that bucket</div>
+      <div class="canvas-wrap" id="storeHistCanvasWrap" style="height:260px;"><div id="storeHistChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="storeHistCallout">–</div>
+      <div class="data-table-wrap" id="storeHistBucketDetail"></div>
+      <div class="data-table-wrap" id="storeHistTableWrap"></div>
     </div>
-    <table id="rankTable"></table>
   </div>
 
 </div>
@@ -320,25 +366,57 @@ const mtARSeries = [];
 { let level = 86; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.5)*1.2; level = Math.max(78, Math.min(94, level)); mtARSeries.push(level); } }
 const mtPartnersSeries = [];
 { let level = 34; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.35; mtPartnersSeries.push(Math.round(level)); } }
-const mtRetentionSeries = [];
-{ let level = 91; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.5)*1.0; level = Math.max(86, Math.min(96, level)); mtRetentionSeries.push(level); } }
 
-/* Key Account names are retail-FORMAT placeholders (Beauty Specialty Chain,
-   Department Store, ...), not real company names — this is mock data, no
-   real Charmiss partner list was used or implied. */
+/* Key Account names are real Thai retail/beauty-specialty chains (used here
+   for realism), but every % share and stat below is illustrative Mock Data
+   for this dashboard demo — not actual disclosed partner performance.
+   growthYoY is a static illustrative figure per account (this mock model has
+   no real per-account monthly time series, same limitation as Product
+   Analysis's CATEGORY_TREE.growthYoY) used to derive the Growth Contribution
+   Waterfall below. */
+/* storeCount is set ONLY for accounts whose Sales Report actually splits out
+   by store location — WATSONS, EVEANDBOY, CJ Express, Beautrium, and Multy
+   report per-store data to us today. Lotus's, 7-Eleven, KONVY, and Tsuruha
+   currently send one lump-sum Sales Report per account with no store-level
+   breakdown, so storeCount is left undefined for them on purpose — the Store
+   Performance section below must skip these 4, not fabricate a store split
+   that doesn't exist in the real reporting relationship. */
 const keyAccounts = [
-  {name:'Beauty Specialty Chain', pct:27},
-  {name:'Department Store', pct:24},
-  {name:'Drugstore Chain', pct:20},
-  {name:'Hypermarket Chain', pct:17},
-  {name:'Convenience Chain', pct:12}
+  {name:'WATSONS', pct:22, growthYoY:9.5, storeCount:460},
+  {name:'EVEANDBOY', pct:18, growthYoY:24.0, storeCount:85},
+  {name:"Lotus's", pct:16, growthYoY:4.0},
+  {name:'7-Eleven', pct:14, growthYoY:11.0},
+  {name:'KONVY', pct:10, growthYoY:32.0},
+  {name:'CJ Express', pct:8, growthYoY:18.0, storeCount:320},
+  {name:'Beautrium', pct:6, growthYoY:14.0, storeCount:35},
+  {name:'Tsuruha', pct:4, growthYoY:21.0},
+  {name:'Multy', pct:2, growthYoY:-6.0, storeCount:20}
 ];
+/* Per-store weight within each account with storeCount set — generated once
+   (deterministic, seeded rand()) so each store's share of its account's
+   total is fixed, then scaled by that account's period-filtered net sales at
+   render time (same "static weight × period-varying total" pattern used
+   throughout this dashboard, e.g. CATEGORY_TREE.pct in Product Analysis).
+   Weight = rand()^2 skews toward many small stores + a long tail of a few
+   big ones, which is what a realistic store-productivity spread looks like,
+   rather than every store contributing an identical, unrealistic 1/N share. */
+keyAccounts.forEach(a=>{
+  if(!a.storeCount) return;
+  const raw = []; for(let i=0;i<a.storeCount;i++) raw.push(Math.pow(rand(),2) + 0.02);
+  const sum = raw.reduce((x,y)=>x+y,0);
+  a.storeWeights = raw.map(w=>w/sum);
+});
+const keyAccountColors = ['#4C6FA5','#6E9B6E','#8C6FB0','#C97B63','#C4A22E','#75798C','#B23368','#3B7A7A','#A87C3F'];
 const keyAccountStats = [
-  {attain:104, ret:2.8, ar:91},
-  {attain:98,  ret:3.4, ar:88},
-  {attain:101, ret:3.1, ar:93},
-  {attain:96,  ret:4.2, ar:85},
-  {attain:107, ret:2.5, ar:90}
+  {attain:103, ret:3.0, ar:90},
+  {attain:108, ret:2.4, ar:93},
+  {attain:97,  ret:3.6, ar:86},
+  {attain:101, ret:2.9, ar:92},
+  {attain:112, ret:2.1, ar:95},
+  {attain:99,  ret:3.3, ar:88},
+  {attain:105, ret:2.6, ar:91},
+  {attain:94,  ret:4.0, ar:84},
+  {attain:90,  ret:4.5, ar:80}
 ];
 /* Category shares within MT — derived from the Category × Channel Heatmap's
    MT column already shown in Product Analysis (Skin Care ฿16.7M, Color
@@ -350,6 +428,112 @@ const mtCategoryShares = [
   {name:'Skin Care', pct:31.9}, {name:'Personal Care', pct:23.2}, {name:'Hair Care', pct:16.8},
   {name:'Color Cosmetics', pct:15.4}, {name:'Accessories', pct:6.5}, {name:'Fragrance', pct:6.2}
 ];
+
+/* Fix (2026-08-04): "Product level" drill-down added to Sales by Category —
+   CATEGORY_TREE below is a byte-for-byte copy of the same const in
+   sales_overview_product_analysis.html (structure only; that file's own
+   top-level pct/growthYoY/returnRate/channelMix fields are copied too for
+   fidelity but unused here). Sub-Category/Type/Series % splits come from
+   this tree's *internal* proportions (sub.pct/type.pct/series.pct, each
+   relative to its own parent) applied on top of mtCategoryShares' existing
+   Category-level % above — so the Category level (depth 0) keeps using the
+   exact numbers already shown here (and already copied into P&L), while
+   deeper levels are new detail layered on, not a wholesale replacement of
+   the existing model. This is a local, card-scoped level toggle (not the
+   page-wide Product Level filter Product Analysis has) since only this one
+   card on this page needs it. */
+const CATEGORY_TREE = {
+  'Skin Care': { pct:28.7, growthYoY:12.4, returnRate:3.4, channelMix:{MT:.35,TT:.40,Ecom:.25}, subs:{
+    'Facial Care': { pct:60, types:{
+      'Cleanser': { pct:55, series:{'Foam Cleanser':60,'Micellar Water':40} },
+      'Moisturizer': { pct:45, series:{'Day Cream':55,'Night Cream':45} }
+    }},
+    'Body Care': { pct:40, types:{
+      'Lotion': { pct:60, series:{'Body Lotion':65,'Hand Cream':35} },
+      'Sunscreen': { pct:40, series:{'SPF30':50,'SPF50':50} }
+    }}
+  }},
+  'Color Cosmetics': { pct:19.5, growthYoY:8.1, returnRate:5.6, channelMix:{MT:.25,TT:.30,Ecom:.45}, subs:{
+    'Face Makeup': { pct:55, types:{
+      'Foundation': { pct:60, series:{'Liquid Foundation':70,'Cushion':30} },
+      'Powder': { pct:40, series:{'Loose Powder':50,'Pressed Powder':50} }
+    }},
+    'Eye & Lip': { pct:45, types:{
+      'Lipstick': { pct:55, series:{'Matte':60,'Glossy':40} },
+      'Eyeliner': { pct:45, series:{'Pencil':50,'Liquid':50} }
+    }}
+  }},
+  'Hair Care': { pct:17.6, growthYoY:2.3, returnRate:2.8, channelMix:{MT:.30,TT:.55,Ecom:.15}, subs:{
+    'Cleansing': { pct:65, types:{
+      'Shampoo': { pct:60, series:{'Anti-Dandruff':55,'Everyday':45} },
+      'Conditioner': { pct:40, series:{'Deep Repair':50,'Daily':50} }
+    }},
+    'Styling': { pct:35, types:{
+      'Serum': { pct:55, series:{'Anti-Frizz':60,'Heat Protect':40} },
+      'Spray': { pct:45, series:{'Hold Spray':50,'Shine Spray':50} }
+    }}
+  }},
+  'Personal Care': { pct:16.3, growthYoY:-1.5, returnRate:4.2, channelMix:{MT:.45,TT:.40,Ecom:.15}, subs:{
+    'Oral Care': { pct:55, types:{
+      'Toothpaste': { pct:60, series:{'Whitening':55,'Sensitive':45} },
+      'Mouthwash': { pct:40, series:{'Fresh Mint':50,'Alcohol-Free':50} }
+    }},
+    'Bath': { pct:45, types:{
+      'Soap': { pct:50, series:{'Bar Soap':55,'Liquid Soap':45} },
+      'Shower Gel': { pct:50, series:{'Moisturizing':55,'Refreshing':45} }
+    }}
+  }},
+  'Fragrance': { pct:9.8, growthYoY:22.6, returnRate:6.5, channelMix:{MT:.20,TT:.20,Ecom:.60}, subs:{
+    'Personal Fragrance': { pct:70, types:{
+      'Eau de Toilette': { pct:60, series:{'Floral':55,'Woody':45} },
+      'Body Mist': { pct:40, series:{'Citrus':50,'Fruity':50} }
+    }},
+    'Home Fragrance': { pct:30, types:{
+      'Diffuser': { pct:60, series:{'Reed Diffuser':55,'Electric Diffuser':45} },
+      'Spray': { pct:40, series:{'Room Spray':50,'Linen Spray':50} }
+    }}
+  }},
+  'Accessories': { pct:8.1, growthYoY:-4.2, returnRate:7.8, channelMix:{MT:.25,TT:.25,Ecom:.50}, subs:{
+    'Application Tools': { pct:55, types:{
+      'Brush': { pct:60, series:{'Foundation Brush':55,'Powder Brush':45} },
+      'Sponge': { pct:40, series:{'Beauty Sponge':60,'Puff':40} }
+    }},
+    'Storage': { pct:45, types:{
+      'Pouch': { pct:55, series:{'Travel Pouch':55,'Everyday Pouch':45} },
+      'Organizer': { pct:45, series:{'Drawer Organizer':50,'Vanity Tray':50} }
+    }}
+  }}
+};
+const LEVEL_NAMES = ['Category','Sub-Category','Type','Series'];
+const LEVEL_NAMES_PLURAL = ['Categories','Sub-Categories','Types','Series'];
+let currentMtCatLevel = 0;
+
+/** MT-scoped version of Product Analysis's enumerateLevel() — depth 0 uses
+    mtCategoryShares' own % directly (unchanged, still matches P&L's copy);
+    depth 1-3 multiply that % down through CATEGORY_TREE's nested sub/type/
+    series proportions (which are relative shares, not absolute), so results
+    still sum to ~100% within MT at every level. */
+function enumerateMTCatLevel(depth){
+  const results = [];
+  mtCategoryShares.forEach(cat=>{
+    if(depth===0){ results.push({name:cat.name, pct:cat.pct, parent:null, rootCategory:cat.name}); return; }
+    const tree = CATEGORY_TREE[cat.name];
+    if(!tree){ return; }
+    Object.entries(tree.subs).forEach(([subName,sub])=>{
+      const subPct = cat.pct * sub.pct/100;
+      if(depth===1){ results.push({name:subName, pct:subPct, parent:cat.name, rootCategory:cat.name}); return; }
+      Object.entries(sub.types).forEach(([typeName,type])=>{
+        const typePct = subPct * type.pct/100;
+        if(depth===2){ results.push({name:typeName, pct:typePct, parent:subName, rootCategory:cat.name}); return; }
+        Object.entries(type.series).forEach(([seriesName,seriesPct])=>{
+          const seriesAbsPct = typePct * seriesPct/100;
+          if(depth===3){ results.push({name:seriesName, pct:seriesAbsPct, parent:typeName, rootCategory:cat.name}); }
+        });
+      });
+    });
+  });
+  return results.sort((a,b)=>b.pct-a.pct);
+}
 
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
@@ -427,6 +611,28 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
 /* ---------- Render ---------- */
 let latestData = {};
 
+/* Renders the Sales by Category card at whatever currentMtCatLevel is
+   selected. Split out from renderAll() so the level toggle can re-render
+   just this one card without re-running the whole page. Reads
+   latestData.totalActual (set by renderAll() before this is first called),
+   so this must run after that assignment. */
+function renderMtCategory(){
+  const totalActual = latestData.totalActual || 0;
+  const allItems = enumerateMTCatLevel(currentMtCatLevel);
+  const items = allItems.slice(0,10);
+  const maxCatShare = Math.max(...items.map(c=>c.pct)) || 1;
+  document.getElementById('mtCatBars').innerHTML = items.map(c=>{
+    const val = totalActual*c.pct/100;
+    const widthPct = (c.pct/maxCatShare*100).toFixed(1);
+    return '<div class="cat-row"><span class="cat-label">'+c.name+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct.toFixed(1)+'%</span></div></div></div>';
+  }).join('');
+  latestData.mtCatShares = items.map(c=>({name:c.name, value: totalActual*c.pct/100, pct:c.pct}));
+  document.getElementById('mtCatMoreCaption').textContent = allItems.length>10
+    ? 'Top 10 of '+allItems.length+' '+LEVEL_NAMES_PLURAL[currentMtCatLevel].toLowerCase()+' shown'
+    : '';
+}
+
 function renderAll(periodKey, custom){
   const [s,e] = getPeriodRange(periodKey, custom);
   const label = periodLabelText(periodKey, custom);
@@ -449,6 +655,7 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiNetSalesYoy').innerHTML = '<span class="'+deltaClass(yoyGrowth)+'">'+fmtSignedPct(yoyGrowth)+'</span>';
   const salesSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) salesSpark.push(groupActual.MT[i]);
   document.getElementById('kpiNetSalesSpark').innerHTML = sparklineSVG('kpiNetSalesSpark', salesSpark, brand, fmtTHB);
+  document.getElementById('kpiTopAccountCaption').innerHTML = 'Top account: <strong>'+keyAccounts[0].name+'</strong> ('+keyAccounts[0].pct.toFixed(0)+'% of MT sales)';
 
   /* === KPI: Target Attainment % === */
   document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
@@ -457,18 +664,9 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
   const attainSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
   document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', attainSpark, brand, v=>fmtPct(v,0));
-
-  /* === KPI: AR% === */
-  const arAt = i => mtARSeries[i];
-  let arSum=0, arN=0; for(let i=s;i<=e;i++){ arSum+=arAt(i); arN++; }
-  const arPeriodAvg = arN ? arSum/arN : 0;
-  const arMomPP = arAt(e)-arAt(e-1), arYoyPP = arAt(e)-arAt(e-12);
-  document.getElementById('kpiArValue').textContent = fmtPct(arPeriodAvg,0);
-  document.getElementById('kpiArCaption').textContent = label;
-  document.getElementById('kpiArMom').innerHTML = '<span class="'+deltaClass(arMomPP)+'">'+fmtSignedPP(arMomPP)+'</span>';
-  document.getElementById('kpiArYoy').innerHTML = '<span class="'+deltaClass(arYoyPP)+'">'+fmtSignedPP(arYoyPP)+'</span>';
-  const arSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) arSpark.push(arAt(i));
-  document.getElementById('kpiArSpark').innerHTML = sparklineSVG('kpiArSpark', arSpark, brand, v=>fmtPct(v,0));
+  const gapValue = totalActual - totalTarget;
+  const gapClass = gapValue>=0 ? 'pos' : 'neg';
+  document.getElementById('kpiGapCaption').innerHTML = 'Gap to Target: <span class="'+gapClass+'">'+(gapValue>=0?'+':'−')+fmtTHB(Math.abs(gapValue))+'</span> (Actual vs Target, '+label+')';
 
   /* === KPI: Return Rate (CN) === */
   const retAt = i => mtCNRate[i]*100;
@@ -479,32 +677,12 @@ function renderAll(periodKey, custom){
   const invDelta = v => v<=0 ? 'pos' : 'neg';
   document.getElementById('kpiRetValue').textContent = fmtPct(retPeriod,1);
   document.getElementById('kpiRetCaption').textContent = label;
-  document.getElementById('kpiRetAmountCaption').textContent = 'Amount: '+fmtTHB(retAmount)+' · '+label;
+  const highestRetIdx = keyAccountStats.reduce((best,cur,i)=> cur.ret > keyAccountStats[best].ret ? i : best, 0);
+  document.getElementById('kpiRetAmountCaption').innerHTML = 'Amount: '+fmtTHB(retAmount)+' · Highest: <strong>'+keyAccounts[highestRetIdx].name+'</strong> ('+keyAccountStats[highestRetIdx].ret.toFixed(1)+'%)';
   document.getElementById('kpiRetMom').innerHTML = '<span class="'+invDelta(retMomPP)+'">'+fmtSignedPP(retMomPP)+'</span>';
   document.getElementById('kpiRetYoy').innerHTML = '<span class="'+invDelta(retYoyPP)+'">'+fmtSignedPP(retYoyPP)+'</span>';
   const retSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) retSpark.push(retAt(i));
   document.getElementById('kpiRetSpark').innerHTML = sparklineSVG('kpiRetSpark', retSpark, brand, v=>fmtPct(v,1));
-
-  /* === KPI: Active Partners === */
-  const partnersAt = i => mtPartnersSeries[i];
-  const partnersMomPct = pctChange(partnersAt(e), partnersAt(e-1));
-  const partnersYoyPct = pctChange(partnersAt(e), partnersAt(e-12));
-  document.getElementById('kpiPartnersValue').textContent = String(partnersAt(e));
-  document.getElementById('kpiPartnersCaption').textContent = monthLabels[e];
-  document.getElementById('kpiPartnersMom').innerHTML = '<span class="'+deltaClass(partnersMomPct)+'">'+fmtSignedPct(partnersMomPct)+'</span>';
-  document.getElementById('kpiPartnersYoy').innerHTML = '<span class="'+deltaClass(partnersYoyPct)+'">'+fmtSignedPct(partnersYoyPct)+'</span>';
-  const partnersSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) partnersSpark.push(partnersAt(i));
-  document.getElementById('kpiPartnersSpark').innerHTML = sparklineSVG('kpiPartnersSpark', partnersSpark, brand, v=>String(Math.round(v)));
-
-  /* === KPI: Partner Retention === */
-  const retentionAt = i => mtRetentionSeries[i];
-  const retentionMomPP = retentionAt(e)-retentionAt(e-1), retentionYoyPP = retentionAt(e)-retentionAt(e-12);
-  document.getElementById('kpiRetentionValue').textContent = fmtPct(retentionAt(e),1);
-  document.getElementById('kpiRetentionCaption').textContent = monthLabels[e];
-  document.getElementById('kpiRetentionMom').innerHTML = '<span class="'+deltaClass(retentionMomPP)+'">'+fmtSignedPP(retentionMomPP)+'</span>';
-  document.getElementById('kpiRetentionYoy').innerHTML = '<span class="'+deltaClass(retentionYoyPP)+'">'+fmtSignedPP(retentionYoyPP)+'</span>';
-  const retentionSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) retentionSpark.push(retentionAt(i));
-  document.getElementById('kpiRetentionSpark').innerHTML = sparklineSVG('kpiRetentionSpark', retentionSpark, brand, v=>fmtPct(v,1));
 
   /* === Chart: Revenue Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
@@ -523,30 +701,150 @@ function renderAll(periodKey, custom){
   });
   latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
 
-  /* === Chart: Monthly YoY Growth % === */
-  const growthSeries = curYearIdx.map(i => i<=TODAY ? pctChange(groupActual.MT[i], groupActual.MT[i-12]) : null);
-  document.getElementById('growthHeadline').innerHTML = fmtSignedPct(yoyGrowth) + '<span class="kpi-unit"> vs ' + monthLabels[TODAY-12] + ' · latest closed month</span>';
-  buildLineChartSVG('growthChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:growthSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)}] });
-  latestData.growth = { labels: curYearLabels, values: growthSeries };
-
   /* === Chart: Sales by Key Account (donut) === */
-  buildDonutSVG('accountChart', keyAccounts.map((a,i)=>({value: totalActual*a.pct/100, color: resolveColor('var(--cat-'+(i+1)+')')})), 140, {showLabels:true});
+  buildDonutSVG('accountChart', keyAccounts.map((a,i)=>({value: totalActual*a.pct/100, color: keyAccountColors[i]})), 140, {showLabels:true});
   document.getElementById('accountCenterValue').textContent = fmtTHB(totalActual);
   document.getElementById('accountLegend').innerHTML = keyAccounts.map((a,i)=>
-    '<div class="legend-row"><span class="legend-dot" style="background:'+resolveColor('var(--cat-'+(i+1)+')')+'"></span>'
+    '<div class="legend-row"><span class="legend-dot" style="background:'+keyAccountColors[i]+'"></span>'
     + '<span class="legend-name">'+a.name+'</span>'
     + '<span class="legend-value">'+fmtTHB(totalActual*a.pct/100)+' · '+a.pct.toFixed(1)+'%</span></div>'
   ).join('');
   latestData.accounts = keyAccounts.map(a=>({name:a.name, value: totalActual*a.pct/100, pct:a.pct}));
 
-  /* === Table: Ranking — Top Key Accounts === */
-  const rankRows = keyAccounts.map((a,i)=>({ name:a.name, net: totalActual*a.pct/100, attain: keyAccountStats[i].attain, ret: keyAccountStats[i].ret, ar: keyAccountStats[i].ar }))
-    .sort((x,y)=>y.net-x.net);
-  document.getElementById('rankTable').innerHTML =
-    '<thead><tr><th>#</th><th>Account</th><th>Net Sales</th><th>Target Attainment</th><th>Return Rate (CN)</th><th>AR%</th></tr></thead><tbody>'
-    + rankRows.map((r,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+r.name+'</td><td class="tnum">'+fmtTHB(r.net)+'</td><td class="tnum">'+fmtPct(r.attain,0)+'</td><td class="tnum">'+fmtPct(r.ret,1)+'</td><td class="tnum">'+fmtPct(r.ar,0)+'</td></tr>').join('')
-    + '</tbody>';
-  latestData.ranking = rankRows;
+  /* === Chart: Sales by Category (ranked bar, company-wide MT, same data +
+     visual convention as module_mt_breakdown.html's "Sales by Category") —
+     paired next to Sales by Key Account so a viewer sees "who" and "what"
+     side by side, matching sales_overview.html's Sales by Channel + Sales by
+     Category pairing. mtCategoryShares was already defined in this file's
+     mock data (for a future use that never landed) — this is its first use. */
+  renderMtCategory();
+
+  /* === Chart: Partner Concentration / Pareto === *
+   * Reuses buildParetoSVG (same function as Product Analysis's Category
+   * Pareto) — bars are each account's own share of total, the line is
+   * running cumulative share, both on the same 0-100% axis. Only 9 accounts
+   * total here (fixed list, no Level drill-down like Product Analysis), so
+   * every account is shown — no Top-N cap / "Other" bucket needed. */
+  const paretoItems = keyAccounts.map((a,i)=>({ label:a.name, value: totalActual*a.pct/100, color: keyAccountColors[i] }));
+  buildParetoSVG('partnerParetoChart', paretoItems, { thresholdPct: 80 });
+  let paretoCum = 0, paretoCountTo80 = paretoItems.length;
+  const paretoTotal = paretoItems.reduce((a,it)=>a+it.value,0) || 1;
+  const paretoWithCum = paretoItems.map(it=>{ paretoCum += it.value/paretoTotal*100; return { label: it.label, value: it.value, cumPct: paretoCum }; });
+  for(let i=0;i<paretoWithCum.length;i++){ if(paretoWithCum[i].cumPct >= 80){ paretoCountTo80 = i+1; break; } }
+  latestData.pareto = paretoWithCum;
+  document.getElementById('partnerParetoCallout').innerHTML =
+    'Top <b>'+paretoCountTo80+'</b> key account'+(paretoCountTo80===1?'':'s')+' ('+paretoWithCum.slice(0,paretoCountTo80).map(it=>it.label).join(', ')+') already make up '
+    + paretoWithCum[Math.min(paretoCountTo80,paretoWithCum.length)-1].cumPct.toFixed(0) + '% of MT sales.';
+
+  /* === Chart: Key Account Growth Contribution (Waterfall) === *
+   * Same bottom-up "Last Year" derivation as Product Analysis's Category
+   * Growth Contribution: per-account Last Year = This Year / (1+growthYoY),
+   * so Start + Sum(Deltas) always reconciles exactly to End regardless of
+   * period filter. Sorted by |contribution| descending; all 9 accounts shown
+   * (small fixed list, no Top-N cap needed here). */
+  let cwfThisYearTotal = 0, cwfLastYearTotal = 0;
+  const cwfDeltaList = keyAccounts.map((a,i)=>{
+    const thisYearVal = totalActual*a.pct/100;
+    const lastYearVal = thisYearVal / (1 + a.growthYoY/100);
+    cwfThisYearTotal += thisYearVal;
+    cwfLastYearTotal += lastYearVal;
+    return { name: a.name, delta: thisYearVal - lastYearVal };
+  });
+  const cwfSorted = [...cwfDeltaList].sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+  const cwfSteps = [{label:'Last Year', value: cwfLastYearTotal, type:'start'}]
+    .concat(cwfSorted.map(d=>({label:d.name, value:d.delta, type:'delta'})))
+    .concat([{label:'This Year', value: cwfThisYearTotal, type:'end'}]);
+  buildWaterfallSVG('partnerCwfChart', cwfSteps, { yFormatter: fmtTHB });
+  latestData.cwf = cwfSteps;
+  const cwfTotalGrowth = cwfThisYearTotal - cwfLastYearTotal;
+  const cwfTopContributor = cwfDeltaList.reduce((a,b)=> a.delta>=b.delta ? a : b);
+  const cwfDragger = cwfDeltaList.reduce((a,b)=> a.delta<=b.delta ? a : b);
+  document.getElementById('partnerCwfCallout').innerHTML =
+    'Total growth: <span class="'+deltaClass(cwfTotalGrowth)+'">'+(cwfTotalGrowth>=0?'+':'')+fmtTHB(cwfTotalGrowth)+'</span>'
+    + ' · Top contributor: <b>'+cwfTopContributor.name+'</b> <span class="'+deltaClass(cwfTopContributor.delta)+'">('+(cwfTopContributor.delta>=0?'+':'')+fmtTHB(cwfTopContributor.delta)+')</span>'
+    + (cwfDragger.delta<0 ? ' · Dragging down: <b>'+cwfDragger.name+'</b> <span class="neg">('+fmtTHB(cwfDragger.delta)+')</span>' : '');
+
+  /* === Store Performance (only the 5 accounts with storeCount set) === */
+  const storeAccounts = keyAccounts.filter(a=>a.storeCount);
+
+  /* --- Avg Sales per Store by Partner (ranked bar, same cat-bars pattern as
+     Sales by Category / Growth Ranking elsewhere in this dashboard) --- */
+  const avgStoreItems = storeAccounts.map(a=>{
+    const i = keyAccounts.indexOf(a);
+    const accountTotal = totalActual*a.pct/100;
+    return { name:a.name, avg: accountTotal/a.storeCount, storeCount:a.storeCount, color: keyAccountColors[i] };
+  }).sort((x,y)=>y.avg-x.avg);
+  const maxAvg = Math.max(...avgStoreItems.map(it=>it.avg)) || 1;
+  document.getElementById('avgStoreBars').innerHTML = avgStoreItems.map(it=>{
+    const widthPct = (it.avg/maxAvg*100).toFixed(1);
+    return '<div class="cat-row"><span class="cat-label">'+it.name+'<span class="sub-label">'+it.storeCount+' stores</span></span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+it.color+';"><span class="cat-fill-label">'+fmtTHB(it.avg)+'/store</span></div></div></div>';
+  }).join('');
+  latestData.avgStore = avgStoreItems;
+  const avgStoreBest = avgStoreItems[0], avgStoreWorst = avgStoreItems[avgStoreItems.length-1];
+  document.getElementById('avgStoreCallout').innerHTML =
+    'Highest: <b>'+avgStoreBest.name+'</b> '+fmtTHB(avgStoreBest.avg)+'/store · Lowest: <b>'+avgStoreWorst.name+'</b> '+fmtTHB(avgStoreWorst.avg)+'/store'
+    + ' — a '+(avgStoreBest.avg/avgStoreWorst.avg).toFixed(1)+'× gap between smaller/premium-format stores and large hypermarket-style footprints';
+
+  /* --- Store Productivity Distribution (Histogram) — buckets store-level
+     sales (accountTotal × that store's fixed weight) across all 5 accounts'
+     stores combined, reusing buildGroupedBarSVG as a plain single-series bar
+     chart (one bar per bucket, no sub-grouping). --- */
+  const bucketDefs = [
+    {label:'<10K', min:0, max:10000},
+    {label:'10K–30K', min:10000, max:30000},
+    {label:'30K–60K', min:30000, max:60000},
+    {label:'60K–100K', min:60000, max:100000},
+    {label:'100K–200K', min:100000, max:200000},
+    {label:'≥200K', min:200000, max:Infinity}
+  ];
+  const bucketCounts = bucketDefs.map(()=>0);
+  const bucketValues = bucketDefs.map(()=>0);
+  /* Fix (2026-08-05): kept individual stores per bucket (not just the
+     count/value totals already used for the chart) so a click on a bar can
+     drill into "which stores, exactly, are in this range" — reuses the same
+     per-store storeSales figure already computed here, no new mock data. */
+  const bucketStores = bucketDefs.map(()=>[]);
+  storeAccounts.forEach(a=>{
+    const accountTotal = totalActual*a.pct/100;
+    a.storeWeights.forEach((w,si)=>{
+      const storeSales = accountTotal*w;
+      const bi = bucketDefs.findIndex(b=> storeSales>=b.min && storeSales<b.max);
+      if(bi>=0){
+        bucketCounts[bi]++; bucketValues[bi]+=storeSales;
+        bucketStores[bi].push({ name: a.name+' #'+String(si+1).padStart(3,'0'), partner: a.name, sales: storeSales });
+      }
+    });
+  });
+  const totalStoreCount = storeAccounts.reduce((a,acc)=>a+acc.storeCount,0);
+  /* Fix (2026-08-04): data labels used to show store count only — added a
+     second line with total ฿ sales for that bucket and % of all stores, so
+     e.g. "<10K, 305 stores" also answers "how much revenue is that" and
+     "what share of our footprint is this". valueLabelFormatter can return
+     an array of lines (see shared.js buildGroupedBarSVG).
+     Fix (2026-08-05): added clickableBars so each bar gets a pointer cursor
+     — see the storeHistChart click-delegation handler in the toolbar
+     section below, which reads latestData.storeHistBuckets to show the
+     stores in whichever bucket was clicked. */
+  buildGroupedBarSVG('storeHistChart', {
+    labels: bucketDefs.map(b=>b.label),
+    series: [{name:'Stores', color: brand, values: bucketCounts}],
+    referenceValue: 0,
+    yFormatter: v=>Math.round(v),
+    showValueLabels: true,
+    clickableBars: true,
+    valueLabelFormatter: (v,s,gi)=> [
+      Math.round(v)+' stores',
+      fmtTHB(bucketValues[gi])+' · '+fmtPct(totalStoreCount ? v/totalStoreCount*100 : 0, 0)
+    ]
+  });
+  latestData.storeHist = bucketDefs.map((b,i)=>({label:b.label, count:bucketCounts[i], value:bucketValues[i]}));
+  latestData.storeHistBuckets = bucketStores;
+  const modeIdx = bucketCounts.reduce((best,cur,i)=> cur>bucketCounts[best] ? i : best, 0);
+  document.getElementById('storeHistCallout').innerHTML =
+    'Across <b>'+totalStoreCount+'</b> stores (5 of 9 key accounts) · Most common range: <b>'+bucketDefs[modeIdx].label+'</b> ('+bucketCounts[modeIdx]+' stores)';
+  document.getElementById('storeHistBucketDetail').classList.remove('visible');
+  document.getElementById('storeHistBucketDetail').dataset.openGi = '';
 }
 
 /* --- Toolbar --- */
@@ -560,20 +858,6 @@ document.getElementById('revTableBtn').addEventListener('click', ()=>{
   const d = latestData.revenue;
   let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Last Year</th><th>Target</th><th>This Year</th></tr></thead><tbody>';
   d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtTHB(d.lastYear[i])+'</td><td>'+fmtTHB(d.target[i])+'</td><td>'+(d.thisYear[i]!==null?fmtTHB(d.thisYear[i]):'–')+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('growthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('growthChart', 'mt_monthly_yoy_growth.svg'));
-document.getElementById('growthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('growthTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('growthTableWrap');
-  const canvasWrap = document.getElementById('growthCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.growth;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>YoY Growth %</th></tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+(d.values[i]!==null?fmtSignedPct(d.values[i]):'–')+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
@@ -592,12 +876,120 @@ document.getElementById('accountTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); layout.style.display='none';
 });
 
-document.getElementById('rankDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['#','Account','Net Sales','Target Attainment %','Return Rate (CN) %','AR %']];
-  latestData.ranking.forEach((r,i)=> rows.push([i+1, r.name, Math.round(r.net), r.attain, r.ret, r.ar]));
-  downloadCSV(rows, 'mt_top_key_accounts.csv');
+document.getElementById('mtCatDownloadBtn').addEventListener('click', ()=>{
+  const rows = [[LEVEL_NAMES[currentMtCatLevel],'Share %','Value (THB)']];
+  latestData.mtCatShares.forEach(c=> rows.push([c.name, c.pct.toFixed(1), Math.round(c.value)]));
+  downloadCSV(rows, 'mt_sales_by_category_'+LEVEL_NAMES[currentMtCatLevel].toLowerCase().replace(/[^a-z]+/g,'_')+'.csv');
 });
-document.getElementById('rankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mtCatExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mtCatTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('mtCatTableWrap');
+  const bars = document.getElementById('mtCatBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentMtCatLevel]+'</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
+  latestData.mtCatShares.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtTHB(c.value)+'</td><td>'+c.pct.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+document.querySelectorAll('#mtCatLevelToggle .toggle-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#mtCatLevelToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentMtCatLevel = parseInt(btn.dataset.level,10);
+    document.getElementById('mtCatTableWrap').classList.remove('visible');
+    document.getElementById('mtCatBars').style.display='';
+    renderMtCategory();
+  });
+});
+
+document.getElementById('partnerParetoDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerParetoChart','mt_partner_concentration_pareto.svg'));
+document.getElementById('partnerParetoExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('partnerParetoTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('partnerParetoTableWrap');
+  const canvasWrap = document.getElementById('partnerParetoCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.pareto;
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Net Sales</th><th>Cumulative %</th></tr></thead><tbody>';
+  d.forEach(it=>{ html += '<tr><td>'+it.label+'</td><td>'+fmtTHB(it.value)+'</td><td>'+it.cumPct.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('partnerCwfDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerCwfChart','mt_key_account_growth_contribution.svg'));
+document.getElementById('partnerCwfExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('partnerCwfTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('partnerCwfTableWrap');
+  const canvasWrap = document.getElementById('partnerCwfCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.cwf;
+  let html = '<table class="mini-table"><thead><tr><th>Step</th><th>Value</th></tr></thead><tbody>';
+  d.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+(s.type==='delta'?(s.value>=0?'+':'')+fmtTHB(s.value):fmtTHB(s.value))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('avgStoreDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Key Account','Store Count','Avg Sales per Store (THB)']];
+  latestData.avgStore.forEach(it=> rows.push([it.name, it.storeCount, Math.round(it.avg)]));
+  downloadCSV(rows, 'mt_avg_sales_per_store.csv');
+});
+document.getElementById('avgStoreExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('avgStoreTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('avgStoreTableWrap');
+  const bars = document.getElementById('avgStoreBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  const d = latestData.avgStore;
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Store Count</th><th>Avg Sales / Store</th></tr></thead><tbody>';
+  d.forEach(it=>{ html += '<tr><td>'+it.name+'</td><td>'+it.storeCount+'</td><td>'+fmtTHB(it.avg)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+
+document.getElementById('storeHistDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('storeHistChart','mt_store_productivity_distribution.svg'));
+document.getElementById('storeHistExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('storeHistTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('storeHistTableWrap');
+  const canvasWrap = document.getElementById('storeHistCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.storeHist;
+  const total = d.reduce((a,b)=>a+b.count,0);
+  let html = '<table class="mini-table"><thead><tr><th>Net Sales per Store</th><th>Store Count</th><th>% of Stores</th><th>Total Sales</th></tr></thead><tbody>';
+  d.forEach(b=>{ html += '<tr><td>'+b.label+'</td><td>'+b.count+'</td><td>'+fmtPct(total?b.count/total*100:0,0)+'</td><td>'+fmtTHB(b.value)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* Drill-through (2026-08-05): click a Store Productivity Distribution bar to
+   see the (up to 10, sorted by sales desc) individual stores in that
+   bucket. Attached once on the outer chart container — buildGroupedBarSVG
+   re-renders the SVG's innerHTML on every renderAll() call but never
+   replaces the container div itself, so this delegated listener keeps
+   working across period/theme changes without needing to be re-attached. */
+document.getElementById('storeHistChart').addEventListener('click', (e)=>{
+  const rect = e.target.closest('rect[data-gi]');
+  if(!rect) return;
+  const gi = parseInt(rect.dataset.gi, 10);
+  const panel = document.getElementById('storeHistBucketDetail');
+  if(panel.dataset.openGi === String(gi) && panel.classList.contains('visible')){
+    panel.classList.remove('visible'); panel.dataset.openGi = '';
+    return;
+  }
+  const bucket = latestData.storeHist[gi];
+  const stores = (latestData.storeHistBuckets[gi] || []).slice().sort((a,b)=>b.sales-a.sales);
+  const top = stores.slice(0,10);
+  let html = '<table class="mini-table"><thead><tr><th>Store</th><th>Partner</th><th>Net Sales</th></tr></thead><tbody>';
+  top.forEach(s=>{ html += '<tr><td>'+s.name+'</td><td>'+s.partner+'</td><td>'+fmtTHB(s.sales)+'</td></tr>'; });
+  html += '</tbody></table>';
+  if(stores.length>10) html += '<div style="padding:8px 10px;font-size:11px;color:var(--ink-3);">Top 10 of '+stores.length+' stores in '+bucket.label+' shown</div>';
+  panel.innerHTML = html;
+  panel.classList.add('visible');
+  panel.dataset.openGi = String(gi);
+});
 
 /* ---------- Init ---------- */
 renderAll(currentPeriodKey, currentCustom);

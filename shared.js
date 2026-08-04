@@ -244,7 +244,19 @@ function buildHBarCompareSVG(containerId, items, opts){
   const formatValue = opts.formatValue || (v => v);
   const labelW = opts.labelW || 90, valueW = 64, padX = 10;
   const plotW = width - labelW - valueW - padX*2;
-  const height = items.length * rowHeight;
+  /* Fix (2026-08-04): this function used to draw *only* a single dashed
+     reference line with no tick marks/gridlines/axis labels anywhere on the
+     value axis — readable enough when the reference sat at 0, but for a
+     referenceValue:100 chart (Target Attainment %, all bars clustered
+     90-112%) there was no way to tell how far any bar actually was from the
+     reference or from each other, since the only number visible per row was
+     the bar's own end label. Added a proper bottom axis (niceAxisTicks, same
+     convention as buildGroupedBarSVG/buildLineChartSVG) with light vertical
+     gridlines + tick labels — needs its own AXIS_H reserved under the rows,
+     hence the taller total height. */
+  const AXIS_H = 22;
+  const rowsH = items.length * rowHeight;
+  const height = rowsH + AXIS_H;
   // Fix (2026-08-01, see Charmiss_Dashboard_Review_2026-07-31.md Task 2.2/6.3):
   // the default domain used to always force 0 in as a boundary
   // (Math.min(0,...)/Math.max(0,...)), regardless of where referenceValue
@@ -257,15 +269,29 @@ function buildHBarCompareSVG(containerId, items, opts){
   // buildGroupedBarSVG's padding convention) so bars never sit flush against
   // the plot edges or the reference line.
   const ref = opts.referenceValue !== undefined ? opts.referenceValue : 0;
-  let minV = opts.domainMin !== undefined ? opts.domainMin : Math.min(ref, ...items.map(i=>i.value));
-  let maxV = opts.domainMax !== undefined ? opts.domainMax : Math.max(ref, ...items.map(i=>i.value));
-  if(maxV === minV) maxV = minV + 1;
-  if(opts.domainMin === undefined && opts.domainMax === undefined){
-    const pad = (maxV - minV) * 0.15;
-    minV -= pad; maxV += pad;
+  let rawMin = opts.domainMin !== undefined ? opts.domainMin : Math.min(ref, ...items.map(i=>i.value));
+  let rawMax = opts.domainMax !== undefined ? opts.domainMax : Math.max(ref, ...items.map(i=>i.value));
+  if(rawMax === rawMin) rawMax = rawMin + 1;
+  let minV, maxV, ticks;
+  if(opts.domainMin !== undefined || opts.domainMax !== undefined){
+    minV = rawMin; maxV = rawMax; ticks = niceAxisTicks(minV, maxV, 5).ticks;
+  } else {
+    const pad = (rawMax - rawMin) * 0.15;
+    const nice = niceAxisTicks(rawMin - pad, rawMax + pad, 5);
+    minV = nice.min; maxV = nice.max; ticks = nice.ticks;
   }
   const xAt = v => labelW + padX + ((v-minV)/(maxV-minV)) * plotW;
   const refX = xAt(ref);
+
+  const hairline = cssVar('--hairline') || '#e1e0d9';
+  const inkTertiary = cssVar('--ink-3') || '#898781';
+  let gridSvg = '';
+  ticks.forEach(val=>{
+    if(val < minV || val > maxV) return;
+    const x = xAt(val);
+    gridSvg += '<line x1="'+x.toFixed(1)+'" y1="0" x2="'+x.toFixed(1)+'" y2="'+rowsH+'" stroke="'+hairline+'" stroke-width="1"/>';
+    gridSvg += '<text x="'+x.toFixed(1)+'" y="'+(rowsH+14)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+formatValue(val)+'</text>';
+  });
 
   let rows = '';
   items.forEach((it,i)=>{
@@ -278,10 +304,10 @@ function buildHBarCompareSVG(containerId, items, opts){
     rows += '<rect x="'+x0.toFixed(1)+'" y="'+barY.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+barH.toFixed(1)+'" rx="4" fill="'+it.color+'"/>';
     rows += '<text x="'+(width-valueW+8)+'" y="'+(y+rowHeight/2+4)+'" font-size="12.5" font-weight="700" fill="'+cssVar('--ink-1')+'">'+formatValue(it.value)+'</text>';
   });
-  const refLine = '<line x1="'+refX.toFixed(1)+'" y1="2" x2="'+refX.toFixed(1)+'" y2="'+(height-2)+'" stroke="'+cssVar('--ink-1')+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
+  const refLine = '<line x1="'+refX.toFixed(1)+'" y1="0" x2="'+refX.toFixed(1)+'" y2="'+rowsH+'" stroke="'+cssVar('--ink-1')+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
 
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="'+height+'">'+refLine+rows+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="'+height+'">'+gridSvg+refLine+rows+'</svg>';
 }
 
 /* ---------- Stacked area chart (percentage mix over time — used for
@@ -411,7 +437,14 @@ function buildGroupedBarSVG(containerId, opts){
       const y0 = Math.min(y1, baseY);
       const h = Math.max(0.5, Math.abs(y1-baseY));
       const color = opts.colorFn ? opts.colorFn(s, val) : s.color;
-      bars += '<rect x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"/>';
+      // data-gi (2026-08-05): harmless group-index attribute on every bar, so
+      // a caller that wants drill-through-on-click (e.g. Store Productivity
+      // Distribution → "which stores are in this bucket") can attach its own
+      // delegated click listener afterward without this function needing to
+      // know anything about that use case. opts.clickableBars just adds a
+      // pointer cursor as a visual affordance; everything still renders
+      // exactly as before for callers that don't set it.
+      bars += '<rect data-gi="'+gi+'" x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"'+(opts.clickableBars?' style="cursor:pointer;"':'')+'/>';
       if(opts.showValueLabels){
         const above = val >= baseline;
         // Fix (2026-08-03): valueLabelFormatter can now return either a plain
@@ -528,24 +561,51 @@ function buildScatterSVG(containerId, points, opts){
     svg += '<text x="'+(padL+4)+'" y="'+(height-padB-6)+'" font-size="9.5" text-anchor="start" fill="'+inkTertiary+'" font-weight="700">'+(ql.bottomLeft||'')+'</text>';
   }
 
-  // Label-collision avoidance (fix logged 2026-08-01, see
-  // Charmiss_Dashboard_Review_2026-07-31.md Task 2.1): labels used to always
-  // sit fixed just above each point, which collided with (a) the quadrant
-  // corner labels when a point landed near a corner, and (b) each other when
-  // two points landed close together. Placed labels are now tracked and any
-  // point whose default label would sit too close to the top edge (where the
-  // quadrant labels live) or too close to an already-placed label gets its
-  // label flipped below the point instead.
-  const placedLabels = [];
+  // Label-collision avoidance (fix logged 2026-08-01, extended 2026-08-05).
+  // Original version (2026-08-01) only ever tried two candidate positions —
+  // straight above, or straight below if that collided — checked by
+  // center-to-center distance, not real bounding boxes. That missed cases
+  // where two points sit close in BOTH x and y (e.g. Category Portfolio
+  // Matrix's "Color Cosmetics" and "Hair Care", whose growth% and sales
+  // value both land near each other): flipping one label below the point
+  // still isn't far enough from the other's box, and a 46×14px collision
+  // radius doesn't reflect how wide a real label like "Color Cosmetics"
+  // actually renders. Now tries 8 candidate offsets (above, below, and 4
+  // diagonals, plus two "further" fallbacks) in priority order, each checked
+  // as a real bounding box (label width estimated from character count)
+  // against every already-placed label's box, the plot edges, and the
+  // quadrant corner label zones — first non-colliding candidate wins.
+  const placedBoxes = [];
+  const CANDIDATES = [
+    {dx:0, dy:-10}, {dx:0, dy:16},
+    {dx:34, dy:-10}, {dx:-34, dy:-10},
+    {dx:34, dy:16}, {dx:-34, dy:16},
+    {dx:0, dy:-26}, {dx:0, dy:32}
+  ];
+  const cornerZone = 92, cornerH = 20; // approx footprint of a quadrant corner label
+  function boxOverlaps(a,b){ return a.x0 < b.x1 && a.x1 > b.x0 && a.y0 < b.y1 && a.y1 > b.y0; }
+  function hitsCorner(box){
+    if(!opts.quadrantLabels) return false;
+    const nearTop = box.y0 < padT+cornerH, nearBottom = box.y1 > (height-padB)-cornerH;
+    const nearLeft = box.x0 < padL+cornerZone, nearRight = box.x1 > (width-padR)-cornerZone;
+    return (nearTop && (nearLeft || nearRight)) || (nearBottom && (nearLeft || nearRight));
+  }
   points.forEach(p=>{
     const cx = xAt(p.x), cy = yAt(p.y);
-    let ly = cy - 10;
-    const nearTopEdge = (cy - padT) < 26;
-    const collidesWithPlaced = placedLabels.some(q => Math.abs(q.x-cx) < 46 && Math.abs(q.y-ly) < 14);
-    if(nearTopEdge || collidesWithPlaced) ly = cy + 16;
-    placedLabels.push({x:cx, y:ly});
+    const halfW = Math.max(18, p.label.length*3.15), halfH = 8;
+    let chosen = null;
+    for(const c of CANDIDATES){
+      const lx = cx+c.dx, ly = cy+c.dy;
+      const box = {x0:lx-halfW, x1:lx+halfW, y0:ly-halfH-2, y1:ly+halfH-2};
+      if(box.x0 < padL || box.x1 > width-padR || box.y0 < 2 || box.y1 > height-2) continue;
+      if(hitsCorner(box)) continue;
+      if(placedBoxes.some(pb => boxOverlaps(pb, box))) continue;
+      chosen = {lx, ly, box}; break;
+    }
+    if(!chosen){ const c = CANDIDATES[1]; const lx=cx+c.dx, ly=cy+c.dy; chosen = {lx, ly, box:{x0:lx-halfW,x1:lx+halfW,y0:ly-halfH-2,y1:ly+halfH-2}}; }
+    placedBoxes.push(chosen.box);
     svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"/>';
-    svg += '<text x="'+cx.toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
+    svg += '<text x="'+chosen.lx.toFixed(1)+'" y="'+chosen.ly.toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
   });
 
   /* --- Axis titles: real chart-axis labels, not a caption floated outside the
@@ -801,6 +861,137 @@ function buildParetoSVG(containerId, items, opts){
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+}
+
+/* ---------- Smooth stream/area chart (100%-stacked, mix over time) with a
+   hover tooltip — added 2026-08-05 for MT Breakdown's "Category Share of
+   Sales Over Time", which previously used buildStacked100BarSVG (monthly
+   stacked bars with a % + ฿ label baked into every segment of every month —
+   18 months × 6 categories = 108 always-on labels, too dense to read at a
+   glance). This function keeps the same 100%-stacked *meaning* (mix, not
+   absolute ฿) but smooths the band boundaries with a Catmull-Rom resample
+   (denser interpolated points, drawn as a fine polyline — visually
+   indistinguishable from a true bezier spline without needing bezier
+   control-point math) and drops the always-on labels entirely in favor of a
+   single shared hover tooltip that shows the exact %/฿ for every series at
+   whatever month the cursor is nearest to. buildStacked100BarSVG itself is
+   untouched — every other caller (Store Productivity Quartile by Partner,
+   etc.) keeps its current always-labeled bar-chart look. ---------- */
+function catmullRomResample(values, samplesPerSegment){
+  const n = values.length;
+  if(n < 2) return values.slice();
+  const get = i => values[Math.max(0, Math.min(n-1, i))];
+  const out = [];
+  for(let i=0;i<n-1;i++){
+    const p0=get(i-1), p1=get(i), p2=get(i+1), p3=get(i+2);
+    for(let s=0;s<samplesPerSegment;s++){
+      const t = s/samplesPerSegment, t2=t*t, t3=t2*t;
+      out.push(0.5*((2*p1) + (-p0+p2)*t + (2*p0-5*p1+4*p2-p3)*t2 + (-p0+3*p1-3*p2+p3)*t3));
+    }
+  }
+  out.push(values[n-1]);
+  return out;
+}
+function ensureChartTooltip(){
+  let el = document.getElementById('sharedChartTooltip');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'sharedChartTooltip';
+    el.className = 'chart-tooltip';
+    document.body.appendChild(el);
+  }
+  return el;
+}
+function buildStreamAreaSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 700;
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
+  const labels = opts.labels, series = opts.series; // series: [{name,color,values:[absolute per month]}]
+  const valueFormatter = opts.valueFormatter || (v=>v);
+  const n = labels.length;
+  const padL=30, padR=8, padT=10, padB=22;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkTertiary = cssVar('--ink-3')||'#898781';
+  const SAMPLES = 8;
+
+  const totals = labels.map((lb,m)=> series.reduce((a,s)=>a+s.values[m],0) || 1);
+  const pctByMonth = series.map(s => s.values.map((v,m)=> v/totals[m]*100));
+  const cum = []; // cum[i][m] = cumulative % through series i at month m
+  series.forEach((s,i)=>{
+    cum.push(labels.map((lb,m)=> (i===0?0:cum[i-1][m]) + pctByMonth[i][m]));
+  });
+  const denseCum = cum.map(arr => catmullRomResample(arr, SAMPLES));
+  // Clamp: a Catmull-Rom curve can overshoot slightly past its control
+  // points, which for stacked bands could otherwise invert two adjacent
+  // boundaries (band height going negative) right where a category's share
+  // swings sharply month to month. Clamping each band's resampled curve to
+  // never dip below the band beneath it (and to stay within 0-100%) keeps
+  // every band a valid non-negative height everywhere along the curve.
+  for(let i=0;i<denseCum.length;i++){
+    for(let k=0;k<denseCum[i].length;k++){
+      const floor = i===0 ? 0 : denseCum[i-1][k];
+      denseCum[i][k] = Math.min(100, Math.max(floor, denseCum[i][k]));
+    }
+  }
+  const denseLen = denseCum[0] ? denseCum[0].length : 0;
+  const xAtDense = k => padL + (denseLen>1 ? k/(denseLen-1)*plotW : 0);
+  const xAtMonth = m => padL + (n>1 ? m/(n-1)*plotW : 0);
+  const yAt = v => padT + (1 - v/100) * plotH;
+
+  let svg = '';
+  [0,50,100].forEach(v=>{
+    const y = yAt(v);
+    svg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    svg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+v+'%</text>';
+  });
+
+  for(let i=0;i<series.length;i++){
+    const top = denseCum[i], bottom = i===0 ? denseCum[i].map(()=>0) : denseCum[i-1];
+    let d = '';
+    for(let k=0;k<denseLen;k++){ const x=xAtDense(k), y=yAt(top[k]); d += (k===0?'M':'L')+x.toFixed(1)+','+y.toFixed(1)+' '; }
+    for(let k=denseLen-1;k>=0;k--){ const x=xAtDense(k), y=yAt(bottom[k]); d += 'L'+x.toFixed(1)+','+y.toFixed(1)+' '; }
+    d += 'Z';
+    svg += '<path d="'+d+'" fill="'+series[i].color+'" opacity="0.9"/>';
+  }
+
+  const showEvery = n>12 ? 3 : 1;
+  labels.forEach((lb,m)=>{
+    if(m%showEvery!==0 && m!==n-1) return;
+    svg += '<text x="'+xAtMonth(m).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
+  });
+  svg += '<line id="'+containerId+'-crosshair" x1="0" y1="'+padT+'" x2="0" y2="'+(height-padB)+'" stroke="'+(cssVar('--ink-1')||'#0b0b0b')+'" stroke-width="1" opacity="0"/>';
+
+  container.innerHTML = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+
+  /* --- Hover tooltip: nearest-month lookup, shows every series' real (non-
+     interpolated) %/฿ at that month, plus a crosshair line for orientation. --- */
+  const tooltip = ensureChartTooltip();
+  const crosshair = document.getElementById(containerId+'-crosshair');
+  container.onmousemove = (e)=>{
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const scaleX = rect.width ? width/rect.width : 1;
+    const svgX = mouseX*scaleX;
+    let m = Math.round((svgX-padL)/(plotW||1)*(n-1));
+    m = Math.max(0, Math.min(n-1, m));
+    const cx = xAtMonth(m) / width * rect.width;
+    crosshair.setAttribute('x1', xAtMonth(m).toFixed(1));
+    crosshair.setAttribute('x2', xAtMonth(m).toFixed(1));
+    crosshair.setAttribute('opacity', '0.35');
+    const rows = series.map((s,i)=>({ name:s.name, color:s.color, pct: pctByMonth[i][m], value: s.values[m] }))
+      .sort((a,b)=>b.value-a.value);
+    tooltip.innerHTML = '<div class="chart-tooltip-title">'+labels[m]+'</div>'
+      + rows.map(r=>'<div class="chart-tooltip-row"><span class="chart-tooltip-dot" style="background:'+r.color+';"></span><span class="chart-tooltip-name">'+r.name+'</span><span class="chart-tooltip-value">'+valueFormatter(r.value)+' · '+r.pct.toFixed(0)+'%</span></div>').join('');
+    const pw = 240;
+    let left = e.clientX + 14;
+    if(left + pw > window.innerWidth - 12) left = e.clientX - pw - 14;
+    let top = e.clientY + 14;
+    if(top + 140 > window.innerHeight - 12) top = e.clientY - 150;
+    tooltip.style.left = Math.max(12,left) + 'px';
+    tooltip.style.top = Math.max(12,top) + 'px';
+    tooltip.classList.add('show');
+  };
+  container.onmouseleave = ()=>{ tooltip.classList.remove('show'); crosshair.setAttribute('opacity','0'); };
 }
 
 function downloadSVGFromContainer(containerId, filename){

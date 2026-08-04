@@ -29,6 +29,7 @@ const MODULE_MAP = [
     items: [
       { key:'mt-exec',      label:'Executive Summary', href:'module_mt_executive_summary.html' },
       { key:'mt-breakdown', label:'Breakdown',          href:'module_mt_breakdown.html' },
+      { key:'mt-store',     label:'Store',              href:'module_mt_store.html' },
     ],
   },
   {
