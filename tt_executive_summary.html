@@ -68,6 +68,11 @@
     <div class="filter-note">Company-wide, all regions/categories/reps</div>
   </div>
 
+  <nav class="section-nav">
+    <a href="#sec-exec-summary">Executive Summary</a>
+    <a href="#sec-trends-mix">Trends &amp; Mix</a>
+  </nav>
+
   <div id="pageAnalysis" class="page-view">
   <!-- ============ HIDDEN STUBS — render() also writes to these ids as part of the other page's cards (Executive Summary and Breakdown are computed together by design, see tt-shared.js's header comment). Kept empty and display:none; never shown, just here so render() has a valid target and does not throw. ============ -->
   <div class="card" style="display:none;" aria-hidden="true">
@@ -141,7 +146,7 @@
        never silently disagree with that card's own retention figure. grid-exec6 replaces the
        shared 12-col grid for this row only since a same-width row of 6 reads better as an
        explicit override than as 6x col-2 (see grid-exec6 CSS comment). ============ -->
-  <div class="section-label">Executive Summary</div>
+  <div class="section-label" id="sec-exec-summary">Executive Summary</div>
   <div class="grid grid-exec6">
     <div class="card">
       <div class="stat-label">Total Net Sales
@@ -289,6 +294,7 @@
        section regardless of Region/Category/Sales Person state (those filters are hidden on this
        page's filter row) — see the state-override wrapper around this block's render() call.
        ============ -->
+  <div class="section-label" id="sec-trends-mix">Trends &amp; Mix</div>
   <div class="grid row-gap">
     <div class="col-6 card trend-compact">
       <div class="card-head">

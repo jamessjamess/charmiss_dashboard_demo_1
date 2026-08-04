@@ -189,6 +189,7 @@
       </div>
       <div class="chart-subtitle" id="matrixSubtitle">Top 6 by sales, plus highest/lowest growth if not already shown</div>
       <div class="canvas-wrap" id="matrixCanvasWrap" style="height:260px;"><div id="matrixChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="matrixCallout">–</div>
       <div class="data-table-wrap" id="matrixTableWrap"></div>
     </div>
     <div class="card">
@@ -810,6 +811,29 @@ function renderAll(periodKey, custom){
   document.getElementById('matrixSubtitle').textContent = 'Top 6 by sales, plus highest/lowest growth if not already shown (' + matrixNodes.length + ' points)';
   latestData.matrix = matrixPoints;
 
+  /* Insight callout (2026-08-06, feedback) — the 4 quadrant corner labels
+     (Stars/Question Marks/Cash Cows/Dogs) name the axes but don't say
+     WHICH nodes landed where. Reuses shared.js's own `median()` so the
+     quadrant split here exactly matches what buildScatterSVG draws
+     internally (it doesn't expose the split, so this recomputes it from
+     the same inputs) — then surfaces the two quadrants most worth acting on
+     (Question Marks = small but growing fast, worth investing in; Dogs =
+     shrinking and already small, worth reviewing) plus the single biggest
+     and fastest-growing node for headline context. */
+  const matrixMedX = median(matrixPoints.map(p=>p.x));
+  const matrixMedY = median(matrixPoints.map(p=>p.y));
+  const matrixQuadrants = {Stars:[], 'Question Marks':[], 'Cash Cows':[], Dogs:[]};
+  matrixPoints.forEach(p=>{
+    const q = p.x>=matrixMedX ? (p.y>=matrixMedY?'Stars':'Cash Cows') : (p.y>=matrixMedY?'Question Marks':'Dogs');
+    matrixQuadrants[q].push(p.label);
+  });
+  const matrixTopSales = [...matrixPoints].sort((a,b)=>b.x-a.x)[0];
+  const matrixTopGrowth = [...matrixPoints].sort((a,b)=>b.y-a.y)[0];
+  let matrixCalloutHtml = '<b>'+matrixTopSales.label+'</b> is the largest by sales ('+fmtTHB(matrixTopSales.x)+') · <b>'+matrixTopGrowth.label+'</b> is growing fastest ('+fmtSignedPct(matrixTopGrowth.y)+')';
+  if(matrixQuadrants['Question Marks'].length) matrixCalloutHtml += ' · Question Marks worth watching: <b>'+matrixQuadrants['Question Marks'].join(', ')+'</b> (small but growing fast)';
+  if(matrixQuadrants.Dogs.length) matrixCalloutHtml += ' · Dogs worth reviewing: <b>'+matrixQuadrants.Dogs.join(', ')+'</b> (small and flat/declining)';
+  document.getElementById('matrixCallout').innerHTML = matrixCalloutHtml;
+
   /* --- Category Growth Contribution Waterfall: mirrors Executive Outlook's
      channel-level Growth Contribution Waterfall, but per-node using each
      node's own stated %Growth YoY (a field that already exists on
@@ -844,7 +868,7 @@ function renderAll(periodKey, custom){
     .concat(cwfShown.map(d=>({label:d.name, value:d.delta, type:'delta'})))
     .concat(cwfRest.length ? [{label:'Other ('+cwfRest.length+')', value:cwfRestSum, type:'delta'}] : [])
     .concat([{label:'This Year', value: cwfThisYearTotal, type:'end'}]);
-  buildWaterfallSVG('cwfChart', cwfSteps, { yFormatter: fmtTHB });
+  buildWaterfallSVG('cwfChart', cwfSteps, { yFormatter: fmtTHB, rotateLabels: 90 });
   document.getElementById('cwfSubtitle').textContent = cwfRest.length
     ? 'Last Year → Top 8 contributors + Other (' + cwfRest.length + ') → This Year'
     : 'Last Year → contribution by ' + LEVEL_NAMES[currentLevel].toLowerCase() + ' → This Year';

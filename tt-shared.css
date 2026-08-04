@@ -320,6 +320,15 @@
   }
   .section-label:first-of-type{ margin-top:4px; }
 
+  /* Anchor nav (2026-08-06) — ported byte-for-byte from shared.css's
+     .section-nav (used on MT/Sales Overview) so jump-links look identical
+     across engines. html{scroll-behavior:smooth} too, same reasoning as
+     shared.css's own comment: harmless global upgrade for anchor jumps. */
+  html{ scroll-behavior:smooth; }
+  .section-nav{ display:flex; gap:8px; flex-wrap:wrap; margin:2px 0 22px; }
+  .section-nav a{ font-size:12px; font-weight:600; color:var(--ink-2); background:var(--card); border:1px solid var(--border-2); border-radius:999px; padding:6px 14px; text-decoration:none; transition:border-color .15s,color .15s; }
+  .section-nav a:hover{ border-color:var(--brand); color:var(--brand); }
+
   /* ---------- Card ---------- */
   .card{
     background:var(--card); border:1px solid var(--border); border-radius:var(--radius);

@@ -75,9 +75,9 @@
   </div>
 
   <nav class="section-nav">
-    <a href="#sec-store-ranking">Store Ranking</a>
     <a href="#sec-store-performance">Store Performance</a>
     <a href="#sec-store-health">Store Health</a>
+    <a href="#sec-store-ranking">Store Ranking</a>
   </nav>
 
   <div class="chart-subtitle" style="margin:-6px 0 14px;">WATSONS, EVEANDBOY, CJ Express, Beautrium, and Multy report sales by store location. Lotus's, 7-Eleven, KONVY, and Tsuruha currently send one lump-sum Sales Report per account with no store-level breakdown, so they're excluded from every chart and table on this page — same coverage limitation already noted on the Executive Summary tab.</div>
@@ -87,98 +87,50 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">Total Stores</span>
-        <button class="info-icon" data-info-title="Total Stores" data-info-text="จำนวนสาขารวมของคู่ค้าที่มีข้อมูลระดับสาขา (ตาม Partner filter ด้านบน) — ไม่ผูกกับ Period ที่เลือก เพราะเป็นจำนวนสาขาปัจจุบัน ไม่ใช่ยอดขาย">i</button>
+        <button class="info-icon" data-info-title="Total Stores" data-info-text="จำนวนสาขารวมของคู่ค้าที่มีข้อมูลระดับสาขา (ตาม Partner filter ด้านบน) — ไม่ผูกกับ Period ที่เลือก เพราะเป็นจำนวนสาขาปัจจุบัน ไม่ใช่ยอดขาย — เส้น Sparkline คือจำนวนสาขาสะสม ย้อนหลัง 12 เดือน (ขยับขึ้นทุกครั้งที่มีสาขาใหม่เปิด)">i</button>
       </div>
       <div class="kpi-value-line">
         <span class="kpi-value" id="kpiTotalStoresValue">–</span><span class="kpi-unit">stores</span>
       </div>
+      <div id="kpiTotalStoresSpark"></div>
       <div class="kpi-caption" id="kpiTotalStoresCaption">–</div>
     </div>
 
     <div class="card">
       <div class="card-head">
         <span class="card-title">Avg Sales per Store</span>
-        <button class="info-icon" data-info-title="Avg Sales per Store" data-info-text="ยอดขายรวมของคู่ค้าที่อยู่ใน Scope (ตาม Partner filter) หารด้วยจำนวนสาขารวม ในช่วงเวลาที่เลือก">i</button>
+        <button class="info-icon" data-info-title="Avg Sales per Store" data-info-text="ยอดขายรวมของคู่ค้าที่อยู่ใน Scope (ตาม Partner filter) หารด้วยจำนวนสาขารวม ในช่วงเวลาที่เลือก — เส้น Sparkline คือค่าเฉลี่ยเดียวกันนี้ คำนวณย้อนหลังแบบรายเดือน 12 เดือน">i</button>
       </div>
       <div class="kpi-value-line">
         <span class="kpi-value" id="kpiAvgStoreValue">–</span><span class="kpi-unit">THB</span>
       </div>
+      <div id="kpiAvgStoreSpark"></div>
       <div class="kpi-caption" id="kpiAvgStoreCaption">–</div>
     </div>
 
     <div class="card">
       <div class="card-head">
         <span class="card-title">Same-Store Sales Growth</span>
-        <button class="info-icon" data-info-title="Same-Store Sales Growth (SSSG)" data-info-text="YoY Growth เฉพาะสาขาที่เปิดมาแล้วอย่างน้อย 12 เดือน ณ วันสิ้นสุดช่วงเวลาที่เลือก (ตัดผลจากสาขาเปิดใหม่ออก) เทียบกับ Total Growth ที่รวมสาขาใหม่ด้วย — ยิ่งห่างกันมาก แปลว่าการเติบโตพึ่งพาสาขาใหม่มากกว่าการเติบโตแบบ Organic">i</button>
+        <button class="info-icon" data-info-title="Same-Store Sales Growth (SSSG)" data-info-text="YoY Growth เฉพาะสาขาที่เปิดมาแล้วอย่างน้อย 12 เดือน ณ วันสิ้นสุดช่วงเวลาที่เลือก (ตัดผลจากสาขาเปิดใหม่ออก) เทียบกับ Total Growth ที่รวมสาขาใหม่ด้วย — ยิ่งห่างกันมาก แปลว่าการเติบโตพึ่งพาสาขาใหม่มากกว่าการเติบโตแบบ Organic — เส้น Sparkline เป็น Trend ย้อนหลัง 12 เดือน จุดขวาสุดตรงกับตัวเลขด้านบนเป๊ะ จุดก่อนหน้าคำนวณจากสัดส่วนสาขาใหม่ที่ค่อยๆเพิ่มขึ้นตามจริง (Growth Rate ฐานคงที่ตามค่าที่ประกาศไว้)">i</button>
       </div>
       <div class="kpi-value-line">
         <span class="kpi-value" id="kpiSssgValue">–</span>
       </div>
+      <div id="kpiSssgSpark"></div>
       <div class="kpi-caption" id="kpiSssgCaption">–</div>
     </div>
 
     <div class="card">
       <div class="card-head">
         <span class="card-title">New Stores Opened</span>
-        <button class="info-icon" data-info-title="New Stores Opened" data-info-text="จำนวนสาขาที่เปิดใหม่ภายในช่วงเวลาที่เลือก (นับจากวันที่เปิดสาขาจริง) — ยังไม่มีการเก็บสถานะ 'ปิดสาขา' แยกในข้อมูลต้นทาง จึงยังไม่แสดงจำนวนสาขาปิด ณ ตอนนี้">i</button>
+        <button class="info-icon" data-info-title="New Stores Opened" data-info-text="จำนวนสาขาที่เปิดใหม่ภายในช่วงเวลาที่เลือก (นับจากวันที่เปิดสาขาจริง) — ยังไม่มีการเก็บสถานะ 'ปิดสาขา' แยกในข้อมูลต้นทาง จึงยังไม่แสดงจำนวนสาขาปิด ณ ตอนนี้ — เส้น Sparkline คือจำนวนสาขาใหม่รายเดือน ย้อนหลัง 12 เดือนเต็ม (คงที่ ไม่ขึ้นกับ Period filter ด้านบน เพื่อให้เห็น Pace ตาม Trend เสมอ)">i</button>
       </div>
       <div class="kpi-value-line">
         <span class="kpi-value" id="kpiNewStoresValue">–</span><span class="kpi-unit">stores</span>
       </div>
+      <div id="kpiNewStoresSpark"></div>
       <div class="kpi-caption" id="kpiNewStoresCaption">–</div>
     </div>
-  </div>
-
-  <!-- ===== STORE RANKING ===== -->
-  <div class="section-label" id="sec-store-ranking">Store Ranking</div>
-  <div class="chart-grid">
-    <div class="card table-card">
-      <div class="card-head">
-        <span class="card-title">Top Store Ranking</span>
-        <button class="info-icon" data-info-title="Top Store Ranking" data-info-text="10 อันดับสาขาที่ยอดขายสุทธิสูงสุด ในช่วงเวลาและ Partner ที่เลือก — YoY Growth ของแต่ละสาขาอ้างอิงจากค่าเฉลี่ยระดับคู่ค้า (Mock Model ยังไม่มี Time Series แยกรายสาขา) ไม่ใช่ตัวเลขเฉพาะสาขานั้นจริงๆ — ไม่แสดง Attainment เพราะโดยปกติไม่มีการตั้ง Target แยกรายสาขา จึงคำนวณ Attainment ระดับสาขาจริงไม่ได้ — กด 'See all' เพื่อดูครบทุกสาขา">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="topStoreDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="topStoreExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Ranked by net sales, selected period</div>
-      <table id="topStoreTable"></table>
-      <div class="chart-subtitle" id="topStoreMoreCaption" style="margin:8px 0 0;"></div>
-      <div id="topStoreSeeMore"></div>
-    </div>
-
-    <div class="card table-card">
-      <div class="card-head">
-        <span class="card-title">Bottom Store Ranking</span>
-        <button class="info-icon" data-info-title="Bottom Store Ranking" data-info-text="10 อันดับสาขาที่ยอดขายสุทธิต่ำสุด ในช่วงเวลาและ Partner ที่เลือก — ช่วยดูว่าสาขาไหนต้องการความสนใจ (Attention) เพิ่ม, ตัวเลข YoY Growth อ้างอิงระดับคู่ค้าเช่นเดียวกับ Top Store Ranking — ไม่แสดง Attainment ด้วยเหตุผลเดียวกัน (ไม่มี Target แยกรายสาขา) — กด 'See all' เพื่อดูครบทุกสาขา">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="bottomStoreDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="bottomStoreExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Ranked by net sales ascending, selected period</div>
-      <table id="bottomStoreTable"></table>
-      <div class="chart-subtitle" id="bottomStoreMoreCaption" style="margin:8px 0 0;"></div>
-      <div id="bottomStoreSeeMore"></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Pareto Ranking</span>
-        <button class="info-icon" data-info-title="Pareto Ranking" data-info-text="แบ่งสาขาทั้งหมด (ใน Scope ที่เลือก) เป็น 10 กลุ่มเท่าๆ กันตามยอดขายต่อสาขาจากมากไปน้อย (Decile) แท่งคือสัดส่วนยอดขายของแต่ละกลุ่ม เส้นคือสัดส่วนสะสม — เส้นประคือระดับ 80% ใช้ตอบคำถาม 'สาขากี่ % สร้างยอดขายกี่ % ของทั้งหมด'">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="storeParetoTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="storeParetoDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="storeParetoExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">Store deciles (highest sales-per-store first) — bars + cumulative share</div>
-    <div class="canvas-wrap" id="storeParetoCanvasWrap" style="height:260px;"><div id="storeParetoChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="storeParetoCallout">–</div>
-    <div class="data-table-wrap" id="storeParetoTableWrap"></div>
   </div>
 
   <!-- ===== STORE PERFORMANCE ===== -->
@@ -224,17 +176,21 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Same-Store Sales Growth by Partner</span>
-        <button class="info-icon" data-info-title="Same-Store Sales Growth by Partner" data-info-text="เทียบ Total Growth (รวมสาขาใหม่) กับ SSSG (เฉพาะสาขาที่เปิดมาแล้ว 12 เดือนขึ้นไป) ต่อคู่ค้า — ส่วนต่างระหว่าง 2 แท่งคือสัดส่วนการเติบโตที่มาจากการเปิดสาขาใหม่">i</button>
+        <button class="info-icon" data-info-title="Same-Store Sales Growth by Partner" data-info-text="เทียบ Total Growth (รวมสาขาใหม่) กับ SSSG (เฉพาะสาขาที่เปิดมาแล้ว 12 เดือนขึ้นไป) ต่อคู่ค้า — จุดสีเข้ม (Total Growth) กับจุดสีฟ้าอมเขียว (SSSG) อยู่บนเส้นเดียวกัน ยิ่งจุดทั้งสองห่างกันมาก แปลว่าการเติบโตของคู่ค้านั้นพึ่งพาการเปิดสาขาใหม่มากกว่าการเติบโตแบบ Organic จากสาขาเดิม">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="sssgTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="sssgDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="sssgDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="sssgExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
     <div class="chart-subtitle">YoY, selected period's account-level growth vs. same-store-only growth</div>
-    <div class="canvas-wrap" id="sssgCanvasWrap" style="height:260px;"><div id="sssgChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="sssgCallout">–</div>
+    <div class="chart-legend" style="margin-bottom:12px;">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand);border-radius:50%;"></span>Total Growth</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--tt);border-radius:50%;"></span>Same-Store (SSSG)</span>
+    </div>
+    <div id="sssgChart"></div>
+    <div class="callout-text" id="sssgCallout" style="margin-top:12px;">–</div>
     <div class="data-table-wrap" id="sssgTableWrap"></div>
   </div>
 
@@ -242,7 +198,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Top Stores Trend</span>
-        <button class="info-icon" data-info-title="Top Stores Trend" data-info-text="ยอดขายรายเดือนของสาขาที่ยอดขายสูงสุด 1 สาขาต่อคู่ค้า (5 สาขา ตาม 5 คู่ค้าที่มีข้อมูลระดับสาขา, ปรับตาม Partner filter ที่เลือก) ย้อนหลังเต็ม 3 ปี — เลือกแบบ 1 สาขาต่อคู่ค้าแทน Top 5 ยอดขายสูงสุดโดยรวม เพราะสาขาที่ขายดีที่สุดของบริษัทมักกระจุกอยู่คู่ค้าเดียว ทำให้ได้ 5 เส้นที่ใกล้เคียงกันจนอ่านไม่ออก — แบบนี้เห็นสาขา Top ของทุกคู่ค้าเทียบกันได้จริง ส่วนภาพรวมการกระจายของสาขาทั้งหมด ดูที่ 'Store Productivity Mix Over Time' ใน Store Health ด้านล่างแทน">i</button>
+        <button class="info-icon" data-info-title="Top Stores Trend" data-info-text="ยอดขายรายเดือนของ Top 5 สาขา ย้อนหลังเต็ม 3 ปี ตาม Scope ที่เลือกใน Dropdown ด้านล่าง (แยกอิสระจาก Partner Filter ด้านบนของหน้า เหมือน Store Health ด้านล่าง) — เลือก 'All 5 Partners' เพื่อดู Top 5 สาขาที่ยอดขายสูงสุดโดยรวมทั้งบริษัท (อาจกระจุกอยู่คู่ค้าเดียวถ้าคู่ค้านั้นมี Store ที่โดดเด่นจริง) หรือเลือกคู่ค้าใดคู่ค้าหนึ่งเพื่อดู Top 5 สาขาของคู่ค้านั้นแยกออกมา (คู่ค้าที่มีสาขาน้อยกว่า 5 จะแสดงเท่าที่มี) — ชื่อสาขาใน Data Label มีชื่อคู่ค้าอยู่ในตัวอยู่แล้ว (เช่น 'EVEANDBOY #001') — Caption ใต้กราฟระบุว่า Roster ของ Top 5 นี้เหมือนเดิมตลอด 12 เดือนที่ผ่านมา หรือมีสาขาอื่นสลับเข้ามาบ้าง (ดูจาก Weight รายเดือนที่มี Noise เล็กน้อย ไม่ใช่ค่าคงที่ตลอด 36 เดือนแบบเส้นกราฟ) — ส่วนภาพรวมการกระจายของสาขาทั้งหมด ดูที่ 'Store Productivity Mix Over Time' ใน Store Health ด้านล่างแทน">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="topStoresTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -250,14 +206,19 @@
         <button class="tool-btn" id="topStoresTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Jan 2024 – Jun 2026, monthly · top store per partner, within current Partner filter</div>
+    <div class="chart-subtitle">Jan 2024 – Jun 2026, monthly · Top 5 stores for the scope below (independent of the Partner filter above)</div>
+    <div style="margin-bottom:10px;">
+      <span class="filter-label" style="margin-right:6px;">Scope</span>
+      <select class="level-select" id="topStoresTrendScopeSelect"></select>
+    </div>
     <div class="canvas-wrap" id="topStoresTrendCanvasWrap" style="height:260px;"><div id="topStoresTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="topStoresTrendStability" style="margin-top:10px;">–</div>
     <div class="data-table-wrap" id="topStoresTrendTableWrap"></div>
   </div>
 
   <!-- ===== STORE HEALTH ===== -->
   <div class="section-label" id="sec-store-health">Store Health (Company-wide, 5 of 9 Key Accounts)</div>
-  <div class="chart-subtitle" style="margin:-6px 0 14px;">All 3 charts below always show all 5 store-tracked accounts combined — they don't scope to the Partner filter above, since a single-partner view of "new store" cadence or productivity distribution/quartiles isn't a meaningful comparison on its own.</div>
+  <div class="chart-subtitle" style="margin:-6px 0 14px;">All 3 charts below always show all 5 store-tracked accounts combined — they don't scope to the Partner filter above, since a single-partner view of "new store" cadence or productivity distribution/mix isn't a meaningful comparison on its own.</div>
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
@@ -279,7 +240,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Store Productivity Distribution</span>
-          <button class="info-icon" data-info-title="Store Productivity Distribution" data-info-text="Histogram นับจำนวนสาขา (รวมทั้ง 5 คู่ค้าที่มีข้อมูลระดับสาขา) แบ่งตามช่วงยอดขายต่อสาขาในช่วงเวลาที่เลือก — บอกว่าสาขาส่วนใหญ่กระจุกอยู่โซนไหน มี Long-tail สาขาที่ยอดขายต่ำมากแค่ไหน — คลิกที่แท่งเพื่อดูรายชื่อสาขาในช่วงนั้น (Top 10 ต่อ Bucket) — ย้ายมาจาก Executive Summary เมื่อ 2026-08-06 พร้อมมาจับคู่กับ Store Productivity Quartile by Partner ทางขวา (Distribution รวม vs แยกรายคู่ค้า)">i</button>
+          <button class="info-icon" data-info-title="Store Productivity Distribution" data-info-text="Histogram นับจำนวนสาขา (รวมทั้ง 5 คู่ค้าที่มีข้อมูลระดับสาขา) แบ่งตามช่วงยอดขายต่อสาขาในช่วงเวลาที่เลือก — ช่วง (Bucket) คำนวณแบบ Dynamic จากยอดขายสูงสุดของสาขาในข้อมูลปัจจุบัน ไม่ใช่เลขคงที่ ดังนั้นถ้าในอนาคตยอดขายต่อสาขาจริงอยู่ในช่วงที่ต่างไปมาก กราฟนี้จะขยับช่วง Bucket ให้เหมาะสมเองแทนที่จะกระจุกอยู่ไม่กี่แท่ง — บอกว่าสาขาส่วนใหญ่กระจุกอยู่โซนไหน มี Long-tail สาขาที่ยอดขายต่ำมากแค่ไหน — คลิกที่แท่งเพื่อดูรายชื่อสาขาในช่วงนั้น (Top 10 ต่อ Bucket) — จับคู่กับ Store Productivity Mix Over Time ทางขวา (Snapshot ปัจจุบัน vs การเปลี่ยนแปลงย้อนหลัง 18 เดือน ด้วย Bucket เดียวกัน)">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="storeHistTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -287,7 +248,7 @@
           <button class="tool-btn" id="storeHistExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Store count by net-sales-per-store bucket, over the selected period · click a bar to drill into that bucket</div>
+      <div class="chart-subtitle">Store count by net-sales-per-store bucket (dynamic ranges), over the selected period · click a bar to drill into that bucket</div>
       <div class="canvas-wrap" id="storeHistCanvasWrap" style="height:260px;"><div id="storeHistChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="storeHistCallout">–</div>
       <div class="data-table-wrap" id="storeHistBucketDetail"></div>
@@ -297,37 +258,72 @@
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Store Productivity Quartile by Partner</span>
-          <button class="info-icon" data-info-title="Store Productivity Quartile by Partner" data-info-text="จัดสาขาทั้งหมด (5 คู่ค้ารวมกัน) เป็น 4 กลุ่มเท่าๆ กันตามยอดขายต่อสาขา (Q1=ต่ำสุด 25%, Q4=สูงสุด 25%) แล้วดูว่าสาขาของแต่ละคู่ค้ากระจายอยู่ใน Quartile ไหนบ้าง เป็น % ของจำนวนสาขาคู่ค้านั้น — ต่อยอดจาก Store Productivity Distribution ทางซ้าย แต่แยกมุมมองรายคู่ค้า">i</button>
+          <span class="chart-title">Store Productivity Mix Over Time</span>
+          <button class="info-icon" data-info-title="Store Productivity Mix Over Time" data-info-text="ต่อยอดจาก Store Productivity Distribution ทางซ้าย แต่ดูการเปลี่ยนแปลงย้อนหลัง 18 เดือน — สัดส่วน % จำนวนสาขา (รวมทั้ง 5 คู่ค้าที่มีข้อมูล) แบ่งตามช่วงยอดขายต่อสาขาเดียวกัน 6 ช่วง (Bucket เดียวกับ Distribution ทางซ้าย คำนวณแบบ Dynamic จากข้อมูลปัจจุบัน) เพื่อดูว่าฐานสาขาโดยรวมกำลังขยับไปทาง Productive ขึ้นหรือลง — วิธีนี้ Scale ได้แม้จำนวนสาขารวมจะมากขึ้นในอนาคต เพราะดูสัดส่วนของกลุ่ม ไม่ใช่ชื่อสาขารายตัว">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="quartileTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="quartileDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="quartileExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+          <button class="tool-btn" id="storeMixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="storeMixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="storeMixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">% of each partner's own stores, by company-wide productivity quartile</div>
-      <div class="canvas-wrap" id="quartileCanvasWrap" style="height:230px;"><div id="quartileChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="quartileTableWrap"></div>
+      <div class="chart-legend" id="storeMixLegend"></div>
+      <div class="canvas-wrap" id="storeMixCanvasWrap" style="height:260px;"><div id="storeMixChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="storeMixCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="storeMixTableWrap"></div>
     </div>
   </div>
 
-  <div class="card">
+  <!-- ===== STORE RANKING ===== -->
+  <div class="section-label" id="sec-store-ranking">Store Ranking</div>
+  <div class="chart-grid">
+    <div class="card table-card">
+      <div class="card-head">
+        <span class="card-title">Top Store Ranking</span>
+        <button class="info-icon" data-info-title="Top Store Ranking" data-info-text="10 อันดับสาขาที่ยอดขายสุทธิสูงสุด ในช่วงเวลาและ Partner ที่เลือก — YoY Growth ของแต่ละสาขาเป็นตัวเลข Mock ที่ผันแปรรายสาขาจริง (ค่าเฉลี่ยของคู่ค้า ± Variance สุ่ม ไม่ใช่ Copy ตัวเลขเดียวกันทุกสาขาแบบเดิม) แต่ยังไม่ใช่ Time Series แยกรายสาขาจริงจากระบบต้นทาง — ไม่แสดง Attainment เพราะโดยปกติไม่มีการตั้ง Target แยกรายสาขา จึงคำนวณ Attainment ระดับสาขาจริงไม่ได้ — กด 'See all' เพื่อดูครบทุกสาขา">i</button>
+        <div class="toolbar" style="margin-left:auto;">
+          <button class="tool-btn" id="topStoreDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="topStoreExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Ranked by net sales, selected period</div>
+      <table id="topStoreTable"></table>
+      <div class="chart-subtitle" id="topStoreMoreCaption" style="margin:8px 0 0;"></div>
+      <div id="topStoreSeeMore"></div>
+    </div>
+
+    <div class="card table-card">
+      <div class="card-head">
+        <span class="card-title">Bottom Store Ranking</span>
+        <button class="info-icon" data-info-title="Bottom Store Ranking" data-info-text="10 อันดับสาขาที่ยอดขายสุทธิต่ำสุด ในช่วงเวลาและ Partner ที่เลือก — ช่วยดูว่าสาขาไหนต้องการความสนใจ (Attention) เพิ่ม, ตัวเลข YoY Growth ผันแปรรายสาขาเช่นเดียวกับ Top Store Ranking (ดู Info-icon การ์ดนั้น) — ไม่แสดง Attainment ด้วยเหตุผลเดียวกัน (ไม่มี Target แยกรายสาขา) — กด 'See all' เพื่อดูครบทุกสาขา">i</button>
+        <div class="toolbar" style="margin-left:auto;">
+          <button class="tool-btn" id="bottomStoreDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="bottomStoreExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Ranked by net sales ascending, selected period</div>
+      <table id="bottomStoreTable"></table>
+      <div class="chart-subtitle" id="bottomStoreMoreCaption" style="margin:8px 0 0;"></div>
+      <div id="bottomStoreSeeMore"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Store Productivity Mix Over Time</span>
-        <button class="info-icon" data-info-title="Store Productivity Mix Over Time" data-info-text="ต่อยอดจาก Store Productivity Distribution ด้านบน แต่ดูการเปลี่ยนแปลงย้อนหลัง 18 เดือน — สัดส่วน % จำนวนสาขา (รวมทั้ง 5 คู่ค้าที่มีข้อมูล) แบ่งตามช่วงยอดขายต่อสาขาเดียวกัน 6 ช่วง เพื่อดูว่าฐานสาขาโดยรวมกำลังขยับไปทาง Productive ขึ้นหรือลง — วิธีนี้ Scale ได้แม้จำนวนสาขารวมจะมากขึ้นในอนาคต เพราะดูสัดส่วนของกลุ่ม ไม่ใช่ชื่อสาขารายตัว">i</button>
+        <span class="chart-title">Pareto Ranking</span>
+        <button class="info-icon" data-info-title="Pareto Ranking" data-info-text="แบ่งสาขาทั้งหมด (ใน Scope ที่เลือก) เป็น 10 กลุ่มเท่าๆ กันตามยอดขายต่อสาขาจากมากไปน้อย (Decile) แท่งคือสัดส่วนยอดขายของแต่ละกลุ่ม เส้นคือสัดส่วนสะสม — เส้นประคือระดับ 80% ใช้ตอบคำถาม 'สาขากี่ % สร้างยอดขายกี่ % ของทั้งหมด' — ดูคำอธิบายแกน X ใต้กราฟถ้าไม่แน่ใจว่า Decile คืออะไร">i</button>
       </div>
       <div class="toolbar">
-        <button class="tool-btn" id="storeMixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="storeMixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="storeMixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        <button class="tool-btn" id="storeParetoTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="storeParetoDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="storeParetoExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-legend" id="storeMixLegend"></div>
-    <div class="canvas-wrap" id="storeMixCanvasWrap" style="height:260px;"><div id="storeMixChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="storeMixCallout" style="margin-top:10px;">–</div>
-    <div class="data-table-wrap" id="storeMixTableWrap"></div>
+    <div class="chart-subtitle">Store deciles (highest sales-per-store first) — bars + cumulative share</div>
+    <div class="canvas-wrap" id="storeParetoCanvasWrap" style="height:260px;"><div id="storeParetoChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="storeParetoCallout">–</div>
+    <div class="data-table-wrap" id="storeParetoTableWrap"></div>
   </div>
 
 </div>
@@ -424,27 +420,82 @@ keyAccounts.forEach(a=>{
    as "recently opened, not yet a same-store" as of TODAY.
    NEW_STORE_TARGET_SHARE is an illustrative per-account share of that
    account's TOTAL STORE WEIGHT assigned to "new" stores — picked highest for
-   the fastest-growing accounts (EVEANDBOY, CJ Express) and zero for Multy
-   (whose -6% YoY is pure organic decline, not store-count-driven), so Same-
-   Store Sales Growth below tells a genuinely different story from headline
-   Total Growth per account instead of just mechanically re-deriving it. The
-   stores are picked in RANDOM order (not smallest-weight-first) until the
-   target weight share is reached — deliberately not weight-biased, since a
-   handful of small stores from this long-tail distribution would otherwise
-   need an unrealistically large store COUNT to add up to even a modest %
-   of revenue (e.g. reaching 8% of weight from the smallest stores alone
-   could require tagging 20%+ of the entire chain as "new", which reads as
-   implausible for a mature retailer). Random selection keeps the resulting
-   new-store COUNT proportionate to the target share instead. */
-const NEW_STORE_TARGET_SHARE = {WATSONS:0.025, EVEANDBOY:0.12, 'CJ Express':0.08, Beautrium:0.05, Multy:0};
+   the fastest-growing accounts (EVEANDBOY, CJ Express) and lowest for Multy
+   (whose -6% YoY is overwhelmingly organic decline, not store-count-driven),
+   so Same-Store Sales Growth below tells a genuinely different story from
+   headline Total Growth per account instead of just mechanically re-deriving
+   it. The stores are picked in RANDOM order (not smallest-weight-first)
+   until the target weight share is reached — deliberately not weight-biased,
+   since a handful of small stores from this long-tail distribution would
+   otherwise need an unrealistically large store COUNT to add up to even a
+   modest % of revenue (e.g. reaching 8% of weight from the smallest stores
+   alone could require tagging 20%+ of the entire chain as "new", which reads
+   as implausible for a mature retailer). Random selection keeps the
+   resulting new-store COUNT proportionate to the target share instead.
+   Fix (2026-08-06, feedback): Multy's share was originally an exact 0, which
+   made its Total Growth and SSSG render as EXACTLY equal — correct given the
+   model (organic decline has no new-store effect to back out at all), but it
+   read as suspicious on the Same-Store Sales Growth chart (the only card
+   where Total and SSSG visibly land on the identical value). A small
+   non-zero share keeps the "almost entirely organic" story intact while
+   giving SSSG a small, visibly-real gap under Total, matching every other
+   account's presentation. */
+const NEW_STORE_TARGET_SHARE = {WATSONS:0.025, EVEANDBOY:0.12, 'CJ Express':0.08, Beautrium:0.05, Multy:0.015};
 keyAccounts.forEach(a=>{
   if(!a.storeCount) return;
   const target = NEW_STORE_TARGET_SHARE[a.name] || 0;
+  // Fix (2026-08-06): a.newStoreWeightShare used to be the ACTUAL cum reached
+  // by whole-store tagging below, not the declared target — fine for
+  // accounts with enough stores that one store's weight is a small fraction
+  // of the total, but for a low-storeCount account (Multy has only 2) a
+  // SINGLE tagged store can BE 50%+ of the account's weight, wildly
+  // overshooting a small target (this produced an absurd -82% SSSG off a
+  // 1.5% target). sssgOf() now always uses the clean declared target
+  // instead of the rounding-prone tagged total — storeOpenedMonth tagging
+  // below is unaffected (still used for the "New Stores Opened" KPI/table,
+  // where "at least one store" rounding is a much smaller cosmetic issue
+  // than corrupting the headline SSSG number).
+  a.newStoreWeightShare = target;
   const order = a.storeWeights.map((w,i)=>({w,i,r:rand()})).sort((x,y)=>x.r-y.r);
   let cum = 0; const newSet = new Set();
   for(const o of order){ if(cum >= target) break; newSet.add(o.i); cum += o.w; }
-  a.newStoreWeightShare = cum;
   a.storeOpenedMonth = a.storeWeights.map((w,i)=> newSet.has(i) ? (TODAY - Math.floor(rand()*12)) : null);
+});
+
+/* Monthly per-store weight flutter, trailing 12 months (2026-08-06) — added
+   for the Top Stores Trend leadership-stability callout. storeWeights above
+   is a single fixed share per store for the WHOLE 36-month window, which
+   makes a store's rank within its own account perfectly invariant over time
+   (every store scales by the exact same account-wide factor each month) —
+   fine for the Trend/Avg-per-Store charts, but it means "does the #1 store
+   actually change month to month" has zero real signal to show. This gives
+   each store a modest ±20% month-to-month wobble around its base weight
+   (renormalized so an account's stores still sum to 100% each month) —
+   enough for a different store to occasionally out-rank the regular leader,
+   without reshuffling the whole distribution beyond recognition. */
+const RANK_TREND_MONTHS = 12;
+keyAccounts.forEach(a=>{
+  if(!a.storeCount) return;
+  a.monthlyWeights = [];
+  for(let m=0;m<RANK_TREND_MONTHS;m++){
+    const raw = a.storeWeights.map(w => w * (0.8 + rand()*0.4));
+    const sum = raw.reduce((x,y)=>x+y,0);
+    a.monthlyWeights.push(raw.map(w=>w/sum));
+  }
+});
+
+/* Per-store YoY Growth variance (2026-08-06, feedback) — Top/Bottom Store
+   Ranking used to show every store's "YoY Growth" as a straight copy of its
+   PARTNER-level `growthYoY` (e.g. all 40 WATSONS stores showing the exact
+   same "+9.5%"), which reads as obviously fake in a per-store table. Gives
+   each store its own number instead: partner growthYoY ± up to 6pp of
+   random variance, so the ranking shows a believable per-store spread while
+   still averaging out close to the partner's own published growth figure
+   (mock-only — this is illustrative variance, not modeled off any real
+   per-store driver). */
+keyAccounts.forEach(a=>{
+  if(!a.storeCount) return;
+  a.storeGrowthYoY = a.storeWeights.map(()=> a.growthYoY + (rand()*12-6));
 });
 
 const storeAccounts = keyAccounts.filter(a=>a.storeCount);
@@ -457,6 +508,74 @@ function accountColor(name){ return keyAccountColors[accountIndex(name)]; }
    if we back out the share of this year's stores that didn't exist a year
    ago." See the NEW_STORE_TARGET_SHARE comment above for the model. */
 function sssgOf(a){ return ((1+a.growthYoY/100)*(1-(a.newStoreWeightShare||0)) - 1) * 100; }
+
+/* Dynamic productivity buckets (2026-08-06) — replaces the old fixed
+   absolute-THB thresholds (<10K, 10K-30K, ... ≥200K), which only made sense
+   for this mock data's own sales-per-store scale. Buckets are now derived
+   from the actual current data's max value (rounded to a "nice" step), so
+   the histogram stays informative even if a future real-data connection has
+   every store bunched into e.g. ≤30K — the buckets would then span 0-30K in
+   nice increments instead of collapsing everything into the first 1-2 of 6
+   fixed bins. */
+function niceStep(x){
+  if(x<=0) return 1;
+  const exp = Math.floor(Math.log10(x));
+  const base = Math.pow(10, exp);
+  const frac = x/base;
+  let niceFrac;
+  if(frac<=1) niceFrac=1; else if(frac<=2) niceFrac=2; else if(frac<=5) niceFrac=5; else niceFrac=10;
+  return niceFrac*base;
+}
+function computeDynamicBuckets(storeList, bucketCount){
+  // Fix (2026-08-06): sizing bucket width off the raw MAX let a single
+  // extreme outlier store set the scale for every bucket, cramming nearly
+  // everything else into bucket 1 (e.g. one ฿5M store forcing ฿1M-wide bins
+  // when the bulk of stores sit under ฿1M total) — technically "dynamic" but
+  // useless as a distribution chart. Basing the step on the 90th percentile
+  // instead keeps resolution where most stores actually are; the last
+  // bucket stays open-ended ("≥") so outliers are still counted, just not
+  // allowed to flatten the rest of the histogram.
+  const sorted = storeList.map(s=>s.sales).sort((x,y)=>x-y);
+  const n = sorted.length;
+  const refMax = Math.max(1, sorted[Math.min(n-1, Math.floor(n*0.9))] || sorted[n-1] || 1);
+  const step = niceStep(refMax/(bucketCount-1));
+  const buckets = [];
+  for(let i=0;i<bucketCount;i++){
+    const min = i*step;
+    const max = i===bucketCount-1 ? Infinity : (i+1)*step;
+    buckets.push({ min, max, label: i===bucketCount-1 ? '≥'+fmtTHB(min) : fmtTHB(min)+'–'+fmtTHB(max) });
+  }
+  return buckets;
+}
+
+/* Dumbbell row renderer (2026-08-06) — HTML/CSS instead of a new SVG chart
+   function, matching this page's existing cat-bars convention. Two dots per
+   category (Total Growth / SSSG) on a shared 0-anchored scale, connected by
+   a line, plus an explicit numeric readout on the right — replaces a grouped
+   2-bar chart that read as "why are there two bars?" without the legend. */
+function renderDumbbellRows(containerId, rows, colorA, colorB){
+  const allVals = rows.flatMap(r=>[r.a, r.b]).concat([0]);
+  const rawMin = Math.min(...allVals), rawMax = Math.max(...allVals);
+  const span = (rawMax-rawMin) || 1;
+  const pad = span*0.18;
+  const domMin = rawMin-pad, domMax = rawMax+pad;
+  const pctPos = v => ((v-domMin)/(domMax-domMin)*100);
+  const zeroPct = pctPos(0).toFixed(2);
+  const html = rows.map(r=>{
+    const aPct = pctPos(r.a), bPct = pctPos(r.b);
+    const lo = Math.min(aPct,bPct), w = Math.max(0.4, Math.abs(aPct-bPct));
+    return '<div class="dumbbell-row"><span class="cat-label">'+r.name+'</span>'
+      + '<div class="dumbbell-track">'
+      +   '<div class="dumbbell-zero-line" style="left:'+zeroPct+'%;"></div>'
+      +   '<div class="dumbbell-connector" style="left:'+lo.toFixed(2)+'%;width:'+w.toFixed(2)+'%;"></div>'
+      +   '<div class="dumbbell-dot" style="left:'+aPct.toFixed(2)+'%;background:'+colorA+';"></div>'
+      +   '<div class="dumbbell-dot" style="left:'+bPct.toFixed(2)+'%;background:'+colorB+';"></div>'
+      + '</div>'
+      + '<span class="dumbbell-values">Total <b class="'+deltaClass(r.a)+'">'+fmtSignedPct(r.a,1)+'</b> · SSSG <b class="'+deltaClass(r.b)+'">'+fmtSignedPct(r.b,1)+'</b></span>'
+      + '</div>';
+  }).join('');
+  document.getElementById(containerId).innerHTML = html;
+}
 
 /* Flat per-store list for the selected period/partner scope, sorted
    descending by net sales — feeds both the Top Store table and the Pareto
@@ -472,7 +591,8 @@ function buildStoreList(activeAccounts, totalActual){
         si, weight: w,
         color: accountColor(a.name),
         sales: accountTotal*w,
-        opened: a.storeOpenedMonth[si]
+        opened: a.storeOpenedMonth[si],
+        growthYoY: a.storeGrowthYoY[si]
       });
     });
   });
@@ -531,6 +651,22 @@ storePartnerSelect.addEventListener('change', ()=>{
   renderAll(currentPeriodKey, currentCustom, v);
 });
 
+/* ---------- Top Stores Trend's own Scope selector (2026-08-06, feedback) —
+   deliberately separate from storePartnerSelect above: this chart now shows
+   the Top 5 stores by net sales for whichever scope is picked here ("All"
+   = top 5 company-wide, or one partner = that partner's own top 5), and
+   stays on that scope regardless of what the page-level Partner filter is
+   set to — same "own control, ignores the page filter" convention already
+   used by the Store Health section below. ---------- */
+const topStoresTrendScopeSelect = document.getElementById('topStoresTrendScopeSelect');
+(function(){ const o=document.createElement('option'); o.value='all'; o.textContent='All 5 Partners'; topStoresTrendScopeSelect.appendChild(o); })();
+storeAccounts.forEach(a=>{ const o=document.createElement('option'); o.value=a.name; o.textContent=a.name; topStoresTrendScopeSelect.appendChild(o); });
+let topStoresTrendScope = 'all';
+topStoresTrendScopeSelect.addEventListener('change', ()=>{
+  topStoresTrendScope = topStoresTrendScopeSelect.value;
+  renderAll(currentPeriodKey, currentCustom, currentPartnerFilter());
+});
+
 /* ---------- Period dropdown ---------- */
 const periodBtn = document.getElementById('periodBtn');
 const periodDropdown = document.getElementById('periodDropdown');
@@ -574,8 +710,7 @@ function renderStoreRankTable(opts){
   document.getElementById(opts.tableId).innerHTML =
     '<thead><tr><th>#</th><th>Store</th><th>Partner</th><th>Net Sales</th><th>YoY Growth</th></tr></thead><tbody>'
     + rows.map((st,i)=>{
-        const acct = keyAccounts[accountIndex(st.partner)];
-        return '<tr><td class="rank-num">'+(i+1)+'</td><td>'+st.name+'</td><td>'+st.partner+'</td><td>'+fmtTHB(st.sales)+'</td><td class="'+deltaClass(acct.growthYoY)+'">'+fmtSignedPct(acct.growthYoY,1)+'</td></tr>';
+        return '<tr><td class="rank-num">'+(i+1)+'</td><td>'+st.name+'</td><td>'+st.partner+'</td><td>'+fmtTHB(st.sales)+'</td><td class="'+deltaClass(st.growthYoY)+'">'+fmtSignedPct(st.growthYoY,1)+'</td></tr>';
       }).join('')
     + '</tbody>';
   const overflow = opts.allRows.length > opts.cap;
@@ -589,7 +724,7 @@ function renderStoreRankTable(opts){
     seeMoreEl.innerHTML = '<div style="margin-top:8px;text-align:center;"><button type="button" id="'+opts.seeMoreId+'Btn" style="background:none;border:none;color:var(--brand);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">See all '+opts.allRows.length+' →</button></div>';
     document.getElementById(opts.seeMoreId+'Btn').addEventListener('click', opts.onToggle);
   }
-  latestData[opts.dataKey] = rows.map((st,i)=>({rank:i+1, name:st.name, partner:st.partner, sales:st.sales, growth:keyAccounts[accountIndex(st.partner)].growthYoY}));
+  latestData[opts.dataKey] = rows.map((st,i)=>({rank:i+1, name:st.name, partner:st.partner, sales:st.sales, growth:st.growthYoY}));
 }
 
 function renderStoreRankings(){
@@ -623,12 +758,32 @@ function renderAll(periodKey, custom, partnerFilterVal){
   document.getElementById('kpiTotalStoresCaption').textContent = filterVal==='all'
     ? '5 of 9 Key Accounts report store-level data'
     : filterVal + ' only';
+  /* Sparkline (2026-08-06): cumulative store count, trailing 12 months —
+     reconstructed from storeOpenedMonth (a store counts once its openedMonth
+     has passed, or always if null) rather than a separately-tracked history,
+     so the last point always matches the headline exactly. */
+  const totalStoresSparkVals = [];
+  for(let mi=TODAY-11; mi<=TODAY; mi++){
+    totalStoresSparkVals.push(activeAccounts.reduce((sum,a)=> sum + a.storeOpenedMonth.filter(om=> om===null || om<=mi).length, 0));
+  }
+  document.getElementById('kpiTotalStoresSpark').innerHTML = sparklineSVG('kpiTotalStoresSpark', totalStoresSparkVals, brand, v=>Math.round(v)+' stores');
 
   /* --- KPI: Avg Sales per Store (blended across active accounts) --- */
   const activeAccountTotal = activeAccounts.reduce((sum,a)=> sum + totalActual*a.pct/100, 0);
   const avgPerStoreBlended = totalStoreCountFiltered ? activeAccountTotal/totalStoreCountFiltered : 0;
   document.getElementById('kpiAvgStoreValue').textContent = fmtTHB(avgPerStoreBlended);
   document.getElementById('kpiAvgStoreCaption').textContent = label;
+  /* Sparkline: same ratio (account sales ÷ store count) evaluated per month
+     instead of over the selected period — reads as a monthly trend, same
+     convention as other KPI sparklines elsewhere (e.g. Net Sales on
+     Executive Summary) that show a monthly series alongside a period-total
+     headline rather than forcing the two onto identical units. */
+  const avgStoreSparkVals = totalStoresSparkVals.map((cnt,idx)=>{
+    const mi = TODAY-11+idx;
+    const monthAccountTotal = activeAccounts.reduce((sum,a)=> sum + groupActual.MT[mi]*a.pct/100, 0);
+    return cnt ? monthAccountTotal/cnt : 0;
+  });
+  document.getElementById('kpiAvgStoreSpark').innerHTML = sparklineSVG('kpiAvgStoreSpark', avgStoreSparkVals, brand, fmtTHB);
 
   /* --- KPI: Same-Store Sales Growth (blended, weighted by pct share) --- */
   const wSum = activeAccounts.reduce((s2,a)=>s2+a.pct,0) || 1;
@@ -636,12 +791,43 @@ function renderAll(periodKey, custom, partnerFilterVal){
   const blendedSssg = activeAccounts.reduce((s2,a)=>s2+sssgOf(a)*a.pct,0)/wSum;
   document.getElementById('kpiSssgValue').textContent = fmtSignedPct(blendedSssg,1);
   document.getElementById('kpiSssgCaption').textContent = 'Total growth ' + fmtSignedPct(blendedGrowth,1) + ' · new stores contributed ~' + (blendedGrowth-blendedSssg).toFixed(1) + 'pp';
+  /* Sparkline: growthYoY itself has no real monthly series (it's a static
+     per-account narrative number, same convention as every other MT tab —
+     see §6.2), so only the new-store WEIGHT SHARE is genuinely time-varying
+     here (grows as more tagged-new stores cross their storeOpenedMonth, and
+     wobbles slightly via monthlyWeights) — held blendedGrowth fixed and let
+     that share move month-to-month, then hard-anchor the last point to the exact
+     headline blendedSssg so the sparkline never visually disagrees with the
+     number above it. */
+  const sssgSparkVals = [];
+  for(let ti=0; ti<RANK_TREND_MONTHS; ti++){
+    const monthIdx = TODAY-(RANK_TREND_MONTHS-1)+ti;
+    let wSumSpark=0, shareSum=0;
+    activeAccounts.forEach(a=>{
+      let share=0;
+      a.storeOpenedMonth.forEach((om,si)=>{ if(om!==null && om<=monthIdx) share += a.monthlyWeights[ti][si]; });
+      shareSum += share*a.pct; wSumSpark += a.pct;
+    });
+    const blendedShareAtMonth = wSumSpark ? shareSum/wSumSpark : 0;
+    sssgSparkVals.push(((1+blendedGrowth/100)*(1-blendedShareAtMonth)-1)*100);
+  }
+  sssgSparkVals[sssgSparkVals.length-1] = blendedSssg;
+  document.getElementById('kpiSssgSpark').innerHTML = sparklineSVG('kpiSssgSpark', sssgSparkVals, brand, v=>fmtSignedPct(v,1));
 
   /* --- KPI: New Stores Opened within selected period --- */
   let newOpenedCount = 0;
   activeAccounts.forEach(a=> a.storeOpenedMonth.forEach(m=>{ if(m!==null && m>=s && m<=e) newOpenedCount++; }));
   document.getElementById('kpiNewStoresValue').textContent = newOpenedCount;
   document.getElementById('kpiNewStoresCaption').textContent = label;
+  /* Sparkline: fixed trailing-12-month window (unlike the headline, which
+     follows the Period filter) — same "recent pace, regardless of the
+     selected period" framing as New Stores Opened's own chart further down
+     the page. */
+  const newStoresSparkVals = [];
+  for(let mi=TODAY-11; mi<=TODAY; mi++){
+    newStoresSparkVals.push(activeAccounts.reduce((sum,a)=> sum + a.storeOpenedMonth.filter(m=>m===mi).length, 0));
+  }
+  document.getElementById('kpiNewStoresSpark').innerHTML = sparklineSVG('kpiNewStoresSpark', newStoresSparkVals, brand, v=>Math.round(v)+' new');
 
   /* === Store Ranking: Top/Bottom Store tables + Pareto Ranking === */
   const storeList = buildStoreList(activeAccounts, totalActual);
@@ -658,7 +844,7 @@ function renderAll(periodKey, custom, partnerFilterVal){
     const lo = i*10+1, hi = Math.min((i+1)*10, 100);
     deciles.push({label: lo+'–'+hi+'%', value: chunk.reduce((a,b)=>a+b.sales,0), color: brand});
   }
-  buildParetoSVG('storeParetoChart', deciles, {thresholdPct:80});
+  buildParetoSVG('storeParetoChart', deciles, {thresholdPct:80, xAxisTitle:'Store deciles — Decile 1 = highest sales/store, Decile 10 = lowest'});
   const totalSales = storeList.reduce((a,b)=>a+b.sales,0) || 1;
   let cum=0, crossCount=n;
   for(let i=0;i<n;i++){ cum += storeList[i].sales; if(cum/totalSales*100 >= 80){ crossCount = i+1; break; } }
@@ -698,46 +884,73 @@ function renderAll(periodKey, custom, partnerFilterVal){
   buildLineChartSVG('storeTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: trendSeries });
   latestData.storeTrend = { labels: monthLabels, accounts: activeAccounts.map(a=>({name:a.name, values: groupActual.MT.map(v=>(v*a.pct/100)/a.storeCount)})) };
 
-  /* === Store Performance: Same-Store Sales Growth by Partner === */
-  const sssgLabels = activeAccounts.map(a=>a.name);
-  const totalGrowthVals = activeAccounts.map(a=>a.growthYoY);
-  const sssgVals = activeAccounts.map(a=>sssgOf(a));
-  buildGroupedBarSVG('sssgChart', {
-    labels: sssgLabels,
-    series: [
-      {name:'Total Growth', color: brand, values: totalGrowthVals},
-      {name:'Same-Store (SSSG)', color: secondary, values: sssgVals}
-    ],
-    referenceValue: 0,
-    yFormatter: v=>v.toFixed(0)+'%',
-    showValueLabels: true,
-    valueLabelFormatter: v => fmtSignedPct(v,1)
-  });
-  latestData.sssg = activeAccounts.map((a,i)=>({name:a.name, totalGrowth:totalGrowthVals[i], sssg:sssgVals[i]}));
+  /* === Store Performance: Same-Store Sales Growth by Partner ===
+     Dumbbell rows (2026-08-06), replacing a 2-bar grouped chart that read as
+     "why are there two bars per partner?" without checking the legend — a
+     connected pair of dots on one shared scale, plus an explicit numeric
+     readout per row, makes the Total-vs-SSSG gap the obvious point instead
+     of something you have to decode. */
+  const sssgRows = activeAccounts.map(a=>({name:a.name, a:a.growthYoY, b:sssgOf(a)}));
+  renderDumbbellRows('sssgChart', sssgRows, brand, secondary);
+  latestData.sssg = sssgRows.map(r=>({name:r.name, totalGrowth:r.a, sssg:r.b}));
   const biggestGap = latestData.sssg.reduce((best,cur)=> (cur.totalGrowth-cur.sssg) > (best.totalGrowth-best.sssg) ? cur : best, latestData.sssg[0]);
   document.getElementById('sssgCallout').innerHTML = biggestGap
     ? 'Widest gap: <b>'+biggestGap.name+'</b> — Total Growth '+fmtSignedPct(biggestGap.totalGrowth,1)+' vs SSSG '+fmtSignedPct(biggestGap.sssg,1)+', meaning new store openings account for most of its reported growth.'
     : '–';
 
-  /* === Store Performance: Top Stores Trend (individual-store granularity) ===
-     new 2026-08-06 — one line per Partner (its OWN #1 store), not a flat
-     Top 5 overall: with rand()^2 long-tail weighting, a flat Top 5 tends to
-     be dominated by whichever single account happens to have the largest
-     total (e.g. all 5 could be EVEANDBOY stores), producing 5 near-identical
-     overlapping lines — informationally redundant and visually unreadable
-     (end-labels collide). One store per tracked Partner instead gives a
-     genuinely comparable "who's your best performer in each account" view,
-     and naturally narrows to fewer lines when the Partner filter is active. */
-  const top5Stores = activeAccounts.map(a=>
-    storeList.filter(st=>st.partner===a.name).reduce((best,cur)=> cur.sales>best.sales?cur:best)
-  );
-  const topStoresTrendSeries = top5Stores.map(st=>{
-    const acct = activeAccounts.find(a=>a.name===st.partner);
+  /* === Store Performance: Top Stores Trend === redesigned 2026-08-06
+     (feedback) — was 1 line per Partner (each account's own #1 store,
+     always exactly 5 lines regardless of scope). Now driven by its own
+     Scope selector (topStoresTrendScope, independent of the page's Partner
+     filter — see the dropdown's setup above): "all" = flat Top 5 stores by
+     net sales across every tracked account (may end up dominated by one
+     account if that account genuinely has the standout stores — that's a
+     real finding, not something to hide), or one partner name = that
+     partner's own Top 5 (fewer if it has under 5 stores). Store names
+     already carry their partner in the label (e.g. "EVEANDBOY #001"), so no
+     extra formatting is needed to show which MT a line belongs to. */
+  const topStoresPool = topStoresTrendScope === 'all' ? storeAccounts : storeAccounts.filter(a=>a.name===topStoresTrendScope);
+  const topStoresCap = Math.min(5, topStoresPool.reduce((sum,a)=>sum+a.storeCount,0));
+  const topStoresList = buildStoreList(topStoresPool, totalActual).slice(0, topStoresCap);
+  const topStoresTrendSeries = topStoresList.map(st=>{
+    const acct = keyAccounts[accountIndex(st.partner)];
     const data = groupActual.MT.map(v => v*acct.pct/100*st.weight);
     return { data, color: st.color, width:2.2, showLastLabel:true, lastLabelFormatter: v => st.name+' '+fmtTHB(v) };
   });
   buildLineChartSVG('topStoresTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: topStoresTrendSeries });
-  latestData.topStoresTrend = { labels: monthLabels, stores: top5Stores.map((st,i)=>({name:st.name, values: topStoresTrendSeries[i].data})) };
+  latestData.topStoresTrend = { labels: monthLabels, stores: topStoresList.map((st,i)=>({name:st.name, values: topStoresTrendSeries[i].data})) };
+
+  /* Roster-stability callout — generalized from the old per-partner
+     "#1 store" check to whatever pool is currently selected: for each of
+     the trailing 12 months, rank every store IN THE POOL by that month's ฿
+     sales (via monthlyWeights, which genuinely varies month to month,
+     unlike the static storeWeights the line chart itself is drawn from)
+     and take the pool-wide Top N (N = topStoresCap). A store's key is
+     "partner#si" so ranking is comparable across different accounts when
+     scope is "all". Counts how many distinct stores ever crossed into that
+     Top N during the window — matches today's roster exactly (stable) or
+     higher (churn) — same concept as the original per-partner check, just
+     no longer assuming exactly one store per account. */
+  const rosterMonths = RANK_TREND_MONTHS;
+  function rankPoolAt(m){
+    const all = [];
+    topStoresPool.forEach(a=>{
+      const monthIdxGlobal = TODAY-(rosterMonths-1)+m;
+      const accountTotalAtMonth = groupActual.MT[monthIdxGlobal]*a.pct/100;
+      a.monthlyWeights[m].forEach((w,si)=> all.push({key:a.name+'#'+si, val:accountTotalAtMonth*w}));
+    });
+    all.sort((x,y)=>y.val-x.val);
+    return all.slice(0, topStoresCap).map(o=>o.key);
+  }
+  const everTop = new Set();
+  for(let m=0;m<rosterMonths;m++) rankPoolAt(m).forEach(k=>everTop.add(k));
+  const todaysKeys = new Set(topStoresList.map(st=>st.partner+'#'+st.si));
+  const rosterStable = everTop.size===todaysKeys.size && [...everTop].every(k=>todaysKeys.has(k));
+  const scopeLabel = topStoresTrendScope==='all' ? 'company-wide' : topStoresTrendScope;
+  document.getElementById('topStoresTrendStability').innerHTML = rosterStable
+    ? 'Same '+topStoresCap+' stores held the Top '+topStoresCap+' ('+scopeLabel+') all 12mo'
+    : '<b>'+everTop.size+'</b> distinct stores cycled through the Top '+topStoresCap+' ('+scopeLabel+') in 12mo';
+  latestData.topStoresTrend.rosterStability = { everTopCount: everTop.size, stable: rosterStable, scope: topStoresTrendScope };
 
   /* === Store Health (always company-wide, all 5 accounts) === */
   const newStoresMonths = []; for(let i=TODAY-11;i<=TODAY;i++) newStoresMonths.push(i);
@@ -755,22 +968,15 @@ function renderAll(periodKey, custom, partnerFilterVal){
     '<b>'+totalNewTrailing+'</b> new stores opened in the trailing 12 months, across all 5 tracked accounts · <b>0</b> closures recorded in source data (not yet tracked as a distinct status)';
 
   /* Store Productivity Distribution (Histogram) — moved from Executive
-     Summary 2026-08-06, paired with Store Productivity Quartile by Partner
-     below (same underlying store list, just cut two different ways: overall
-     bucket counts here vs by-partner quartile share there). Always
-     company-wide (all 5 tracked accounts), same as Quartile — reuses
+     Summary 2026-08-06, paired with Store Productivity Mix Over Time to the
+     right (same underlying store list and same dynamic buckets, just cut two
+     different ways: current-period snapshot here vs 18-month trend there).
+     Always company-wide (all 5 tracked accounts) — reuses
      buildStoreList(storeAccounts, totalActual) directly instead of
      re-deriving per-store sales from storeWeights, since this page already
      computes that exact list for the Pareto/Top-Store components above. */
   const allStoreListForHist = buildStoreList(storeAccounts, totalActual);
-  const bucketDefs = [
-    {label:'<10K', min:0, max:10000},
-    {label:'10K–30K', min:10000, max:30000},
-    {label:'30K–60K', min:30000, max:60000},
-    {label:'60K–100K', min:60000, max:100000},
-    {label:'100K–200K', min:100000, max:200000},
-    {label:'≥200K', min:200000, max:Infinity}
-  ];
+  const bucketDefs = computeDynamicBuckets(allStoreListForHist, 6);
   const bucketCounts = bucketDefs.map(()=>0);
   const bucketValues = bucketDefs.map(()=>0);
   const bucketStores = bucketDefs.map(()=>[]);
@@ -787,12 +993,8 @@ function renderAll(periodKey, custom, partnerFilterVal){
     series: [{name:'Stores', color: brand, values: bucketCounts}],
     referenceValue: 0,
     yFormatter: v=>Math.round(v),
-    showValueLabels: true,
-    clickableBars: true,
-    valueLabelFormatter: (v,s,gi)=> [
-      Math.round(v)+' stores',
-      fmtTHB(bucketValues[gi])+' · '+fmtPct(totalStoreCountHist ? v/totalStoreCountHist*100 : 0, 0)
-    ]
+    yAxisTitle: 'Store Count',
+    clickableBars: true
   });
   latestData.storeHist = bucketDefs.map((b,i)=>({label:b.label, count:bucketCounts[i], value:bucketValues[i]}));
   latestData.storeHistBuckets = bucketStores;
@@ -801,29 +1003,6 @@ function renderAll(periodKey, custom, partnerFilterVal){
     'Across <b>'+totalStoreCountHist+'</b> stores (5 of 9 key accounts) · Most common range: <b>'+bucketDefs[modeIdx].label+'</b> ('+bucketCounts[modeIdx]+' stores)';
   document.getElementById('storeHistBucketDetail').classList.remove('visible');
   document.getElementById('storeHistBucketDetail').dataset.openGi = '';
-
-  /* Store Productivity Quartile by Partner — global quartiles computed over
-     ALL 5 accounts' stores at the currently selected period's totals (company-
-     wide totalActual, independent of the Partner filter), then grouped by
-     each partner's own store count share. */
-  const allStoreList = allStoreListForHist.slice().sort((a,b)=>a.sales-b.sales);
-  const qN = allStoreList.length;
-  const qSize = Math.ceil(qN/4);
-  const quartileOf = {};
-  allStoreList.forEach((st,i)=>{ quartileOf[st.name] = Math.min(3, Math.floor(i/qSize)); });
-  const qLabels = ['Q1 (Lowest 25%)','Q2','Q3','Q4 (Highest 25%)'];
-  const qColors = ['#C97B63','#C4A22E','#6E9B6E','#4C6FA5'];
-  const qCountsByPartner = storeAccounts.map(a=>{
-    const counts = [0,0,0,0];
-    a.storeWeights.forEach((w,si)=>{ const nm = a.name+' #'+String(si+1).padStart(3,'0'); counts[quartileOf[nm]]++; });
-    return counts.map(c => a.storeCount ? c/a.storeCount*100 : 0);
-  });
-  buildStacked100BarSVG('quartileChart', {
-    labels: storeAccounts.map(a=>a.name),
-    series: qLabels.map((lb,qi)=>({ name:lb, color:qColors[qi], values: qCountsByPartner.map(row=>row[qi]) })),
-    valueFormatter: v=>fmtPct(v,0)
-  });
-  latestData.quartile = storeAccounts.map((a,i)=>({name:a.name, q:qCountsByPartner[i]}));
 
   /* Store Productivity Mix Over Time — new 2026-08-06, extends Store
      Productivity Distribution's single-period snapshot into an 18-month
@@ -938,14 +1117,14 @@ document.getElementById('sssgDownloadBtn').addEventListener('click', ()=>{
 document.getElementById('sssgExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('sssgTableBtn').addEventListener('click', ()=>{
   const wrap = document.getElementById('sssgTableWrap');
-  const canvasWrap = document.getElementById('sssgCanvasWrap');
+  const chart = document.getElementById('sssgChart');
   const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  if(showing){ wrap.classList.remove('visible'); chart.style.display=''; return; }
   const d = latestData.sssg;
   let html = '<table class="mini-table"><thead><tr><th>Partner</th><th>Total Growth</th><th>SSSG</th></tr></thead><tbody>';
   d.forEach(it=>{ html += '<tr><td>'+it.name+'</td><td>'+fmtSignedPct(it.totalGrowth,1)+'</td><td>'+fmtSignedPct(it.sssg,1)+'</td></tr>'; });
   html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+  wrap.innerHTML = html; wrap.classList.add('visible'); chart.style.display='none';
 });
 
 /* --- Toolbar: Top Stores Trend --- */
@@ -1009,25 +1188,6 @@ document.getElementById('storeHistChart').addEventListener('click', (e)=>{
   panel.innerHTML = html;
   panel.classList.add('visible');
   panel.dataset.openGi = String(gi);
-});
-
-/* --- Toolbar: Store Productivity Quartile by Partner --- */
-document.getElementById('quartileDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Partner','Q1 %','Q2 %','Q3 %','Q4 %']];
-  latestData.quartile.forEach(it=> rows.push([it.name, it.q[0].toFixed(1), it.q[1].toFixed(1), it.q[2].toFixed(1), it.q[3].toFixed(1)]));
-  downloadCSV(rows, 'mt_store_productivity_quartile.csv');
-});
-document.getElementById('quartileExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('quartileTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('quartileTableWrap');
-  const canvasWrap = document.getElementById('quartileCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.quartile;
-  let html = '<table class="mini-table"><thead><tr><th>Partner</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th></tr></thead><tbody>';
-  d.forEach(it=>{ html += '<tr><td>'+it.name+'</td><td>'+fmtPct(it.q[0],0)+'</td><td>'+fmtPct(it.q[1],0)+'</td><td>'+fmtPct(it.q[2],0)+'</td><td>'+fmtPct(it.q[3],0)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 /* --- Toolbar: Store Productivity Mix Over Time --- */

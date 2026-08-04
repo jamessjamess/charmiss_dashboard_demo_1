@@ -156,7 +156,15 @@ function buildLineChartSVG(containerId, opts){
     gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(val)+'</text>';
   });
   let xLabelSvg = '';
-  const showEvery = labels.length>12 ? 2 : 1;
+  // Fix (2026-08-06): showEvery used to depend only on labels.length, not the
+  // actual rendered width — fine for a full-width 36-month chart, but the
+  // same "every 2nd label" rule crammed into a half-width chart-grid card
+  // (e.g. Sales per Store Trend) overlapped every label into an unreadable
+  // smear. Derive the skip interval from the real plot width instead, so any
+  // caller at any card width gets non-overlapping labels automatically.
+  const estLabelW = 30;
+  const maxLabels = Math.max(2, Math.floor(plotW/estLabelW));
+  const showEvery = Math.max(1, Math.ceil(labels.length/maxLabels));
   labels.forEach((lb,i)=>{
     if(i%showEvery!==0 && i!==labels.length-1) return;
     xLabelSvg += '<text x="'+xAt(i).toFixed(1)+'" y="'+(height-5)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
@@ -372,7 +380,10 @@ function buildGroupedBarSVG(containerId, opts){
   const labels = opts.labels, series = opts.series; // series: [{name, color, values:[...]}]
   const yFormatter = opts.yFormatter || (v=>v);
   const baseline = opts.referenceValue !== undefined ? opts.referenceValue : 0;
-  const padL=44, padR=10, padT=18, padB=30;
+  // yAxisTitle (2026-08-06): optional rotated axis label along the left
+  // margin — reserves a little extra width so it doesn't crowd the tick
+  // labels. Off by default; existing callers are unaffected.
+  const padL=44 + (opts.yAxisTitle ? 14 : 0), padR=10, padT=18, padB=30;
   const plotW = width-padL-padR, plotH = height-padT-padB;
 
   let allVals = [];
@@ -486,8 +497,14 @@ function buildGroupedBarSVG(containerId, opts){
 
   const refLine = '<line x1="'+padL+'" y1="'+baseY.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+baseY.toFixed(1)+'" stroke="'+(opts.referenceValue!==undefined?inkOne:hairline)+'" stroke-width="1.3" stroke-dasharray="'+(opts.referenceValue!==undefined?'4,3':'none')+'"/>';
 
+  let yTitleSvg = '';
+  if(opts.yAxisTitle){
+    const tx = 11, ty = padT+plotH/2;
+    yTitleSvg = '<text x="'+tx+'" y="'+ty.toFixed(1)+'" font-size="9.5" font-weight="600" text-anchor="middle" fill="'+inkTertiary+'" transform="rotate(-90 '+tx+' '+ty.toFixed(1)+')">'+opts.yAxisTitle+'</text>';
+  }
+
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+valueLabels+xLabels+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+valueLabels+xLabels+yTitleSvg+'</svg>';
 }
 
 /* ---------- Bullet bar chart (Actual bar colored green/red by hit-or-miss +
@@ -568,6 +585,24 @@ function buildBulletBarSVG(containerId, opts){
 
 /* ---------- Scatter plot with median-split quadrant lines — used for
    "Category Portfolio Matrix" (Growth-Share) ---------- */
+// Fix (2026-08-06): buildScatterSVG's label-collision boxes used to estimate
+// each label's width from character count (length*3.15px) — a rough
+// approximation that assumes a fixed average glyph width. Real text doesn't
+// render at a fixed width per character (a "W" is much wider than an "i"),
+// and the estimate is completely decoupled from whatever font the browser
+// actually substitutes for the page's font-family stack — so the collision
+// math could clear a candidate position that the ACTUAL rendered label then
+// overlaps, on any system where real glyph widths diverge enough from the
+// estimate. Measuring with canvas.measureText() against the label's real
+// font-size/weight/family removes that guesswork entirely — the box the
+// algorithm reasons about is now the box that actually gets drawn.
+let _measureCanvas = null;
+function measureTextWidth(text, fontSize, fontWeight, fontFamily){
+  if(!_measureCanvas) _measureCanvas = document.createElement('canvas');
+  const ctx = _measureCanvas.getContext('2d');
+  ctx.font = fontWeight+' '+fontSize+'px '+fontFamily;
+  return ctx.measureText(text).width;
+}
 function median(arr){
   const s = [...arr].sort((a,b)=>a-b);
   const mid = Math.floor(s.length/2);
@@ -666,9 +701,10 @@ function buildScatterSVG(containerId, points, opts){
     const nearLeft = box.x0 < padL+cornerZone, nearRight = box.x1 > (width-padR)-cornerZone;
     return (nearTop && (nearLeft || nearRight)) || (nearBottom && (nearLeft || nearRight));
   }
+  const scatterFontFamily = (container && getComputedStyle(container).fontFamily) || 'sans-serif';
   points.forEach(p=>{
     const cx = xAt(p.x), cy = yAt(p.y);
-    const halfW = Math.max(18, p.label.length*3.15), halfH = 8;
+    const halfW = measureTextWidth(p.label, 10.5, '700', scatterFontFamily)/2 + 3, halfH = 8;
     let chosen = null;
     for(const c of CANDIDATES){
       const lx = cx+c.dx, ly = cy+c.dy;
@@ -746,7 +782,20 @@ function buildWaterfallSVG(containerId, steps, opts){
   // a hardcoded default, so it always matches the card's CSS canvas-wrap height.
   const height = opts.height || (container ? container.clientHeight : 0) || 240;
   const yFormatter = opts.yFormatter || (v=>v);
-  const padL=54, padR=16, padT=16, padB=34;
+  // rotateLabels (2026-08-06): optional slanted/vertical X-axis labels for
+  // charts with many steps (e.g. Category Growth Contribution, up to ~10
+  // bars) where horizontal centered labels collide into an unreadable
+  // smear. Off by default (existing callers with few, short labels are
+  // unaffected). Accepts `true` (defaults to 35°) or a specific angle in
+  // degrees (e.g. 90 for fully vertical). padB is measured from the actual
+  // rendered label width (via measureTextWidth, same technique
+  // buildScatterSVG uses for its collision boxes) rather than a guessed
+  // constant, so it stays correct at any angle or label length instead of
+  // needing a hand-tuned number per angle.
+  const rotateDeg = opts.rotateLabels === true ? 35 : (opts.rotateLabels || 0);
+  const rotateFontFamily = (container && getComputedStyle(container).fontFamily) || 'sans-serif';
+  const maxLabelW = rotateDeg ? Math.max(0, ...steps.map(st => measureTextWidth(st.label, 10, '400', rotateFontFamily))) : 0;
+  const padL=54, padR=16, padT=16, padB = rotateDeg ? Math.ceil(20 + maxLabelW*Math.abs(Math.sin(rotateDeg*Math.PI/180))) : 34;
   const plotW = width-padL-padR, plotH = height-padT-padB;
 
   // running totals to know each bar's floating base/top
@@ -794,7 +843,21 @@ function buildWaterfallSVG(containerId, steps, opts){
     barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+color+'"/>';
     const labelVal = st.type==='delta' ? (st.value>=0?'+':'') + yFormatter(st.value) : yFormatter(st.value);
     barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+color+'">'+labelVal+'</text>';
-    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+st.label+'</text>';
+    if(rotateDeg){
+      // Fix (2026-08-06): rotate(-35) was the wrong sign — in SVG's y-down
+      // coordinate system that sweeps the text-anchor="end" label DOWNWARD
+      // from its anchor point (below the "height-8" baseline), not upward
+      // into the chart's own padding as intended. That let long labels dip
+      // below the SVG's bottom edge and visually collide with whatever
+      // sibling element (e.g. the insight callout) sits right after the
+      // canvas-wrap in the DOM. A positive angle sweeps up-and-left instead,
+      // staying inside the padB reserved for this mode (at 90° the label
+      // runs straight up, reading bottom-to-top).
+      const lx = (x+barW/2).toFixed(1), ly = height-8;
+      xLabels += '<text x="'+lx+'" y="'+ly+'" font-size="10" text-anchor="end" fill="'+inkTertiary+'" transform="rotate('+rotateDeg+' '+lx+' '+ly+')">'+st.label+'</text>';
+    } else {
+      xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+st.label+'</text>';
+    }
     if(i<bars.length-1){
       const nextX = padL + (i+1)*slotW + (slotW-barW)/2;
       const connectY = yAt(b.top);
@@ -922,6 +985,13 @@ function buildParetoSVG(containerId, items, opts){
     }
     svg += '<text x="'+cx.toFixed(1)+'" y="'+(height-padB+16)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+it.label+'</text>';
   });
+
+  // xAxisTitle (2026-08-06): a caption under the per-group labels, for
+  // charts whose axis labels alone (e.g. "1–10%") aren't self-explanatory on
+  // first read — clarifies what the groups actually represent.
+  if(opts.xAxisTitle){
+    svg += '<text x="'+(padL+plotW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" font-weight="600" text-anchor="middle" fill="'+inkTwo+'">'+opts.xAxisTitle+'</text>';
+  }
 
   let linePath = '';
   withPct.forEach((it,i)=>{

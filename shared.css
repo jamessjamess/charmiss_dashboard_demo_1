@@ -177,10 +177,24 @@ button,select{font-family:inherit;}
 .cat-bars{display:flex;flex-direction:column;gap:9px;}
 .cat-row{display:flex;align-items:center;gap:9px;}
 .cat-label{width:104px;font-size:11.5px;color:var(--ink-3);flex-shrink:0;}
-.cat-track{flex:1;height:25px;background:var(--wash);border-radius:6px;overflow:hidden;}
+.cat-track{position:relative;flex:1;height:25px;background:var(--wash);border-radius:6px;overflow:hidden;}
+.cat-ref-line{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed var(--ink-1);z-index:2;pointer-events:none;}
 .cat-fill{height:100%;background:var(--brand);border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;min-width:fit-content;}
 .cat-fill-label{color:#fff;font-size:10.5px;font-weight:700;white-space:nowrap;}
 .level-select{border:1px solid var(--border-2);border-radius:8px;padding:6px 8px;font-size:11.5px;background:var(--card);color:var(--ink-1);font-family:inherit;}
+
+/* Dumbbell row chart (2026-08-06) — two connected dots per category on a
+   shared scale, used where a grouped-bar pair (e.g. Total Growth vs
+   Same-Store Growth) reads as "two bars, why?" instead of "here's the gap
+   between two related numbers for this row." */
+.dumbbell-rows{display:flex;flex-direction:column;gap:18px;}
+.dumbbell-row{display:flex;align-items:center;gap:9px;}
+.dumbbell-track{flex:1;position:relative;height:26px;}
+.dumbbell-zero-line{position:absolute;top:1px;bottom:1px;width:1px;background:var(--hairline);}
+.dumbbell-connector{position:absolute;top:50%;height:2px;background:var(--ink-3);opacity:.35;transform:translateY(-50%);border-radius:1px;}
+.dumbbell-dot{position:absolute;top:50%;width:11px;height:11px;border-radius:50%;transform:translate(-50%,-50%);box-shadow:0 0 0 2px var(--card);}
+.dumbbell-values{flex:none;width:200px;font-size:11.5px;color:var(--ink-3);text-align:right;line-height:1.4;}
+.dumbbell-values b{font-weight:700;}
 
 .table-card{margin-bottom:6px;}
 .table-card table{width:100%;border-collapse:collapse;}
@@ -211,6 +225,7 @@ button,select{font-family:inherit;}
   .donut-layout{flex-direction:column;align-items:stretch;justify-content:flex-start;}
   .legend-list{max-width:none;}
   .cat-label{width:88px;font-size:11px;}
+  .dumbbell-values{width:130px;font-size:10.5px;}
   .filterbar{flex-direction:column;align-items:flex-start;}
   .user-meta{display:none;}
   .tabs{width:100%;overflow-x:auto;}

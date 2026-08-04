@@ -130,7 +130,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">High Return Rate Partner</span>
-          <button class="info-icon" data-info-title="High Return Rate Partner" data-info-text="Key Account ที่มี Return Rate (CN) ตั้งแต่ 4.0% ขึ้นไป (Threshold เดียวกับเส้นประในกราฟ Return Rate (CN) ทางซ้าย) เรียงจากสูงไปต่ำ — Company-wide MT เสมอ ไม่ scope ตาม Filter ด้านบน">i</button>
+          <button class="info-icon" data-info-title="High Return Rate Partner" data-info-text="Return Rate (CN) ของทุก Key Account เรียงจากสูงไปต่ำ (Company-wide MT เสมอ ไม่ scope ตาม Filter ด้านบน) — เส้นประแนวตั้งคือ Threshold 4.0% (เดียวกับเส้นประในกราฟ Return Rate (CN) ทางซ้าย) แท่งสีแดงคือคู่ค้าที่แตะหรือเกิน Threshold แท่งสีเขียวคือยังต่ำกว่า">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="highReturnTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -138,9 +138,8 @@
           <button class="tool-btn" id="highReturnExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">≥ 4.0% CN rate · company-wide MT</div>
+      <div class="chart-subtitle">All 9 Key Accounts, ranked · dashed line = 4.0% threshold · company-wide MT</div>
       <div class="cat-bars" id="highReturnBars"></div>
-      <div class="callout-text" id="highReturnEmpty" style="display:none;">No key accounts currently above the 4.0% return rate threshold.</div>
       <div class="data-table-wrap" id="highReturnTableWrap"></div>
     </div>
   </div>
@@ -827,18 +826,24 @@ function renderAll(){
   /* === ZONE A: High Return Rate Partner — company-wide MT (all 9 Key
      Accounts, not scoped to KAM/My-accounts-only), paired with Return Rate
      (CN) Trend above per the same "TT-style" ask as Target vs Actual.
-     Same ceiling constant as that trend's dashed reference line. Only 9
-     partners total (vs TT's ~40 stores) so no Top-N cap/"See all" needed —
-     every flagged account is always shown. */
-  const flaggedPartners = [...partners].filter(p=>p.cnRate>=RETURN_RATE_CEILING_PCT).sort((a,b)=>b.cnRate-a.cnRate);
-  const maxFlaggedCn = Math.max(RETURN_RATE_CEILING_PCT, ...flaggedPartners.map(p=>p.cnRate));
-  document.getElementById('highReturnBars').innerHTML = flaggedPartners.map(p=>{
-    const widthPct = (p.cnRate/maxFlaggedCn*100).toFixed(1);
-    return '<div class="cat-row"><span class="cat-label">'+p.id+'<span class="sub-label">'+p.kam+'</span></span>'
-      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:var(--critical);"><span class="cat-fill-label">'+fmtPct(p.cnRate,1)+'</span></div></div></div>';
+     Same ceiling constant as that trend's dashed reference line.
+     Fix (2026-08-06, feedback): used to filter down to only accounts
+     >=4.0%, which hid everyone else with no way to see where the rest sat
+     relative to the threshold — now always shows all 9, ranked, with the
+     threshold itself drawn as a reference line on every row (same idea as
+     the dashed Target tick on the Bullet Bar chart) instead of being purely
+     a filter cutoff. Only 9 partners total (vs TT's ~40 stores) so no
+     Top-N cap/"See all" needed. */
+  const partnersRanked = [...partners].sort((a,b)=>b.cnRate-a.cnRate);
+  const maxCnRate = Math.max(RETURN_RATE_CEILING_PCT, ...partnersRanked.map(p=>p.cnRate));
+  const refPct = (RETURN_RATE_CEILING_PCT/maxCnRate*100).toFixed(1);
+  document.getElementById('highReturnBars').innerHTML = partnersRanked.map(p=>{
+    const widthPct = (p.cnRate/maxCnRate*100).toFixed(1);
+    const color = p.cnRate>=RETURN_RATE_CEILING_PCT ? 'var(--critical)' : 'var(--good-text)';
+    return '<div class="cat-row"><span class="cat-label">'+p.id+'</span>'
+      + '<div class="cat-track"><div class="cat-ref-line" style="left:'+refPct+'%;"></div><div class="cat-fill" style="width:'+widthPct+'%;background:'+color+';"><span class="cat-fill-label">'+fmtPct(p.cnRate,1)+'</span></div></div></div>';
   }).join('');
-  document.getElementById('highReturnEmpty').style.display = flaggedPartners.length ? 'none' : '';
-  latestData.highReturn = flaggedPartners.map(p=>({id:p.id, kam:p.kam, cnRate:p.cnRate}));
+  latestData.highReturn = partnersRanked.map(p=>({id:p.id, cnRate:p.cnRate}));
 
   /* === ZONE B: Monthly Sales by Partner — moved to top of section 2026-08-06
      (was after Target vs Actual/YoY Growth). Company-wide MT always (KAM/
@@ -996,8 +1001,8 @@ document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('highReturnDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Key Account','KAM','Return Rate (CN) %']];
-  latestData.highReturn.forEach(p=> rows.push([p.id, p.kam, p.cnRate.toFixed(1)]));
+  const rows = [['Key Account','Return Rate (CN) %']];
+  latestData.highReturn.forEach(p=> rows.push([p.id, p.cnRate.toFixed(1)]));
   downloadCSV(rows, 'mt_high_return_rate_partner.csv');
 });
 document.getElementById('highReturnExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
@@ -1006,8 +1011,8 @@ document.getElementById('highReturnTableBtn').addEventListener('click', ()=>{
   const bars = document.getElementById('highReturnBars');
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
-  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>KAM</th><th>Return Rate (CN)</th></tr></thead><tbody>';
-  latestData.highReturn.forEach(p=>{ html += '<tr><td>'+p.id+'</td><td>'+p.kam+'</td><td>'+fmtPct(p.cnRate,1)+'</td></tr>'; });
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Return Rate (CN)</th></tr></thead><tbody>';
+  latestData.highReturn.forEach(p=>{ html += '<tr><td>'+p.id+'</td><td>'+fmtPct(p.cnRate,1)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
 });
