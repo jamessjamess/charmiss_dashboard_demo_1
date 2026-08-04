@@ -253,6 +253,24 @@
     </div>
   </div>
 
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Net Sales: Last Year vs This Year vs Target</span>
+        <button class="info-icon" data-info-title="Net Sales: Last Year vs This Year vs Target" data-info-text="ยอดขายสุทธิของช่วงเวลาที่เลือกด้านบน (Period Filter) แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) — 3 แท่งต่อ Platform: Last Year (Net Sales), This Year (Net Sales + Growth YoY), Target (Attainment % + ส่วนต่างจาก Target) — ยอดรวม Ecom ทั้งหมดดูได้จาก KPI Card ด้านบนแทน (ไม่ใส่ในกราฟนี้เพื่อไม่ให้ Scale ถูกดึงสูงเกินไป) — ใช้ Time Series จริงต่อ Platform เหมือน Platform Growth Contribution ด้านล่าง กดดูเป็นตารางเพื่อดูตัวเลขละเอียดทุก Metric ในที่เดียว">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="periodCompareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="periodCompareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="periodCompareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle" id="periodCompareSubtitle">Year to Date · This Year vs Target vs same range last year · by Platform</div>
+    <div class="chart-legend" id="periodCompareLegend"></div>
+    <div class="canvas-wrap" id="periodCompareCanvasWrap" style="height:320px;"><div id="periodCompareChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="periodCompareTableWrap"></div>
+  </div>
+
   <div class="card">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
@@ -708,6 +726,56 @@ function renderAll(periodKey, custom){
   }).join('');
   latestData.platforms = ecomChannels.map(c=>({name:c.label, value: platformTotals[c.key], pct: totalActual ? (platformTotals[c.key]/totalActual*100) : 0}));
 
+  /* === Chart: Net Sales: Last Year vs This Year vs Target (new 2026-08-06)
+     — same concept/formula/label logic as Sales Overview's own "Net Sales:
+     Last Year vs This Year vs Target" (sales_overview.html), just scoped to
+     Ecom's own Platforms (ecomChannels) instead of company Channels
+     (MT/TT/Ecom). Each platform already carries a real monthly .actual[]/
+     .target[] series (same one Platform Growth Contribution below uses), so
+     "Last Year" here is a real prior-year sum, not an estimate. */
+  const good = cssVar('--good')||'#0ca30c', critical = cssVar('--critical')||'#d03b3b', warning = cssVar('--warning')||'#fab219', neutralInk = cssVar('--ink-2')||'#52514e';
+  const pcGroups = ecomChannels.map(c=>c.label);
+  const pcLastYear = ecomChannels.map(c=> s-12>=0 ? sumRange(c.actual, s-12, e-12) : 0);
+  const pcThisYear = ecomChannels.map(c=> sumRange(c.actual, s, e));
+  const pcTarget = ecomChannels.map(c=> sumRange(c.target, s, e));
+  const pcGrowth = pcThisYear.map((v,i)=> pcLastYear[i] ? pctChange(v, pcLastYear[i]) : null);
+  const pcAttain = pcThisYear.map((v,i)=> pcTarget[i] ? (v/pcTarget[i]*100) : 0);
+  const pcDiff = pcThisYear.map((v,i)=> v - pcTarget[i]);
+  buildGroupedBarSVG('periodCompareChart', {
+    labels: pcGroups,
+    series: [
+      {name:'Last Year', color:cssVar('--baseline')||'#c3c2b7', values: pcLastYear},
+      {name:'This Year', color:brand, values: pcThisYear},
+      {name:'Target', color:neutralInk, values: pcTarget}
+    ],
+    yFormatter: fmtTHB,
+    showValueLabels: true,
+    valueLabelFormatter: (val, ser, gi, barW) => {
+      const veryNarrow = barW < 28;
+      if(ser.name==='Last Year'){
+        return veryNarrow ? [] : [{text: fmtTHB(val), color: neutralInk}];
+      }
+      if(ser.name==='This Year'){
+        const g = pcGrowth[gi];
+        const growthLine = {text: g!==null ? fmtSignedPct(g) : '–', color: g===null ? neutralInk : (g>=0?good:critical)};
+        return veryNarrow ? [growthLine] : [{text: fmtTHB(val), color: neutralInk}, growthLine];
+      }
+      if(veryNarrow) return [];
+      const att = pcAttain[gi], diff = pcDiff[gi];
+      const attColor = att>=100 ? good : (att>=90 ? warning : critical);
+      return [
+        {text: fmtPct(att,0)+(barW>=45?' attain':''), color: attColor},
+        {text: (diff>=0?'+':'')+fmtTHB(diff), color: diff>=0?good:critical}
+      ];
+    }
+  });
+  document.getElementById('periodCompareSubtitle').textContent = label + ' · This Year vs Target vs same range last year · by Platform';
+  document.getElementById('periodCompareLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+(cssVar('--baseline')||'#c3c2b7')+'"></span>Last Year</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>This Year</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+neutralInk+'"></span>Target</span>';
+  latestData.periodCompare = { labels: pcGroups, lastYear: pcLastYear, thisYear: pcThisYear, target: pcTarget, growth: pcGrowth, attain: pcAttain, diff: pcDiff };
+
   /* === Chart: Sales by Category (ranked bar + Product Level Toggle) ===
      Paired next to Sales by Platform so a viewer sees "where" and "what"
      side by side, matching MT/TT's Sales by Key Account + Sales by Category
@@ -811,6 +879,25 @@ document.querySelectorAll('#ecomCatLevelToggle .toggle-btn').forEach(btn=>{
     document.getElementById('ecomCatBars').style.display='';
     renderEcomCategory();
   });
+});
+
+document.getElementById('periodCompareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('periodCompareChart', 'ecom_net_sales_last_year_vs_this_year_vs_target.svg'));
+document.getElementById('periodCompareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('periodCompareTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('periodCompareTableWrap');
+  const canvasWrap = document.getElementById('periodCompareCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.periodCompare;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Last Year</th><th>This Year</th><th>Growth YoY</th><th>Target</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.labels.forEach((g,i)=>{
+    html += '<tr><td>'+g+'</td><td>'+fmtTHB(d.lastYear[i])+'</td><td>'+fmtTHB(d.thisYear[i])+'</td>'
+      + '<td>'+(d.growth[i]!==null?fmtSignedPct(d.growth[i]):'–')+'</td>'
+      + '<td>'+fmtTHB(d.target[i])+'</td><td>'+fmtPct(d.attain[i],0)+'</td>'
+      + '<td>'+(d.diff[i]>=0?'+':'')+fmtTHB(d.diff[i])+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 document.getElementById('platformCwfDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformCwfChart','ecom_platform_growth_contribution.svg'));

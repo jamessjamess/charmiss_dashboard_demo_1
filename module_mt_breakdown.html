@@ -812,17 +812,25 @@ function renderAll(){
   /* === ZONE A: Return Rate (CN) trend, MT-wide ===
      Fix (2026-08-05): briefly split into one line per Key Account (Top 5 +
      Other) per an earlier request — reverted back to a single MT-wide line
-     per follow-up feedback. */
-  const retSeries = curYearIdx.map(i => i<=TODAY ? mtCNRate[i]*100 : null);
-  const thresholdSeries = curYearIdx.map(()=>RETURN_RATE_CEILING_PCT);
+     per follow-up feedback.
+     Fix (2026-08-06, feedback): was plotted against the full-year curYearIdx
+     (Jan–Dec) with future months as null — technically not misleading (a
+     line chart just breaks at the null point) but left the whole right half
+     of the chart canvas empty, which read as "not filling the frame."
+     Switched to closedIdx (Jan through TODAY only, same set the Target vs
+     Actual bar chart above already uses) so the line now spans the full
+     width of its own container — still responsive since buildLineChartSVG
+     scales the plotted x-range to whatever labels array it's given. */
+  const retSeries = closedIdx.map(i => mtCNRate[i]*100);
+  const thresholdSeries = closedIdx.map(()=>RETURN_RATE_CEILING_PCT);
   buildLineChartSVG('retTrendChart', {
-    labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
+    labels: closedLabels, yFormatter: v=>v.toFixed(1)+'%',
     series:[
       {data:thresholdSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
       {data:retSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}
     ]
   });
-  latestData.retTrend = { labels: curYearLabels, values: retSeries };
+  latestData.retTrend = { labels: closedLabels, values: retSeries };
 
   /* === ZONE A: High Return Rate Partner — company-wide MT (all 9 Key
      Accounts, not scoped to KAM/My-accounts-only), paired with Return Rate

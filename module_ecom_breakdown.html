@@ -88,18 +88,24 @@
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Target vs Actual per Platform</span>
-        <button class="info-icon" data-info-title="Target vs Actual per Platform" data-info-text="Target Attainment % ของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก — เขียว = ถึงเป้า, แดง = ต่ำกว่าเป้า เส้นอ้างอิงที่ 100%">i</button>
+        <span class="chart-title">Target vs Actual</span>
+        <button class="info-icon" data-info-title="Target vs Actual" data-info-text="ยอดขายจริงรายเดือน (แท่ง) เทียบเป้าหมาย (เส้น Tick สีเข้ม) ของ Ecom ทั้ง Channel — แท่งเขียว = ถึงเป้า, แท่งแดง = ต่ำกว่าเป้า ตัวเลขใต้เดือนคือผลต่าง (Actual − Target) ตามด้วย MoM/YoY ไม่ scope ตาม Filter ด้านบน">i</button>
       </div>
       <div class="toolbar">
-        <button class="tool-btn" id="platformBulletTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="platformBulletDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="platformBulletExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        <button class="tool-btn" id="targetTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="targetDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="targetExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">This period · all 4 platforms</div>
-    <div class="canvas-wrap" id="platformBulletCanvasWrap" style="height:180px;"><div id="platformBulletChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="platformBulletTableWrap"></div>
+    <div class="chart-subtitle">Monthly · Jan – Jun 2026 · company-wide Ecom (not scoped to filters above)</div>
+    <div class="chart-headline" id="targetHeadline">–</div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:linear-gradient(90deg, var(--good-text) 50%, var(--critical) 50%);border-radius:3px;width:14px;height:10px;"></span>Actual (green = hit target, red = below)</span>
+      <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (tick)</span>
+      <span class="chart-legend-item">Number below month = vs Target</span>
+    </div>
+    <div class="canvas-wrap" id="targetCanvasWrap" style="height:300px;"><div id="targetChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="targetTableWrap"></div>
   </div>
 
   <div class="chart-grid">
@@ -161,8 +167,25 @@
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
+          <span class="chart-title">Target vs Actual per Platform</span>
+          <button class="info-icon" data-info-title="Target vs Actual per Platform" data-info-text="Target Attainment % ของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก — เขียว = ถึงเป้า, แดง = ต่ำกว่าเป้า เส้นอ้างอิงที่ 100% เรียงตามยอดขาย (Order เดียวกับกราฟ YoY Growth by Platform ทางขวา)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="platformBulletTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="platformBulletDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="platformBulletExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">All 4 platforms · sorted by net sales (same order as the chart to the right)</div>
+      <div class="canvas-wrap" id="platformBulletCanvasWrap" style="height:220px;"><div id="platformBulletChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="platformBulletTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
           <span class="chart-title">YoY Growth by Platform</span>
-          <button class="info-icon" data-info-title="YoY Growth by Platform" data-info-text="%Growth เทียบช่วงเวลาเดียวกันปีก่อน ต่อ Platform — คำนวณจาก Time Series ยอดขายจริงของแต่ละ Platform (ไม่ใช่ตัวเลข Narrative คงที่) เขียว = โต, แดง = หด">i</button>
+          <button class="info-icon" data-info-title="YoY Growth by Platform" data-info-text="%Growth เทียบช่วงเวลาเดียวกันปีก่อน ต่อ Platform — คำนวณจาก Time Series ยอดขายจริงของแต่ละ Platform (ไม่ใช่ตัวเลข Narrative คงที่) เขียว = โต, แดง = หด เรียงตามยอดขาย (Order เดียวกับกราฟ Target vs Actual per Platform ทางซ้าย)">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="platformYoyTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -170,28 +193,64 @@
           <button class="tool-btn" id="platformYoyExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This period vs same period last year · by platform</div>
+      <div class="chart-subtitle">This period vs same period last year · sorted by net sales (same order as the chart to the left)</div>
       <div class="canvas-wrap" id="platformYoyCanvasWrap" style="height:220px;"><div id="platformYoyChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="platformYoyTableWrap"></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Platform</span>
+          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform ในช่วงเวลาที่เลือก — Company-wide Ecom เสมอ เหมือน Sales by Category ด้านล่างแต่มองจากมุม Platform แทนหมวดหมู่สินค้า">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="platformSalesTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="platformSalesDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="platformSalesExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Platform · Ecom channel</div>
+      <div class="cat-bars" id="platformSalesBars"></div>
+      <div class="data-table-wrap" id="platformSalesTableWrap"></div>
     </div>
 
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Platform Share of Sales Over Time</span>
-          <button class="info-icon" data-info-title="Platform Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Period Filter ด้านบน) — คำนวณจากยอดขายจริงต่อ Platform ในแต่ละเดือน หารด้วยยอดรวม Ecom เดือนนั้น ไม่ใช่สัดส่วนคงที่">i</button>
+          <span class="chart-title">Platform Portfolio Matrix</span>
+          <button class="info-icon" data-info-title="Platform Portfolio Matrix" data-info-text="Adapted BCG Matrix เหมือน Category Portfolio Matrix แต่มองราย Platform: แกนนอน (X) = ยอดขาย, แกนตั้ง (Y) = %Growth YoY เส้นประคือค่ามัธยฐาน แบ่งเป็น 4 กลุ่ม Stars/Cash Cows/Question Marks/Dogs">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="platformShareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="platformShareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="platformShareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+          <button class="tool-btn" id="platformMatrixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="platformMatrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="platformMatrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-legend" id="platformShareLegend"></div>
-      <div class="canvas-wrap" id="platformShareCanvasWrap" style="height:180px;"><div id="platformShareChart" style="width:100%;height:100%;"></div></div>
-      <div class="callout-text" id="platformShareCallout" style="margin-top:10px;">–</div>
-      <div class="data-table-wrap" id="platformShareTableWrap"></div>
+      <div class="chart-subtitle">Ecom channel, this period vs same period last year</div>
+      <div class="canvas-wrap" id="platformMatrixCanvasWrap" style="height:280px;"><div id="platformMatrixChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="platformMatrixTableWrap"></div>
     </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Platform Share of Sales Over Time</span>
+        <button class="info-icon" data-info-title="Platform Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Period Filter ด้านบน) — คำนวณจากยอดขายจริงต่อ Platform ในแต่ละเดือน หารด้วยยอดรวม Ecom เดือนนั้น ไม่ใช่สัดส่วนคงที่">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="platformShareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="platformShareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="platformShareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="platformShareLegend"></div>
+    <div class="canvas-wrap" id="platformShareCanvasWrap" style="height:180px;"><div id="platformShareChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="platformShareCallout" style="margin-top:10px;">–</div>
+    <div class="data-table-wrap" id="platformShareTableWrap"></div>
   </div>
 
   <div class="chart-grid">
@@ -285,28 +344,18 @@
     <div class="data-table-wrap" id="shareTableWrap"></div>
   </div>
 
-  <div class="chart-grid">
-    <div class="card table-card">
-      <div class="card-head">
-        <span class="card-title">Top 5 SKU by Revenue</span>
-        <button class="info-icon" data-info-title="Top 5 SKU" data-info-text="Series/SKU ที่มียอดขายสูงสุด 5 อันดับแรก ในช่วงเวลาที่เลือก (ระดับ Series ในลำดับชั้น Category → Sub-Category → Type → Series)">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="topSkuDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="topSkuExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Platform × Category</span>
+      <button class="info-icon" data-info-title="Platform × Category" data-info-text="แถว = 4 Platform, คอลัมน์ = 6 Category ค่าใน Cell = % ยอดขายของ Platform นั้นที่มาจาก Category นั้น (Row-normalized ต่อ Platform) สีเข้มขึ้นตาม % ที่สูงขึ้น — Mix ต่อ Platform เป็น Mock จากสมมติฐาน Format เช่น TikTok เอียงไปทาง Color Cosmetics/Fragrance (Impulse Buying/Live-selling), Line Shop เอียงไปทาง Skin Care/Personal Care (ฐานลูกค้าประจำสั่งซ้ำ) ไม่ใช่ข้อมูลจริง">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="crossTabDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="crossTabExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
-      <table id="topSkuTable"></table>
     </div>
-    <div class="card table-card">
-      <div class="card-head">
-        <span class="card-title">Bottom 5 SKU by Revenue</span>
-        <button class="info-icon" data-info-title="Bottom 5 SKU" data-info-text="Series/SKU ที่มียอดขายต่ำสุด 5 อันดับสุดท้าย ในช่วงเวลาที่เลือก — ไว้ดูว่า SKU ไหนต้องพิจารณาเลิกขายหรือทำโปรโมชัน">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="bottomSkuDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="bottomSkuExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <table id="bottomSkuTable"></table>
+    <div class="chart-subtitle">All 6 Categories · % share within each platform's own mix</div>
+    <div class="heatmap-scroll" style="overflow-x:auto;">
+      <table class="heatmap-table heatmap-table-transposed" id="crossTabTable"></table>
     </div>
   </div>
 
@@ -429,36 +478,42 @@ const ecomCategoryShares = [
   {name:'Hair Care', pct:14.0, growth:6.0}, {name:'Fragrance', pct:11.6, growth:22.5}, {name:'Accessories', pct:8.0, growth:-1.8}
 ];
 
-/* SKU (Series-level) mock data — the deepest tier of the 4-level Category
-   Hierarchy (Category → Sub-Category → Type → Series, see spec section 4.2).
-   No Product Analysis data file is part of this build to draw real Series
-   names/values from, so — same approach as MT's Partner IDs — SKUs are
-   identified by code rather than invented product names, distributed across
-   the categories above by weighted share. */
-const SKU_COUNT = 40;
-const skus = [];
-(function(){
-  let assigned = 0;
-  const groupN = {};
-  ecomCategoryShares.forEach((c,ci)=>{
-    const n = ci===ecomCategoryShares.length-1 ? (SKU_COUNT-assigned) : Math.max(4, Math.round(SKU_COUNT*c.pct/100));
-    groupN[c.name]=n; assigned+=n;
-  });
-  let idCounter = 0;
-  ecomCategoryShares.forEach(c=>{
-    const n = groupN[c.name];
-    const rawWeights = []; for(let i=0;i<n;i++) rawWeights.push(Math.pow(rand(),2.6));
-    const sumW = rawWeights.reduce((a,b)=>a+b,0) || 1;
-    rawWeights.forEach(w=>{
-      idCounter++;
-      skus.push({ id:'SKU-'+String(idCounter).padStart(3,'0'), category:c.name, weightWithinCategory:w/sumW, categoryPct:c.pct });
-    });
-  });
-})();
-
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
   return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+/* Byte-for-byte copy of sales_overview_product_analysis.html's helper — used
+   by the Platform × Category heatmap cells below. */
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16);
+  return [(num>>16)&255, (num>>8)&255, num&255];
+}
+
+/* Fix (2026-08-06, feedback): new Platform × Category cross-tab mock data —
+   same idea as MT Breakdown's Partner × Category (each row's category mix
+   deviates from the company-wide Ecom mix above by a fixed per-row skew,
+   hardcoded rather than rand()-generated so it stays stable across
+   re-renders/filters), but the row entity is Platform instead of Partner —
+   Ecom has no Key-Account/Partner concept (see the shops[] removal note
+   above), so Platform is the only real dimension to cross with Category.
+   Skews meant to feel plausible: TikTok (live-selling/impulse-driven) skews
+   hard toward Color Cosmetics/Fragrance and away from bulky routine
+   categories; Line Shop (repeat-purchase, chat-commerce loyal base) skews
+   toward Skin/Personal Care; Lazada/Shopee stay closer to the company-wide
+   mix as the two broad general marketplaces. */
+const platformCategorySkew = {
+  Lazada:   { 'Color Cosmetics':0.95, 'Skin Care':1.10, 'Personal Care':1.05, 'Hair Care':1.00, 'Fragrance':0.90, 'Accessories':1.00 },
+  Shopee:   { 'Color Cosmetics':0.90, 'Skin Care':1.00, 'Personal Care':1.15, 'Hair Care':1.10, 'Fragrance':0.85, 'Accessories':1.05 },
+  TikTok:   { 'Color Cosmetics':1.55, 'Skin Care':0.95, 'Personal Care':0.65, 'Hair Care':0.60, 'Fragrance':1.35, 'Accessories':1.30 },
+  LineShop: { 'Color Cosmetics':0.70, 'Skin Care':1.30, 'Personal Care':1.25, 'Hair Care':1.15, 'Fragrance':0.75, 'Accessories':0.75 }
+};
+function enumeratePlatformCatShare(platformKey){
+  const skew = platformCategorySkew[platformKey] || {};
+  const weighted = ecomCategoryShares.map(c => ({ name:c.name, pct: c.pct * (skew[c.name] || 1) }));
+  const sum = weighted.reduce((a,n)=>a+n.pct,0) || 1;
+  return weighted.map(n => ({ name:n.name, pct: n.pct/sum*100 })).sort((a,b)=>b.pct-a.pct);
 }
 
 function getPeriodRange(key, custom){
@@ -545,30 +600,46 @@ function renderAll(){
   const critical = cssVar('--critical') || '#d03b3b';
   const ecomTotalPeriod = sumRange(groupActual.Ecom, s, e);
 
-  const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
-  const curYearLabels = curYearIdx.map(i=>monthLabels[i]);
+  const closedIdx = []; for(let i=24;i<=TODAY;i++) closedIdx.push(i);
+  const closedLabels = closedIdx.map(i=>monthLabels[i]);
 
-  /* === ZONE A: Target vs Actual per Platform (bullet, baseline 100%) === */
-  const platformAttain = ecomChannels.map(c=>{
-    const net = sumRange(c.actual, s, e), tgt = sumRange(c.target, s, e);
-    return { label:c.label, value: tgt ? (net/tgt*100) : 0, net };
+  /* === ZONE A: Target vs Actual — company-wide Ecom, monthly bullet-bar,
+     mirrors MT Breakdown's card of the same name (moved up here 2026-08-06,
+     feedback — the per-platform breakdown that used to occupy this top slot
+     moved down to Platform Performance, now paired with YoY Growth by
+     Platform, mirroring how MT pairs Target vs Actual per Partner with YoY
+     Growth by Partner). */
+  const targetActualValues = closedIdx.map(i=>groupActual.Ecom[i]);
+  const targetActualTargets = closedIdx.map(i=>groupTarget.Ecom[i]);
+  const targetActualMom = closedIdx.map(i=>pctChange(groupActual.Ecom[i], groupActual.Ecom[i-1]));
+  const targetActualYoy = closedIdx.map(i=>pctChange(groupActual.Ecom[i], groupActual.Ecom[i-12]));
+  const targetTotalActual = targetActualValues.reduce((a,b)=>a+b,0);
+  const targetTotalTarget = targetActualTargets.reduce((a,b)=>a+b,0);
+  document.getElementById('targetHeadline').innerHTML =
+    (targetTotalTarget ? Math.round(targetTotalActual/targetTotalTarget*100) : 0) + '<span class="kpi-unit"> % of target, Year to Date</span>';
+  buildBulletBarSVG('targetChart', {
+    labels: closedLabels, actual: targetActualValues, target: targetActualTargets,
+    yFormatter: fmtTHB, mom: targetActualMom, yoy: targetActualYoy
   });
-  buildHBarCompareSVG('platformBulletChart', platformAttain.map(p=>({
-    label:p.label, value:p.value, color: p.value>=100 ? good : critical
-  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:90, rowHeight:44 });
-  latestData.platformBullet = platformAttain;
+  latestData.target = { labels: closedLabels, actual: targetActualValues, target: targetActualTargets, mom: targetActualMom, yoy: targetActualYoy };
 
-  /* === ZONE A: Return/Cancellation Rate, Ecom-wide === */
-  const retSeries = curYearIdx.map(i => i<=TODAY ? ecomCancelRate[i]*100 : null);
-  const thresholdSeries = curYearIdx.map(()=>8);
+  /* === ZONE A: Return/Cancellation Rate, Ecom-wide ===
+     Fix (2026-08-06, feedback): was plotted against a full-year index (Jan–
+     Dec) with future months as null, leaving the right half of the chart
+     canvas empty ("doesn't fill the frame") — switched to closedIdx (Jan
+     through TODAY only, same set the Target vs Actual bar chart above now
+     uses) so the line spans the container's full width. Same fix applied to
+     MT Breakdown's equivalent chart. */
+  const retSeries = closedIdx.map(i => ecomCancelRate[i]*100);
+  const thresholdSeries = closedIdx.map(()=>8);
   buildLineChartSVG('retTrendChart', {
-    labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
+    labels: closedLabels, yFormatter: v=>v.toFixed(1)+'%',
     series:[
       {data:thresholdSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
       {data:retSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}
     ]
   });
-  latestData.retTrend = { labels: curYearLabels, values: retSeries };
+  latestData.retTrend = { labels: closedLabels, values: retSeries };
 
   /* === ZONE A: Return/Cancellation Rate by Platform (new 2026-08-06) —
      pairs with Return/Cancellation Rate Trend the same way MT Breakdown
@@ -596,21 +667,71 @@ function renderAll(){
   buildLineChartSVG('platformTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: platformTrendSeries });
   latestData.platformTrend = { labels: monthLabels, platforms: ecomChannels.map(c=>({name:c.label, values:c.actual})) };
 
+  /* === ZONE B: shared per-platform ordering — every "by Platform" chart
+     below (Target vs Actual per Platform, YoY Growth, Sales by Platform,
+     Platform Portfolio Matrix) sorts by this period's net sales descending,
+     so they all read in the same order — same convention as MT Breakdown's
+     partner-ranked charts. */
+  const platformsRanked = ecomChannels.map(c=>({
+    key: c.key, label: c.label, color: c.color,
+    net: sumRange(c.actual, s, e), target: sumRange(c.target, s, e)
+  })).sort((a,b)=>b.net-a.net);
+
+  /* === ZONE B: Target vs Actual per Platform (moved down 2026-08-06,
+     feedback — now paired with YoY Growth by Platform, mirroring MT's
+     Target vs Actual per Partner / YoY Growth by Partner pairing). === */
+  const platformAttain = platformsRanked.map(p=>({
+    label:p.label, value: p.target ? (p.net/p.target*100) : 0, net:p.net
+  }));
+  buildHBarCompareSVG('platformBulletChart', platformAttain.map(p=>({
+    label:p.label, value:p.value, color: p.value>=100 ? good : critical
+  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:90, rowHeight:44 });
+  latestData.platformBullet = platformAttain;
+
   /* === ZONE B: YoY Growth by Platform — real period-over-period growth from
      each platform's own .actual[] (guards s-12 going negative for an early
      custom range by clamping to index 0, an approximation but avoids
-     reading undefined array slots). === */
+     reading undefined array slots). Same order as Target vs Actual per
+     Platform above. === */
   const yoyBaseIdx = Math.max(0, s-12);
-  const platformYoy = ecomChannels.map(c=>{
-    const thisPeriod = sumRange(c.actual, s, e);
+  const platformYoy = platformsRanked.map(p=>{
+    const c = ecomChannels.find(cc=>cc.key===p.key);
     const lastYearPeriod = sumRange(c.actual, yoyBaseIdx, Math.max(yoyBaseIdx, e-12));
-    const yoy = lastYearPeriod ? ((thisPeriod-lastYearPeriod)/lastYearPeriod*100) : 0;
-    return { label:c.label, value:yoy, color: yoy>=0 ? good : critical };
+    const yoy = lastYearPeriod ? ((p.net-lastYearPeriod)/lastYearPeriod*100) : 0;
+    return { label:p.label, value:yoy, color: yoy>=0 ? good : critical };
   });
   buildHBarCompareSVG('platformYoyChart', platformYoy, { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:90, rowHeight:44 });
   latestData.platformYoy = platformYoy;
 
-  /* === ZONE B: Platform Share of Sales Over Time — mirrors Category Share
+  /* === ZONE B: Sales by Platform (new 2026-08-06, feedback) — ranked bar,
+     % share of Ecom period sales per platform, mirrors MT Breakdown's
+     "Sales by Partner" but only 4 rows so no Top-N cap is needed. === */
+  const maxPlatformNet = Math.max(...platformsRanked.map(p=>p.net)) || 1;
+  document.getElementById('platformSalesBars').innerHTML = platformsRanked.map(p=>{
+    const pct = ecomTotalPeriod ? (p.net/ecomTotalPeriod*100) : 0;
+    const widthPct = (p.net/maxPlatformNet*100).toFixed(1);
+    return '<div class="cat-row"><span class="cat-label">'+p.label+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+p.color+';"><span class="cat-fill-label">'+fmtTHB(p.net)+' · '+pct.toFixed(1)+'%</span></div></div></div>';
+  }).join('');
+  latestData.platformSales = platformsRanked.map(p=>({name:p.label, value:p.net, pct: ecomTotalPeriod ? p.net/ecomTotalPeriod*100 : 0}));
+
+  /* === ZONE B: Platform Portfolio Matrix (new 2026-08-06, feedback) —
+     Adapted BCG Matrix like Category Portfolio Matrix elsewhere: X = net
+     sales this period, Y = %Growth YoY — reuses the platformYoy values
+     computed just above so the two stay consistent. === */
+  const platformMatrixPoints = platformsRanked.map((p,i)=>({
+    x: p.net, y: platformYoy[i].value, label: p.label, color: p.color
+  }));
+  buildScatterSVG('platformMatrixChart', platformMatrixPoints, {
+    xFormatter: fmtTHB, yFormatter: v=>fmtSignedPct(v),
+    xAxisTitle: 'Net Sales (฿)', yAxisTitle: 'Growth YoY (%)',
+    quadrantLabels: { topRight:'Stars', topLeft:'Question Marks', bottomRight:'Cash Cows', bottomLeft:'Dogs' }
+  });
+  latestData.platformMatrix = platformMatrixPoints;
+
+  /* === ZONE B: Platform Share of Sales Over Time (now a standalone
+     full-width card instead of paired with YoY Growth by Platform) — mirrors
+     Category Share
      of Sales Over Time's stream-chart pattern, but the % share here is
      computed from real per-platform monthly actuals (not jittered around a
      static pct), so the mix genuinely shifts based on each platform's own
@@ -688,28 +809,52 @@ function renderAll(){
   ).join('');
   latestData.share = { labels: shareLabels, series: shareSeries };
 
-  /* === ZONE C: Top/Bottom SKU (Series-level) === */
-  const skuRows = skus.map(sk=>{
-    const net = ecomTotalPeriod * sk.categoryPct/100 * sk.weightWithinCategory;
-    return { ...sk, net };
+  /* === ZONE C: Platform × Category cross-tab (new 2026-08-06, feedback) —
+     rows = 4 Platforms, columns = all 6 Categories (no Top-N cap needed,
+     unlike MT's Partner × Category, since Ecom has no deeper product-level
+     toggle and only 6 categories total). Cell = % share of that platform's
+     own sales mix from that category (row-normalized) — mirrors MT's
+     Partner × Category pattern with the row entity swapped from Key Account
+     to Platform, since Ecom has no Partner/Key-Account concept (replaces
+     the cut Top/Bottom 5 SKU by Revenue cards). */
+  const rgbBrand = hexToRgb(resolveColor('var(--brand)'));
+  const platformCatRows = ecomChannels.map(c=>{
+    const shares = enumeratePlatformCatShare(c.key);
+    const byName = {}; shares.forEach(n=>{ byName[n.name]=n.pct; });
+    return { label:c.label, cells: ecomCategoryShares.map(cat => byName[cat.name] || 0) };
   });
-  const skuTotal = skuRows.reduce((a,r)=>a+r.net,0);
-  const sortedSku = [...skuRows].sort((a,b)=>b.net-a.net);
-  const topSku = sortedSku.slice(0,5);
-  const bottomSku = [...sortedSku].reverse().slice(0,5);
-  document.getElementById('topSkuTable').innerHTML =
-    '<thead><tr><th>#</th><th>SKU</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>'
-    + topSku.map((r,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+r.id+'<span class="sub-label">'+r.category+'</span></td><td class="tnum">'+fmtTHB(r.net)+'</td><td class="tnum">'+(skuTotal?(r.net/skuTotal*100).toFixed(2):'0.00')+'%</td></tr>').join('')
-    + '</tbody>';
-  document.getElementById('bottomSkuTable').innerHTML =
-    '<thead><tr><th>#</th><th>SKU</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>'
-    + bottomSku.map((r,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+r.id+'<span class="sub-label">'+r.category+'</span></td><td class="tnum">'+fmtTHB(r.net)+'</td><td class="tnum">'+(skuTotal?(r.net/skuTotal*100).toFixed(2):'0.00')+'%</td></tr>').join('')
-    + '</tbody>';
-  latestData.topSku = topSku;
-  latestData.bottomSku = bottomSku;
+  const maxCellPct = Math.max(...platformCatRows.flatMap(r=>r.cells)) || 1;
+  let crossHtml = '<thead><tr><th>Platform</th>' + ecomCategoryShares.map(c=>'<th>'+c.name+'</th>').join('') + '</tr></thead><tbody>';
+  platformCatRows.forEach(row=>{
+    crossHtml += '<tr><td>'+row.label+'</td>' + row.cells.map(v=>{
+      const intensity = v/maxCellPct;
+      const bg = 'rgba('+rgbBrand[0]+','+rgbBrand[1]+','+rgbBrand[2]+','+(0.10+intensity*0.55).toFixed(2)+')';
+      return '<td><div class="heatmap-cell" style="background:'+bg+';">'+v.toFixed(1)+'%</div></td>';
+    }).join('') + '</tr>';
+  });
+  crossHtml += '</tbody>';
+  document.getElementById('crossTabTable').innerHTML = crossHtml;
+  latestData.crossTab = { nodes: ecomCategoryShares.map(c=>c.name), rows: platformCatRows };
 }
 
 /* --- Toolbar --- */
+document.getElementById('targetDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('targetChart', 'ecom_target_vs_actual.svg'));
+document.getElementById('targetExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('targetTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('targetTableWrap');
+  const canvasWrap = document.getElementById('targetCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.target;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Actual</th><th>Target</th><th>Attainment</th><th>MoM</th><th>YoY</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{
+    html += '<tr><td>'+lb+'</td><td>'+fmtTHB(d.actual[i])+'</td><td>'+fmtTHB(d.target[i])+'</td><td>'+(d.target[i]?Math.round(d.actual[i]/d.target[i]*100):0)+'%</td>'
+      + '<td>'+(d.mom[i]!=null?fmtSignedPct(d.mom[i],1):'–')+'</td><td>'+(d.yoy[i]!=null?fmtSignedPct(d.yoy[i],1):'–')+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
 document.getElementById('platformBulletDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformBulletChart', 'ecom_target_vs_actual_per_platform.svg'));
 document.getElementById('platformBulletExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('platformBulletTableBtn').addEventListener('click', ()=>{
@@ -794,6 +939,37 @@ document.getElementById('platformShareTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
+document.getElementById('platformSalesDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Platform','Net Sales (THB)','Share %']];
+  latestData.platformSales.forEach(it=> rows.push([it.name, Math.round(it.value), it.pct.toFixed(1)]));
+  downloadCSV(rows, 'ecom_sales_by_platform.csv');
+});
+document.getElementById('platformSalesExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('platformSalesTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('platformSalesTableWrap');
+  const bars = document.getElementById('platformSalesBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
+  latestData.platformSales.forEach(it=>{ html += '<tr><td>'+it.name+'</td><td>'+fmtTHB(it.value)+'</td><td>'+it.pct.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+
+document.getElementById('platformMatrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformMatrixChart', 'ecom_platform_portfolio_matrix.svg'));
+document.getElementById('platformMatrixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('platformMatrixTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('platformMatrixTableWrap');
+  const canvasWrap = document.getElementById('platformMatrixCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.platformMatrix;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Sales</th><th>Growth YoY</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.x)+'</td><td>'+fmtSignedPct(p.y)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
 document.getElementById('aovByPlatformDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('aovByPlatformChart', 'ecom_aov_by_platform.svg'));
 document.getElementById('aovByPlatformExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('aovByPlatformTableBtn').addEventListener('click', ()=>{
@@ -867,18 +1043,12 @@ document.getElementById('shareTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('topSkuDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['#','SKU','Category','Net Sales']];
-  latestData.topSku.forEach((r,i)=> rows.push([i+1, r.id, r.category, Math.round(r.net)]));
-  downloadCSV(rows, 'ecom_top5_sku.csv');
+document.getElementById('crossTabDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Platform', ...latestData.crossTab.nodes]];
+  latestData.crossTab.rows.forEach(r=> rows.push([r.label, ...r.cells.map(v=>v.toFixed(1))]));
+  downloadCSV(rows, 'ecom_platform_x_category.csv');
 });
-document.getElementById('topSkuExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('bottomSkuDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['#','SKU','Category','Net Sales']];
-  latestData.bottomSku.forEach((r,i)=> rows.push([i+1, r.id, r.category, Math.round(r.net)]));
-  downloadCSV(rows, 'ecom_bottom5_sku.csv');
-});
-document.getElementById('bottomSkuExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('crossTabExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 /* ---------- Init ---------- */
 renderAll();
