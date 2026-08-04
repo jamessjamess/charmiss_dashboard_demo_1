@@ -176,7 +176,7 @@ function buildLineChartSVG(containerId, opts){
       let areaD = d + 'L'+xAt(lastIdx).toFixed(1)+','+yAt(yMin).toFixed(1)+' L'+xAt(firstIdx).toFixed(1)+','+yAt(yMin).toFixed(1)+' Z';
       seriesSvg += '<path d="'+areaD+'" fill="'+s.color+'" opacity="0.12" stroke="none"/>';
     }
-    seriesSvg += '<path d="'+d.trim()+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.width||2.2)+'" stroke-dasharray="'+(s.dash||'')+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    seriesSvg += '<path d="'+d.trim()+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.width||2.2)+'" stroke-dasharray="'+(s.dash||'')+'" stroke-opacity="'+(s.opacity!==undefined?s.opacity:1)+'" stroke-linecap="round" stroke-linejoin="round"/>';
     if(s.showLastLabel && lastIdx>=0){
       const x=xAt(lastIdx), y=yAt(s.data[lastIdx]);
       // Fix (2026-08-03): lastLabelFormatter now also receives the point's
@@ -488,6 +488,82 @@ function buildGroupedBarSVG(containerId, opts){
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+valueLabels+xLabels+'</svg>';
+}
+
+/* ---------- Bullet bar chart (Actual bar colored green/red by hit-or-miss +
+   Target tick mark + Δ vs Target / MoM / YoY captions below each month) —
+   used for "Target vs Actual" style charts. Visual pattern matches TT
+   Overview's own renderBulletBarChart (tt-shared.js) so both systems read
+   the same way, ported here in shared.js's string-SVG convention instead of
+   that file's DOM-node style. opts: {labels, actual:[...], target:[...],
+   yFormatter, mom:[...]|null, yoy:[...]|null} — mom/yoy are per-month %,
+   nullable, and only reserve extra caption rows when passed at all. */
+function buildBulletBarSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 640;
+  const height = opts.height || (container ? container.clientHeight : 0) || 280;
+  const labels = opts.labels, actual = opts.actual, target = opts.target;
+  const yFormatter = opts.yFormatter || (v=>v);
+  const mom = opts.mom, yoy = opts.yoy;
+  const hasMomYoy = !!(mom || yoy);
+  const padL=48, padR=10, padT=18, padB = hasMomYoy ? 74 : 46;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+
+  const allVals = [...actual, ...target].filter(v=>v!=null);
+  if(allVals.length===0) allVals.push(0,1);
+  const nice = niceAxisTicks(0, Math.max(1,...allVals)*1.15, 5);
+  const yMin = nice.min, yMax = nice.max===nice.min ? nice.min+1 : nice.max;
+  const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
+  const zeroY = yAt(0);
+
+  const hairline = cssVar('--hairline') || '#e1e0d9';
+  const inkTertiary = cssVar('--ink-3') || '#898781';
+  const inkOne = cssVar('--ink-1') || '#0b0b0b';
+  const goodText = cssVar('--good-text') || '#006300';
+  const critical = cssVar('--critical') || '#d03b3b';
+
+  let gridSvg = '';
+  nice.ticks.forEach(v=>{
+    const y = yAt(v);
+    gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkTertiary+'">'+yFormatter(v)+'</text>';
+  });
+  gridSvg += '<line x1="'+padL+'" y1="'+zeroY.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+zeroY.toFixed(1)+'" stroke="'+inkTertiary+'" stroke-width="1"/>';
+
+  const n = labels.length;
+  const slotW = plotW/Math.max(1,n);
+  const barW = Math.max(6, Math.min(46, slotW*0.5));
+
+  let bars='', ticks='', capSvg='';
+  labels.forEach((lb,i)=>{
+    const gx = padL + slotW*(i+0.5);
+    const av = actual[i], tv = target[i];
+    if(av!=null){
+      const barY = Math.min(yAt(av), zeroY), barH = Math.max(1, Math.abs(yAt(av)-zeroY));
+      const hit = tv==null || av>=tv;
+      bars += '<rect x="'+(gx-barW/2).toFixed(1)+'" y="'+barY.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+barH.toFixed(1)+'" rx="2" fill="'+(hit?goodText:critical)+'"/>';
+      bars += '<text x="'+gx.toFixed(1)+'" y="'+(barY-5).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="middle" fill="'+inkOne+'">'+yFormatter(av)+'</text>';
+    }
+    if(tv!=null){
+      const ty = yAt(tv);
+      const tickW = barW+6;
+      ticks += '<rect x="'+(gx-tickW/2).toFixed(1)+'" y="'+(ty-1.25).toFixed(1)+'" width="'+tickW.toFixed(1)+'" height="2.5" rx="1" fill="'+inkOne+'"/>';
+    }
+    let ly = height-padB+16;
+    capSvg += '<text x="'+gx.toFixed(1)+'" y="'+ly+'" font-size="10.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
+    if(av!=null && tv!=null){
+      ly += 15;
+      const dv = av-tv, dHit = dv>=0;
+      capSvg += '<text x="'+gx.toFixed(1)+'" y="'+ly+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+(dHit?goodText:critical)+'">'+(dv>=0?'+':'')+yFormatter(dv)+'</text>';
+    }
+    if(hasMomYoy){
+      if(mom && mom[i]!=null){ ly += 13; capSvg += '<text x="'+gx.toFixed(1)+'" y="'+ly+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">MoM '+fmtSignedPct(mom[i],1)+'</text>'; }
+      if(yoy && yoy[i]!=null){ ly += 13; capSvg += '<text x="'+gx.toFixed(1)+'" y="'+ly+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">YoY '+fmtSignedPct(yoy[i],1)+'</text>'; }
+    }
+  });
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+bars+ticks+capSvg+'</svg>';
 }
 
 /* ---------- Scatter plot with median-split quadrant lines — used for

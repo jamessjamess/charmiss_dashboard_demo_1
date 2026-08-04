@@ -23,7 +23,6 @@
         <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
       </div>
       <h1>TT Overview — Executive Summary</h1>
-      <p class="subhead">Executive snapshot of revenue vs. target and overall business health across the Traditional Trade channel.</p>
     </div>
     <div class="topbar-right">
       <div class="user-info-row">
@@ -120,7 +119,6 @@
     <div id="storeFlowTopline"></div>
     <div id="visitTrendChart"></div>
     <div id="visitTrendTable"></div>
-    <select id="categoryLevelSelect"><option value="1">1</option></select>
     <div id="categoryChart"></div>
     <div id="categoryTable"></div>
     <div id="storesSub"></div>
@@ -349,18 +347,17 @@
               <div class="info-pop">จัดอันดับสินค้าที่ระดับที่เลือก (Category / Sub-Category / Type / Series) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown — ภาพรวมบริษัททั้งหมดเสมอ (Level 1 ไม่ scope ตาม Region/Sales Person)</div>
             </span>
           </div>
-          <div class="card-sub">Category → Sub-Category → Type → Series · company-wide</div>
         </div>
         <div class="icon-toolbar" data-chart="overviewCategory">
-          <select class="toolbar-select" id="overviewCategoryLevelSelect">
-            <option value="1" selected>Category</option>
-            <option value="2">Sub-Category</option>
-            <option value="3">Type</option>
-            <option value="4">Series</option>
-          </select>
+          <div class="toggle-group" id="overviewCategoryLevelToggle">
+            <button class="toggle-btn active" type="button" data-level="1">Category</button>
+            <button class="toggle-btn" type="button" data-level="2">Sub-Category</button>
+            <button class="toggle-btn" type="button" data-level="3">Type</button>
+            <button class="toggle-btn" type="button" data-level="4">Series</button>
+          </div>
         </div>
       </div>
-      <div id="overviewCategoryChart"></div>
+      <div class="cat-bars" id="overviewCategoryChart"></div>
       <div id="overviewCategoryTable" class="table-scroll" style="display:none;"></div>
     </div>
   </div>
@@ -461,7 +458,14 @@
      .icon-toolbar[data-chart] auto-wiring loop already run by tt-shared.js) ---- */
   document.getElementById("overviewRankingDownloadBtn").addEventListener("click", () => downloadTableCsv(document.getElementById("overviewRankingTable"), "ranking"));
   document.getElementById("overviewRankingFocusBtn").addEventListener("click", (e) => toggleFocus(e.currentTarget.closest(".card"), e.currentTarget));
-  document.getElementById("overviewCategoryLevelSelect").addEventListener("change", render);
+  document.querySelectorAll("#overviewCategoryLevelToggle .toggle-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#overviewCategoryLevelToggle .toggle-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.overviewCategoryLevel = parseInt(btn.dataset.level, 10);
+      render();
+    });
+  });
 
   /* ---- Dark / Light mode toggle ---- */
   const MODE_ICONS = {

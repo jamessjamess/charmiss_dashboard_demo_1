@@ -23,7 +23,6 @@
         <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
       </div>
       <h1>TT Overview — Breakdown</h1>
-      <p class="subhead">Detailed portfolio quality, customer, product, and team performance for Sales Ops and Regional Managers.</p>
     </div>
     <div class="topbar-right">
       <div class="user-info-row">
@@ -139,7 +138,6 @@
     <span id="kpiYoY"></span>
     <span id="kpiYoYCompare"></span>
     <div id="overviewCategoryChart"></div>
-    <select id="overviewCategoryLevelSelect"><option value="1">1</option></select>
     <div id="overviewCategoryTable"></div>
     <div id="overviewRankingTable"></div>
     <div id="riskAlertBanner"></div>
@@ -433,18 +431,17 @@
               <div class="info-pop">จัดอันดับสินค้าที่ระดับที่เลือก (Category / Sub-Category / Type / Series) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown</div>
             </span>
           </div>
-          <div class="card-sub">Category → Sub-Category → Type → Series</div>
         </div>
         <div class="icon-toolbar" data-chart="category">
-          <select class="toolbar-select" id="categoryLevelSelect">
-            <option value="1" selected>Category</option>
-            <option value="2">Sub-Category</option>
-            <option value="3">Type</option>
-            <option value="4">Series</option>
-          </select>
+          <div class="toggle-group" id="categoryLevelToggle">
+            <button class="toggle-btn active" type="button" data-level="1">Category</button>
+            <button class="toggle-btn" type="button" data-level="2">Sub-Category</button>
+            <button class="toggle-btn" type="button" data-level="3">Type</button>
+            <button class="toggle-btn" type="button" data-level="4">Series</button>
+          </div>
         </div>
       </div>
-      <div id="categoryChart"></div>
+      <div class="cat-bars" id="categoryChart"></div>
       <div id="categoryTable" class="table-scroll" style="display:none;"></div>
     </div>
     <div class="col-6 card">
@@ -641,7 +638,14 @@
   /* ---- This page's own standalone toolbar buttons ---- */
   document.getElementById("arAgingDownloadBtn").addEventListener("click", () => downloadTableCsv(document.getElementById("arAgingTableMount"), "ar_aging"));
   document.getElementById("arAgingFocusBtn").addEventListener("click", (e) => toggleFocus(e.currentTarget.closest(".card"), e.currentTarget));
-  document.getElementById("categoryLevelSelect").addEventListener("change", render);
+  document.querySelectorAll("#categoryLevelToggle .toggle-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#categoryLevelToggle .toggle-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.categoryLevel = parseInt(btn.dataset.level, 10);
+      render();
+    });
+  });
   document.getElementById("regionLevelSelect").addEventListener("change", render);
   document.getElementById("customerCategoryHeatmapLevelSelect").addEventListener("change", render);
 

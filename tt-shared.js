@@ -743,7 +743,15 @@
   const fmtInt = v => Math.round(v).toLocaleString("en-US");
 
   /* ============ STATE ============ */
-  const state = { dateRange:{mode:"preset", key:"ytd"}, region:"all", category:"all", rep:"all", drillPath:[], categoryMode:"explore", mapZoom:{scale:1, x:0, y:0}, regionDrillPath:[], regionMode:"explore" };
+  const state = { dateRange:{mode:"preset", key:"ytd"}, region:"all", category:"all", rep:"all", drillPath:[], categoryMode:"explore", mapZoom:{scale:1, x:0, y:0}, regionDrillPath:[], regionMode:"explore",
+    /* categoryLevel/overviewCategoryLevel (2026-08-06): Sales by Category's level toggle state,
+       ported off the old <select> DOM value now that the widget is a toggle-group (matching MT
+       Overview's Sales by Category) instead of a dropdown. Two separate fields because Executive
+       Summary's card (Level 1, overviewCategoryLevel) and Breakdown's card (Level 2,
+       categoryLevel) are independent controls — only one is ever visibly interactive on a given
+       page (the other's card is the hidden HIDDEN STUBS placeholder), but both must hold a valid
+       depth so the shared render() never breaks on either page. */
+    categoryLevel:1, overviewCategoryLevel:1 };
 
   const PRESETS = {
     thisMonth:  { label:"This Month",             range:[17,17] },
@@ -2764,7 +2772,8 @@
       // Sales by Category card, mounted into its own ids so the two stay independent (this one
       // always company-wide, the Breakdown one respects Region/Category/Sales Person filters).
       renderCategoryTopView(win, {
-        selectId:"overviewCategoryLevelSelect", chartId:"overviewCategoryChart", tableId:"overviewCategoryTable",
+        depth: state.overviewCategoryLevel,
+        chartId:"overviewCategoryChart", tableId:"overviewCategoryTable",
         seeMoreId:"overviewCategorySeeMore", tableMapKey:"overviewCategory", syncMatrix:false
       });
 
@@ -3047,7 +3056,7 @@
      aggregation functions Page 1's Sales Coverage/Engagement Health/Sales Ranking sections
      already use, so nothing here can drift from what an analyst sees on Page 1 for the same
      person/month. ============ */
-  const spState = { repId: reps[0].repId, monthIdx: actualMonths.length-1, arView: "overdue" };
+  const spState = { repId: reps[0].repId, monthIdx: actualMonths.length-1, arView: "overdue", categoryLevel: 1 };
   // Round 32 direct feedback (Task 7): arView toggles AR By Due Date between "overdue" (existing
   // behavior) and "withinDue" (new — stores with debt not yet due, using the same
   // storeNearDueAtMonth/storeWithinDueLaterAtMonth pools the company-wide AR Aging table uses).
@@ -3522,26 +3531,25 @@
     // = (rep's real Category total) × (that node's real share of its parent Category,
     // company-wide). Ranked and capped to Top 10 by the rep's own blended value, not the raw
     // company-wide value, since this card is about the rep's own mix.
-    const myCatDepth = parseInt(document.getElementById("myCategoryLevelSelect").value, 10);
+    const myCatDepth = spState.categoryLevel;
     const myCatLevelName = HIERARCHY_LEVELS[myCatDepth-1];
     document.getElementById("myCategoryLevelLabel").textContent = myCatLevelName;
     const myCatRowsAll = (myCatDepth===1
-      ? CATEGORIES.map((c,i) => ({ key:c, label:c, tooltipLabel:c, value:myCatTotals[i] }))
+      ? CATEGORIES.map((c,i) => ({ key:c, label:c, sublabel:null, tooltipLabel:c, value:myCatTotals[i] }))
       : enumerateLevel(myCatDepth).map(p => {
           const catIdx = CATEGORIES.indexOf(p[0]);
           const catTotalCompanyWide = windowValueForPath(spWin, [p[0]]);
           const nodeValueCompanyWide = windowValueForPath(spWin, p);
           const share = catTotalCompanyWide>0 ? nodeValueCompanyWide/catTotalCompanyWide : 0;
-          return { key:p.join("/"), label:p[p.length-1], tooltipLabel:p.join(" › "), value: myCatTotals[catIdx]*share };
+          return { key:p.join("/"), label:p[p.length-1], sublabel:p.slice(0,-1).join(" › "), tooltipLabel:p.join(" › "), value: myCatTotals[catIdx]*share };
         })
     ).sort((a,b)=>b.value-a.value);
     const myCatOverflow = myCatRowsAll.length > 10;
     const myCatRows = myCatOverflow ? myCatRowsAll.slice(0, 10) : myCatRowsAll;
     document.getElementById("myCategorySub").textContent =
       "This month, your stores only" + (myCatOverflow ? ` · Top 10 shown (see Table for all)` : "");
-    renderHBarChart(document.getElementById("myCategoryChart"), {
-      items: myCatRows, color:getVar("--brand"), seriesName:"Revenue", ariaLabel:"My Sales by " + myCatLevelName,
-      rowHeight: 34, compactLabels: true, // Round 32 direct feedback (Task 5)
+    renderCategoryBars(document.getElementById("myCategoryChart"), {
+      items: myCatRows,
       formatValue: v => fmtTHBFull(v) + " · " + (myCatTotal>0 ? (v/myCatTotal*100).toFixed(1) : "0.0") + "%"
     });
     renderTable(document.getElementById("myCategoryTable"), [myCatLevelName, "Revenue (THB)", "% of Total"],
@@ -3936,7 +3944,24 @@
   }
 
   function renderCategorySection(win){
-    renderCategoryTopView(win);
+    renderCategoryTopView(win, { depth: state.categoryLevel });
+  }
+
+  /* Ranked bar list (2026-08-06) — ported byte-for-byte from MT Overview's cat-bars pattern
+     (shared.css/module_mt_*.html) so TT's "Sales by Category" renders identically: plain HTML
+     bars instead of an SVG horizontal bar chart. Replaces renderHBarChart for this one component
+     only — renderHBarChart itself is untouched and still used everywhere else (Sales by Region,
+     High Return Rate Stores, My Sales by Category's old call, etc.). opts: {items:[{label,
+     sublabel, value}], formatValue}. */
+  function renderCategoryBars(mount, opts){
+    const items = opts.items;
+    const maxVal = Math.max(...items.map(it=>it.value)) || 1;
+    mount.innerHTML = items.map(it=>{
+      const widthPct = (it.value/maxVal*100).toFixed(1);
+      const subLabel = it.sublabel ? `<span class="sub-label">${it.sublabel}</span>` : "";
+      return `<div class="cat-row"><span class="cat-label">${it.label}${subLabel}</span>`
+        + `<div class="cat-track"><div class="cat-fill" style="width:${widthPct}%"><span class="cat-fill-label">${opts.formatValue(it.value)}</span></div></div></div>`;
+    }).join("");
   }
 
   // (renderCategoryDrilldown — the Explore-mode breadcrumb drill-down — was removed here
@@ -3954,14 +3979,13 @@
   // duration of that call — this function doesn't need its own company-wide special-case.
   function renderCategoryTopView(win, opts){
     opts = opts || {};
-    const selectId = opts.selectId || "categoryLevelSelect";
     const chartId = opts.chartId || "categoryChart";
     const tableId = opts.tableId || "categoryTable";
     const seeMoreId = opts.seeMoreId || "categorySeeMore";
     const tableMapKey = opts.tableMapKey || "category";
     const syncMatrix = opts.syncMatrix !== false;
 
-    const depth = parseInt(document.getElementById(selectId).value, 10);
+    const depth = opts.depth;
     const levelName = HIERARCHY_LEVELS[depth-1];
     const paths = enumerateLevel(depth);
     const portfolioTotal = state.region!=="all"
@@ -3987,9 +4011,8 @@
     const prevSeeMore = document.getElementById(seeMoreId);
     if (prevSeeMore) prevSeeMore.remove();
 
-    renderHBarChart(document.getElementById(chartId), {
-      items: rows, color:getVar("--brand"), seriesName:"Revenue", ariaLabel:"Top " + levelName,
-      labelWidth: 200, rowHeight: 46,
+    renderCategoryBars(document.getElementById(chartId), {
+      items: rows,
       formatValue: v => fmtTHBFull(v) + " · " + (v/portfolioTotal*100).toFixed(1) + "%"
     });
     if (overflow){

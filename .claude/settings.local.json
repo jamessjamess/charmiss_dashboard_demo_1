@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Get-Content 'G:\\\\My Drive\\\\[Charmiss] - Sales Overview Dashboard\\\\Charmiss Dashboard Dev\\\\tt-shared.css' -Tail 5\")"
+    ]
+  }
+}

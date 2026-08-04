@@ -33,7 +33,6 @@
   <div class="page-head">
     <div>
       <h1 class="page-title">ECOM Overview — Executive Summary</h1>
-      <p class="page-subtitle">Executive snapshot of revenue vs. target and overall business health across Lazada, Shopee, and TikTok Shop.</p>
     </div>
     <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
   </div>
@@ -202,42 +201,74 @@
     </div>
   </div>
 
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Sales by Platform</span>
-        <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok Shop) ในช่วงเวลาที่เลือก">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="platformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="platformDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="platformExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">This period, Ecom channel</div>
-    <div class="donut-layout" id="platformLayout">
-      <div class="donut-canvas-wrap">
-        <div id="platformChart" style="width:100%;height:100%;"></div>
-        <div class="donut-center">
-          <div class="donut-center-value" id="platformCenterValue">–</div>
-          <div class="donut-center-label">Total</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Platform</span>
+          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok Shop) ในช่วงเวลาที่เลือก">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="platformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="platformDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="platformExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="legend-list" id="platformLegend"></div>
+      <div class="chart-subtitle">This period, Ecom channel</div>
+      <div class="donut-layout" id="platformLayout">
+        <div class="donut-canvas-wrap">
+          <div id="platformChart" style="width:100%;height:100%;"></div>
+          <div class="donut-center">
+            <div class="donut-center-value" id="platformCenterValue">–</div>
+            <div class="donut-center-label">Total</div>
+          </div>
+        </div>
+        <div class="legend-list" id="platformLegend"></div>
+      </div>
+      <div class="data-table-wrap" id="platformTableWrap"></div>
     </div>
-    <div class="data-table-wrap" id="platformTableWrap"></div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Category</span>
+          <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตามหมวดหมู่สินค้า ในช่วงเวลาที่เลือก — Company-wide Ecom เสมอ ไม่ผูกกับ Platform รายใดรายหนึ่ง สลับ Product Level ได้ (Category/Sub-Category/Type/Series) เหมือน MT/TT Overview">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="ecomCatTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="ecomCatDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="ecomCatExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Category · Ecom channel</div>
+      <div class="toggle-group" id="ecomCatLevelToggle" style="margin-bottom:10px;">
+        <button class="toggle-btn active" data-level="0">Category</button>
+        <button class="toggle-btn" data-level="1">Sub-Category</button>
+        <button class="toggle-btn" data-level="2">Type</button>
+        <button class="toggle-btn" data-level="3">Series</button>
+      </div>
+      <div class="cat-bars" id="ecomCatBars"></div>
+      <div class="kpi-caption" id="ecomCatMoreCaption" style="margin-top:6px;"></div>
+      <div class="data-table-wrap" id="ecomCatTableWrap"></div>
+    </div>
   </div>
 
-  <div class="card table-card">
-    <div class="card-head">
-      <span class="card-title">Ranking — by Platform</span>
-      <button class="info-icon" data-info-title="Ranking by Platform" data-info-text="จัดอันดับ Platform (Lazada/Shopee/TikTok Shop) ตามยอดขายสุทธิในช่วงเวลาที่เลือก พร้อม Metric สำคัญของแต่ละ Platform">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="rankDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="rankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+  <div class="card">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Platform Growth Contribution</span>
+        <button class="info-icon" data-info-title="Platform Growth Contribution" data-info-text="Waterfall: ยอดขายปีก่อน → ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของแต่ละ Platform ทีละแท่ง (เขียว=บวก, แดง=ลบ) → ยอดขายรวมปีนี้ ตามช่วงเวลาที่เลือก — ใช้ยอดขายจริงรายเดือนของแต่ละ Platform เทียบปีก่อนตรงๆ (ไม่ใช่ค่าประมาณ) บอกว่า Platform ไหน Contribute ต่อการเติบโตรวมเท่าไหร่ในหน่วย ฿ จริง คนละมุมกับ Donut ที่เห็นแค่สัดส่วน ณ ปัจจุบัน">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="platformCwfTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="platformCwfDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="platformCwfExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <table id="rankTable"></table>
+    <div class="chart-subtitle">Last Year → contribution by platform → This Year</div>
+    <div class="canvas-wrap" id="platformCwfCanvasWrap" style="height:260px;"><div id="platformCwfChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="platformCwfCallout">–</div>
+    <div class="data-table-wrap" id="platformCwfTableWrap"></div>
   </div>
 
 </div>
@@ -328,11 +359,14 @@ const ecomConvSeries = [];
 const ecomShopListingsSeries = [];
 { let level = 14; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.28; ecomShopListingsSeries.push(Math.round(level)); } }
 
-/* Per-platform stats used only by the "Ranking by Platform" table — a
-   narrative split rather than derived math: TikTok Shop skews toward lower
-   AOV / higher conversion (livestream, impulse-driven purchases), Lazada
-   skews toward higher AOV / lower conversion (more considered purchases).
-   cancelFactor multiplies the shared ecomCancelRate series per platform. */
+/* Per-platform stats — a narrative split rather than derived math: TikTok
+   Shop skews toward lower AOV / higher conversion (livestream, impulse-
+   driven purchases), Lazada skews toward higher AOV / lower conversion
+   (more considered purchases). cancelFactor multiplies the shared
+   ecomCancelRate series per platform. Fix (2026-08-06): no longer displayed
+   directly in THIS file (the "Ranking — by Platform" table that used it was
+   removed) but must stay — module_ecom_breakdown.html copies this const
+   byte-for-byte for its own AOV/Conversion Rate by Platform charts. */
 const ecomPlatformStats = {
   Lazada: { aov: 560, conv: 2.9, cancelFactor: 0.90 },
   Shopee: { aov: 480, conv: 3.4, cancelFactor: 1.05 },
@@ -347,6 +381,110 @@ const ecomCategoryShares = [
   {name:'Color Cosmetics', pct:26.4}, {name:'Skin Care', pct:24.8}, {name:'Personal Care', pct:15.2},
   {name:'Hair Care', pct:14.0}, {name:'Fragrance', pct:11.6}, {name:'Accessories', pct:8.0}
 ];
+
+/* Fix (2026-08-06): "Product level" drill-down added to Sales by Category,
+   same treatment MT already has — CATEGORY_TREE is a byte-for-byte copy of
+   the same const in module_mt_executive_summary.html/sales_overview_product_
+   analysis.html (structure only: Sub-Category/Type/Series nesting is the
+   same universal Category Hierarchy from spec §4.2, so it's identical for
+   every channel — that file's own top-level pct/growthYoY/returnRate/
+   channelMix fields are copied too for fidelity but unused here). The
+   Category level (depth 0) keeps using ecomCategoryShares' existing % above
+   unchanged; deeper levels are computed from this tree's *internal*
+   proportions (sub.pct/type.pct/series.pct, each relative to its own
+   parent) applied on top of that — same pattern as MT's enumerateMTCatLevel. */
+const CATEGORY_TREE = {
+  'Skin Care': { pct:28.7, growthYoY:12.4, returnRate:3.4, channelMix:{MT:.35,TT:.40,Ecom:.25}, subs:{
+    'Facial Care': { pct:60, types:{
+      'Cleanser': { pct:55, series:{'Foam Cleanser':60,'Micellar Water':40} },
+      'Moisturizer': { pct:45, series:{'Day Cream':55,'Night Cream':45} }
+    }},
+    'Body Care': { pct:40, types:{
+      'Lotion': { pct:60, series:{'Body Lotion':65,'Hand Cream':35} },
+      'Sunscreen': { pct:40, series:{'SPF30':50,'SPF50':50} }
+    }}
+  }},
+  'Color Cosmetics': { pct:19.5, growthYoY:8.1, returnRate:5.6, channelMix:{MT:.25,TT:.30,Ecom:.45}, subs:{
+    'Face Makeup': { pct:55, types:{
+      'Foundation': { pct:60, series:{'Liquid Foundation':70,'Cushion':30} },
+      'Powder': { pct:40, series:{'Loose Powder':50,'Pressed Powder':50} }
+    }},
+    'Eye & Lip': { pct:45, types:{
+      'Lipstick': { pct:55, series:{'Matte':60,'Glossy':40} },
+      'Eyeliner': { pct:45, series:{'Pencil':50,'Liquid':50} }
+    }}
+  }},
+  'Hair Care': { pct:17.6, growthYoY:2.3, returnRate:2.8, channelMix:{MT:.30,TT:.55,Ecom:.15}, subs:{
+    'Cleansing': { pct:65, types:{
+      'Shampoo': { pct:60, series:{'Anti-Dandruff':55,'Everyday':45} },
+      'Conditioner': { pct:40, series:{'Deep Repair':50,'Daily':50} }
+    }},
+    'Styling': { pct:35, types:{
+      'Serum': { pct:55, series:{'Anti-Frizz':60,'Heat Protect':40} },
+      'Spray': { pct:45, series:{'Hold Spray':50,'Shine Spray':50} }
+    }}
+  }},
+  'Personal Care': { pct:16.3, growthYoY:-1.5, returnRate:4.2, channelMix:{MT:.45,TT:.40,Ecom:.15}, subs:{
+    'Oral Care': { pct:55, types:{
+      'Toothpaste': { pct:60, series:{'Whitening':55,'Sensitive':45} },
+      'Mouthwash': { pct:40, series:{'Fresh Mint':50,'Alcohol-Free':50} }
+    }},
+    'Bath': { pct:45, types:{
+      'Soap': { pct:50, series:{'Bar Soap':55,'Liquid Soap':45} },
+      'Shower Gel': { pct:50, series:{'Moisturizing':55,'Refreshing':45} }
+    }}
+  }},
+  'Fragrance': { pct:9.8, growthYoY:22.6, returnRate:6.5, channelMix:{MT:.20,TT:.20,Ecom:.60}, subs:{
+    'Personal Fragrance': { pct:70, types:{
+      'Eau de Toilette': { pct:60, series:{'Floral':55,'Woody':45} },
+      'Body Mist': { pct:40, series:{'Citrus':50,'Fruity':50} }
+    }},
+    'Home Fragrance': { pct:30, types:{
+      'Diffuser': { pct:60, series:{'Reed Diffuser':55,'Electric Diffuser':45} },
+      'Spray': { pct:40, series:{'Room Spray':50,'Linen Spray':50} }
+    }}
+  }},
+  'Accessories': { pct:8.1, growthYoY:-4.2, returnRate:7.8, channelMix:{MT:.25,TT:.25,Ecom:.50}, subs:{
+    'Application Tools': { pct:55, types:{
+      'Brush': { pct:60, series:{'Foundation Brush':55,'Powder Brush':45} },
+      'Sponge': { pct:40, series:{'Beauty Sponge':60,'Puff':40} }
+    }},
+    'Storage': { pct:45, types:{
+      'Pouch': { pct:55, series:{'Travel Pouch':55,'Everyday Pouch':45} },
+      'Organizer': { pct:45, series:{'Drawer Organizer':50,'Vanity Tray':50} }
+    }}
+  }}
+};
+const LEVEL_NAMES = ['Category','Sub-Category','Type','Series'];
+const LEVEL_NAMES_PLURAL = ['Categories','Sub-Categories','Types','Series'];
+let currentEcomCatLevel = 0;
+
+/** Ecom-scoped version of MT's enumerateMTCatLevel(): depth 0 uses
+    ecomCategoryShares' own % directly (unchanged); depth 1-3 multiply that %
+    down through CATEGORY_TREE's nested sub/type/series proportions (relative
+    shares, not absolute), so results still sum to ~100% within Ecom at
+    every level. */
+function enumerateEcomCatLevel(depth){
+  const results = [];
+  ecomCategoryShares.forEach(cat=>{
+    if(depth===0){ results.push({name:cat.name, pct:cat.pct, parent:null, rootCategory:cat.name}); return; }
+    const tree = CATEGORY_TREE[cat.name];
+    if(!tree){ return; }
+    Object.entries(tree.subs).forEach(([subName,sub])=>{
+      const subPct = cat.pct * sub.pct/100;
+      if(depth===1){ results.push({name:subName, pct:subPct, parent:cat.name, rootCategory:cat.name}); return; }
+      Object.entries(sub.types).forEach(([typeName,type])=>{
+        const typePct = subPct * type.pct/100;
+        if(depth===2){ results.push({name:typeName, pct:typePct, parent:subName, rootCategory:cat.name}); return; }
+        Object.entries(type.series).forEach(([seriesName,seriesPct])=>{
+          const seriesAbsPct = typePct * seriesPct/100;
+          if(depth===3){ results.push({name:seriesName, pct:seriesAbsPct, parent:typeName, rootCategory:cat.name}); }
+        });
+      });
+    });
+  });
+  return results.sort((a,b)=>b.pct-a.pct);
+}
 
 function getPeriodRange(key, custom){
   switch(key){
@@ -418,6 +556,28 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
 
 /* ---------- Render ---------- */
 let latestData = {};
+
+/* Renders the Sales by Category card at whatever currentEcomCatLevel is
+   selected — split out from renderAll() so the level toggle can re-render
+   just this one card, same pattern as MT's renderMtCategory(). Reads
+   latestData.totalActual (set by renderAll() before this is first called). */
+function renderEcomCategory(){
+  const totalActual = latestData.totalActual || 0;
+  const allItems = enumerateEcomCatLevel(currentEcomCatLevel);
+  const items = allItems.slice(0,10);
+  const maxCatShare = Math.max(...items.map(c=>c.pct)) || 1;
+  document.getElementById('ecomCatBars').innerHTML = items.map(c=>{
+    const val = totalActual*c.pct/100;
+    const widthPct = (c.pct/maxCatShare*100).toFixed(1);
+    const subLabel = c.parent ? '<span class="sub-label">'+c.parent+'</span>' : '';
+    return '<div class="cat-row"><span class="cat-label">'+c.name+subLabel+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct.toFixed(1)+'%</span></div></div></div>';
+  }).join('');
+  latestData.ecomCat = items.map(c=>({name:c.name, value: totalActual*c.pct/100, pct:c.pct}));
+  document.getElementById('ecomCatMoreCaption').textContent = allItems.length>10
+    ? 'Top 10 of '+allItems.length+' '+LEVEL_NAMES_PLURAL[currentEcomCatLevel].toLowerCase()+' shown'
+    : '';
+}
 
 function renderAll(periodKey, custom){
   const [s,e] = getPeriodRange(periodKey, custom);
@@ -535,21 +695,39 @@ function renderAll(periodKey, custom){
   }).join('');
   latestData.platforms = ecomChannels.map(c=>({name:c.label, value: platformTotals[c.key], pct: totalActual ? (platformTotals[c.key]/totalActual*100) : 0}));
 
-  /* === Table: Ranking — by Platform === */
-  const rankRows = ecomChannels.map(c=>{
-    const net = platformTotals[c.key];
-    const tgt = sumRange(c.target, s, e);
-    const attain = tgt ? (net/tgt*100) : 0;
-    const stat = ecomPlatformStats[c.key];
-    let cancelSum=0, cancelN=0; for(let i=s;i<=e;i++){ cancelSum += ecomCancelRate[i]*100*stat.cancelFactor; cancelN++; }
-    const cancelAvg = cancelN ? cancelSum/cancelN : 0;
-    return { name:c.label, net, attain, cancel:cancelAvg, aov:stat.aov, conv:stat.conv };
-  }).sort((x,y)=>y.net-x.net);
-  document.getElementById('rankTable').innerHTML =
-    '<thead><tr><th>#</th><th>Platform</th><th>Net Sales</th><th>Target Attainment</th><th>Return/Cancellation Rate</th><th>AOV</th><th>Conversion Rate</th></tr></thead><tbody>'
-    + rankRows.map((r,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+r.name+'</td><td class="tnum">'+fmtTHB(r.net)+'</td><td class="tnum">'+fmtPct(r.attain,0)+'</td><td class="tnum">'+fmtPct(r.cancel,1)+'</td><td class="tnum">'+fmtTHB(r.aov)+'</td><td class="tnum">'+fmtPct(r.conv,1)+'</td></tr>').join('')
-    + '</tbody>';
-  latestData.ranking = rankRows;
+  /* === Chart: Sales by Category (ranked bar + Product Level Toggle) ===
+     Paired next to Sales by Platform so a viewer sees "where" and "what"
+     side by side, matching MT/TT's Sales by Key Account + Sales by Category
+     pairing. Fix (2026-08-06): now has the same Category/Sub-Category/Type/
+     Series toggle as MT/TT (was Category-level only) — see renderEcomCategory(). */
+  latestData.totalActual = totalActual;
+  renderEcomCategory();
+
+  /* === Chart: Platform Growth Contribution (Waterfall) — new 2026-08-06,
+     same concept as MT's Key Account Growth Contribution but with a genuine
+     advantage: ecomChannels already carries full monthly `actual` series
+     per platform (unlike MT's keyAccounts, which only has a static
+     growthYoY estimate), so Last Year per platform is the REAL prior-year
+     sum, not a back-derived approximation — Start+ΣDelta reconciles to End
+     exactly by construction regardless of period filter. */
+  const platformLastYearTotal = ecomChannels.map(c=> sumRange(c.actual, s-12, e-12));
+  const platformThisYearTotal = ecomChannels.map(c=> sumRange(c.actual, s, e));
+  const cwfLastYearSum = platformLastYearTotal.reduce((a,b)=>a+b,0);
+  const cwfThisYearSum = platformThisYearTotal.reduce((a,b)=>a+b,0);
+  const cwfDeltaList = ecomChannels.map((c,i)=>({ name:c.label, delta: platformThisYearTotal[i]-platformLastYearTotal[i] }));
+  const cwfSorted = [...cwfDeltaList].sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
+  const cwfSteps = [{label:'Last Year', value: cwfLastYearSum, type:'start'}]
+    .concat(cwfSorted.map(d=>({label:d.name, value:d.delta, type:'delta'})))
+    .concat([{label:'This Year', value: cwfThisYearSum, type:'end'}]);
+  buildWaterfallSVG('platformCwfChart', cwfSteps, { yFormatter: fmtTHB });
+  latestData.platformCwf = cwfSteps;
+  const cwfTotalGrowth = cwfThisYearSum - cwfLastYearSum;
+  const cwfTopContributor = cwfDeltaList.reduce((a,b)=> a.delta>=b.delta ? a : b);
+  const cwfDragger = cwfDeltaList.reduce((a,b)=> a.delta<=b.delta ? a : b);
+  document.getElementById('platformCwfCallout').innerHTML =
+    'Total growth: <span class="'+deltaClass(cwfTotalGrowth)+'">'+(cwfTotalGrowth>=0?'+':'')+fmtTHB(cwfTotalGrowth)+'</span>'
+    + ' · Top contributor: <b>'+cwfTopContributor.name+'</b> <span class="'+deltaClass(cwfTopContributor.delta)+'">('+(cwfTopContributor.delta>=0?'+':'')+fmtTHB(cwfTopContributor.delta)+')</span>'
+    + (cwfDragger.delta<0 ? ' · Dragging down: <b>'+cwfDragger.name+'</b> <span class="neg">('+fmtTHB(cwfDragger.delta)+')</span>' : '');
 }
 
 /* --- Toolbar --- */
@@ -595,12 +773,46 @@ document.getElementById('platformTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); layout.style.display='none';
 });
 
-document.getElementById('rankDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['#','Platform','Net Sales','Target Attainment %','Return/Cancellation Rate %','AOV','Conversion Rate %']];
-  latestData.ranking.forEach((r,i)=> rows.push([i+1, r.name, Math.round(r.net), r.attain.toFixed(0), r.cancel.toFixed(1), Math.round(r.aov), r.conv.toFixed(1)]));
-  downloadCSV(rows, 'ecom_ranking_by_platform.csv');
+document.getElementById('ecomCatDownloadBtn').addEventListener('click', ()=>{
+  const rows = [[LEVEL_NAMES[currentEcomCatLevel],'Share %','Value (THB)']];
+  latestData.ecomCat.forEach(c=> rows.push([c.name, c.pct.toFixed(1), Math.round(c.value)]));
+  downloadCSV(rows, 'ecom_sales_by_category_'+LEVEL_NAMES[currentEcomCatLevel].toLowerCase().replace(/[^a-z]+/g,'_')+'.csv');
 });
-document.getElementById('rankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('ecomCatExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('ecomCatTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('ecomCatTableWrap');
+  const bars = document.getElementById('ecomCatBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentEcomCatLevel]+'</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
+  latestData.ecomCat.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtTHB(c.value)+'</td><td>'+c.pct.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+document.querySelectorAll('#ecomCatLevelToggle .toggle-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#ecomCatLevelToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    currentEcomCatLevel = parseInt(btn.dataset.level,10);
+    document.getElementById('ecomCatTableWrap').classList.remove('visible');
+    document.getElementById('ecomCatBars').style.display='';
+    renderEcomCategory();
+  });
+});
+
+document.getElementById('platformCwfDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformCwfChart','ecom_platform_growth_contribution.svg'));
+document.getElementById('platformCwfExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('platformCwfTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('platformCwfTableWrap');
+  const canvasWrap = document.getElementById('platformCwfCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.platformCwf;
+  let html = '<table class="mini-table"><thead><tr><th>Step</th><th>Value</th></tr></thead><tbody>';
+  d.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+(s.type==='delta'?(s.value>=0?'+':'')+fmtTHB(s.value):fmtTHB(s.value))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
 
 /* ---------- Init ---------- */
 renderAll(currentPeriodKey, currentCustom);

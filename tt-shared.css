@@ -133,7 +133,6 @@
   .mode-toggle-btn svg{ width:16px; height:16px; display:block; }
 
   h1{ font-size:22px; font-weight:650; letter-spacing:-0.01em; margin:0 0 4px; }
-  .subhead{ font-size:13.5px; color:var(--ink-2); margin:0; }
 
   /* ---------- Filters ---------- */
   .filter-row{
@@ -720,3 +719,26 @@
   }
   .user-name{ font-size:13px; font-weight:700; color:var(--ink-1); }
   .user-role{ font-size:11.5px; color:var(--ink-3); }
+
+  /* ---------- Ranked bar list + Level toggle (2026-08-06) — ported byte-for-byte
+     from shared.css so "Sales by Category" here renders identically to MT Overview's
+     (same HTML-bar pattern instead of an SVG horizontal bar chart, same toggle-group
+     widget instead of a <select> dropdown).
+     Fix (2026-08-06): .cat-bars itself was missing from this original port — only
+     its children (.cat-row etc.) got copied, so the container fell back to plain
+     block display with no gap between rows, making Category-level (single-line
+     labels, no sub-label) rows butt up against each other with zero space. Deeper
+     levels only *looked* less cramped by accident, from the sub-label's own
+     margin-top adding incidental space — not real inter-row spacing. Adding this
+     rule gives every level the same deliberate 9px gap. */
+  .cat-bars{display:flex;flex-direction:column;gap:9px;}
+  .cat-row{display:flex;align-items:center;gap:9px;}
+  .cat-label{width:104px;font-size:11.5px;color:var(--ink-3);flex-shrink:0;}
+  .cat-track{flex:1;height:25px;background:var(--wash);border-radius:6px;overflow:hidden;}
+  .cat-fill{height:100%;background:var(--brand);border-radius:6px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;min-width:fit-content;}
+  .cat-fill-label{color:#fff;font-size:10.5px;font-weight:700;white-space:nowrap;}
+  .sub-label{display:block;font-size:10px;color:var(--ink-3);font-weight:500;margin-top:1px;}
+  .toggle-group{display:flex;gap:4px;background:var(--wash);padding:3px;border-radius:9px;width:fit-content;}
+  .toggle-btn{border:none;background:transparent;padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;color:var(--ink-3);cursor:pointer;font-family:inherit;}
+  .toggle-btn.active{background:var(--card);color:var(--ink-1);box-shadow:var(--shadow);}
+  @media (max-width:768px){ .cat-label{width:88px;font-size:11px;} }
