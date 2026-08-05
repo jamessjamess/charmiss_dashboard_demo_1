@@ -10,37 +10,41 @@
 <body>
 <div class="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">C</div>
-      <div class="brand-name">Charmiss</div>
-      <div id="navMenuMount"></div>
-    </div>
-    <div class="user-area">
-      <div class="user-meta">
-        <div class="user-name">Nattapong V.</div>
-        <div class="user-role">VP of Sales</div>
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="sales_overview.html">Executive Outlook</a>
+          <a class="tab active tab-link" href="sales_overview_product_analysis.html">Product Analysis</a>
+        </nav>
       </div>
-      <div class="avatar">NV</div>
-      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
-        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
-      </button>
-    </div>
-  </header>
+      <div class="user-area">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="avatar">NV</div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
 
-  <div class="page-head">
-    <div>
-      <h1 class="page-title">Sales Overview — Product Analysis</h1>
-    </div>
-    <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
-  </div>
+    <div class="header-utility-row" id="headerUtilityRow" style="flex-direction:column;align-items:stretch;gap:12px;">
+    <nav class="section-nav">
+      <a href="#sec-zoneA">Category Performance Overview</a>
+      <a href="#sec-zoneB">Cross-Channel Analysis</a>
+      <a href="#sec-zoneC">Portfolio Strategy</a>
+      <a href="#sec-zoneD">Category Deep-dive</a>
+    </nav>
 
-  <nav class="tabs">
-    <a class="tab tab-link" href="sales_overview.html">Executive Outlook</a>
-    <a class="tab active tab-link" href="sales_overview_product_analysis.html">Product Analysis</a>
-  </nav>
-
-  <div class="filterbar">
+  <div class="filterbar" style="margin-bottom:0;">
     <div class="filter-left">
       <div class="filter-item">
         <span class="filter-label">Period</span>
@@ -105,13 +109,8 @@
     </div>
     <div class="filter-scope" id="filterScopeText">All channels · Category focus</div>
   </div>
-
-  <nav class="section-nav">
-    <a href="#sec-zoneA">Category Performance Overview</a>
-    <a href="#sec-zoneB">Cross-Channel Analysis</a>
-    <a href="#sec-zoneC">Portfolio Strategy</a>
-    <a href="#sec-zoneD">Category Deep-dive</a>
-  </nav>
+    </div>
+  </div>
 
   <!-- ===== Zone A: Category Performance Overview ===== -->
   <div class="section-label" id="sec-zoneA">Category Performance Overview</div>
@@ -510,6 +509,33 @@ if (typeof renderNavMenu === 'function') {
 }
 initInfoPopovers();
 initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
+
+/* ---------- Menu bar collapse (same mechanism as sales_overview.html — see
+   that file for the full rationale). ---------- */
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+initSectionScrollSpy();
 
 /* ---------- Custom range selects ---------- */
 const customFromSel = document.getElementById('customFrom');

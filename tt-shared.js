@@ -4366,3 +4366,35 @@
 
   // Sales Ranking's standalone download button (no chart/table pair, so it's not part of the
   // generic icon-toolbar loop above — merged in from Module 3, moved to Level 1 in Round 25).
+
+/* ---------- Section-nav / mini-nav scroll-spy (2026-08-06) — same mechanism as
+   shared.js's initSectionScrollSpy(), ported here since tt-shared.js is a fully
+   separate engine. Targets both .section-nav a (tt_executive_summary.html) and
+   .l2-mini-nav-item (#l2MiniNav on tt_breakdown.html, #l3MiniNav on
+   tt_sales_person.html) so one function covers every TT page's pill nav. Safe
+   no-op if the page has neither. ---------- */
+function initSectionScrollSpy(){
+  const navLinks = Array.from(document.querySelectorAll('.section-nav a, .l2-mini-nav-item'));
+  const anchors = navLinks
+    .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+    .filter(Boolean);
+  const headerWrap = document.getElementById('pageHeaderSticky');
+  if(!anchors.length || !navLinks.length || !headerWrap) return;
+  function setActive(id){
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+id));
+  }
+  let ticking = false;
+  function updateActive(){
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if(atBottom){ setActive(anchors[anchors.length-1].id); ticking = false; return; }
+    const buffer = headerWrap.getBoundingClientRect().height + 16;
+    let currentId = anchors[0].id;
+    anchors.forEach(a => { if(a.getBoundingClientRect().top <= buffer) currentId = a.id; });
+    setActive(currentId);
+    ticking = false;
+  }
+  window.addEventListener('scroll', ()=>{
+    if(!ticking){ requestAnimationFrame(updateActive); ticking = true; }
+  }, {passive:true});
+  updateActive();
+}

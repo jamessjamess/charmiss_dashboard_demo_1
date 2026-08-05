@@ -57,18 +57,27 @@ const MODULE_MAP = [
  * in the page's header markup) and wires open/close + click-to-navigate.
  * `currentKey` should match one of the MODULE_MAP item keys so that item is
  * marked as the current page and shown non-clickable.
+ *
+ * The closed button shows only the MODULE group name (e.g. "Sales Overview"),
+ * not "Sales Overview · Executive Outlook" — pages with a sub-module tab
+ * switcher next to this button already show the sub-module name there, so
+ * repeating it on the button as well just duplicates the same word twice.
+ * `currentLabel` is kept as a fallback (used only if `currentKey` doesn't
+ * match any MODULE_MAP item) so existing call sites don't need to change.
  */
 function renderNavMenu(currentKey, currentLabel){
   const mount = document.getElementById('navMenuMount');
   if(!mount) return;
 
   let groupsHtml = '';
+  let currentGroupLabel = currentLabel;
   MODULE_MAP.forEach(group=>{
     groupsHtml += '<div class="navmenu-group">' + group.group
       + (group.ready ? '' : ' <span class="badge-soon">Coming soon</span>')
       + '</div>';
     group.items.forEach(item=>{
       const isCurrent = item.key === currentKey;
+      if(isCurrent) currentGroupLabel = group.group;
       const disabled = !group.ready;
       groupsHtml += '<button type="button" class="navmenu-item" data-href="'+item.href+'" '
         + (disabled ? 'disabled' : '') + ' aria-current="'+(isCurrent?'true':'false')+'">'
@@ -76,10 +85,17 @@ function renderNavMenu(currentKey, currentLabel){
     });
   });
 
+  // Button label drops any "(...)" qualifier from the group name (e.g.
+  // "Sales Overview (Company-wide)" -> "Sales Overview") — that qualifier
+  // earns its place as a section heading inside the dropdown panel (it
+  // disambiguates group scope among several groups at once) but reads as
+  // clutter on the compact button, which only ever shows one group.
+  const btnLabel = (currentGroupLabel||'Navigate').replace(/\s*\([^)]*\)\s*$/, '');
+
   mount.innerHTML =
     '<div class="navmenu-wrap">'
     + '<button type="button" class="navmenu-btn" id="navMenuBtn">'
-    +   '<span id="navMenuBtnLabel">'+(currentLabel||'Navigate')+'</span>'
+    +   '<span id="navMenuBtnLabel">'+btnLabel+'</span>'
     +   '<span class="navmenu-caret">▾</span>'
     + '</button>'
     + '<div class="navmenu-panel" id="navMenuPanel">'+groupsHtml+'</div>'

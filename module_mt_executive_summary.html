@@ -10,70 +10,66 @@
 <body>
 <div class="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">C</div>
-      <div class="brand-name">Charmiss</div>
-      <div id="navMenuMount"></div>
-    </div>
-    <div class="user-area">
-      <div class="user-meta">
-        <div class="user-name">Nattapong V.</div>
-        <div class="user-role">VP of Sales</div>
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab active tab-link" href="module_mt_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="module_mt_breakdown.html">Breakdown</a>
+          <a class="tab tab-link" href="module_mt_store.html">Store</a>
+        </nav>
       </div>
-      <div class="avatar">NV</div>
-      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
-        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
-      </button>
+      <div class="user-area">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="avatar">NV</div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <nav class="section-nav">
+        <a href="#sec-exec-summary">Executive Summary</a>
+        <a href="#sec-key-account-portfolio">Key Account Portfolio</a>
+      </nav>
+      <div class="filter-left">
+        <span class="filter-label">Period</span>
+        <button class="period-btn" id="periodBtn">
+          <span id="periodBtnLabel">Year to Date</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="period-dropdown" id="periodDropdown">
+          <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+          <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+          <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+          <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+          <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+          <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+          <div class="period-divider"></div>
+          <div class="custom-range-label">Custom Range</div>
+          <div class="custom-range-row">
+            <select id="customFrom"></select>
+            <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+            <select id="customTo"></select>
+          </div>
+          <button class="apply-btn" id="applyCustom">Apply</button>
+        </div>
+      </div>
+      <div class="filter-scope">Company-wide, all key accounts</div>
     </div>
-  </header>
+  </div>
 
   <div class="breadcrumb"><a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">MT Overview</span></div>
-
-  <div class="page-head">
-    <div>
-      <h1 class="page-title">MT Overview — Executive Summary</h1>
-    </div>
-    <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
-  </div>
-
-  <nav class="tabs">
-    <a class="tab active tab-link" href="module_mt_executive_summary.html">Executive Summary</a>
-    <a class="tab tab-link" href="module_mt_breakdown.html">Breakdown</a>
-    <a class="tab tab-link" href="module_mt_store.html">Store</a>
-  </nav>
-
-  <div class="filterbar">
-    <div class="filter-left">
-      <span class="filter-label">Period</span>
-      <button class="period-btn" id="periodBtn">
-        <span id="periodBtnLabel">Year to Date</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
-      <div class="period-dropdown" id="periodDropdown">
-        <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
-        <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
-        <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
-        <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
-        <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
-        <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
-        <div class="period-divider"></div>
-        <div class="custom-range-label">Custom Range</div>
-        <div class="custom-range-row">
-          <select id="customFrom"></select>
-          <span style="color:var(--ink-3);font-size:11.5px;">to</span>
-          <select id="customTo"></select>
-        </div>
-        <button class="apply-btn" id="applyCustom">Apply</button>
-      </div>
-    </div>
-    <div class="filter-scope">Company-wide, all key accounts</div>
-  </div>
-
-  <nav class="section-nav">
-    <a href="#sec-exec-summary">Executive Summary</a>
-    <a href="#sec-key-account-portfolio">Key Account Portfolio</a>
-  </nav>
 
   <!-- ===== EXECUTIVE SUMMARY ===== -->
   <div class="section-label" id="sec-exec-summary">Executive Summary</div>
@@ -528,6 +524,32 @@ if (typeof renderNavMenu === 'function') {
 }
 initInfoPopovers();
 initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
+
+/* ---------- Menu bar collapse (same mechanism as sales_overview.html). ---------- */
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+initSectionScrollSpy();
 
 /* ---------- Custom range selects ---------- */
 const customFromSel = document.getElementById('customFrom');

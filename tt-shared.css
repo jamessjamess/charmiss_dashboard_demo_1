@@ -134,6 +134,46 @@
 
   h1{ font-size:22px; font-weight:650; letter-spacing:-0.01em; margin:0 0 4px; }
 
+  /* ---------- Sticky collapsible Menu Bar (2026-08-06) — ported from shared.css's
+     .page-header-sticky pattern (Sales Overview/MT/Ecom) so TT gets the same frozen
+     brand+tabs row, sticky anchor-nav/filters, and collapse toggle. .topbar loses its
+     bottom border/margin here since that's now owned by the sticky wrapper itself. */
+  .page-header-sticky{ position:sticky; top:0; z-index:50; background:var(--page); margin-bottom:20px; }
+  .page-header-sticky .topbar{ border-bottom:none; margin-bottom:0; padding-bottom:12px; }
+  .header-topbar-tabs{
+    display:inline-flex; gap:2px; padding:3px; background:var(--wash); border:1px solid var(--border);
+    border-radius:9px; margin-left:8px;
+  }
+  .header-topbar-tabs .page-tab{ font-size:12px; padding:6px 12px; }
+  @media (max-width:768px){ .header-topbar-tabs{ display:none; } }
+
+  .header-utility-row{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    max-height:200px; opacity:1; transition:max-height .2s ease, opacity .15s ease, padding .2s ease;
+    border-top:1px solid var(--hairline); padding-top:12px;
+  }
+  .menubar-collapsed .header-utility-row{ max-height:0; opacity:0; padding-top:0; border-top-color:transparent; overflow:hidden; }
+  .collapse-toggle-btn{
+    flex:none; width:34px; height:34px; padding:0; border-radius:50%;
+    border:1px solid var(--border-2); background:var(--card); color:var(--ink-2); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:transform .2s ease;
+  }
+  .collapse-toggle-btn:hover{ background:var(--wash); }
+  .collapse-toggle-btn svg{ width:16px; height:16px; display:block; }
+  .menubar-collapsed .collapse-toggle-btn svg{ transform:rotate(180deg); }
+  /* Filter/toolbar/mini-nav components keep their own margins when used standalone elsewhere;
+     zero them out here since .header-utility-row already supplies the row's spacing. Scoped to
+     min-width:621px so the Skyscanner-style mobile bottom-sheet (.filter-row below 620px, see
+     that @media block) keeps its own padding/background/border untouched. */
+  @media (min-width:621px){
+    .header-utility-row .filter-row,
+    .header-utility-row .sp-toolbar{ margin:0; border:none; padding:0; background:transparent; flex:1 1 auto; }
+  }
+  .header-utility-row .section-nav{ margin:0; }
+  .header-utility-row .l2-mini-nav{
+    position:static; margin:0; padding:0; border-bottom:none; background:transparent; will-change:auto;
+  }
+
   /* ---------- Filters ---------- */
   .filter-row{
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
@@ -459,6 +499,7 @@
     padding:5px 12px; border-radius:20px; background:var(--wash); border:1px solid transparent;
   }
   .l2-mini-nav-item:hover{ background:var(--brand-wash); color:var(--brand); border-color:var(--brand); }
+  .l2-mini-nav-item.active{ background:var(--brand-wash); color:var(--brand); border-color:var(--brand); }
 
   /* ---------- Donut chart (Level 1 Customer Group, 2026-07-26) ---------- */
   .donut-wrap{ display:flex; align-items:center; gap:20px; flex-wrap:wrap; margin-top:6px; }

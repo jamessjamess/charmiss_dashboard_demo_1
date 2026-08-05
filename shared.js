@@ -129,10 +129,22 @@ function buildLineChartSVG(containerId, opts){
   let allVals = [];
   series.forEach(s => s.data.forEach(v => { if(v!==null && v!==undefined) allVals.push(v); }));
   if(allVals.length===0) allVals = [0,1];
-  const dataMin = Math.min(0, ...allVals);
-  const dataMax = Math.max(...allVals);
-  const headroom = (dataMax-dataMin)*0.08 || Math.abs(dataMax)*0.08 || 1;
-  const nice = niceAxisTicks(dataMin, dataMax + headroom, 5);
+  // opts.domainMin/domainMax (optional, same convention as buildHBarCompareSVG)
+  // let a caller pin the Y-axis instead of always anchoring at 0 — needed for
+  // metrics that hover near a non-zero baseline (e.g. Attainment % around
+  // 100), where forcing 0 into the domain squashes all the real variation
+  // into a sliver at the top of the chart.
+  let nice;
+  if(opts.domainMin !== undefined || opts.domainMax !== undefined){
+    const dataMin = opts.domainMin !== undefined ? opts.domainMin : Math.min(0, ...allVals);
+    const dataMax = opts.domainMax !== undefined ? opts.domainMax : Math.max(...allVals);
+    nice = niceAxisTicks(dataMin, dataMax, 5);
+  } else {
+    const dataMin = Math.min(0, ...allVals);
+    const dataMax = Math.max(...allVals);
+    const headroom = (dataMax-dataMin)*0.08 || Math.abs(dataMax)*0.08 || 1;
+    nice = niceAxisTicks(dataMin, dataMax + headroom, 5);
+  }
   let yMin = nice.min, yMax = nice.max;
   if(yMax===yMin) yMax = yMin+1;
 
@@ -174,7 +186,15 @@ function buildLineChartSVG(containerId, opts){
   series.forEach(s=>{
     let d='', started=false, lastIdx=-1, firstIdx=-1;
     s.data.forEach((v,i)=>{
-      if(v===null || v===undefined){ started=false; return; }
+      // connectGaps (2026-08-06 fix): a series that only carries real values
+      // at two far-apart indices (e.g. a taper from the last actual month
+      // straight to a single year-end projection, nulls in between) needs
+      // those two points joined by one line — the default behavior resets
+      // `started` on every null so each real point after a gap starts a
+      // fresh, disconnected "M" subpath (rendered as two isolated dots, no
+      // visible line). Opt in per-series with connectGaps:true to skip nulls
+      // without breaking the path; every other caller is unaffected.
+      if(v===null || v===undefined){ if(!s.connectGaps) started=false; return; }
       const x=xAt(i), y=yAt(v);
       d += (started?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
       started = true; lastIdx = i;
@@ -478,7 +498,13 @@ function buildGroupedBarSVG(containerId, opts){
         // that could render legible text at all, so skip labels on that bar
         // entirely rather than paint illegible/overlapping glyphs — the
         // "view as table" toggle still has the exact numbers.
-        const compactLabels = barW < 55;
+        // opts.compactLabelWidth (optional) lets a caller lower this cutoff
+        // when it knows its own label text is short enough to stay safe at a
+        // narrower bar width than the 55px default assumes (e.g. "+฿6M" is
+        // nowhere near as wide as the generic case this constant guards
+        // against) — backward-compatible, unset callers keep 55 exactly as
+        // before.
+        const compactLabels = barW < (opts.compactLabelWidth !== undefined ? opts.compactLabelWidth : 55);
         if(compactLabels && lines.length>1) lines = [lines[0]];
         if(barW < 22) lines = [];
         const labelFontSize = barW < 30 ? 7.5 : 9;
@@ -1198,6 +1224,36 @@ function initInfoPopovers(){
     if(activeInfoIcon && !popoverEl.contains(e.target)) closePopover();
   });
   document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closePopover(); });
+}
+
+/* ---------- Section-nav scroll-spy (ported 2026-08-06 from sales_overview.html
+   so every page with a .section-nav inside .page-header-sticky gets the same
+   pink "active" pill following scroll position, not just Sales Overview).
+   Safe no-op if the page has no .section-nav or #pageHeaderSticky. ---------- */
+function initSectionScrollSpy(){
+  const navLinks = Array.from(document.querySelectorAll('.section-nav a'));
+  const anchors = navLinks
+    .map(a => document.getElementById(a.getAttribute('href').slice(1)))
+    .filter(Boolean);
+  const headerWrap = document.getElementById('pageHeaderSticky');
+  if(!anchors.length || !navLinks.length || !headerWrap) return;
+  function setActive(id){
+    navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#'+id));
+  }
+  let ticking = false;
+  function updateActive(){
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    if(atBottom){ setActive(anchors[anchors.length-1].id); ticking = false; return; }
+    const buffer = headerWrap.getBoundingClientRect().height + 16;
+    let currentId = anchors[0].id;
+    anchors.forEach(a => { if(a.getBoundingClientRect().top <= buffer) currentId = a.id; });
+    setActive(currentId);
+    ticking = false;
+  }
+  window.addEventListener('scroll', ()=>{
+    if(!ticking){ requestAnimationFrame(updateActive); ticking = true; }
+  }, {passive:true});
+  updateActive();
 }
 
 /* ---------- Dark mode toggle. SVG colors are baked in at render time (see

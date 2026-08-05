@@ -10,66 +10,69 @@
 <body>
 <div class="shell">
 
-  <div class="topbar">
-    <div>
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <div class="topbar">
       <div class="brand-block">
         <div class="brand-mark">C</div>
         <div>
           <div class="brand-name">Charmiss</div>
         </div>
         <div id="navMenuMount"></div>
+        <nav class="header-topbar-tabs">
+          <a class="page-tab tab-link" href="tt_executive_summary.html">Executive Summary</a>
+          <a class="page-tab tab-link" href="tt_breakdown.html">Breakdown</a>
+          <a class="page-tab active tab-link" href="tt_sales_person.html">Sales Person</a>
+        </nav>
       </div>
-      <div class="breadcrumb" style="margin-top:14px;">
-        <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
-      </div>
-      <h1>TT Overview — Sales Person</h1>
-    </div>
-    <div class="topbar-right">
-      <div class="user-info-row">
-        <div class="user-meta">
-          <div class="user-name">Nattapong V.</div>
-          <div class="user-role">VP of Sales</div>
+      <div class="topbar-right">
+        <div class="user-info-row">
+          <div class="user-meta">
+            <div class="user-name">Nattapong V.</div>
+            <div class="user-role">VP of Sales</div>
+          </div>
+          <div class="user-avatar-circle">NV</div>
+          <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
+          <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+          </button>
         </div>
-        <div class="user-avatar-circle">NV</div>
-        <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
       </div>
-      <div class="asof">Data as of Jun 30, 2026 (mock data)</div>
+    </div>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <!-- Round 26 (direct request): sticky shortcut sub-nav, same pattern as Sales Breakdown's
+           #l2MiniNav (reuses its CSS classes directly — nothing L2-specific about them). Now
+           lives in the shared collapsible header instead of its own independent sticky rule. -->
+      <div class="l2-mini-nav" id="l3MiniNav">
+        <a href="#l3Priority" class="l2-mini-nav-item">Priority Actions</a>
+        <a href="#l3Snapshot" class="l2-mini-nav-item">Sales Snapshot</a>
+        <a href="#l3Customers" class="l2-mini-nav-item">Customers &amp; Products</a>
+        <a href="#l3CN" class="l2-mini-nav-item">Credit Notes</a>
+      </div>
+      <div class="sp-toolbar" id="spToolbar">
+        <div class="filter-group">
+          <span class="filter-label">Sales Person</span>
+          <select class="filter-input" id="spRepSelect"></select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Year</span>
+          <select class="filter-input" id="spYearSelect"></select>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Month</span>
+          <select class="filter-input" id="spMonthSelect"></select>
+        </div>
+        <div class="filter-spacer"></div>
+        <div class="sp-identity-note">Auto-scoped to this Sales Person's assigned stores — no additional filtering needed</div>
+      </div>
     </div>
   </div>
 
-  <div class="page-switcher" role="tablist">
-    <a class="page-tab tab-link" href="tt_executive_summary.html" role="tab">Executive Summary</a>
-    <a class="page-tab tab-link" href="tt_breakdown.html" role="tab">Breakdown</a>
-    <a class="page-tab active tab-link" href="tt_sales_person.html" role="tab" aria-selected="true">Sales Person</a>
+  <div class="breadcrumb">
+    <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
   </div>
 
   <div id="pageSalesPerson" class="page-view">
-
-    <div class="sp-toolbar" id="spToolbar">
-      <div class="filter-group">
-        <span class="filter-label">Sales Person</span>
-        <select class="filter-input" id="spRepSelect"></select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Year</span>
-        <select class="filter-input" id="spYearSelect"></select>
-      </div>
-      <div class="filter-group">
-        <span class="filter-label">Month</span>
-        <select class="filter-input" id="spMonthSelect"></select>
-      </div>
-      <div class="filter-spacer"></div>
-      <div class="sp-identity-note">Auto-scoped to this Sales Person's assigned stores — no additional filtering needed</div>
-    </div>
-
-    <!-- Round 26 (direct request): sticky shortcut sub-nav, same pattern as Sales Breakdown's
-         #l2MiniNav (reuses its CSS classes directly — nothing L2-specific about them). -->
-    <div class="l2-mini-nav" id="l3MiniNav">
-      <a href="#l3Priority" class="l2-mini-nav-item">Priority Actions</a>
-      <a href="#l3Snapshot" class="l2-mini-nav-item">Sales Snapshot</a>
-      <a href="#l3Customers" class="l2-mini-nav-item">Customers &amp; Products</a>
-      <a href="#l3CN" class="l2-mini-nav-item">Credit Notes</a>
-    </div>
 
     <div class="grid">
       <!-- Round 31 direct feedback (Task 6): rebalanced from col-8/col-4 to col-6/col-6 now that
@@ -457,6 +460,32 @@
     renderSalesPersonPage();
     this.setAttribute("aria-label", this.title);
   });
+
+  /* ---- Menu bar collapse (same mechanism as sales_overview.html / shared.css pages) ---- */
+  (function initMenubarCollapse(){
+    const wrap = document.getElementById("pageHeaderSticky");
+    const btn = document.getElementById("menubarCollapseBtn");
+    if(!wrap || !btn) return;
+    const STORAGE_KEY = "charmiss_menubar_collapsed";
+    function updateScrollPadding(){
+      requestAnimationFrame(()=>{
+        document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + "px";
+      });
+    }
+    function setCollapsed(collapsed){
+      wrap.classList.toggle("menubar-collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      btn.title = collapsed ? "ขยาย Menu Bar" : "พับ Menu Bar";
+      try{ localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0"); }catch(e){}
+      updateScrollPadding();
+    }
+    let initial = false;
+    try{ initial = localStorage.getItem(STORAGE_KEY) === "1"; }catch(e){}
+    setCollapsed(initial);
+    btn.addEventListener("click", ()=> setCollapsed(!wrap.classList.contains("menubar-collapsed")));
+    window.addEventListener("resize", updateScrollPadding);
+  })();
+  initSectionScrollSpy();
 
   /* ---- User info is now plain, non-interactive text (2026-07-31) — no dropdown to wire up. ---- */
   document.addEventListener("click", (e) => {

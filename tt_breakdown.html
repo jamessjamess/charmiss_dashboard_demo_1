@@ -10,86 +10,95 @@
 <body>
 <div class="shell">
 
-  <div class="topbar">
-    <div>
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <div class="topbar">
       <div class="brand-block">
         <div class="brand-mark">C</div>
         <div>
           <div class="brand-name">Charmiss</div>
         </div>
         <div id="navMenuMount"></div>
+        <nav class="header-topbar-tabs">
+          <a class="page-tab tab-link" href="tt_executive_summary.html">Executive Summary</a>
+          <a class="page-tab active tab-link" href="tt_breakdown.html">Breakdown</a>
+          <a class="page-tab tab-link" href="tt_sales_person.html">Sales Person</a>
+        </nav>
       </div>
-      <div class="breadcrumb" style="margin-top:14px;">
-        <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
-      </div>
-      <h1>TT Overview — Breakdown</h1>
-    </div>
-    <div class="topbar-right">
-      <div class="user-info-row">
-        <div class="user-meta">
-          <div class="user-name">Nattapong V.</div>
-          <div class="user-role">VP of Sales</div>
-        </div>
-        <div class="user-avatar-circle">NV</div>
-        <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
-      </div>
-      <div class="asof">Data as of Jun 30, 2026 (mock data)</div>
-    </div>
-  </div>
-
-  <div class="page-switcher" role="tablist">
-    <a class="page-tab tab-link" href="tt_executive_summary.html" role="tab">Executive Summary</a>
-    <a class="page-tab active tab-link" href="tt_breakdown.html" role="tab" aria-selected="true">Breakdown</a>
-    <a class="page-tab tab-link" href="tt_sales_person.html" role="tab">Sales Person</a>
-  </div>
-
-  <button class="mobile-filter-trigger" id="mobileFilterTrigger" type="button">
-    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
-    <span>Filters</span>
-    <span class="mobile-filter-badge" id="mobileFilterBadge" style="display:none;">0</span>
-  </button>
-  <div class="mobile-filter-backdrop" id="mobileFilterBackdrop"></div>
-
-  <div class="filter-row" id="filterRow">
-    <div class="mobile-filter-sheet-head">
-      <span>Filters</span>
-      <button type="button" id="mobileFilterCloseBtn" aria-label="Close filters">
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
-      </button>
-    </div>
-    <div class="filter-group">
-      <span class="filter-label">Period</span>
-      <button class="date-trigger" id="dateTrigger" type="button" aria-haspopup="true" aria-expanded="false">
-        <span id="dateTriggerLabel">Year to Date</span><span class="caret">▾</span>
-      </button>
-      <div class="date-panel" id="datePanel" role="menu">
-        <div id="datePresetList"></div>
-        <div class="date-custom">
-          <div class="date-custom-label">Custom range</div>
-          <div class="date-custom-row">
-            <select id="customFrom"></select>
-            <span style="color:var(--ink-3);font-size:12px;">to</span>
-            <select id="customTo"></select>
+      <div class="topbar-right">
+        <div class="user-info-row">
+          <div class="user-meta">
+            <div class="user-name">Nattapong V.</div>
+            <div class="user-role">VP of Sales</div>
           </div>
-          <button class="date-apply" id="dateApply" type="button">Apply</button>
+          <div class="user-avatar-circle">NV</div>
+          <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
+          <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+          </button>
         </div>
       </div>
     </div>
-    <div class="filter-group" id="filterGroupRegion">
-      <span class="filter-label">Region</span>
-      <select class="filter-input" id="regionFilter"></select>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <div class="l2-mini-nav" id="l2MiniNav">
+        <a href="#l2Quality" class="l2-mini-nav-item">Portfolio Quality</a>
+        <a href="#l2Team" class="l2-mini-nav-item">Team</a>
+        <a href="#l2Customer" class="l2-mini-nav-item">Customer</a>
+        <a href="#l2Product" class="l2-mini-nav-item">Product</a>
+      </div>
+      <button class="mobile-filter-trigger" id="mobileFilterTrigger" type="button">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
+        <span>Filters</span>
+        <span class="mobile-filter-badge" id="mobileFilterBadge" style="display:none;">0</span>
+      </button>
+      <div class="mobile-filter-backdrop" id="mobileFilterBackdrop"></div>
+
+      <div class="filter-row" id="filterRow">
+        <div class="mobile-filter-sheet-head">
+          <span>Filters</span>
+          <button type="button" id="mobileFilterCloseBtn" aria-label="Close filters">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Period</span>
+          <button class="date-trigger" id="dateTrigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span id="dateTriggerLabel">Year to Date</span><span class="caret">▾</span>
+          </button>
+          <div class="date-panel" id="datePanel" role="menu">
+            <div id="datePresetList"></div>
+            <div class="date-custom">
+              <div class="date-custom-label">Custom range</div>
+              <div class="date-custom-row">
+                <select id="customFrom"></select>
+                <span style="color:var(--ink-3);font-size:12px;">to</span>
+                <select id="customTo"></select>
+              </div>
+              <button class="date-apply" id="dateApply" type="button">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group" id="filterGroupRegion">
+          <span class="filter-label">Region</span>
+          <select class="filter-input" id="regionFilter"></select>
+        </div>
+        <div class="filter-group" id="filterGroupCategory">
+          <span class="filter-label">Category</span>
+          <select class="filter-input" id="categoryFilter"></select>
+        </div>
+        <div class="filter-group" id="filterGroupPerson">
+          <span class="filter-label">Sales Person</span>
+          <select class="filter-input" id="repFilter"></select>
+        </div>
+        <div class="filter-spacer"></div>
+        <div class="filter-note" id="filterNote">Scopes the KPIs and charts below</div>
+        <button type="button" class="mobile-filter-apply-btn" id="mobileFilterApplyBtn">Show Results</button>
+      </div>
     </div>
-    <div class="filter-group" id="filterGroupCategory">
-      <span class="filter-label">Category</span>
-      <select class="filter-input" id="categoryFilter"></select>
-    </div>
-    <div class="filter-group" id="filterGroupPerson">
-      <span class="filter-label">Sales Person</span>
-      <select class="filter-input" id="repFilter"></select>
-    </div>
-    <div class="filter-spacer"></div>
-    <div class="filter-note" id="filterNote">Scopes the KPIs and charts below</div>
-    <button type="button" class="mobile-filter-apply-btn" id="mobileFilterApplyBtn">Show Results</button>
+  </div>
+
+  <div class="breadcrumb">
+    <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
   </div>
 
   <div id="pageBreakdown" class="page-view">
@@ -144,13 +153,6 @@
     <div id="trendChart"></div>
     <div id="trendTable"></div>
     <div id="trendTopline"></div>
-  </div>
-
-  <div class="l2-mini-nav" id="l2MiniNav">
-    <a href="#l2Quality" class="l2-mini-nav-item">Portfolio Quality</a>
-    <a href="#l2Team" class="l2-mini-nav-item">Team</a>
-    <a href="#l2Customer" class="l2-mini-nav-item">Customer</a>
-    <a href="#l2Product" class="l2-mini-nav-item">Product</a>
   </div>
 
   <!-- ============ Portfolio Quality (regrouped 2026-07-26 — was "Portfolio Health" minus
@@ -665,6 +667,32 @@
     render();
     this.setAttribute("aria-label", this.title);
   });
+
+  /* ---- Menu bar collapse (same mechanism as sales_overview.html / shared.css pages) ---- */
+  (function initMenubarCollapse(){
+    const wrap = document.getElementById("pageHeaderSticky");
+    const btn = document.getElementById("menubarCollapseBtn");
+    if(!wrap || !btn) return;
+    const STORAGE_KEY = "charmiss_menubar_collapsed";
+    function updateScrollPadding(){
+      requestAnimationFrame(()=>{
+        document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + "px";
+      });
+    }
+    function setCollapsed(collapsed){
+      wrap.classList.toggle("menubar-collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      btn.title = collapsed ? "ขยาย Menu Bar" : "พับ Menu Bar";
+      try{ localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0"); }catch(e){}
+      updateScrollPadding();
+    }
+    let initial = false;
+    try{ initial = localStorage.getItem(STORAGE_KEY) === "1"; }catch(e){}
+    setCollapsed(initial);
+    btn.addEventListener("click", ()=> setCollapsed(!wrap.classList.contains("menubar-collapsed")));
+    window.addEventListener("resize", updateScrollPadding);
+  })();
+  initSectionScrollSpy();
 
   /* ---- User info is now plain, non-interactive text (2026-07-31) — no dropdown to wire up. ---- */
   document.addEventListener("click", (e) => {
