@@ -183,7 +183,8 @@ function buildLineChartSVG(containerId, opts){
   });
 
   let seriesSvg = '';
-  series.forEach(s=>{
+  const hasMarkers = series.some(s=>s.markers);
+  series.forEach((s,seriesIdx)=>{
     let d='', started=false, lastIdx=-1, firstIdx=-1;
     s.data.forEach((v,i)=>{
       // connectGaps (2026-08-06 fix): a series that only carries real values
@@ -205,6 +206,25 @@ function buildLineChartSVG(containerId, opts){
       seriesSvg += '<path d="'+areaD+'" fill="'+s.color+'" opacity="0.12" stroke="none"/>';
     }
     seriesSvg += '<path d="'+d.trim()+'" fill="none" stroke="'+s.color+'" stroke-width="'+(s.width||2.2)+'" stroke-dasharray="'+(s.dash||'')+'" stroke-opacity="'+(s.opacity!==undefined?s.opacity:1)+'" stroke-linecap="round" stroke-linejoin="round"/>';
+    // Per-point hit/miss markers (2026-08-06) — opt-in via s.markers, a
+    // parallel array to s.data where markers[i] is either null (skip, e.g. a
+    // future month with no actual yet) or {hit:boolean, tooltip:htmlString}.
+    // hit draws a solid dot in the series' own color; miss draws a hollow
+    // ring in --critical so a below-target month reads as a warning without
+    // introducing a whole new line/color into the chart.
+    if(s.markers){
+      s.data.forEach((v,i)=>{
+        if(v===null || v===undefined) return;
+        const mk = s.markers[i];
+        if(!mk) return;
+        const x=xAt(i), y=yAt(v);
+        if(mk.hit){
+          seriesSvg += '<circle class="marker-dot" data-si="'+seriesIdx+'" data-pi="'+i+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="'+s.color+'" stroke="none" style="cursor:pointer;"/>';
+        } else {
+          seriesSvg += '<circle class="marker-dot" data-si="'+seriesIdx+'" data-pi="'+i+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="'+(cssVar('--card')||'#fff')+'" stroke="'+(cssVar('--critical')||'#d03b3b')+'" stroke-width="2" style="cursor:pointer;"/>';
+        }
+      });
+    }
     if(s.showLastLabel && lastIdx>=0){
       const x=xAt(lastIdx), y=yAt(s.data[lastIdx]);
       // Fix (2026-08-03): lastLabelFormatter now also receives the point's
@@ -214,13 +234,39 @@ function buildLineChartSVG(containerId, opts){
       const label = s.lastLabelFormatter(s.data[lastIdx], lastIdx);
       const anchor = x>width-64 ? 'end' : 'start';
       const lx = anchor==='end' ? x-6 : x+6;
-      seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+s.color+'"/>';
+      if(!s.markers) seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+s.color+'"/>';
       seriesSvg += '<text x="'+lx.toFixed(1)+'" y="'+(y-8).toFixed(1)+'" font-size="10.5" font-weight="700" fill="'+s.color+'" text-anchor="'+anchor+'">'+label+'</text>';
     }
   });
 
   const svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+xLabelSvg+seriesSvg+'</svg>';
   document.getElementById(containerId).innerHTML = svg;
+
+  /* Hover wiring for marker dots — reuses the same shared tooltip element
+     buildStreamAreaSVG uses (see ensureChartTooltip below), just triggered
+     per-circle instead of by nearest-month mousemove math. */
+  if(hasMarkers){
+    const tooltip = ensureChartTooltip();
+    container.onmouseover = (e)=>{
+      const dot = e.target.closest('.marker-dot');
+      if(!dot) return;
+      const si = +dot.dataset.si, pi = +dot.dataset.pi;
+      const mk = series[si] && series[si].markers && series[si].markers[pi];
+      if(!mk || !mk.tooltip) return;
+      tooltip.innerHTML = mk.tooltip;
+      const pw = 220;
+      let left = e.clientX + 14;
+      if(left + pw > window.innerWidth - 12) left = e.clientX - pw - 14;
+      let top = e.clientY + 14;
+      if(top + 120 > window.innerHeight - 12) top = e.clientY - 130;
+      tooltip.style.left = Math.max(12,left) + 'px';
+      tooltip.style.top = Math.max(12,top) + 'px';
+      tooltip.classList.add('show');
+    };
+    container.onmouseout = (e)=>{
+      if(e.target.closest('.marker-dot')) tooltip.classList.remove('show');
+    };
+  }
 }
 
 /* ---------- Custom donut chart (self-contained SVG) ---------- */
@@ -270,7 +316,7 @@ function buildHBarCompareSVG(containerId, items, opts){
   const width = opts.width || measuredWidth || 480;
   const rowHeight = opts.rowHeight || 44;
   const formatValue = opts.formatValue || (v => v);
-  const labelW = opts.labelW || 90, valueW = 64, padX = 10;
+  const labelW = opts.labelW || 90, valueW = opts.valueW || 64, padX = 10;
   const plotW = width - labelW - valueW - padX*2;
   /* Fix (2026-08-04): this function used to draw *only* a single dashed
      reference line with no tick marks/gridlines/axis labels anywhere on the
@@ -330,7 +376,16 @@ function buildHBarCompareSVG(containerId, items, opts){
     const x0 = Math.min(refX, barX), barW = Math.max(1, Math.abs(barX-refX));
     rows += '<text x="'+(labelW-8)+'" y="'+(y+rowHeight/2+4)+'" font-size="12" text-anchor="end" fill="'+cssVar('--ink-2')+'">'+it.label+'</text>';
     rows += '<rect x="'+x0.toFixed(1)+'" y="'+barY.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+barH.toFixed(1)+'" rx="4" fill="'+it.color+'"/>';
-    rows += '<text x="'+(width-valueW+8)+'" y="'+(y+rowHeight/2+4)+'" font-size="12.5" font-weight="700" fill="'+cssVar('--ink-1')+'">'+formatValue(it.value)+'</text>';
+    // it.subLabel (2026-08-06) — optional second, smaller line under the main
+    // value (e.g. "+฿582.1K over target"), for callers that want the raw ฿
+    // gap alongside the % — existing callers without it keep the exact
+    // single centered line as before.
+    if(it.subLabel){
+      rows += '<text x="'+(width-valueW+8)+'" y="'+(y+rowHeight/2-3)+'" font-size="12.5" font-weight="700" fill="'+cssVar('--ink-1')+'">'+formatValue(it.value)+'</text>';
+      rows += '<text x="'+(width-valueW+8)+'" y="'+(y+rowHeight/2+13)+'" font-size="10" fill="'+(it.subLabelColor||cssVar('--ink-3'))+'">'+it.subLabel+'</text>';
+    } else {
+      rows += '<text x="'+(width-valueW+8)+'" y="'+(y+rowHeight/2+4)+'" font-size="12.5" font-weight="700" fill="'+cssVar('--ink-1')+'">'+formatValue(it.value)+'</text>';
+    }
   });
   const refLine = '<line x1="'+refX.toFixed(1)+'" y1="0" x2="'+refX.toFixed(1)+'" y2="'+rowsH+'" stroke="'+cssVar('--ink-1')+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
 
@@ -409,23 +464,37 @@ function buildGroupedBarSVG(containerId, opts){
   let allVals = [];
   series.forEach(s => s.values.forEach(v => allVals.push(v)));
   if(allVals.length===0) allVals=[baseline, baseline+1];
-  // Domain is centered around the baseline (0, or 100 for a diverging-from-100
-  // index chart) rather than always forcing 0 in — otherwise a chart whose
-  // values cluster around 100 would render as a sliver at the very top of a
-  // 0-130 range instead of a proper diverging chart.
-  let rawMin = Math.min(baseline, ...allVals), rawMax = Math.max(baseline, ...allVals);
-  if(rawMax===rawMin) rawMax = rawMin+1;
-  const span = rawMax-rawMin;
-  // Only pad *below* the baseline if some value actually sits below it (e.g.
-  // an index chart diverging under 100) — otherwise a plain 0-anchored bar
-  // chart (all values positive) would get a nonsensical negative tick like
-  // "-20M" from padding underneath a floor nothing ever reaches.
-  const padBelow = rawMin < baseline ? span*0.18 : 0;
-  const padAbove = span*0.18;
-  // Fix (2026-08-03): ticks now come from niceAxisTicks (clean round numbers)
-  // instead of splitting raw min/max into 4 even fractions — same fix as
-  // buildLineChartSVG, applied here too since this function shares the bug.
-  const nice = niceAxisTicks(rawMin-padBelow, rawMax+padAbove, 5);
+  // opts.domainMin/domainMax (2026-08-06, same convention as
+  // buildLineChartSVG's own fix) — a diverging-from-100 attainment-% chart
+  // whose real values all cluster within a point or two of the baseline
+  // would otherwise auto-fit to that tiny span (e.g. 100-102%), rendering a
+  // technically-correct but meaningless zoomed-in chart with duplicate
+  // rounded axis labels. Opt-in per caller; unset callers keep the exact
+  // auto-fit behavior below.
+  let nice;
+  if(opts.domainMin !== undefined || opts.domainMax !== undefined){
+    const dataMin = opts.domainMin !== undefined ? opts.domainMin : Math.min(baseline, ...allVals);
+    const dataMax = opts.domainMax !== undefined ? opts.domainMax : Math.max(baseline, ...allVals);
+    nice = niceAxisTicks(dataMin, dataMax, 5);
+  } else {
+    // Domain is centered around the baseline (0, or 100 for a diverging-from-100
+    // index chart) rather than always forcing 0 in — otherwise a chart whose
+    // values cluster around 100 would render as a sliver at the very top of a
+    // 0-130 range instead of a proper diverging chart.
+    let rawMin = Math.min(baseline, ...allVals), rawMax = Math.max(baseline, ...allVals);
+    if(rawMax===rawMin) rawMax = rawMin+1;
+    const span = rawMax-rawMin;
+    // Only pad *below* the baseline if some value actually sits below it (e.g.
+    // an index chart diverging under 100) — otherwise a plain 0-anchored bar
+    // chart (all values positive) would get a nonsensical negative tick like
+    // "-20M" from padding underneath a floor nothing ever reaches.
+    const padBelow = rawMin < baseline ? span*0.18 : 0;
+    const padAbove = span*0.18;
+    // Fix (2026-08-03): ticks now come from niceAxisTicks (clean round numbers)
+    // instead of splitting raw min/max into 4 even fractions — same fix as
+    // buildLineChartSVG, applied here too since this function shares the bug.
+    nice = niceAxisTicks(rawMin-padBelow, rawMax+padAbove, 5);
+  }
   let yMin = nice.min, yMax = nice.max;
   if(yMax===yMin) yMax = yMin+1;
   const yAt = v => padT + (1-(v-yMin)/(yMax-yMin))*plotH;
@@ -458,7 +527,8 @@ function buildGroupedBarSVG(containerId, opts){
   const barW = Math.max(2, (groupW - barGap*(seriesCount+1))/seriesCount);
   const valueLabelFormatter = opts.valueLabelFormatter || yFormatter;
 
-  let bars = '', xLabels = '', valueLabels = '';
+  let bars = '', xLabels = '', valueLabels = '', tickMarks = '';
+  const goodTextVar = cssVar('--good-text') || '#006300', criticalVar = cssVar('--critical') || '#d03b3b';
   labels.forEach((lb,gi)=>{
     const groupX = padL + gi*(groupW+groupGap);
     series.forEach((s,si)=>{
@@ -467,15 +537,36 @@ function buildGroupedBarSVG(containerId, opts){
       const y1 = yAt(val);
       const y0 = Math.min(y1, baseY);
       const h = Math.max(0.5, Math.abs(y1-baseY));
-      const color = opts.colorFn ? opts.colorFn(s, val) : s.color;
+      // colorFn now also receives gi (2026-08-06) so a caller with a single
+      // series spanning multiple groups (e.g. one "This Year" bar per
+      // channel) can color each bar by its own group instead of every bar
+      // sharing the series' one color — existing callers reading only the
+      // first two args are unaffected.
+      const color = opts.colorFn ? opts.colorFn(s, val, gi) : s.color;
       // data-gi (2026-08-05): harmless group-index attribute on every bar, so
       // a caller that wants drill-through-on-click (e.g. Store Productivity
       // Distribution → "which stores are in this bucket") can attach its own
       // delegated click listener afterward without this function needing to
       // know anything about that use case. opts.clickableBars just adds a
       // pointer cursor as a visual affordance; everything still renders
-      // exactly as before for callers that don't set it.
-      bars += '<rect data-gi="'+gi+'" x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"'+(opts.clickableBars?' style="cursor:pointer;"':'')+'/>';
+      // exactly as before for callers that don't set it. opts.tooltips (new,
+      // 2026-08-06) does the same cursor affordance, plus wires the shared
+      // hover tooltip below.
+      bars += '<rect data-gi="'+gi+'" x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"'+((opts.clickableBars||opts.tooltips)?' style="cursor:pointer;"':'')+'/>';
+      // opts.tickValues (2026-08-06) — a short horizontal tick mark drawn on
+      // top of series index 0's bar at a given value, colored green/red by
+      // hit/miss. Built for "Net Sales vs Target by Channel": the bar itself
+      // stays the channel's own brand color (unlike buildBulletBarSVG, which
+      // colors the whole bar green/red) — only this tick carries the
+      // hit/miss signal, so Target can be dropped as its own bar without
+      // losing the at-a-glance hit/miss read.
+      if(si===0 && opts.tickValues && opts.tickValues[gi]){
+        const tick = opts.tickValues[gi];
+        const tickY = yAt(tick.value);
+        const tickW = barW + 6;
+        const tickColor = tick.hit ? goodTextVar : criticalVar;
+        tickMarks += '<rect x="'+(barX+barW/2-tickW/2).toFixed(1)+'" y="'+(tickY-1.4).toFixed(1)+'" width="'+tickW.toFixed(1)+'" height="2.8" rx="1.2" fill="'+tickColor+'"/>';
+      }
       if(opts.showValueLabels){
         const above = val >= baseline;
         // Fix (2026-08-03): valueLabelFormatter can now return either a plain
@@ -509,12 +600,28 @@ function buildGroupedBarSVG(containerId, opts){
         if(barW < 22) lines = [];
         const labelFontSize = barW < 30 ? 7.5 : 9;
         const lineH = labelFontSize + 1;
+        // opts.insideBarLabels (2026-08-06) — centers the label stack inside
+        // the bar itself (vertically, around the bar's midpoint) instead of
+        // floating above/below its end — for a bar tall enough to hold text
+        // (e.g. a 0-anchored Attainment % bar that fills most of the plot
+        // height), this reads as data printed on the bar rather than a
+        // caption hovering near it. Existing above/below positioning is
+        // unchanged for callers that don't set this.
+        const insideFontSize = opts.insideBarLabels ? Math.min(13, labelFontSize+3) : labelFontSize;
+        const insideLineH = insideFontSize + 2;
+        // Fix: y0 is already the bar's top edge (Math.min(y1,baseY) collapses
+        // to y1 whenever the bar grows upward from the baseline, i.e. every
+        // 0-anchored positive-value bar), so (y0+y1)/2 was just y0/y1 again —
+        // the true vertical center of the rect is y0 + half its height.
+        const barMidY = y0 + h/2;
         lines.forEach((ln, li)=>{
           const isObj = ln && typeof ln === 'object';
           const text = isObj ? ln.text : ln;
-          const fillColor = isObj && ln.color ? ln.color : color;
-          const ly = above ? (y1-4-(lines.length-1-li)*lineH) : (y1+11+li*lineH);
-          valueLabels += '<text x="'+(barX+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+labelFontSize+'" font-weight="700" text-anchor="middle" fill="'+fillColor+'">'+text+'</text>';
+          const fillColor = opts.insideBarLabels ? (isObj && ln.insideColor ? ln.insideColor : '#fff') : (isObj && ln.color ? ln.color : color);
+          const ly = opts.insideBarLabels
+            ? barMidY - ((lines.length-1)*insideLineH)/2 + li*insideLineH + insideFontSize*0.32
+            : (above ? (y1-4-(lines.length-1-li)*lineH) : (y1+11+li*lineH));
+          valueLabels += '<text x="'+(barX+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+(opts.insideBarLabels?insideFontSize:labelFontSize)+'" font-weight="700" text-anchor="middle" fill="'+fillColor+'">'+text+'</text>';
         });
       }
     });
@@ -522,6 +629,16 @@ function buildGroupedBarSVG(containerId, opts){
   });
 
   const refLine = '<line x1="'+padL+'" y1="'+baseY.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+baseY.toFixed(1)+'" stroke="'+(opts.referenceValue!==undefined?inkOne:hairline)+'" stroke-width="1.3" stroke-dasharray="'+(opts.referenceValue!==undefined?'4,3':'none')+'"/>';
+  // opts.targetLine (2026-08-06) — an independent dashed reference line at a
+  // fixed value, separate from opts.referenceValue (which also controls
+  // where bars are anchored/measured from). Lets a caller keep bars
+  // 0-anchored while still marking a target value (e.g. 100% attainment)
+  // as a dashed line partway up the chart.
+  let targetLineSvg = '';
+  if(opts.targetLine !== undefined){
+    const tly = yAt(opts.targetLine);
+    targetLineSvg = '<line x1="'+padL+'" y1="'+tly.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+tly.toFixed(1)+'" stroke="'+inkOne+'" stroke-width="1.3" stroke-dasharray="4,3"/>';
+  }
 
   let yTitleSvg = '';
   if(opts.yAxisTitle){
@@ -530,7 +647,33 @@ function buildGroupedBarSVG(containerId, opts){
   }
 
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+bars+valueLabels+xLabels+yTitleSvg+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+refLine+targetLineSvg+bars+tickMarks+valueLabels+xLabels+yTitleSvg+'</svg>';
+
+  // opts.tooltips (2026-08-06) — one HTML string per group (data-gi), shown
+  // on hover via the same shared tooltip element buildLineChartSVG's markers
+  // and buildStreamAreaSVG both already use.
+  if(opts.tooltips){
+    const tooltip = ensureChartTooltip();
+    container.onmouseover = (e)=>{
+      const bar = e.target.closest('rect[data-gi]');
+      if(!bar) return;
+      const gi = +bar.dataset.gi;
+      const html = opts.tooltips[gi];
+      if(!html) return;
+      tooltip.innerHTML = html;
+      const pw = 220;
+      let left = e.clientX + 14;
+      if(left + pw > window.innerWidth - 12) left = e.clientX - pw - 14;
+      let top = e.clientY + 14;
+      if(top + 140 > window.innerHeight - 12) top = e.clientY - 150;
+      tooltip.style.left = Math.max(12,left) + 'px';
+      tooltip.style.top = Math.max(12,top) + 'px';
+      tooltip.classList.add('show');
+    };
+    container.onmouseout = (e)=>{
+      if(e.target.closest('rect[data-gi]')) tooltip.classList.remove('show');
+    };
+  }
 }
 
 /* ---------- Bullet bar chart (Actual bar colored green/red by hit-or-miss +
@@ -657,8 +800,15 @@ function buildScatterSVG(containerId, points, opts){
   // of splitting the padded raw min/max into 4 even fractions, which used to
   // print confusing values like "฿7.3M" / "-9.0%". Same fix already applied
   // to buildLineChartSVG/buildGroupedBarSVG/buildWaterfallSVG.
-  const niceX = niceAxisTicks(rawXMin-xPad, rawXMax+xPad, 5);
-  const niceY = niceAxisTicks(rawYMin-yPad, rawYMax+yPad, 5);
+  // opts.xDomainMin/xDomainMax (2026-08-06) — the "|| fallback" padding above
+  // only kicks in when the raw span is EXACTLY 0; a near-but-not-quite-equal
+  // spread (e.g. 100.75-101.16, a few points all clustered near a shared
+  // target) still takes the *0.18 branch, producing a padding of a few
+  // hundredths of a percent — a duplicate-tick axis exactly like the
+  // bar/line chart fix elsewhere on this page. Opt in per-axis; unset
+  // callers keep the exact auto-fit behavior above.
+  const niceX = niceAxisTicks(opts.xDomainMin !== undefined ? opts.xDomainMin : rawXMin-xPad, opts.xDomainMax !== undefined ? opts.xDomainMax : rawXMax+xPad, 5);
+  const niceY = niceAxisTicks(opts.yDomainMin !== undefined ? opts.yDomainMin : rawYMin-yPad, opts.yDomainMax !== undefined ? opts.yDomainMax : rawYMax+yPad, 5);
   let xMin = niceX.min, xMax = niceX.max;
   let yMin = niceY.min, yMax = niceY.max;
   if(xMax===xMin) xMax = xMin+1;
@@ -728,6 +878,7 @@ function buildScatterSVG(containerId, points, opts){
     return (nearTop && (nearLeft || nearRight)) || (nearBottom && (nearLeft || nearRight));
   }
   const scatterFontFamily = (container && getComputedStyle(container).fontFamily) || 'sans-serif';
+  let pIdx = 0;
   points.forEach(p=>{
     const cx = xAt(p.x), cy = yAt(p.y);
     const halfW = measureTextWidth(p.label, 10.5, '700', scatterFontFamily)/2 + 3, halfH = 8;
@@ -742,8 +893,11 @@ function buildScatterSVG(containerId, points, opts){
     }
     if(!chosen){ const c = CANDIDATES[1]; const lx=cx+c.dx, ly=cy+c.dy; chosen = {lx, ly, box:{x0:lx-halfW,x1:lx+halfW,y0:ly-halfH-2,y1:ly+halfH-2}}; }
     placedBoxes.push(chosen.box);
-    svg += '<circle cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"/>';
+    // data-pidx (2026-08-06) — lets opts.tooltips below find the right point
+    // by array index on hover; harmless when opts.tooltips isn't set.
+    svg += '<circle class="scatter-dot" data-pidx="'+pIdx+'" cx="'+cx.toFixed(1)+'" cy="'+cy.toFixed(1)+'" r="'+(p.r||7)+'" fill="'+p.color+'" opacity="0.88"'+(opts.tooltips?' style="cursor:pointer;"':'')+'/>';
     svg += '<text x="'+chosen.lx.toFixed(1)+'" y="'+chosen.ly.toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkTwo+'">'+p.label+'</text>';
+    pIdx++;
   });
 
   /* --- Axis titles: real chart-axis labels, not a caption floated outside the
@@ -759,6 +913,31 @@ function buildScatterSVG(containerId, points, opts){
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+
+  // opts.tooltips (2026-08-06) — one HTML string per point (by array index,
+  // matches data-pidx above), shown via the same shared tooltip element the
+  // line/bar chart hover markers already use.
+  if(opts.tooltips){
+    const tooltip = ensureChartTooltip();
+    container.onmouseover = (e)=>{
+      const dot = e.target.closest('circle[data-pidx]');
+      if(!dot) return;
+      const html = opts.tooltips[+dot.dataset.pidx];
+      if(!html) return;
+      tooltip.innerHTML = html;
+      const pw = 220;
+      let left = e.clientX + 14;
+      if(left + pw > window.innerWidth - 12) left = e.clientX - pw - 14;
+      let top = e.clientY + 14;
+      if(top + 140 > window.innerHeight - 12) top = e.clientY - 150;
+      tooltip.style.left = Math.max(12,left) + 'px';
+      tooltip.style.top = Math.max(12,top) + 'px';
+      tooltip.classList.add('show');
+    };
+    container.onmouseout = (e)=>{
+      if(e.target.closest('circle[data-pidx]')) tooltip.classList.remove('show');
+    };
+  }
 }
 
 /* ---------- Trajectory sparkline — solid line through actual months, dashed

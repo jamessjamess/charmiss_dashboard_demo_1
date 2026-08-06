@@ -355,7 +355,7 @@ const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct',
 const monthLabels = [];
 for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
 
-function genSeries(base, growthPerMonth){
+function genSeries(base, growthPerMonth, targetBoostFn){
   const actual = [], target = [];
   let level = base;
   for(let i=0;i<MONTHS_TOTAL;i++){
@@ -367,12 +367,19 @@ function genSeries(base, growthPerMonth){
     const noiseA = 0.94 + rand()*0.12;
     const noiseT = 0.97 + rand()*0.05;
     actual.push(Math.round(level * seasonal * noiseA));
-    target.push(Math.round(level * seasonal * noiseT));
+    // targetBoostFn (2026-08-06, "Target ของ 2026 อาจจะมีบาง Channel ได้ 80%")
+    // — optional, consumes no rand() calls, so the rand() sequence stays
+    // byte-identical to before. MT's 2026 target boosted below to match
+    // the same change made in sales_overview.html/module_mt_breakdown.html/
+    // etc. (see Charmiss_Dashboard_Spec.md) — MT is the only channel this
+    // file generates, so the ~80% YTD attainment shown elsewhere for MT
+    // stays consistent with this file's own numbers.
+    target.push(Math.round(level * seasonal * noiseT * (targetBoostFn ? targetBoostFn(i) : 1)));
     level = level * (1 + growthPerMonth);
   }
   return {actual, target};
 }
-const mtSeries = genSeries(8200000, 0.0090);
+const mtSeries = genSeries(8200000, 0.0090, i=>i>=24?1.25:1);
 const groupActual = { MT: mtSeries.actual };
 const groupTarget = { MT: mtSeries.target };
 

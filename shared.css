@@ -182,6 +182,7 @@ button,select{font-family:inherit;}
 .tool-btn svg{width:13px;height:13px;}
 .canvas-wrap{position:relative;height:210px;}
 .canvas-wrap.hidden{display:none;}
+.hidden{display:none;}
 .data-table-wrap{display:none;max-height:225px;overflow:auto;}
 .data-table-wrap.visible{display:block;}
 .mini-table{width:100%;border-collapse:collapse;font-size:11.5px;}
@@ -371,6 +372,58 @@ button,select{font-family:inherit;}
 
 .callout-text{background:var(--wash);border-radius:8px;padding:10px 14px;font-size:12.5px;color:var(--ink-2);margin-bottom:14px;line-height:1.6;}
 .callout-text b{color:var(--ink-1);}
+.callout-text.warning{background:color-mix(in srgb, var(--warning) 16%, var(--card));border:1px solid color-mix(in srgb, var(--warning) 40%, var(--card));}
+
+/* ---------- "Channel Growth & Target Gap" — row-based (not scatter/matrix)
+   replacement for the quadrant scatter, so there's no label-collision risk
+   at all: each row is plain grid layout, not point-placement on a canvas. ---------- */
+/* .card stretches to match its .chart-grid sibling's height (grid default
+   align-items:stretch), which used to leave dead space below the insight
+   box. Scoped to just this card (not .card generically) so other cards'
+   layout is untouched — margin-top:auto on the insight box below absorbs
+   that extra space instead, pinning it to the card's bottom edge. */
+.chgap-card{display:flex;flex-direction:column;}
+.chgap-card #chGapAction{margin-top:auto;}
+.chgap-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);margin-bottom:10px;}
+.chgap-legend-item{display:flex;align-items:center;gap:5px;}
+.chgap-swatch{width:9px;height:9px;border-radius:2px;display:inline-block;flex:none;}
+.chgap-swatch.pos{background:var(--good-text);}
+.chgap-swatch.neg{background:var(--critical);}
+.chgap-col-labels{display:grid;grid-template-columns:112px 1fr 92px 1fr 92px;gap:12px;font-size:10.5px;color:var(--ink-3);padding:0 0 4px;}
+.chgap-axis{display:grid;grid-template-columns:112px 1fr 92px 1fr 92px;gap:12px;padding:0 0 6px;}
+.chgap-axis-track{position:relative;height:11px;}
+.chgap-axis-tick{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--ink-3);white-space:nowrap;}
+.chgap-axis-tick.edge-left{transform:none;}
+.chgap-refline-swatch{width:12px;height:0;border-top:1.5px dashed var(--ink-2);display:inline-block;}
+.chgap-ref-line{position:absolute;top:-3px;bottom:-3px;width:0;border-left:1.5px dashed var(--ink-2);}
+.chgap-row{display:grid;grid-template-columns:112px 1fr 92px 1fr 92px;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--hairline);}
+.chgap-row:last-child{border-bottom:none;}
+.chgap-row.total{border-top:2px solid var(--border-2);border-bottom:none;padding-top:12px;margin-top:2px;}
+.chgap-row.total .chgap-name{font-weight:750;}
+.chgap-name{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:650;color:var(--ink-1);}
+.chgap-dot{width:10px;height:10px;border-radius:2px;flex:none;}
+.chgap-badge{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;justify-content:flex-end;white-space:nowrap;}
+.chgap-badge.pos{color:var(--good-text);}
+.chgap-badge.neg{color:var(--critical);}
+.chgap-bar-track{position:relative;height:20px;background:var(--wash);border-radius:4px;}
+.chgap-bar-zero{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--ink-3);}
+.chgap-bar-fill{position:absolute;top:2px;bottom:2px;border-radius:3px;min-width:2px;}
+.chgap-bar-fill.pos{background:var(--good-text);left:26%;}
+.chgap-bar-fill.neg{background:var(--critical);right:74%;}
+.chgap-value-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
+.chgap-value{font-size:12.5px;font-weight:700;text-align:right;white-space:nowrap;}
+.chgap-value.pos{color:var(--good-text);}
+.chgap-value.neg{color:var(--critical);}
+.chgap-value-sub{font-size:10.5px;font-weight:500;white-space:nowrap;}
+.chgap-value-sub.pos{color:var(--good-text);}
+.chgap-value-sub.neg{color:var(--critical);}
+@media (max-width:768px){
+  .chgap-col-labels,.chgap-axis{display:none;}
+  .chgap-row{grid-template-columns:1fr;gap:6px;text-align:left;}
+  .chgap-row.total{padding-top:9px;}
+  .chgap-value{text-align:left;}
+  .chgap-value-wrap{align-items:flex-start;}
+}
 
 .section-label-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
 .level-select-wrap{display:flex;align-items:center;gap:8px;}
