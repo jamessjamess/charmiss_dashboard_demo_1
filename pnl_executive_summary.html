@@ -78,184 +78,15 @@
 
   <!-- ===== EXECUTIVE SUMMARY ===== -->
   <div class="section-label">Executive Summary</div>
-  <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr);">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Gross Profit</span>
-        <button class="info-icon" data-info-title="Gross Profit" data-info-text="Net Sales − COGS ของทั้งบริษัท (MT+TT+Ecom) ในช่วงเวลาที่เลือก — COGS คำนวณจาก Category Base Margin % คูณ Channel Adjustment Factor (Mock assumption ไม่ใช่บัญชีจริง)">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiGPValue">–</span><span class="kpi-unit">THB</span></div>
-      <div class="kpi-caption" id="kpiGPCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiGPMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiGPYoy">–</span></div>
-      </div>
-      <div id="kpiGPSpark"></div>
-    </div>
 
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Gross Margin %</span>
-        <button class="info-icon" data-info-title="Gross Margin %" data-info-text="Gross Profit ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiGMValue">–</span></div>
-      <div class="kpi-caption" id="kpiGMCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiGMMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiGMYoy">–</span></div>
-      </div>
-      <div id="kpiGMSpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Net Profit</span>
-        <button class="info-icon" data-info-title="Net Profit" data-info-text="Gross Profit หัก OPEX ทั้งหมด (Trade Spend, Logistics, Marketing/Ads, SG&A) ของทั้งบริษัท ในช่วงเวลาที่เลือก">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiNPValue">–</span><span class="kpi-unit">THB</span></div>
-      <div class="kpi-caption" id="kpiNPCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiNPMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiNPYoy">–</span></div>
-      </div>
-      <div id="kpiNPSpark"></div>
-      <div class="kpi-caption" id="kpiNPAdjustedCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Net Margin %</span>
-        <button class="info-icon" data-info-title="Net Margin %" data-info-text="Net Profit ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiNMValue">–</span></div>
-      <div class="kpi-caption" id="kpiNMCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiNMMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiNMYoy">–</span></div>
-      </div>
-      <div id="kpiNMSpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">EBITDA</span>
-        <span class="badge-soon" title="D&amp;A เป็นตัวเลขประมาณการ (3% ของ Net Sales) เพื่อ Scaffold โครง EBITDA ไว้ก่อน รอ Finance ยืนยันตัวเลขจริง">ประมาณการ</span>
-        <button class="info-icon" data-info-title="EBITDA" data-info-text="Net Profit + D&A (Depreciation &amp; Amortization) — D&A เป็นตัวเลขประมาณการ 3% ของ Net Sales เพราะ P&L ปัจจุบันไม่มีบรรทัด D&A แยก รอ Finance ยืนยันตัวเลขจริงก่อนใช้งานจริง">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiEBITDAValue">–</span><span class="kpi-unit">THB</span></div>
-      <div class="kpi-caption" id="kpiEBITDACaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiEBITDAMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiEBITDAYoy">–</span></div>
-      </div>
-      <div id="kpiEBITDASpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Profit Target Attainment %</span>
-        <button class="info-icon" data-info-title="Profit Target Attainment %" data-info-text="Net Profit จริง ÷ Net Profit เป้าหมาย × 100 — เป้าหมายตั้งจาก Net Sales Target × 22% Net Margin สมมติฐาน (แผนงานเดียวทั่วบริษัท)">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiAttainValue">–</span></div>
-      <div class="kpi-caption" id="kpiAttainCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAttainMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAttainYoy">–</span></div>
-      </div>
-      <div id="kpiAttainSpark"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Full Year Profit Forecast</span>
-        <button class="info-icon" data-info-title="Full Year Profit Forecast" data-info-text="ประมาณการแบบ Run-rate อย่างง่าย: (Net Profit YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว) × 12 ÷ Net Profit เป้าหมายทั้งปี × 100 — ยังไม่ปรับ Seasonality (Pattern เดียวกับ Full Year Forecast ของ Sales Overview) — ไม่มีแถว MoM/YoY เพราะเป็นค่าพยากรณ์เต็มปี ไม่ใช่ค่าจริงต่อเดือนที่เทียบ MoM/YoY ได้ตรงไปตรงมา (Sales Overview's Full Year Forecast ก็ไม่มีแถวนี้เช่นกัน)">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiForecastValue">–</span></div>
-      <div class="kpi-caption" id="kpiForecastCaption">Projected Attainment · full year</div>
-      <div id="kpiForecastSpark" style="margin-top:8px;"></div>
-      <div class="kpi-caption" id="kpiForecastGapCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">OPEX Ratio %</span>
-        <button class="info-icon" data-info-title="OPEX Ratio %" data-info-text="OPEX รวม (Trade Spend + Logistics + Marketing/Ads + SG&A) ÷ Net Sales × 100 — ยิ่งต่ำยิ่งดี (Delta กลับทิศเหมือน Return/Cancellation Rate)">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiOpexValue">–</span></div>
-      <div class="kpi-caption" id="kpiOpexCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiOpexMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiOpexYoy">–</span></div>
-      </div>
-      <div id="kpiOpexSpark"></div>
-    </div>
-  </div>
-
-  <div class="card table-card single-label-col" style="margin-bottom:14px;">
-    <div class="card-head">
-      <span class="card-title">Budget vs Actual</span>
-      <button class="info-icon" data-info-title="Budget vs Actual" data-info-text="เทียบตัวเลขจริงกับ Budget ต่อบรรทัด — Budget Net Sales/Net Profit อ้างอิงจาก Target เดียวกับที่ใช้ทั้งหน้า (Sales Target × 22% Net Margin), Budget Gross Margin % เป็นสมมติฐานใหม่ (48%) รอ Finance ยืนยันตัวเลข Budget จริง — RAG: เขียว = ทำได้ถึง/เกิน Budget, เหลือง = ต่ำกว่า Budget ไม่เกิน 2%, แดง = ต่ำกว่า Budget เกิน 2%">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="budgetActualDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle" id="budgetActualSubtitle">Year to Date vs Budget · company-wide — budget figures are mock, pending Finance</div>
-    <table id="budgetActualTable"></table>
-  </div>
-
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Profit Trend</span>
-          <button class="info-icon" data-info-title="Profit Trend" data-info-text="Gross Profit และ Net Profit รายเดือนของทั้งบริษัท เทียบกับ Net Profit เป้าหมาย เส้น Net Profit แสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="profitTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="profitTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="profitTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Gross Profit vs Net Profit vs Target vs Last Year, by month (this year)</div>
-      <div class="chart-headline" id="profitTrendHeadline">–</div>
-      <div class="chart-legend">
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year Net Profit</span>
-        <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target Net Profit</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Gross Profit</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Net Profit</span>
-      </div>
-      <div class="canvas-wrap" id="profitTrendCanvasWrap"><div id="profitTrendChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="profitTrendTableWrap"></div>
-    </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Margin Trend</span>
-          <button class="info-icon" data-info-title="Margin Trend" data-info-text="Gross Margin % และ Net Margin % รายเดือนของทั้งบริษัท">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="marginTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="marginTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="marginTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Gross Margin % vs Net Margin %, by month (this year)</div>
-      <div class="chart-headline" id="marginTrendHeadline">–</div>
-      <div class="chart-legend">
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Gross Margin %</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Net Margin %</span>
-      </div>
-      <div class="canvas-wrap" id="marginTrendCanvasWrap"><div id="marginTrendChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="marginTrendTableWrap"></div>
-    </div>
-  </div>
-
+  <!-- Waterfall moved to the top (compact redesign) — the ladder to
+       after-tax Net Profit is the single clearest "whole page in one
+       chart" view, so it leads instead of sitting after 2 trend charts. -->
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">P&amp;L Waterfall</span>
-        <button class="info-icon" data-info-title="P&L Waterfall" data-info-text="Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → Net Profit ในช่วงเวลาที่เลือก — ตัวเลขต้นทุนทั้งหมดเป็นสมมติฐาน Mock">i</button>
+        <button class="info-icon" data-info-title="P&L Waterfall" data-info-text="Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → EBIT (Operating Profit) → Tax (20%, Mock) → Net Profit (after tax) — EBITDA แสดงเป็นแท่งอ้างอิงข้าง EBIT (= EBIT + D&A ประมาณการ) ไม่ใช่ส่วนหนึ่งของ Chain หลัก — ตัวเลขต้นทุน/ภาษีทั้งหมดเป็นสมมติฐาน Mock">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="waterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -263,15 +94,141 @@
         <button class="tool-btn" id="waterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Net Sales to Net Profit bridge, this period · company-wide</div>
-    <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:260px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
+    <div class="chart-subtitle">Net Sales to after-tax Net Profit bridge, this period · company-wide · Tax = 20% mock rate, pending Finance</div>
+    <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:280px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="waterfallEbitdaNote" style="margin-top:10px;margin-bottom:0;">–</div>
     <div class="data-table-wrap" id="waterfallTableWrap"></div>
+  </div>
+
+  <!-- KPI section redesign (post-build review): 3 rows by role instead of
+       one flat row of 9 identical-weight cards. Row 1 = P&L waterfall
+       amounts (Revenue leads as the hero metric, tinted background). Row 2
+       = margin ratios, each with a trailing-quarters sparkline (readers
+       care about the trajectory here, not a single point). Row 3 = cost
+       efficiency ratios as gauges (readers care about "where does this sit
+       vs a threshold right now", not the trend) — Profit Target
+       Attainment %/Full Year Profit Forecast removed entirely (no target/
+       forecast view wanted in this P&L). -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:12px;">
+    <div class="card" style="background:var(--brand-wash);border-color:var(--brand);">
+      <div class="card-head">
+        <span class="card-title">Revenue</span>
+        <button class="info-icon" data-info-title="Revenue" data-info-text="Net Sales ของทั้งบริษัท (MT+TT+Ecom) ในช่วงเวลาที่เลือก — อ้างอิงจาก Sales Overview โดยตรง ไม่มีการสร้างยอดขายใหม่ที่นี่">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiRevenueValue">–</span><span class="kpi-unit">THB</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Gross Profit</span>
+        <button class="info-icon" data-info-title="Gross Profit" data-info-text="Net Sales − COGS ของทั้งบริษัท (MT+TT+Ecom) ในช่วงเวลาที่เลือก — COGS คำนวณจาก Category Base Margin % คูณ Channel Adjustment Factor (Mock assumption ไม่ใช่บัญชีจริง)">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiGPValue">–</span><span class="kpi-unit">THB</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">EBIT (Operating Profit)</span>
+        <button class="info-icon" data-info-title="EBIT (Operating Profit)" data-info-text="Gross Profit หัก OPEX ทั้งหมด (Trade Spend, Logistics, Marketing/Ads, SG&A) — คือ 'กำไรก่อนภาษี' ก่อนหัก Tax 20% เพื่อได้ Net Profit (after tax)">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiEBITValue">–</span><span class="kpi-unit">THB</span></div>
+    </div>
+
+    <div class="card" style="position:relative;">
+      <span class="badge-soon" style="position:absolute;top:12px;right:14px;" title="D&amp;A เป็นตัวเลขประมาณการ (3% ของ Net Sales) เพื่อ Scaffold โครง EBITDA ไว้ก่อน รอ Finance ยืนยันตัวเลขจริง">ประมาณการ</span>
+      <div class="card-head" style="padding-right:56px;">
+        <span class="card-title">EBITDA</span>
+        <button class="info-icon" data-info-title="EBITDA" data-info-text="EBIT + D&A (Depreciation &amp; Amortization) — D&A เป็นตัวเลขประมาณการ 3% ของ Net Sales เพราะ P&L ปัจจุบันไม่มีบรรทัด D&A แยก รอ Finance ยืนยันตัวเลขจริงก่อนใช้งานจริง">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiEBITDAValue">–</span><span class="kpi-unit">THB</span></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Net Profit</span>
+        <button class="info-icon" data-info-title="Net Profit" data-info-text="EBIT หัก Tax 20% (Mock Rate, รอ Finance ยืนยันอัตราจริง) — คือกำไรสุทธิหลังภาษี">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiNPValue">–</span><span class="kpi-unit">THB</span><span class="kpi-caption">After tax</span></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:12px;">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Gross Margin %</span>
+        <button class="info-icon" data-info-title="Gross Margin %" data-info-text="Gross Profit ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — Sparkline เทียบ 5 ไตรมาสย้อนหลัง">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiGMValue">–</span></div>
+      <div id="kpiGMSpark"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">EBIT Margin %</span>
+        <button class="info-icon" data-info-title="EBIT Margin %" data-info-text="EBIT ÷ Net Sales × 100 — Sparkline เทียบ 5 ไตรมาสย้อนหลัง">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiEBITMValue">–</span></div>
+      <div id="kpiEBITMSpark"></div>
+    </div>
+
+    <div class="card" style="position:relative;">
+      <span class="badge-soon" style="position:absolute;top:12px;right:14px;" title="อิงจาก D&amp;A ประมาณการ">ประมาณการ</span>
+      <div class="card-head" style="padding-right:56px;">
+        <span class="card-title">EBITDA Margin %</span>
+        <button class="info-icon" data-info-title="EBITDA Margin %" data-info-text="EBITDA ÷ Net Sales × 100 — D&A เป็นตัวเลขประมาณการ — Sparkline เทียบ 5 ไตรมาสย้อนหลัง">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiEBITDAMValue">–</span></div>
+      <div id="kpiEBITDAMSpark"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Net Margin %</span>
+        <button class="info-icon" data-info-title="Net Margin %" data-info-text="Net Profit (after tax) ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — Sparkline เทียบ 5 ไตรมาสย้อนหลัง">i</button>
+      </div>
+      <div class="kpi-value-line"><span class="kpi-value" id="kpiNMValue">–</span><span class="kpi-caption">After tax</span></div>
+      <div id="kpiNMSpark"></div>
+    </div>
+  </div>
+
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">COGS to Revenue %</span>
+        <button class="info-icon" data-info-title="COGS to Revenue %" data-info-text="COGS ÷ Net Sales × 100 (= 1 − Gross Margin %) — ยิ่งต่ำยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+      </div>
+      <div id="kpiCogsGauge" style="height:110px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">OPEX Ratio %</span>
+        <button class="info-icon" data-info-title="OPEX Ratio %" data-info-text="OPEX รวม (Trade Spend + Logistics + Marketing/Ads + SG&A) ÷ Net Sales × 100 — ยิ่งต่ำยิ่งดี — ระดับก่อนภาษี ไม่เปลี่ยนจาก Tax — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+      </div>
+      <div id="kpiOpexGauge" style="height:110px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">SG&amp;A to Revenue %</span>
+        <button class="info-icon" data-info-title="SG&A to Revenue %" data-info-text="SG&A ÷ Net Sales × 100 — ยิ่งต่ำยิ่งดี — ใช้ตัวเลข SG&A เดียวกับ Cost Structure/Waterfall ด้านบนอยู่แล้ว (ไม่ใช่ Placeholder) — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+      </div>
+      <div id="kpiSgaGauge" style="height:110px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Selling Expense to Revenue %</span>
+        <button class="info-icon" data-info-title="Selling Expense to Revenue %" data-info-text="Marketing/Ads (= Selling Expense ตาม Taxonomy ของ Cost Structure) ÷ Net Sales × 100 — ยิ่งต่ำยิ่งดี — ใช้ตัวเลขเดียวกับ Marketing/Ads ใน Waterfall/Cost Structure (ไม่ใช่ Placeholder) — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+      </div>
+      <div id="kpiSellingExpGauge" style="height:110px;"></div>
+    </div>
   </div>
 
   <div class="card table-card single-label-col" style="margin-bottom:14px;">
     <div class="card-head">
       <span class="card-title">Income Statement</span>
-      <button class="info-icon" data-info-title="Income Statement" data-info-text="ตัวเลขบรรทัดเดียวกับ P&L Waterfall ด้านบนทุกประการ (Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → Net Profit) แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Bridge — 'Year to Date' เทียบกับช่วงเดียวกันปีก่อน, 'Quarterly' เทียบไตรมาสก่อนหน้ากับไตรมาสล่าสุด — Net Sales อ้างอิงจาก Sales Overview โดยตรง ไม่มีการสร้างยอดขายใหม่ที่นี่ — D&A/EBITDA เป็นตัวเลขประมาณการ รอ Finance ยืนยัน">i</button>
+      <button class="info-icon" data-info-title="Income Statement" data-info-text="ตัวเลขบรรทัดเดียวกับ P&L Waterfall ด้านบนทุกประการ (Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → EBIT → Tax → Net Profit after tax) แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Bridge — 'Year to Date' เทียบกับช่วงเดียวกันปีก่อน, 'Quarterly' เทียบไตรมาสก่อนหน้ากับไตรมาสล่าสุด — Net Sales อ้างอิงจาก Sales Overview โดยตรง ไม่มีการสร้างยอดขายใหม่ที่นี่ — D&A/EBITDA เป็น Memo Line ใต้ Net Profit (ไม่ใช่ส่วนหนึ่งของ Chain), Tax เป็นตัวเลขประมาณการ รอ Finance ยืนยัน">i</button>
       <div class="toolbar" style="margin-left:auto;">
         <button class="tool-btn" id="incomeStmtDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="incomeStmtExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
@@ -287,7 +244,7 @@
       </div>
     </div>
     <table id="incomeStmtTable"></table>
-    <div class="kpi-caption" id="incomeStmtEbitdaCaveat" style="margin-top:8px;">D&amp;A/EBITDA rows are an estimate (3% of Net Sales) to scaffold the metric ahead of Finance confirming real depreciation figures.</div>
+    <div class="kpi-caption" id="incomeStmtEbitdaCaveat" style="margin-top:8px;">Tax (20%) is a mock rate pending Finance confirmation. D&amp;A/EBITDA memo rows are an estimate (3% of Net Sales) to scaffold the metric ahead of Finance confirming real depreciation figures.</div>
   </div>
 
   <div class="card" style="margin-bottom:14px;">
@@ -304,7 +261,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Margin by Channel</span>
-          <button class="info-icon" data-info-title="Margin by Channel" data-info-text="Gross Margin % และ Net Margin % เทียบระหว่าง MT / TT / Ecom ในช่วงเวลาที่เลือก">i</button>
+          <button class="info-icon" data-info-title="Margin by Channel" data-info-text="Gross Margin % และ Net Margin % (after tax) เทียบระหว่าง MT / TT / Ecom ในช่วงเวลาที่เลือก">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="mByChannelTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -312,7 +269,7 @@
           <button class="tool-btn" id="mByChannelExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This period · by channel</div>
+      <div class="chart-subtitle">This period · by channel · Net Margin after tax</div>
       <div class="canvas-wrap" id="mByChannelCanvasWrap"><div id="mByChannelChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="mByChannelTableWrap"></div>
     </div>
@@ -321,7 +278,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Margin by Category</span>
-          <button class="info-icon" data-info-title="Margin by Category" data-info-text="Gross Margin % และ Net Margin % เทียบระหว่างหมวดหมู่สินค้า (Company-wide blended ทุก Channel) ในช่วงเวลาที่เลือก">i</button>
+          <button class="info-icon" data-info-title="Margin by Category" data-info-text="Gross Margin % และ Net Margin % (after tax) เทียบระหว่างหมวดหมู่สินค้า (Company-wide blended ทุก Channel) ในช่วงเวลาที่เลือก">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="mByCategoryTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -329,22 +286,72 @@
           <button class="tool-btn" id="mByCategoryExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This period · company-wide, by category</div>
+      <div class="chart-subtitle">This period · company-wide, by category · Net Margin after tax</div>
       <div class="canvas-wrap" id="mByCategoryCanvasWrap"><div id="mByCategoryChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="mByCategoryTableWrap"></div>
     </div>
   </div>
 
-  <div class="card table-card">
+  <div class="card table-card" style="margin-bottom:14px;">
     <div class="card-head">
       <span class="card-title">Ranking — by Channel</span>
-      <button class="info-icon" data-info-title="Ranking by Channel" data-info-text="จัดอันดับ Channel (MT/TT/Ecom) ตาม Net Profit ในช่วงเวลาที่เลือก พร้อม Metric สำคัญของแต่ละ Channel">i</button>
+      <button class="info-icon" data-info-title="Ranking by Channel" data-info-text="จัดอันดับ Channel (MT/TT/Ecom) ตาม Net Profit (after tax) ในช่วงเวลาที่เลือก พร้อม Metric สำคัญของแต่ละ Channel">i</button>
       <div class="toolbar" style="margin-left:auto;">
         <button class="tool-btn" id="rankPnlDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="rankPnlExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
     <table id="rankPnlTable"></table>
+  </div>
+
+  <!-- Deprioritized (post-build review A3) — kept on this page (not moved
+       to Quarterly Trend) but pushed below the compact overview. -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Profit Trend</span>
+          <button class="info-icon" data-info-title="Profit Trend" data-info-text="Gross Profit และ EBIT รายเดือนของทั้งบริษัท เทียบกับ EBIT เป้าหมาย เส้นแสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น (ระดับก่อนภาษี)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="profitTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="profitTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="profitTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Gross Profit vs EBIT vs Target vs Last Year, by month (this year)</div>
+      <div class="chart-headline" id="profitTrendHeadline">–</div>
+      <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year EBIT</span>
+        <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target EBIT</span>
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Gross Profit</span>
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>EBIT</span>
+      </div>
+      <div class="canvas-wrap" id="profitTrendCanvasWrap"><div id="profitTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="profitTrendTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Margin Trend</span>
+          <button class="info-icon" data-info-title="Margin Trend" data-info-text="Gross Margin % และ Net Margin % (after tax) รายเดือนของทั้งบริษัท">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="marginTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="marginTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="marginTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Gross Margin % vs Net Margin % (after tax), by month (this year)</div>
+      <div class="chart-headline" id="marginTrendHeadline">–</div>
+      <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Gross Margin %</span>
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Net Margin %</span>
+      </div>
+      <div class="canvas-wrap" id="marginTrendCanvasWrap"><div id="marginTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="marginTrendTableWrap"></div>
+    </div>
   </div>
 
 </div>
@@ -496,6 +503,25 @@ for(let i=0;i<MONTHS_TOTAL;i++){
 const targetNetProfit = companyTarget.map(v => v * PNL_TARGET_NET_MARGIN);
 const targetNetProfitByChannel = {}; groupKeys.forEach(g => { targetNetProfitByChannel[g] = groupTarget[g].map(v => v * PNL_TARGET_NET_MARGIN); });
 
+/* ---------- Corporate Tax cascade (post-build review) ----------
+   Everything computed so far as "Net Profit" (pnlCompany.netProfit,
+   pnlByChannel[g].netProfit, targetNetProfit) is actually EBIT / Operating
+   Profit -- gross profit less OPEX, BEFORE tax. Introduce a flat 20% mock
+   corporate tax rate (Thai CIT, pending Finance's real rate) on top of that
+   EBIT figure: Net Profit (after tax) = EBIT × (1 − TAX_RATE). This is a
+   pure derived split (Tax + After-tax Net Profit = EBIT, always, by
+   construction) -- pnlCompany.netProfit itself is left as-is (still the
+   EBIT array every other formula already depends on) rather than renamed,
+   to avoid touching every existing reference; call sites that mean the
+   after-tax bottom line use pnlCompany.netProfitAfterTax explicitly. */
+const TAX_RATE = 0.20;
+pnlCompany.tax = pnlCompany.netProfit.map(v => v * TAX_RATE);
+pnlCompany.netProfitAfterTax = pnlCompany.netProfit.map(v => v * (1-TAX_RATE));
+groupKeys.forEach(g => {
+  pnlByChannel[g].tax = pnlByChannel[g].netProfit.map(v => v * TAX_RATE);
+  pnlByChannel[g].netProfitAfterTax = pnlByChannel[g].netProfit.map(v => v * (1-TAX_RATE));
+});
+
 /* ---------- EBITDA scaffold (pending Finance confirmation) ----------
    Charmiss's P&L has no D&A line item today, so EBITDA doesn't exist
    naturally. D&A is modeled as a fixed % of Net Sales (DA_RATE_OF_SALES) —
@@ -509,43 +535,6 @@ const DA_RATE_OF_SALES = 0.030;
 pnlCompany.da = pnlCompany.netSales.map(v => v * DA_RATE_OF_SALES);
 pnlCompany.ebitda = pnlCompany.netProfit.map((v,i) => v + pnlCompany.da[i]);
 
-/* ---------- Normalized Earnings (Reported vs Adjusted) scaffold ----------
-   One-time add-back categories per WARRIX-style normalized earnings
-   reconciliation. No real one-time-item list exists from Finance yet, so
-   these are mock monthly series (own dedicated PRNG, isolated from the
-   page's main `rand` sequence so nothing else on the page shifts) —
-   Impairment and Litigation are mostly zero (rare/lumpy by nature),
-   Obsolete Inventory and ECL are small recurring amounts (routine for a
-   cosmetics business with real inventory/AR risk). Must be replaced with
-   Finance's actual one-time-item list before production use. */
-const addbackRand = mulberry32(20260632);
-function genAddbackSeries(baseRatio, zeroProb){
-  const arr = [];
-  for(let i=0;i<MONTHS_TOTAL;i++){
-    arr.push(addbackRand() < zeroProb ? 0 : pnlCompany.netSales[i] * baseRatio * (0.5 + addbackRand()));
-  }
-  return arr;
-}
-const addbackSeries = {
-  'Obsolete Inventory Provision': genAddbackSeries(0.012, 0.15),
-  'Impairment Loss on Assets':    genAddbackSeries(0.006, 0.55),
-  'Expected Credit Loss (ECL)':   genAddbackSeries(0.008, 0.15),
-  'Provision for Litigation':     genAddbackSeries(0.004, 0.70)
-};
-const addbackKeys = Object.keys(addbackSeries);
-
-/* ---------- Budget (for Budget vs Actual + RAG) ----------
-   Reuses the SAME Sales Target (companyTarget) and Net Margin target
-   (PNL_TARGET_NET_MARGIN) already used everywhere else on this page,
-   rather than inventing an unrelated budget number — Budget Net Sales =
-   companyTarget, Budget Net Profit = targetNetProfit (both pre-existing).
-   Only PNL_TARGET_GROSS_MARGIN is new, an illustrative Gross Margin budget
-   assumption (~blended actual margin) needed because no gross-margin
-   budget existed before. Mock — replace with Finance's real budget book
-   before production use. */
-const PNL_TARGET_GROSS_MARGIN = 0.48;
-const budgetGrossProfit = companyTarget.map(v => v * PNL_TARGET_GROSS_MARGIN);
-
 /* Blended (company-wide) margin by category — used by "Margin by Category". */
 function categoryNetSales(channel, catName, s, e){
   const shares = categorySharesByChannel[channel];
@@ -558,18 +547,19 @@ function categoryOpexRateTotal(channel){
   return r.tradeSpend + r.logistics + r.marketing + r.sga;
 }
 function blendedCategoryMargins(catName, s, e){
-  let netSalesSum=0, grossProfitSum=0, netProfitSum=0;
+  let netSalesSum=0, grossProfitSum=0, ebitSum2=0;
   groupKeys.forEach(channel=>{
     const net = categoryNetSales(channel, catName, s, e);
     const gp = net * effectiveMarginPct(channel, catName)/100;
     const opex = net * categoryOpexRateTotal(channel);
-    netSalesSum += net; grossProfitSum += gp; netProfitSum += (gp - opex);
+    netSalesSum += net; grossProfitSum += gp; ebitSum2 += (gp - opex);
   });
+  const netProfitAfterTax = ebitSum2 * (1-TAX_RATE); // Tax cascade: Net Profit = EBIT after tax
   return {
     netSales: netSalesSum,
     grossMarginPct: netSalesSum ? grossProfitSum/netSalesSum*100 : 0,
-    netMarginPct: netSalesSum ? netProfitSum/netSalesSum*100 : 0,
-    netProfit: netProfitSum
+    netMarginPct: netSalesSum ? netProfitAfterTax/netSalesSum*100 : 0,
+    netProfit: netProfitAfterTax
   };
 }
 
@@ -756,7 +746,6 @@ function buildKeyFactorBullets(checks){
 
 /* ---------- Render ---------- */
 let latestData = {};
-const invDelta = v => v<=0 ? 'pos' : 'neg';
 
 function renderAll(periodKey, custom){
   const [s,e] = getPeriodRange(periodKey, custom);
@@ -766,143 +755,63 @@ function renderAll(periodKey, custom){
 
   const netSalesSum = sumRange(pnlCompany.netSales, s, e);
   const grossProfitSum = sumRange(pnlCompany.grossProfit, s, e);
-  const netProfitSum = sumRange(pnlCompany.netProfit, s, e);
-  const opexSum = sumRange(pnlCompany.tradeSpend,s,e) + sumRange(pnlCompany.logistics,s,e) + sumRange(pnlCompany.marketing,s,e) + sumRange(pnlCompany.sga,s,e);
-  const targetNPSum = sumRange(targetNetProfit, s, e);
-  const grossMarginPct = netSalesSum ? grossProfitSum/netSalesSum*100 : 0;
-  const netMarginPct = netSalesSum ? netProfitSum/netSalesSum*100 : 0;
-  const opexRatioPct = netSalesSum ? opexSum/netSalesSum*100 : 0;
-  const attainPct = targetNPSum ? netProfitSum/targetNPSum*100 : 0;
-
-  /* === KPI: Gross Profit === */
-  const gpMom = pctChange(pnlCompany.grossProfit[e], pnlCompany.grossProfit[e-1]);
-  const gpYoy = pctChange(pnlCompany.grossProfit[e], pnlCompany.grossProfit[e-12]);
-  document.getElementById('kpiGPValue').textContent = fmtTHB(grossProfitSum);
-  document.getElementById('kpiGPCaption').textContent = label;
-  document.getElementById('kpiGPMom').innerHTML = '<span class="'+deltaClass(gpMom)+'">'+fmtSignedPct(gpMom)+'</span>';
-  document.getElementById('kpiGPYoy').innerHTML = '<span class="'+deltaClass(gpYoy)+'">'+fmtSignedPct(gpYoy)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.grossProfit[i]); document.getElementById('kpiGPSpark').innerHTML = sparklineSVG('kpiGPSpark', spark, brand, fmtTHB); }
-
-  /* === KPI: Gross Margin % === */
-  const gmAt = i => pnlCompany.netSales[i] ? pnlCompany.grossProfit[i]/pnlCompany.netSales[i]*100 : 0;
-  const gmMomPP = gmAt(e)-gmAt(e-1), gmYoyPP = gmAt(e)-gmAt(e-12);
-  document.getElementById('kpiGMValue').textContent = fmtPct(grossMarginPct,1);
-  document.getElementById('kpiGMCaption').textContent = label;
-  document.getElementById('kpiGMMom').innerHTML = '<span class="'+deltaClass(gmMomPP)+'">'+fmtSignedPP(gmMomPP)+'</span>';
-  document.getElementById('kpiGMYoy').innerHTML = '<span class="'+deltaClass(gmYoyPP)+'">'+fmtSignedPP(gmYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(gmAt(i)); document.getElementById('kpiGMSpark').innerHTML = sparklineSVG('kpiGMSpark', spark, brand, v=>fmtPct(v,0)); }
-
-  /* === KPI: Net Profit === */
-  const npMom = pctChange(pnlCompany.netProfit[e], pnlCompany.netProfit[e-1]);
-  const npYoy = pctChange(pnlCompany.netProfit[e], pnlCompany.netProfit[e-12]);
-  document.getElementById('kpiNPValue').textContent = fmtTHB(netProfitSum);
-  document.getElementById('kpiNPCaption').textContent = label;
-  document.getElementById('kpiNPMom').innerHTML = '<span class="'+deltaClass(npMom)+'">'+fmtSignedPct(npMom)+'</span>';
-  document.getElementById('kpiNPYoy').innerHTML = '<span class="'+deltaClass(npYoy)+'">'+fmtSignedPct(npYoy)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.netProfit[i]); document.getElementById('kpiNPSpark').innerHTML = sparklineSVG('kpiNPSpark', spark, brand, fmtTHB); }
-
-  /* === KPI: Net Margin % === */
-  const nmAt = i => pnlCompany.netSales[i] ? pnlCompany.netProfit[i]/pnlCompany.netSales[i]*100 : 0;
-  const nmMomPP = nmAt(e)-nmAt(e-1), nmYoyPP = nmAt(e)-nmAt(e-12);
-  document.getElementById('kpiNMValue').textContent = fmtPct(netMarginPct,1);
-  document.getElementById('kpiNMCaption').textContent = label;
-  document.getElementById('kpiNMMom').innerHTML = '<span class="'+deltaClass(nmMomPP)+'">'+fmtSignedPP(nmMomPP)+'</span>';
-  document.getElementById('kpiNMYoy').innerHTML = '<span class="'+deltaClass(nmYoyPP)+'">'+fmtSignedPP(nmYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(nmAt(i)); document.getElementById('kpiNMSpark').innerHTML = sparklineSVG('kpiNMSpark', spark, brand, v=>fmtPct(v,0)); }
-
-  /* === KPI: EBITDA (estimated — see DA_RATE_OF_SALES note above) === */
+  const ebitSum = sumRange(pnlCompany.netProfit, s, e); // pnlCompany.netProfit IS EBIT -- see Tax cascade note above
+  const netProfitSum = sumRange(pnlCompany.netProfitAfterTax, s, e); // after-tax bottom line
   const ebitdaSum = sumRange(pnlCompany.ebitda, s, e);
-  const ebitdaMom = pctChange(pnlCompany.ebitda[e], pnlCompany.ebitda[e-1]);
-  const ebitdaYoy = pctChange(pnlCompany.ebitda[e], pnlCompany.ebitda[e-12]);
+  const opexSum = sumRange(pnlCompany.tradeSpend,s,e) + sumRange(pnlCompany.logistics,s,e) + sumRange(pnlCompany.marketing,s,e) + sumRange(pnlCompany.sga,s,e);
+  const grossMarginPct = netSalesSum ? grossProfitSum/netSalesSum*100 : 0;
+  const ebitMarginPct = netSalesSum ? ebitSum/netSalesSum*100 : 0;
+  const ebitdaMarginPct = netSalesSum ? ebitdaSum/netSalesSum*100 : 0;
+  const netMarginPct = netSalesSum ? netProfitSum/netSalesSum*100 : 0; // after-tax
+  const opexRatioPct = netSalesSum ? opexSum/netSalesSum*100 : 0;
+  const cogsRatioPct = netSalesSum ? (netSalesSum-grossProfitSum)/netSalesSum*100 : 0;
+  const sgaRatioPct = netSalesSum ? sumRange(pnlCompany.sga,s,e)/netSalesSum*100 : 0;
+  const sellingExpRatioPct = netSalesSum ? sumRange(pnlCompany.marketing,s,e)/netSalesSum*100 : 0; // Marketing/Ads = "Selling Expense" in this project's taxonomy (see Cost Structure page)
+
+  /* === KPI visual hierarchy redesign: Row 1 is ฿-amount P&L waterfall
+     amounts (Revenue/Gross Profit/EBIT/EBITDA/Net Profit), Row 2 is margin
+     ratios with a 5-quarter trailing sparkline each, Row 3 is cost-
+     efficiency ratios as gauges (lower = better). Profit Target Attainment%
+     and Full Year Profit Forecast are removed entirely — no target/forecast
+     view in this P&L section. === */
+  document.getElementById('kpiRevenueValue').textContent = fmtTHB(netSalesSum);
+  document.getElementById('kpiGPValue').textContent = fmtTHB(grossProfitSum);
+  document.getElementById('kpiEBITValue').textContent = fmtTHB(ebitSum);
   document.getElementById('kpiEBITDAValue').textContent = fmtTHB(ebitdaSum);
-  document.getElementById('kpiEBITDACaption').textContent = label;
-  document.getElementById('kpiEBITDAMom').innerHTML = '<span class="'+deltaClass(ebitdaMom)+'">'+fmtSignedPct(ebitdaMom)+'</span>';
-  document.getElementById('kpiEBITDAYoy').innerHTML = '<span class="'+deltaClass(ebitdaYoy)+'">'+fmtSignedPct(ebitdaYoy)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.ebitda[i]); document.getElementById('kpiEBITDASpark').innerHTML = sparklineSVG('kpiEBITDASpark', spark, brand, fmtTHB); }
+  document.getElementById('kpiNPValue').textContent = fmtTHB(netProfitSum);
 
-  /* === Reported vs Adjusted Net Profit mini-section (Net Profit card's
-     bottom caption) — Adjusted = Reported + sum of the 4 one-time add-back
-     categories over the period. Links to the Normalized Earnings bridge on
-     the new Quarterly Trend page for the full breakdown. === */
-  const addbackTotal = addbackKeys.reduce((sum,k)=> sum + sumRange(addbackSeries[k], s, e), 0);
-  const adjustedNetProfit = netProfitSum + addbackTotal;
-  document.getElementById('kpiNPAdjustedCaption').innerHTML =
-    'Adjusted: <b>'+fmtTHB(adjustedNetProfit)+'</b> <span class="pos">(+'+fmtTHB(addbackTotal)+' one-time items)</span> · <a href="pnl_quarterly_trend.html#normalized-earnings">See detail →</a>';
-  latestData.normalizedEarnings = { reported: netProfitSum, adjusted: adjustedNetProfit, addbackTotal, addbacks: addbackKeys.map(k=>({item:k, value: sumRange(addbackSeries[k], s, e)})) };
+  document.getElementById('kpiGMValue').textContent = fmtPct(grossMarginPct,1);
+  document.getElementById('kpiEBITMValue').textContent = fmtPct(ebitMarginPct,1);
+  document.getElementById('kpiEBITDAMValue').textContent = fmtPct(ebitdaMarginPct,1);
+  document.getElementById('kpiNMValue').textContent = fmtPct(netMarginPct,1);
 
-  /* === KPI: Profit Target Attainment % === */
-  const attainAt = i => targetNetProfit[i] ? pnlCompany.netProfit[i]/targetNetProfit[i]*100 : 0;
-  const attainMomPP = attainAt(e)-attainAt(e-1), attainYoyPP = attainAt(e)-attainAt(e-12);
-  document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
-  document.getElementById('kpiAttainCaption').textContent = label;
-  document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
-  document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(attainAt(i)); document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', spark, brand, v=>fmtPct(v,0)); }
-
-  /* === KPI: Full Year Profit Forecast (always Calendar YTD, ignores period filter — same convention as Sales Overview's Full Year Forecast) === */
-  const fyfYtdStart = 24;
-  const fyfYtdActual = sumRange(pnlCompany.netProfit, fyfYtdStart, TODAY);
-  const fyfMonthsElapsed = TODAY - fyfYtdStart + 1;
-  const fyfRunRateAnnual = (fyfYtdActual / fyfMonthsElapsed) * 12;
-  const fyfFullYearTarget = sumRange(targetNetProfit, fyfYtdStart, 35);
-  const fyfProjectedAttainPct = fyfFullYearTarget ? (fyfRunRateAnnual / fyfFullYearTarget * 100) : 0;
-  document.getElementById('kpiForecastValue').textContent = fmtPct(fyfProjectedAttainPct,0);
-  const fyfActualSeries = []; for(let i=fyfYtdStart;i<=TODAY;i++) fyfActualSeries.push(attainAt(i));
-  document.getElementById('kpiForecastSpark').innerHTML = buildTrajectorySparklineSVG('kpiForecastSpark', fyfActualSeries, fyfProjectedAttainPct, brand, v=>fmtPct(v,0));
-  const fyfGapValue = fyfRunRateAnnual - fyfFullYearTarget;
-  const fyfGapClass = fyfGapValue>=0 ? 'pos' : 'neg';
-  document.getElementById('kpiForecastGapCaption').innerHTML = 'Projected Gap: <span class="'+fyfGapClass+'">'+(fyfGapValue>=0?'+':'−')+fmtTHB(Math.abs(fyfGapValue))+'</span> (Full Year Actual vs Target)';
-
-  /* === KPI: OPEX Ratio % (lower is better — inverted delta) === */
-  const opexAt = i => pnlCompany.netSales[i] ? (pnlCompany.tradeSpend[i]+pnlCompany.logistics[i]+pnlCompany.marketing[i]+pnlCompany.sga[i])/pnlCompany.netSales[i]*100 : 0;
-  const opexMomPP = opexAt(e)-opexAt(e-1), opexYoyPP = opexAt(e)-opexAt(e-12);
-  document.getElementById('kpiOpexValue').textContent = fmtPct(opexRatioPct,1);
-  document.getElementById('kpiOpexCaption').textContent = label;
-  document.getElementById('kpiOpexMom').innerHTML = '<span class="'+invDelta(opexMomPP)+'">'+fmtSignedPP(opexMomPP)+'</span>';
-  document.getElementById('kpiOpexYoy').innerHTML = '<span class="'+invDelta(opexYoyPP)+'">'+fmtSignedPP(opexYoyPP)+'</span>';
-  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(opexAt(i)); document.getElementById('kpiOpexSpark').innerHTML = sparklineSVG('kpiOpexSpark', spark, brand, v=>fmtPct(v,0)); }
-
-  /* === Table: Budget vs Actual + RAG === Budget Net Sales/Net Profit reuse
-     the exact same companyTarget/targetNetProfit already computed above
-     (not a second, unrelated budget figure); Budget Gross Profit uses the
-     new PNL_TARGET_GROSS_MARGIN assumption. RAG: green if actual hits/beats
-     budget, amber if short by ≤2%, red if short by >2% — same rule for both
-     ฿ metrics (% variance) and % metrics (pp variance, reusing the same ±2
-     threshold since both are already expressed as "points"). */
-  const budgetNetSalesSum = sumRange(companyTarget, s, e);
-  const budgetGrossProfitSum = sumRange(budgetGrossProfit, s, e);
-  const budgetNetProfitSum = targetNPSum;
-  const budgetGMPct = budgetNetSalesSum ? budgetGrossProfitSum/budgetNetSalesSum*100 : 0;
-  const budgetNMPct = PNL_TARGET_NET_MARGIN*100;
-  function ragFor(actual, budget){
-    if(!budget) return 'green';
-    const varPct = (actual-budget)/Math.abs(budget)*100;
-    return varPct>=0 ? 'green' : (varPct>=-2 ? 'amber' : 'red');
-  }
-  const ragColor = { green:'var(--good-text)', amber:'var(--warning)', red:'var(--critical)' };
-  const budgetRows = [
-    { metric:'Net Sales', actual:netSalesSum, budget:budgetNetSalesSum, isPct:false },
-    { metric:'Gross Profit', actual:grossProfitSum, budget:budgetGrossProfitSum, isPct:false },
-    { metric:'Gross Margin %', actual:grossMarginPct, budget:budgetGMPct, isPct:true },
-    { metric:'Net Profit', actual:netProfitSum, budget:budgetNetProfitSum, isPct:false },
-    { metric:'Net Margin %', actual:netMarginPct, budget:budgetNMPct, isPct:true }
-  ].map(r=>{
-    const varVal = r.actual - r.budget;
-    const varPctOrPp = r.isPct ? varVal : (r.budget ? varVal/Math.abs(r.budget)*100 : 0);
-    return { ...r, varVal, varPctOrPp, rag: ragFor(r.actual, r.budget) };
+  // 5 trailing quarters (ratio-of-sums per quarter, same convention as
+  // Margin Trend below) feeding each Row-2 card's sparkline.
+  const kpiQAnchor = Math.floor(TODAY/3)*3;
+  const kpiQuarterStarts = [kpiQAnchor-12, kpiQAnchor-9, kpiQAnchor-6, kpiQAnchor-3, kpiQAnchor];
+  const kpiMarginTrendQ = numSeries => kpiQuarterStarts.map(qs=>{
+    const ns = sumRange(pnlCompany.netSales, qs, qs+2), num = sumRange(numSeries, qs, qs+2);
+    return ns ? num/ns*100 : 0;
   });
-  document.getElementById('budgetActualSubtitle').textContent = label + ' vs Budget · company-wide — budget figures are mock, pending Finance';
-  document.getElementById('budgetActualTable').innerHTML =
-    '<thead><tr><th>Metric</th><th>Actual</th><th>Budget</th><th>Variance</th><th>Status</th></tr></thead><tbody>'
-    + budgetRows.map(r=>{
-        const fmt = v => r.isPct ? fmtPct(v,1) : fmtTHB(v);
-        const varLabel = (r.isPct ? fmtSignedPP(r.varVal) : fmtSignedPct(r.varPctOrPp,1));
-        return '<tr><td>'+r.metric+'</td><td class="tnum">'+fmt(r.actual)+'</td><td class="tnum">'+fmt(r.budget)+'</td>'
-          + '<td class="tnum"><span class="'+deltaClass(r.varVal)+'">'+varLabel+'</span></td>'
-          + '<td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+ragColor[r.rag]+';"></span></td></tr>';
-      }).join('')
-    + '</tbody>';
-  latestData.budgetActual = budgetRows;
+  const sparkColor = cssVar('--ink-3')||'#898781';
+  document.getElementById('kpiGMSpark').innerHTML = sparklineSVG('kpiGMSpark', kpiMarginTrendQ(pnlCompany.grossProfit), sparkColor, v=>fmtPct(v,1));
+  document.getElementById('kpiEBITMSpark').innerHTML = sparklineSVG('kpiEBITMSpark', kpiMarginTrendQ(pnlCompany.netProfit), sparkColor, v=>fmtPct(v,1));
+  document.getElementById('kpiEBITDAMSpark').innerHTML = sparklineSVG('kpiEBITDAMSpark', kpiMarginTrendQ(pnlCompany.ebitda), sparkColor, v=>fmtPct(v,1));
+  document.getElementById('kpiNMSpark').innerHTML = sparklineSVG('kpiNMSpark', kpiMarginTrendQ(pnlCompany.netProfitAfterTax), sparkColor, v=>fmtPct(v,1));
+
+  // Row 3: cost-efficiency gauges (lower = better). Thresholds are
+  // illustrative placeholders pending real industry benchmarks (see each
+  // card's info-icon caveat) — COGS/OPEX are pre-tax (unaffected by the Tax
+  // cascade); SG&A and Selling Expense (= Marketing/Ads) reuse the exact
+  // same figures as the Waterfall/Cost Structure pages above, not placeholders.
+  buildGaugeSVG('kpiCogsGauge', cogsRatioPct, { max:80, greenTo:55, amberTo:65 });
+  buildGaugeSVG('kpiOpexGauge', opexRatioPct, { max:35, greenTo:22, amberTo:28 });
+  buildGaugeSVG('kpiSgaGauge', sgaRatioPct, { max:20, greenTo:10, amberTo:15 });
+  buildGaugeSVG('kpiSellingExpGauge', sellingExpRatioPct, { max:10, greenTo:5, amberTo:7.5 });
+
+  // Per-month ratios still needed below (Margin Trend headline).
+  const gmAt = i => pnlCompany.netSales[i] ? pnlCompany.grossProfit[i]/pnlCompany.netSales[i]*100 : 0;
+  const nmAt = i => pnlCompany.netSales[i] ? pnlCompany.netProfitAfterTax[i]/pnlCompany.netSales[i]*100 : 0; // after tax
 
   /* === Chart: Profit Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
@@ -933,46 +842,81 @@ function renderAll(periodKey, custom){
   });
   latestData.profitTrend = { labels: curYearLabels, lastYear: lastYearSeries, target: targetSeries, gross: grossSeries, net: netSeries };
 
-  /* === Chart: Margin Trend === */
+  /* === Chart: Margin Trend === Bug fix (post-build review, P1-9): this
+     chart has no forward-looking series (no Target/Last-Year line like
+     Profit Trend does), so plotting it across the full Jan-Dec curYearIdx
+     with everything past TODAY masked to null just left the right half of
+     the canvas empty. Uses its own closedYearIdx (Jan through the latest
+     CLOSED month only) instead of the shared curYearIdx/curYearGroups, so
+     the x-axis ends exactly where the data does. === */
+  const closedYearIdx = curYearIdx.filter(i=>i<=TODAY);
+  const closedYearGroups = bucketMonths(closedYearIdx, currentTimeFrame);
+  const closedYearLabels = currentTimeFrame==='quarterly' ? closedYearGroups.map(quarterLabel) : closedYearIdx.map(i=>monthLabels[i]);
   // Margin % is a ratio of two summable ฿ series (Gross/Net Profit over Net
   // Sales) — a quarter's margin is sum(profit)÷sum(netSales) within it, NOT
   // an average of the months' own %, same "ratio of sums" rule used
-  // everywhere else in this system. Masked to null until the group's months
-  // have all closed, same convention as grossSeries/netSeries above.
-  const gmSeries = curYearGroups.map(g => {
-    if(!g.every(i=>i<=TODAY)) return null;
+  // everywhere else in this system.
+  const gmSeries = closedYearGroups.map(g => {
     const gp = g.reduce((s,i)=>s+pnlCompany.grossProfit[i],0), ns = g.reduce((s,i)=>s+pnlCompany.netSales[i],0);
     return ns ? gp/ns*100 : 0;
   });
-  const nmSeries = curYearGroups.map(g => {
-    if(!g.every(i=>i<=TODAY)) return null;
-    const np = g.reduce((s,i)=>s+pnlCompany.netProfit[i],0), ns = g.reduce((s,i)=>s+pnlCompany.netSales[i],0);
+  const nmSeries = closedYearGroups.map(g => {
+    const np = g.reduce((s,i)=>s+pnlCompany.netProfitAfterTax[i],0), ns = g.reduce((s,i)=>s+pnlCompany.netSales[i],0);
     return ns ? np/ns*100 : 0;
   });
   document.getElementById('marginTrendHeadline').innerHTML = fmtPct(gmAt(TODAY),1) + ' Gross · ' + fmtPct(nmAt(TODAY),1) + ' Net <span class="kpi-unit">· latest closed month</span>';
   buildLineChartSVG('marginTrendChart', {
-    labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%',
+    labels: closedYearLabels, yFormatter: v=>v.toFixed(0)+'%',
     series:[
       {data:gmSeries, color:good, width:2, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)},
       {data:nmSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}
     ]
   });
-  latestData.marginTrend = { labels: curYearLabels, gross: gmSeries, net: nmSeries };
+  latestData.marginTrend = { labels: closedYearLabels, gross: gmSeries, net: nmSeries };
 
-  /* === Chart: P&L Waterfall === */
+  /* === Chart: P&L Waterfall === Single-direction ladder to after-tax Net
+     Profit (simplified per review): Trade Spend/Logistics/Marketing-Ads are
+     combined into one "Selling & Distribution" bar (the 4-way granular
+     breakdown stays on the Cost Structure page and, for continuity, the
+     Income Statement table below); no EBITDA bar (EBITDA is a memo, called
+     out in the caption below instead) and no Interest bar (Charmiss carries
+     no interest-bearing debt, so EBIT already equals EBT). Net Sales/Gross
+     Profit/EBIT are each independently rounded to the nearest ฿0.1M first
+     (the SAME rounding fmtTHB itself applies, and the SAME anchors the KPI
+     cards above already show) — COGS is derived exactly (NetSalesR-
+     GrossProfitR), the 4 OPEX lines are largest-remainder-reconciled to sum
+     EXACTLY to (GrossProfitR-EBITR) same as before (so the Income Statement
+     table's granular rows never drift from this chart), and the waterfall's
+     combined Selling & Distribution bar is simply their sum so it always
+     ties to those 3 rows exactly. Tax is derived from EBITR (EBITR ×
+     TAX_RATE, with after-tax Net Profit as EBITR minus that) so every leg
+     ties exactly at display precision: Gross Profit − Selling & Distribution
+     − SG&A = EBIT, EBIT − Tax = Net Profit. === */
   const cogsSum = netSalesSum - grossProfitSum;
   const tradeSpendSum = sumRange(pnlCompany.tradeSpend,s,e), logisticsSum = sumRange(pnlCompany.logistics,s,e), marketingSum = sumRange(pnlCompany.marketing,s,e), sgaSum = sumRange(pnlCompany.sga,s,e);
+  const netSalesR = roundToNearestTHB100K(netSalesSum), grossProfitR = roundToNearestTHB100K(grossProfitSum), ebitR = roundToNearestTHB100K(ebitSum);
+  const cogsR = netSalesR - grossProfitR;
+  const [tradeSpendR, logisticsR, marketingR, sgaR] = reconcileRoundToTarget(
+    [tradeSpendSum/1e6, logisticsSum/1e6, marketingSum/1e6, sgaSum/1e6], (grossProfitR-ebitR)/1e6, 1
+  ).map(v=>v*1e6);
+  const sellingDistR = tradeSpendR + logisticsR + marketingR; // waterfall's combined bar -- exact sum of the 3 Income Statement rows above
+  const netProfitAfterTaxR = roundToNearestTHB100K(ebitR * (1-TAX_RATE));
+  const taxR = ebitR - netProfitAfterTaxR; // derived -- ties to EBIT exactly
+  const daR = roundToNearestTHB100K(sumRange(pnlCompany.da, s, e));
+  const ebitdaR = ebitR + daR; // derived -- ties to EBIT/D&A exactly -- memo only, not a waterfall bar
   const waterfallSteps = [
-    {label:'Net Sales', value: netSalesSum, type:'start'},
-    {label:'COGS', value: -cogsSum, type:'delta'},
-    {label:'Gross Profit', value: grossProfitSum, type:'end'},
-    {label:'Trade Spend', value: -tradeSpendSum, type:'delta'},
-    {label:'Logistics', value: -logisticsSum, type:'delta'},
-    {label:'Marketing/Ads', value: -marketingSum, type:'delta'},
-    {label:'SG&A', value: -sgaSum, type:'delta'},
-    {label:'Net Profit', value: netProfitSum, type:'end'}
+    {label:'Net Sales', value: netSalesR, type:'start'},
+    {label:'COGS', value: -cogsR, type:'delta'},
+    {label:'Gross Profit', value: grossProfitR, type:'end'},
+    {label:'Selling & Distribution', value: -sellingDistR, type:'delta'},
+    {label:'SG&A', value: -sgaR, type:'delta'},
+    {label:'EBIT', value: ebitR, type:'end'},
+    {label:'Tax (20%)', value: -taxR, type:'delta'},
+    {label:'Net Profit', value: netProfitAfterTaxR, type:'end'}
   ];
-  buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:260 });
+  buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:280, rotateLabels:true });
+  document.getElementById('waterfallEbitdaNote').innerHTML =
+    'EBIT = กำไรก่อนภาษี (ไม่มีภาระดอกเบี้ย/เงินกู้) · Tax 20% เป็น <span class="badge-soon">ประมาณการ</span> mock rate รอ Finance ยืนยันอัตราจริง · EBITDA '+fmtTHB(ebitdaR)+' = EBIT '+fmtTHB(ebitR)+' + D&amp;A '+fmtTHB(daR)+' <span class="badge-soon">ประมาณการ</span> (ดูการ์ด EBITDA ด้านบน)';
   latestData.waterfall = waterfallSteps;
 
   /* === Table: Income Statement — same 8 P&L line items as the Waterfall
@@ -992,10 +936,36 @@ function renderAll(periodKey, custom){
     { label:'– Logistics', series: pnlCompany.logistics.map(v=>-v) },
     { label:'– Marketing/Ads', series: pnlCompany.marketing.map(v=>-v) },
     { label:'– SG&A', series: pnlCompany.sga.map(v=>-v) },
-    { label:'= Net Profit', series: pnlCompany.netProfit, bold:true },
-    { label:'+ D&A (add-back)', series: pnlCompany.da, isEstimate:true },
-    { label:'= EBITDA', series: pnlCompany.ebitda, bold:true, isEstimate:true }
+    { label:'= EBIT (Operating Profit)', series: pnlCompany.netProfit, bold:true },
+    { label:'– Tax (20%)', series: pnlCompany.tax.map(v=>-v), isEstimate:true },
+    { label:'= Net Profit (after tax)', series: pnlCompany.netProfitAfterTax, bold:true },
+    { label:'+ D&A (add-back, memo)', series: pnlCompany.da, isEstimate:true },
+    { label:'= EBITDA (memo)', series: pnlCompany.ebitda, bold:true, isEstimate:true }
   ];
+  /* Same display-rounding reconciliation as the Waterfall above (reused
+     here so Income Statement's ฿ figures are pixel-for-pixel the same
+     numbers, not just the same underlying exact sums) — returns a
+     label->reconciled-value lookup for a given (start,end) range so every
+     P&L line (through Tax/Net Profit after tax, plus the D&A/EBITDA memo)
+     always ties leg-by-leg for THAT period. */
+  function reconcilePnLLabelValues(rs, re){
+    const nsR = roundToNearestTHB100K(sumRange(pnlCompany.netSales,rs,re));
+    const gpR = roundToNearestTHB100K(sumRange(pnlCompany.grossProfit,rs,re));
+    const ebitR2 = roundToNearestTHB100K(sumRange(pnlCompany.netProfit,rs,re));
+    const cogsR = nsR - gpR;
+    const [tsR,lgR,mkR,sgR] = reconcileRoundToTarget(
+      [sumRange(pnlCompany.tradeSpend,rs,re)/1e6, sumRange(pnlCompany.logistics,rs,re)/1e6, sumRange(pnlCompany.marketing,rs,re)/1e6, sumRange(pnlCompany.sga,rs,re)/1e6],
+      (gpR-ebitR2)/1e6, 1
+    ).map(v=>v*1e6);
+    const npAfterTaxR = roundToNearestTHB100K(ebitR2 * (1-TAX_RATE));
+    const taxR2 = ebitR2 - npAfterTaxR;
+    const daR2 = roundToNearestTHB100K(sumRange(pnlCompany.da,rs,re));
+    return {
+      'Net Sales':nsR, '– COGS':-cogsR, '= Gross Profit':gpR, '– Trade Spend':-tsR, '– Logistics':-lgR, '– Marketing/Ads':-mkR, '– SG&A':-sgR,
+      '= EBIT (Operating Profit)':ebitR2, '– Tax (20%)':-taxR2, '= Net Profit (after tax)':npAfterTaxR,
+      '+ D&A (add-back, memo)':daR2, '= EBITDA (memo)':ebitR2+daR2
+    };
+  }
   const [curQS, curQE] = getPeriodRange('thisQuarter', null);
   const [priorQS, priorQE] = getPeriodRange('lastQuarter', null);
   const yoyQS = curQS-12, yoyQE = curQE-12;
@@ -1005,12 +975,13 @@ function renderAll(periodKey, custom){
   }
   let incomeStmtRows, incomeStmtHeaders, incomeStmtMode = incomeStmtViewMode;
   if(incomeStmtViewMode==='quarterly'){
-    const curBase = sumRange(pnlCompany.netSales, curQS, curQE);
+    const priorRecon = reconcilePnLLabelValues(priorQS, priorQE);
+    const curRecon = reconcilePnLLabelValues(curQS, curQE);
+    const yoyRecon = reconcilePnLLabelValues(yoyQS, yoyQE);
+    const curBase = curRecon['Net Sales'];
     const quarterStarts = [curQS-12, curQS-9, curQS-6, curQS-3, curQS];
     incomeStmtRows = incomeStmtLineDefs.map(def=>{
-      const priorV = sumRange(def.series, priorQS, priorQE);
-      const curV = sumRange(def.series, curQS, curQE);
-      const yoyV = sumRange(def.series, yoyQS, yoyQE);
+      const priorV = priorRecon[def.label], curV = curRecon[def.label], yoyV = yoyRecon[def.label];
       const sparkVals = quarterStarts.map(qs=> sumRange(def.series, qs, qs+2));
       return { label:def.label, bold:def.bold, isEstimate:def.isEstimate, colA:priorV, colB:curV,
         qoq: priorV ? (curV-priorV)/Math.abs(priorV)*100 : null, yoy: yoyV ? (curV-yoyV)/Math.abs(yoyV)*100 : null,
@@ -1018,10 +989,15 @@ function renderAll(periodKey, custom){
     });
     incomeStmtHeaders = ['Line Item', 'Prior Quarter ('+quarterYearLabel(priorQS)+')', 'Current Quarter ('+quarterYearLabel(curQS)+')', '% of Net Sales', 'QoQ %', 'YoY % (vs '+quarterYearLabel(yoyQS)+')', 'Quarterly Trend'];
   } else {
-    const curBase = netSalesSum;
+    const thisRecon = {
+      'Net Sales':netSalesR, '– COGS':-cogsR, '= Gross Profit':grossProfitR, '– Trade Spend':-tradeSpendR, '– Logistics':-logisticsR, '– Marketing/Ads':-marketingR, '– SG&A':-sgaR,
+      '= EBIT (Operating Profit)':ebitR, '– Tax (20%)':-taxR, '= Net Profit (after tax)':netProfitAfterTaxR,
+      '+ D&A (add-back, memo)':daR, '= EBITDA (memo)':ebitdaR
+    };
+    const lastRecon = reconcilePnLLabelValues(s-12, e-12);
+    const curBase = thisRecon['Net Sales'];
     incomeStmtRows = incomeStmtLineDefs.map(def=>{
-      const thisV = sumRange(def.series, s, e);
-      const lastV = sumRange(def.series, s-12, e-12);
+      const thisV = thisRecon[def.label], lastV = lastRecon[def.label];
       const sparkVals = []; for(let i=Math.max(0,e-11); i<=e; i++) sparkVals.push(def.series[i]);
       return { label:def.label, bold:def.bold, isEstimate:def.isEstimate, colA:thisV, colB:lastV,
         qoq: diffPct(thisV, lastV), yoy:null, pctOfSales: curBase ? thisV/curBase*100 : 0, sparkVals };
@@ -1066,8 +1042,8 @@ function renderAll(periodKey, custom){
     const priorQNetSales = sumRange(pnlCompany.netSales, priorQS, priorQE), curQNetSales = sumRange(pnlCompany.netSales, curQS, curQE);
     const priorQGM = priorQNetSales ? sumRange(pnlCompany.grossProfit,priorQS,priorQE)/priorQNetSales*100 : 0;
     const curQGM = curQNetSales ? sumRange(pnlCompany.grossProfit,curQS,curQE)/curQNetSales*100 : 0;
-    const priorQNM = priorQNetSales ? sumRange(pnlCompany.netProfit,priorQS,priorQE)/priorQNetSales*100 : 0;
-    const curQNM = curQNetSales ? sumRange(pnlCompany.netProfit,curQS,curQE)/curQNetSales*100 : 0;
+    const priorQNM = priorQNetSales ? sumRange(pnlCompany.netProfitAfterTax,priorQS,priorQE)/priorQNetSales*100 : 0;
+    const curQNM = curQNetSales ? sumRange(pnlCompany.netProfitAfterTax,curQS,curQE)/curQNetSales*100 : 0;
     keyFactorChecks.push({ name:'Gross Margin', delta: curQGM-priorQGM, threshold:KEY_FACTOR_THRESHOLDS.gross_margin_pp_qoq, basis:'QoQ' });
     keyFactorChecks.push({ name:'Net Margin', delta: curQNM-priorQNM, threshold:KEY_FACTOR_THRESHOLDS.net_margin_pp_qoq, basis:'QoQ' });
     [['tradeSpend','Trade Spend-to-Sales'],['logistics','Logistics-to-Sales'],['marketing','Marketing/Ads-to-Sales'],['sga','SG&A-to-Sales']].forEach(([key,name])=>{
@@ -1087,7 +1063,7 @@ function renderAll(periodKey, custom){
   } else {
     const lyNetSalesYTD = sumRange(pnlCompany.netSales, s-12, e-12);
     const lyGMYTD = lyNetSalesYTD ? sumRange(pnlCompany.grossProfit,s-12,e-12)/lyNetSalesYTD*100 : 0;
-    const lyNMYTD = lyNetSalesYTD ? sumRange(pnlCompany.netProfit,s-12,e-12)/lyNetSalesYTD*100 : 0;
+    const lyNMYTD = lyNetSalesYTD ? sumRange(pnlCompany.netProfitAfterTax,s-12,e-12)/lyNetSalesYTD*100 : 0;
     keyFactorChecks.push({ name:'Gross Margin', delta: grossMarginPct-lyGMYTD, threshold:KEY_FACTOR_THRESHOLDS.gross_margin_pp_yoy, basis:'YoY' });
     keyFactorChecks.push({ name:'Net Margin', delta: netMarginPct-lyNMYTD, threshold:KEY_FACTOR_THRESHOLDS.net_margin_pp_yoy, basis:'YoY' });
     const chGrowthYoY = groupKeys.map(g=>{
@@ -1109,7 +1085,7 @@ function renderAll(periodKey, custom){
   /* === Chart: Margin by Channel === */
   const chLabels = groupKeys;
   const chGross = groupKeys.map(g => sumRange(pnlByChannel[g].netSales,s,e) ? sumRange(pnlByChannel[g].grossProfit,s,e)/sumRange(pnlByChannel[g].netSales,s,e)*100 : 0);
-  const chNet = groupKeys.map(g => sumRange(pnlByChannel[g].netSales,s,e) ? sumRange(pnlByChannel[g].netProfit,s,e)/sumRange(pnlByChannel[g].netSales,s,e)*100 : 0);
+  const chNet = groupKeys.map(g => sumRange(pnlByChannel[g].netSales,s,e) ? sumRange(pnlByChannel[g].netProfitAfterTax,s,e)/sumRange(pnlByChannel[g].netSales,s,e)*100 : 0); // after tax
   buildGroupedBarSVG('mByChannelChart', {
     labels: chLabels, yFormatter: v=>v.toFixed(0)+'%', referenceValue:0, showValueLabels:true,
     series:[ {name:'Gross Margin %', color:brand, values:chGross}, {name:'Net Margin %', color:good, values:chNet} ]
@@ -1124,13 +1100,17 @@ function renderAll(periodKey, custom){
   });
   latestData.mByCategory = catMargins;
 
-  /* === Table: Ranking — by Channel === */
+  /* === Table: Ranking — by Channel === Net Profit/Net Margin % are after
+     tax (matches Margin by Channel above); Profit Target Attainment stays
+     EBIT-level since targetNetProfitByChannel is itself an EBIT-level
+     target (Sales Target × 22% Net Margin assumption, pre-tax). === */
   const rankRows = groupKeys.map(g=>{
     const net = sumRange(pnlByChannel[g].netSales,s,e);
     const gp = sumRange(pnlByChannel[g].grossProfit,s,e);
-    const np = sumRange(pnlByChannel[g].netProfit,s,e);
+    const ebitCh = sumRange(pnlByChannel[g].netProfit,s,e);
+    const npAfterTax = sumRange(pnlByChannel[g].netProfitAfterTax,s,e);
     const tgtNp = sumRange(targetNetProfitByChannel[g],s,e);
-    return { name:g, net, gm: net?gp/net*100:0, nm: net?np/net*100:0, np, attain: tgtNp?np/tgtNp*100:0, color: groupColor[g] };
+    return { name:g, net, gm: net?gp/net*100:0, nm: net?npAfterTax/net*100:0, np:npAfterTax, attain: tgtNp?ebitCh/tgtNp*100:0, color: groupColor[g] };
   }).sort((x,y)=>y.np-x.np);
   document.getElementById('rankPnlTable').innerHTML =
     '<thead><tr><th>#</th><th>Channel</th><th>Net Sales</th><th>Gross Margin %</th><th>Net Margin %</th><th>Net Profit</th><th>Profit Target Attainment</th></tr></thead><tbody>'
@@ -1195,11 +1175,6 @@ document.getElementById('incomeStmtDownloadBtn').addEventListener('click', ()=>{
 });
 document.getElementById('incomeStmtExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
-document.getElementById('budgetActualDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Metric','Actual','Budget','Variance','Status']];
-  latestData.budgetActual.forEach(r=> rows.push([r.metric, r.isPct?r.actual.toFixed(1):Math.round(r.actual), r.isPct?r.budget.toFixed(1):Math.round(r.budget), r.varPctOrPp.toFixed(1), r.rag]));
-  downloadCSV(rows, 'pnl_budget_vs_actual.csv');
-});
 
 document.getElementById('mByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mByChannelChart', 'pnl_margin_by_channel.svg'));
 document.getElementById('mByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));

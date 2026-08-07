@@ -247,7 +247,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">For Every ฿1 of Revenue</span>
-        <button class="info-icon" data-info-title="For Every ฿1 of Revenue" data-info-text="แบ่ง Net Sales 1 บาท ออกเป็น COGS / OPEX (Trade Spend+Logistics+Marketing/Ads+SG&A รวมกัน) / Net Profit ตามสัดส่วนจริงในช่วงเวลาที่เลือก">i</button>
+        <button class="info-icon" data-info-title="For Every ฿1 of Revenue" data-info-text="แบ่ง Net Sales 1 บาท ออกเป็น COGS / OPEX (Trade Spend+Logistics+Marketing/Ads+SG&A รวมกัน) / Tax (20% Mock Rate) / Net Profit (after tax) ตามสัดส่วนจริงในช่วงเวลาที่เลือก">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="perBahtDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
@@ -397,6 +397,14 @@ PNL_KEYS.forEach(k => {
   pnlCompany[k] = [];
   for(let i=0;i<MONTHS_TOTAL;i++) pnlCompany[k].push(groupKeys.reduce((sum,g)=> sum + pnlByChannel[g][k][i], 0));
 });
+
+/* Corporate Tax cascade (post-build review) — same TAX_RATE/formula as the
+   other 3 P&L files. pnlCompany.netProfit is EBIT (left as-is); this file's
+   "For Every ฿1 of Revenue" donut is the only widget here below EBIT, so
+   Tax only needs to exist at the company-wide level. */
+const TAX_RATE = 0.20;
+pnlCompany.tax = pnlCompany.netProfit.map(v => v * TAX_RATE);
+pnlCompany.netProfitAfterTax = pnlCompany.netProfit.map(v => v * (1-TAX_RATE));
 
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
@@ -580,8 +588,26 @@ function renderCostCategoryDetail(){
   function renderSplit(totalSeries, split, chartId, ratioChartId, legendId, calloutId, calloutNoun){
     const names = Object.keys(split);
     const totalsByQ = cdQuarterStarts.map(qs => sumRange(totalSeries, qs, qs+2));
+    /* Bug fix (post-build review, P0-5): the split ratios sum to exactly
+       1.0 so the sub-category EXACT values already summed to the exact
+       parent total -- but buildStackedBarSVG's valueFormatter (fmtTHB)
+       rounds each segment's in-bar label independently, and summing N>2
+       independently-rounded labels visually overshoots the (also
+       independently-rounded) parent total shown elsewhere more often than
+       not, worst-case at small quarters like Q4'25. Reconcile each
+       quarter's segment values (largest-remainder) to sum EXACTLY to that
+       quarter's OWN rounded total, so the displayed segments never exceed
+       (or fall short of) the parent line. */
+    const totalsByQRounded = totalsByQ.map(t => roundToNearestTHB100K(t));
+    const rawValuesByName = names.map(name => totalsByQ.map(t => t*split[name]));
+    const reconciledValuesByName = names.map(()=>[]);
+    for(let qi=0; qi<totalsByQ.length; qi++){
+      const columnRaw = rawValuesByName.map(vals => vals[qi]/1e6);
+      const reconciled = reconcileRoundToTarget(columnRaw, totalsByQRounded[qi]/1e6, 1).map(v=>v*1e6);
+      reconciled.forEach((v,ni)=> reconciledValuesByName[ni].push(v));
+    }
     const series = names.map((name,i) => ({ name, color: resolveColor(COST_DETAIL_COLORS[i % COST_DETAIL_COLORS.length]),
-      values: totalsByQ.map(t => t * split[name]) }));
+      values: reconciledValuesByName[i] }));
     buildStackedBarSVG(chartId, { labels: cdQuarterLabels, series, valueFormatter: fmtTHB });
     document.getElementById(legendId).innerHTML = series.map(s=>
       '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>'
@@ -709,11 +735,19 @@ function renderAll(periodKey, custom){
   buildHBarCompareSVG('mktByChannelChart', mktItems, { referenceValue:0, formatValue: fmtTHB, labelW:60, rowHeight:44 });
   latestData.mktByChannel = mktItems;
 
-  /* === SECTION 3: For Every ฿1 of Revenue (donut) === */
+  /* === SECTION 3: For Every ฿1 of Revenue (donut) === Tax cascade
+     (post-build review C4): netProfitSum here is EBIT (pre-tax) -- split
+     it into Tax (20% mock rate) + Net Profit (after tax) so the donut
+     reads the same bottom line as every other page, still summing to
+     exactly ฿1.00 of revenue. */
+  const ebitForDonut = Math.max(0,netProfitSum);
+  const taxForDonut = ebitForDonut * TAX_RATE;
+  const netProfitAfterTaxForDonut = ebitForDonut - taxForDonut;
   const perBahtSegs = [
     { name:'COGS', value: cogsSum, color: baseline },
     { name:'OPEX', value: opexSum, color: resolveColor('var(--cat-1)') },
-    { name:'Net Profit', value: Math.max(0,netProfitSum), color: good }
+    { name:'Tax (20%)', value: taxForDonut, color: resolveColor('var(--cat-5)') },
+    { name:'Net Profit', value: netProfitAfterTaxForDonut, color: good }
   ];
   buildDonutSVG('perBahtChart', perBahtSegs, 140, {showLabels:true});
   document.getElementById('perBahtLegend').innerHTML = perBahtSegs.map(seg =>

@@ -103,7 +103,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Net Margin % Trend by Channel</span>
-          <button class="info-icon" data-info-title="Net Margin % Trend by Channel" data-info-text="Net Margin % รายเดือนของ MT / TT / Ecom (this year)">i</button>
+          <button class="info-icon" data-info-title="Net Margin % Trend by Channel" data-info-text="Net Margin % รายเดือนของ MT / TT / Ecom (this year) — จุดขวาสุดคือเดือนล่าสุดที่ปิดงวด (เดือนเดียว) ไม่ใช่ค่าเฉลี่ย/ผลรวม YTD จึงอาจต่างจาก Net Margin % แบบ YTD ที่โชว์ใน Ranking (Executive Summary) และ Cost Structure by Channel (การ์ดถัดไป) ซึ่งทั้งคู่เป็นค่าเฉลี่ยทั้งช่วงเวลา">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="marginByChTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -111,7 +111,7 @@
           <button class="tool-btn" id="marginByChTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom</div>
+      <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom · เส้นแสดงรายเดือน (ค่าล่าสุด ≠ YTD)</div>
       <div class="chart-legend" id="marginByChTrendLegend"></div>
       <div class="canvas-wrap" id="marginByChTrendCanvasWrap"><div id="marginByChTrendChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="marginByChTrendTableWrap"></div>
@@ -121,7 +121,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Cost Structure by Channel</span>
-          <button class="info-icon" data-info-title="Cost Structure by Channel" data-info-text="สัดส่วน % ของ Net Sales แยกเป็น COGS / Trade Spend / Logistics / Marketing&Ads / SG&A / Net Profit ต่อ Channel ในช่วงเวลาที่เลือก">i</button>
+          <button class="info-icon" data-info-title="Cost Structure by Channel" data-info-text="สัดส่วน % ของ Net Sales แยกเป็น COGS / Trade Spend / Logistics / Marketing&Ads / SG&A / Tax (20% Mock Rate) / Net Profit (after tax) ต่อ Channel ในช่วงเวลาที่เลือก — รวมทุก Segment ได้ 100% พอดี">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="costStructTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -327,6 +327,16 @@ function computeChannelMonthlySeries(channelKey){
 }
 const pnlByChannel = {}; groupKeys.forEach(g => { pnlByChannel[g] = computeChannelMonthlySeries(g); });
 
+/* Corporate Tax cascade (post-build review) — same TAX_RATE/formula as the
+   other 3 P&L files. pnlByChannel[g].netProfit is EBIT (left as-is, not
+   renamed, since Cost Structure by Channel and every margin formula below
+   already depends on it); .netProfitAfterTax is the new bottom line. */
+const TAX_RATE = 0.20;
+groupKeys.forEach(g => {
+  pnlByChannel[g].tax = pnlByChannel[g].netProfit.map(v => v * TAX_RATE);
+  pnlByChannel[g].netProfitAfterTax = pnlByChannel[g].netProfit.map(v => v * (1-TAX_RATE));
+});
+
 function categoryNetSales(channel, catName, s, e){
   const shares = categorySharesByChannel[channel];
   const c = shares.find(x=>x.name===catName);
@@ -342,14 +352,15 @@ function categoryOpexRateTotal(channel){
    filter dropdown. */
 function categoryMarginsFor(catName, channelFilter, s, e){
   const channels = channelFilter==='all' ? groupKeys : [channelFilter];
-  let netSalesSum=0, grossProfitSum=0, netProfitSum=0;
+  let netSalesSum=0, grossProfitSum=0, ebitSum=0;
   channels.forEach(channel=>{
     const net = categoryNetSales(channel, catName, s, e);
     const gp = net * effectiveMarginPct(channel, catName)/100;
     const opex = net * categoryOpexRateTotal(channel);
-    netSalesSum += net; grossProfitSum += gp; netProfitSum += (gp - opex);
+    netSalesSum += net; grossProfitSum += gp; ebitSum += (gp - opex);
   });
-  return { netSales:netSalesSum, grossMarginPct: netSalesSum?grossProfitSum/netSalesSum*100:0, netMarginPct: netSalesSum?netProfitSum/netSalesSum*100:0, netProfit: netProfitSum };
+  const netProfitAfterTax = ebitSum * (1-TAX_RATE); // Tax cascade: Net Profit = EBIT after tax
+  return { netSales:netSalesSum, grossMarginPct: netSalesSum?grossProfitSum/netSalesSum*100:0, netMarginPct: netSalesSum?netProfitAfterTax/netSalesSum*100:0, netProfit: netProfitAfterTax };
 }
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
@@ -505,10 +516,11 @@ function renderAll(){
   const baseline = cssVar('--baseline') || '#c3c2b7';
   const channelFilter = document.getElementById('channelFilterSelect').value;
 
-  const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
-  // View By (Monthly/Quarterly): curYearGroups buckets curYearIdx into
-  // quarters when Quarterly is active (monthly is a no-op passthrough), and
-  // curYearLabels switches to "Q1".."Q4" accordingly.
+  // Bug fix (post-build review, P1-9): trimmed to the latest CLOSED month
+  // only (was Jan-Dec with everything past TODAY masked null, leaving the
+  // chart's right half empty since this line has no forward-looking
+  // Target/forecast series to fill that space).
+  const curYearIdx = []; for(let i=24;i<=TODAY;i++) curYearIdx.push(i);
   const curYearGroups = bucketMonths(curYearIdx, currentTimeFrame);
   const curYearLabels = currentTimeFrame==='quarterly' ? curYearGroups.map(quarterLabel) : curYearIdx.map(i=>monthLabels[i]);
 
@@ -519,12 +531,10 @@ function renderAll(){
   // Net Margin % is a ratio of two summable ฿ series (Net Profit over Net
   // Sales) — a quarter's margin is sum(profit)÷sum(netSales) within it, NOT
   // an average of the months' own %, same "ratio of sums" rule used
-  // elsewhere in this system. Masked to null until every month in the group
-  // has closed, mirroring the old per-month `i<=TODAY` mask.
+  // elsewhere in this system.
   const nmTrendSeries = groupKeys.map(g => ({
     data: curYearGroups.map(grp => {
-      if(!grp.every(i=>i<=TODAY)) return null;
-      const np = grp.reduce((s,i)=>s+pnlByChannel[g].netProfit[i],0), ns = grp.reduce((s,i)=>s+pnlByChannel[g].netSales[i],0);
+      const np = grp.reduce((s,i)=>s+pnlByChannel[g].netProfitAfterTax[i],0), ns = grp.reduce((s,i)=>s+pnlByChannel[g].netSales[i],0);
       return ns ? np/ns*100 : 0;
     }),
     color: groupColor[g], width:2.2, showLastLabel:true, lastLabelFormatter: v=>fmtPct(v,1)
@@ -539,7 +549,8 @@ function renderAll(){
     { key:'logistics', name:'Logistics', color: resolveColor('var(--cat-2)') },
     { key:'marketing', name:'Marketing/Ads', color: resolveColor('var(--cat-3)') },
     { key:'sga', name:'SG&A', color: resolveColor('var(--cat-4)') },
-    { key:'netProfit', name:'Net Profit', color: good }
+    { key:'tax', name:'Tax (20%)', color: resolveColor('var(--cat-5)') },
+    { key:'netProfitAfterTax', name:'Net Profit (after tax)', color: good }
   ];
   document.getElementById('costStructLegend').innerHTML = costLines.map(cl =>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+cl.color+'"></span>'+cl.name+'</span>'
@@ -547,7 +558,13 @@ function renderAll(){
   buildStacked100BarSVG('costStructChart', {
     labels: groupKeys, height:280,
     series: costLines.map(cl => ({ name:cl.name, color:cl.color, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })),
-    valueFormatter: fmtTHB
+    valueFormatter: fmtTHB,
+    /* 1-decimal so the Net Profit segment's % is directly comparable to
+       Executive Summary's Ranking table Net Margin % (both same formula,
+       same underlying value -- 0-decimal rounding here previously made
+       25.66% look like "26%" next to Ranking's "25.7%", reading as a data
+       mismatch when it was only a display-precision difference). */
+    pctDecimals: 1
   });
   latestData.costStruct = { channels: groupKeys, lines: costLines.map(cl => ({ name:cl.name, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })) };
 

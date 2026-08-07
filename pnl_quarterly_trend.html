@@ -97,20 +97,20 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Net Profit Trend (5Q)</span>
-          <button class="info-icon" data-info-title="Net Profit Trend" data-info-text="Net Profit ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
+          <button class="info-icon" data-info-title="Net Profit Trend" data-info-text="Net Profit (after tax, 20% Mock Rate) ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · after tax</div>
       <div class="canvas-wrap" id="npTrendQCanvasWrap"><div id="npTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Net Margin % Trend (5Q)</span>
-          <button class="info-icon" data-info-title="Net Margin % Trend" data-info-text="Net Margin % ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
+          <button class="info-icon" data-info-title="Net Margin % Trend" data-info-text="Net Margin % (after tax, 20% Mock Rate) ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · after tax</div>
       <div class="canvas-wrap" id="nmTrendQCanvasWrap"><div id="nmTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
   </div>
@@ -310,6 +310,15 @@ const DA_RATE_OF_SALES = 0.030;
 pnlCompany.da = pnlCompany.netSales.map(v => v * DA_RATE_OF_SALES);
 pnlCompany.ebitda = pnlCompany.netProfit.map((v,i) => v + pnlCompany.da[i]);
 
+/* Corporate Tax cascade (post-build review) — same TAX_RATE as
+   pnl_executive_summary.html. pnlCompany.netProfit is EBIT (left as-is,
+   not renamed, since every OPEX/margin formula above already depends on
+   it); Net Profit after tax is the new bottom line everywhere this page
+   used to show "Net Profit". */
+const TAX_RATE = 0.20;
+pnlCompany.tax = pnlCompany.netProfit.map(v => v * TAX_RATE);
+pnlCompany.netProfitAfterTax = pnlCompany.netProfit.map(v => v * (1-TAX_RATE));
+
 /* Normalized Earnings add-backs — same dedicated PRNG/model as pnl_executive_summary.html, so Reported/Adjusted figures tie out exactly between pages. */
 const addbackRand = mulberry32(20260632);
 function genAddbackSeries(baseRatio, zeroProb){
@@ -385,13 +394,82 @@ function renderAll(){
     { label:'– Logistics', series: pnlCompany.logistics.map(v=>-v) },
     { label:'– Marketing/Ads', series: pnlCompany.marketing.map(v=>-v) },
     { label:'– SG&A', series: pnlCompany.sga.map(v=>-v) },
-    { label:'= Net Profit', series: pnlCompany.netProfit, bold:true },
-    { label:'Net Margin %', isMargin:true, num: pnlCompany.netProfit, den: pnlCompany.netSales },
-    { label:'+ D&A (add-back)', series: pnlCompany.da, isEstimate:true },
-    { label:'= EBITDA', series: pnlCompany.ebitda, bold:true, isEstimate:true },
+    { label:'= EBIT (Operating Profit)', series: pnlCompany.netProfit, bold:true },
+    { label:'– Tax (20%)', series: pnlCompany.tax.map(v=>-v), isEstimate:true },
+    { label:'= Net Profit (after tax)', series: pnlCompany.netProfitAfterTax, bold:true },
+    { label:'Net Margin %', isMargin:true, num: pnlCompany.netProfitAfterTax, den: pnlCompany.netSales },
+    { label:'+ D&A (add-back, memo)', series: pnlCompany.da, isEstimate:true },
+    { label:'= EBITDA (memo)', series: pnlCompany.ebitda, bold:true, isEstimate:true },
     { label:'EBITDA Margin %', isMargin:true, num: pnlCompany.ebitda, den: pnlCompany.netSales, isEstimate:true }
   ];
-  const qVals = def => quarterStarts.map(qs => def.isMargin ? (qSum(def.den,qs) ? qSum(def.num,qs)/qSum(def.den,qs)*100 : 0) : qSum(def.series, qs));
+  /* Bug fix (post-build review, P0-2): Q1'26+Q2'26 must sum EXACTLY to the
+     same rounded YTD figure Executive Summary's Waterfall/Income Statement
+     show — otherwise two independently-rounded quarters (e.g. ฿3.0M +
+     ฿3.2M) can visibly sum to ฿6.2M while the YTD widget elsewhere shows
+     ฿6.1M, even though the underlying exact numbers already tie perfectly
+     (this is a rounding-display artifact, not a data bug — see
+     reconcileRoundToTarget in shared.js). Uses the exact same formula
+     Executive Summary uses for its YTD anchors (netSalesR/grossProfitR/
+     netProfitR via roundToNearestTHB100K, then largest-remainder-reconcile
+     the 4 OPEX lines) since Q1'26+Q2'26 covers the identical 6 months as
+     that page's default "Year to Date" range — then splits each
+     already-YTD-reconciled total back across the 2 quarters so they both
+     stay close to their own true value AND sum to the anchor exactly. Only
+     Q1'26/Q2'26 need this: no other page shows a sum touching Q2'25-Q4'25. */
+  const q1s = quarterStarts[3], q2s = quarterStarts[4];
+  function reconcileQuarterPair(rawSeries, targetR){
+    const rawQ1 = qSum(rawSeries, q1s), rawQ2 = qSum(rawSeries, q2s);
+    return reconcileRoundToTarget([rawQ1/1e6, rawQ2/1e6], targetR/1e6, 1).map(v=>v*1e6);
+  }
+  const nsR_YTD = roundToNearestTHB100K(qSum(pnlCompany.netSales,q1s)+qSum(pnlCompany.netSales,q2s));
+  const gpR_YTD = roundToNearestTHB100K(qSum(pnlCompany.grossProfit,q1s)+qSum(pnlCompany.grossProfit,q2s));
+  const npR_YTD = roundToNearestTHB100K(qSum(pnlCompany.netProfit,q1s)+qSum(pnlCompany.netProfit,q2s));
+  const [tsR_YTD,lgR_YTD,mkR_YTD,sgR_YTD] = reconcileRoundToTarget(
+    [qSum(pnlCompany.tradeSpend,q1s)+qSum(pnlCompany.tradeSpend,q2s), qSum(pnlCompany.logistics,q1s)+qSum(pnlCompany.logistics,q2s), qSum(pnlCompany.marketing,q1s)+qSum(pnlCompany.marketing,q2s), qSum(pnlCompany.sga,q1s)+qSum(pnlCompany.sga,q2s)].map(v=>v/1e6),
+    (gpR_YTD-npR_YTD)/1e6, 1
+  ).map(v=>v*1e6);
+  const daR_YTD = roundToNearestTHB100K(qSum(pnlCompany.da,q1s)+qSum(pnlCompany.da,q2s));
+  const [nsQ1,nsQ2] = reconcileQuarterPair(pnlCompany.netSales, nsR_YTD);
+  const [gpQ1,gpQ2] = reconcileQuarterPair(pnlCompany.grossProfit, gpR_YTD);
+  const [tsQ1,tsQ2] = reconcileQuarterPair(pnlCompany.tradeSpend, tsR_YTD);
+  const [lgQ1,lgQ2] = reconcileQuarterPair(pnlCompany.logistics, lgR_YTD);
+  const [mkQ1,mkQ2] = reconcileQuarterPair(pnlCompany.marketing, mkR_YTD);
+  const [sgQ1,sgQ2] = reconcileQuarterPair(pnlCompany.sga, sgR_YTD);
+  const [daQ1,daQ2] = reconcileQuarterPair(pnlCompany.da, daR_YTD);
+  const cogsQ1 = nsQ1-gpQ1, cogsQ2 = nsQ2-gpQ2; // derived -- ties to Net Sales/Gross Profit automatically
+  // Net Profit is DERIVED per quarter (Gross Profit minus the 4 reconciled
+  // OPEX lines), NOT independently reconciled from its own raw series --
+  // otherwise Q1's/Q2's own "GP - OPEX = NP" identity could silently break
+  // even though the Q1+Q2 aggregate still tied to the YTD anchor. Deriving
+  // it this way guarantees BOTH the per-quarter leg (used by the Net Profit
+  // Change Bridge below) AND the Q1+Q2-sums-to-YTD tie hold simultaneously.
+  const npQ1 = gpQ1-tsQ1-lgQ1-mkQ1-sgQ1, npQ2 = gpQ2-tsQ2-lgQ2-mkQ2-sgQ2; // EBIT, per quarter
+  const ebitdaQ1 = npQ1+daQ1, ebitdaQ2 = npQ2+daQ2; // derived -- ties to EBIT/D&A automatically
+  // Tax cascade: Net Profit (after tax) is DERIVED from each quarter's own
+  // EBIT (npQ1/npQ2 above), not independently reconciled, so Tax + Net
+  // Profit after tax = EBIT holds exactly per quarter (same reasoning as
+  // deriving EBIT from Gross Profit minus OPEX above).
+  const netProfitAfterTaxQ1 = roundToNearestTHB100K(npQ1*(1-TAX_RATE)), netProfitAfterTaxQ2 = roundToNearestTHB100K(npQ2*(1-TAX_RATE));
+  const taxQ1 = npQ1-netProfitAfterTaxQ1, taxQ2 = npQ2-netProfitAfterTaxQ2;
+  const RECONCILED_Q1Q2 = {
+    'Net Sales': [nsQ1,nsQ2], '– COGS': [-cogsQ1,-cogsQ2], '= Gross Profit': [gpQ1,gpQ2],
+    '– Trade Spend': [-tsQ1,-tsQ2], '– Logistics': [-lgQ1,-lgQ2], '– Marketing/Ads': [-mkQ1,-mkQ2], '– SG&A': [-sgQ1,-sgQ2],
+    '= EBIT (Operating Profit)': [npQ1,npQ2], '– Tax (20%)': [-taxQ1,-taxQ2], '= Net Profit (after tax)': [netProfitAfterTaxQ1,netProfitAfterTaxQ2],
+    '+ D&A (add-back, memo)': [daQ1,daQ2], '= EBITDA (memo)': [ebitdaQ1,ebitdaQ2]
+  };
+  const MARGIN_RECONCILED_ND = {
+    'Gross Margin %': [[gpQ1,nsQ1],[gpQ2,nsQ2]], 'Net Margin %': [[netProfitAfterTaxQ1,nsQ1],[netProfitAfterTaxQ2,nsQ2]], 'EBITDA Margin %': [[ebitdaQ1,nsQ1],[ebitdaQ2,nsQ2]]
+  };
+  const qVals = def => {
+    const vals = quarterStarts.map(qs => def.isMargin ? (qSum(def.den,qs) ? qSum(def.num,qs)/qSum(def.den,qs)*100 : 0) : qSum(def.series, qs));
+    if(def.isMargin && MARGIN_RECONCILED_ND[def.label]){
+      const [[numQ1,denQ1],[numQ2,denQ2]] = MARGIN_RECONCILED_ND[def.label];
+      vals[3] = denQ1 ? numQ1/denQ1*100 : 0; vals[4] = denQ2 ? numQ2/denQ2*100 : 0;
+    } else if(RECONCILED_Q1Q2[def.label]){
+      [vals[3], vals[4]] = RECONCILED_Q1Q2[def.label];
+    }
+    return vals;
+  };
   const rows = lineDefs.map(def=>{
     const vals = qVals(def);
     const qoq = def.isMargin ? vals[4]-vals[3] : (vals[3] ? (vals[4]-vals[3])/Math.abs(vals[3])*100 : null);
@@ -419,8 +497,8 @@ function renderAll(){
      pairs, since shared.js has no dual-axis combo-chart primitive. === */
   const netSalesQ = quarterStarts.map(qs=>qSum(pnlCompany.netSales,qs));
   const gmQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.grossProfit,qs)/qSum(pnlCompany.netSales,qs)*100 : 0);
-  const netProfitQ = quarterStarts.map(qs=>qSum(pnlCompany.netProfit,qs));
-  const nmQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.netProfit,qs)/qSum(pnlCompany.netSales,qs)*100 : 0);
+  const netProfitQ = quarterStarts.map(qs=>qSum(pnlCompany.netProfitAfterTax,qs)); // after tax
+  const nmQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.netProfitAfterTax,qs)/qSum(pnlCompany.netSales,qs)*100 : 0); // after tax
   const ebitdaQ = quarterStarts.map(qs=>qSum(pnlCompany.ebitda,qs));
   const ebitdaMQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.ebitda,qs)/qSum(pnlCompany.netSales,qs)*100 : 0);
 
@@ -431,25 +509,36 @@ function renderAll(){
   buildGroupedBarSVG('ebitdaTrendQChart', { labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true, series:[{name:'EBITDA', color:brand, values:ebitdaQ}] });
   buildLineChartSVG('ebitdaMTrendQChart', { labels: quarterLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:ebitdaMQ, color:good, width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}] });
 
-  /* === Normalized Earnings Bridge (latest quarter) + 5Q reported-vs-adjusted table === */
+  /* === Normalized Earnings Bridge (latest quarter) + 5Q reported-vs-adjusted table ===
+     Reported = Net Profit AFTER TAX for the quarter (post-build review C2)
+     -- Normalized Earnings reconciles the REPORTED bottom line a reader
+     actually sees on the Income Statement, which is after-tax now. === */
   const latestQS = quarterStarts[4];
-  const reportedNP = qSum(pnlCompany.netProfit, latestQS);
+  const reportedNP = qSum(pnlCompany.netProfitAfterTax, latestQS);
   const addbackVals = addbackKeys.map(k=>({ item:k, value: qSum(addbackSeries[k], latestQS) }));
   const addbackTotal = addbackVals.reduce((s,a)=>s+a.value,0);
   const adjustedNP = reportedNP + addbackTotal;
+  /* Bug fix (post-build review, P1-7): the 4 add-back labels are long
+     enough (e.g. "+ Expected Credit Loss (ECL)") that 6 horizontal-centered
+     bar labels collided/got clipped on a normal-width card. Abbreviate for
+     the chart's own x-axis only (the callout above and the 5Q table below
+     keep the full names) and rotate 35° via buildWaterfallSVG's existing
+     rotateLabels option (same fix already used for Product Analysis'
+     Growth Contribution Waterfall). */
+  const ADDBACK_SHORT_LABEL = { 'Obsolete Inventory Provision':'Obsolete Inv.', 'Impairment Loss on Assets':'Impairment', 'Expected Credit Loss (ECL)':'ECL', 'Provision for Litigation':'Litigation' };
   const bridgeSteps = [
-    { label:'Reported Net Profit', value: reportedNP, type:'start' },
-    ...addbackVals.map(a=>({ label:'+ '+a.item, value:a.value, type:'delta' })),
-    { label:'Adjusted Net Profit', value: adjustedNP, type:'end' }
+    { label:'Reported', value: reportedNP, type:'start' },
+    ...addbackVals.map(a=>({ label:'+ '+(ADDBACK_SHORT_LABEL[a.item]||a.item), value:a.value, type:'delta' })),
+    { label:'Adjusted', value: adjustedNP, type:'end' }
   ];
-  buildWaterfallSVG('normEarnChart', bridgeSteps, { yFormatter: fmtTHB, height:260 });
+  buildWaterfallSVG('normEarnChart', bridgeSteps, { yFormatter: fmtTHB, height:260, rotateLabels:35 });
   const biggestAddback = [...addbackVals].sort((a,b)=>b.value-a.value)[0];
   document.getElementById('normEarnCallout').innerHTML =
     'Adjusted Net Profit is <b>'+fmtTHB(addbackTotal)+'</b> higher than Reported in '+quarterLabels[4]+' — mostly from <b>'+biggestAddback.item+'</b> ('+fmtTHB(biggestAddback.value)+')';
   latestData.normEarn = { quarter:quarterLabels[4], reportedNP, addbackVals, adjustedNP };
 
   const normEarn5Q = quarterStarts.map((qs,i)=>{
-    const rep = qSum(pnlCompany.netProfit, qs);
+    const rep = qSum(pnlCompany.netProfitAfterTax, qs);
     const add = addbackKeys.reduce((s,k)=> s+qSum(addbackSeries[k],qs), 0);
     return { quarter:quarterLabels[i], reported:rep, adjusted:rep+add, addback:add };
   });
@@ -461,20 +550,28 @@ function renderAll(){
   /* === Net Profit Change Bridge (Q1'26 -> Q2'26) — driver decomposition,
      not a component build. Volume/Margin-Mix split derives algebraically
      from ΔRevenue and ΔGross-Margin-%, so it reconciles to ΔGross Profit
-     exactly by construction (no manual rounding fix needed); OPEX driver
-     deltas are the literal ΔTradeSpend/ΔLogistics/ΔMarketing/ΔSG&A, so the
-     whole bridge reconciles to ΔNet Profit exactly, always. === */
-  const priorQS2 = quarterStarts[3], curQS2 = quarterStarts[4];
-  const priorNS = qSum(pnlCompany.netSales,priorQS2), curNS = qSum(pnlCompany.netSales,curQS2);
-  const priorGP = qSum(pnlCompany.grossProfit,priorQS2), curGP = qSum(pnlCompany.grossProfit,curQS2);
+     exactly by construction; OPEX driver deltas are the literal
+     ΔTradeSpend/ΔLogistics/ΔMarketing/ΔSG&A, so the whole bridge reconciles
+     to ΔNet Profit exactly, always. Built from the SAME reconciled Q1'26/
+     Q2'26 values the 5-Quarter table above displays (nsQ1/nsQ2/gpQ1/gpQ2/
+     etc., computed above) rather than re-summing raw exact values a second
+     way, so this chart's own ฿ figures are pixel-identical to the table's. */
+  const priorNS = nsQ1, curNS = nsQ2, priorGP = gpQ1, curGP = gpQ2;
   const priorGM = priorNS ? priorGP/priorNS : 0, curGM = curNS ? curGP/curNS : 0;
   const volumeEffect = (curNS-priorNS) * priorGM;
   const marginMixEffect = (curGM-priorGM) * curNS;
-  const tsEffect = -(qSum(pnlCompany.tradeSpend,curQS2)-qSum(pnlCompany.tradeSpend,priorQS2));
-  const lgEffect = -(qSum(pnlCompany.logistics,curQS2)-qSum(pnlCompany.logistics,priorQS2));
-  const mkEffect = -(qSum(pnlCompany.marketing,curQS2)-qSum(pnlCompany.marketing,priorQS2));
-  const sgEffect = -(qSum(pnlCompany.sga,curQS2)-qSum(pnlCompany.sga,priorQS2));
-  const priorNP = qSum(pnlCompany.netProfit,priorQS2), curNP = qSum(pnlCompany.netProfit,curQS2);
+  const tsEffect = -(tsQ2-tsQ1);
+  const lgEffect = -(lgQ2-lgQ1);
+  const mkEffect = -(mkQ2-mkQ1);
+  const sgEffect = -(sgQ2-sgQ1);
+  // Tax cascade (post-build review C2): bridge now starts/ends at Net
+  // Profit AFTER TAX, with a Tax effect step closing the chain right before
+  // the end bar (operating drivers unchanged). taxEffect = -(ΔTax), same
+  // sign convention as the OPEX effects -- this ties exactly by
+  // construction: (EBIT_Q1-taxQ1) + [operating effects summing to
+  // EBIT_Q2-EBIT_Q1] + (taxQ1-taxQ2) = EBIT_Q2-taxQ2 = Net Profit Q2 after tax.
+  const priorNP = netProfitAfterTaxQ1, curNP = netProfitAfterTaxQ2;
+  const taxEffect = -(taxQ2-taxQ1);
   const bridgeStart = { label:'Net Profit '+quarterLabels[3], value: priorNP, type:'start' };
   const bridgeEnd = { label:'Net Profit '+quarterLabels[4], value: curNP, type:'end' };
   const npBridgeSteps = [
@@ -485,15 +582,16 @@ function renderAll(){
     { label:'Logistics', value: lgEffect, type:'delta' },
     { label:'Marketing/Ads', value: mkEffect, type:'delta' },
     { label:'SG&A', value: sgEffect, type:'delta' },
+    { label:'Tax effect', value: taxEffect, type:'delta' },
     bridgeEnd
   ];
   buildWaterfallSVG('npBridgeChart', npBridgeSteps, { yFormatter: fmtTHB, height:280, rotateLabels:35 });
   const netProfitChange = curNP - priorNP;
-  const opexEffectsTotal = marginMixEffect+tsEffect+lgEffect+mkEffect+sgEffect;
+  const opexEffectsTotal = marginMixEffect+tsEffect+lgEffect+mkEffect+sgEffect+taxEffect;
   document.getElementById('npBridgeCallout').innerHTML =
-    'Net Profit <b>'+(netProfitChange>=0?'increased':'decreased')+' '+fmtTHB(Math.abs(netProfitChange))+'</b> QoQ — '
+    'Net Profit (after tax) <b>'+(netProfitChange>=0?'increased':'decreased')+' '+fmtTHB(Math.abs(netProfitChange))+'</b> QoQ — '
     + (volumeEffect>=0?'volume growth contributed +':'volume decline cost ')+fmtTHB(Math.abs(volumeEffect))
-    + ', ' + (opexEffectsTotal>=0?'partly offset further by +':'offset by ') + fmtTHB(Math.abs(opexEffectsTotal)) + ' of combined margin/cost effects';
+    + ', ' + (opexEffectsTotal>=0?'partly offset further by +':'offset by ') + fmtTHB(Math.abs(opexEffectsTotal)) + ' of combined margin/cost/tax effects';
   latestData.npBridge = npBridgeSteps;
 }
 

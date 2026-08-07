@@ -170,9 +170,20 @@ function trendSeries(startVal, endVal, jitterPct){
   return vals;
 }
 const currentRatioQ = trendSeries(2.70, 2.59, 0.015);
-const invDaysQ = trendSeries(201, 187, 0.03);
-const arDaysQ = trendSeries(68, 61, 0.03);
-const apDaysQ = trendSeries(70, 78, 0.03);
+/* Bug fix (post-build review, P0-4): CCC = Inventory Days + AR Days − AP
+   Days must tie EXACTLY to whatever the table displays for those 3 rows.
+   The exact floats already summed correctly (199.4+68.3-70.2 IS exactly
+   197.5), but each of the 3 component rows rounds independently for
+   display (Math.round) and round(a)+round(b)-round(c) doesn't always equal
+   round(a+b-c) -- e.g. Q2'25 displayed as 199 + 68 - 70 = 197 while CCC
+   independently rounded 197.5 up to 198. Fix: round Inventory/AR/AP Days
+   to whole numbers FIRST (days are always displayed as whole numbers
+   anyway) and treat those rounded values as canonical everywhere,
+   including deriving CCC from them -- guarantees CCC always equals
+   exactly DIO+DSO-DPO using the SAME numbers the table shows. */
+const invDaysQ = trendSeries(201, 187, 0.03).map(Math.round);
+const arDaysQ = trendSeries(68, 61, 0.03).map(Math.round);
+const apDaysQ = trendSeries(70, 78, 0.03).map(Math.round);
 const cccDaysQ = invDaysQ.map((v,i)=> v + arDaysQ[i] - apDaysQ[i]);
 const deRatioQ = [0.58, 0.56, 0.54, 0.53, 0.55].map(v => v * (1 + (bsRand()-0.5)*0.01));
 const ibdeRatioQ = [0,0,0,0,0];

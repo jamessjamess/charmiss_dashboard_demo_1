@@ -24,6 +24,40 @@ function pctChange(cur,prev){ return prev===0?0:((cur-prev)/prev)*100; }
 function sumRange(arr,s,e){ let sum=0; for(let i=s;i<=e;i++) sum+=arr[i]; return sum; }
 function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
 
+/* ---------- Display-rounding reconciliation ----------
+   Independently rounding each of several related values (e.g. Q1+Q2 vs a
+   YTD total, or 4 cost lines vs their combined total) almost never sums
+   back to the independently-rounded total — each value's own rounding
+   error can point either direction. That reads as a data-consistency bug
+   even though the underlying exact numbers already tie perfectly. Use
+   reconcileRoundToTarget wherever DISPLAYED component values must visibly
+   sum to a DISPLAYED total/target shown elsewhere (waterfalls, quarterly
+   tables vs YTD figures, cost breakdowns vs their parent line). Largest-
+   remainder method: floor everything, then hand out (or claw back) the
+   leftover units to the values with the largest (or smallest) fractional
+   part first, so the result stays as close as possible to the true values
+   while summing to EXACTLY round(targetSum, decimals). */
+function reconcileRoundToTarget(values, targetSum, decimals){
+  const scale = Math.pow(10, decimals===undefined?1:decimals);
+  const scaledTarget = Math.round(targetSum*scale);
+  const floors = values.map(v=>Math.floor(v*scale));
+  const remainder = scaledTarget - floors.reduce((a,b)=>a+b,0);
+  const result = [...floors];
+  if(remainder>0){
+    const fracs = values.map((v,i)=>({i, frac:(v*scale)-floors[i]})).sort((a,b)=>b.frac-a.frac);
+    for(let k=0;k<remainder && k<fracs.length;k++) result[fracs[k].i]+=1;
+  } else if(remainder<0){
+    const fracs = values.map((v,i)=>({i, frac:(v*scale)-floors[i]})).sort((a,b)=>a.frac-b.frac);
+    for(let k=0;k<-remainder && k<fracs.length;k++) result[fracs[k].i]-=1;
+  }
+  return result.map(v=>v/scale);
+}
+/** Rounds a single ฿ value to the nearest 0.1M (same granularity fmtTHB
+    displays at ≥1e6), returned in raw ฿ so it round-trips through fmtTHB
+    unchanged. Used to compute the "anchor" values (Net Sales/Gross Profit/
+    Net Profit) that reconcileRoundToTarget's targets are built from. */
+function roundToNearestTHB100K(v){ return Math.round(v/1e5)/10 * 1e6; }
+
 /* ---------- Seeded RNG (deterministic mock data across reloads) ---------- */
 function mulberry32(seed){
   return function(){
@@ -184,6 +218,16 @@ function buildLineChartSVG(containerId, opts){
 
   let seriesSvg = '';
   const hasMarkers = series.some(s=>s.markers);
+  // Bug fix (post-build review, P1-8): showLastLabel used to place each
+  // series' end-label independently at its own point's y-8, so two series
+  // ending within a few pixels of each other (e.g. Net Margin % Trend by
+  // Channel when two channels' latest values are close) rendered
+  // overlapping/unreadable text. lastLabelInfos collects every series'
+  // *intended* label position first; a dodge pass after the loop nudges
+  // any that are closer than MIN_LABEL_GAP apart, while a <circle> still
+  // marks each series' TRUE data point so the nudge doesn't misrepresent
+  // where the line actually ends.
+  const lastLabelInfos = [];
   series.forEach((s,seriesIdx)=>{
     let d='', started=false, lastIdx=-1, firstIdx=-1;
     s.data.forEach((v,i)=>{
@@ -235,8 +279,20 @@ function buildLineChartSVG(containerId, opts){
       const anchor = x>width-64 ? 'end' : 'start';
       const lx = anchor==='end' ? x-6 : x+6;
       if(!s.markers) seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+s.color+'"/>';
-      seriesSvg += '<text x="'+lx.toFixed(1)+'" y="'+(y-8).toFixed(1)+'" font-size="10.5" font-weight="700" fill="'+s.color+'" text-anchor="'+anchor+'">'+label+'</text>';
+      lastLabelInfos.push({ x:lx, y:y-8, anchor, color:s.color, label });
     }
+  });
+  // Dodge pass: sort top-to-bottom, push any label closer than MIN_LABEL_GAP
+  // to its neighbor further down so no two overlap, then render.
+  const MIN_LABEL_GAP = 13;
+  lastLabelInfos.sort((a,b)=>a.y-b.y);
+  for(let i=1;i<lastLabelInfos.length;i++){
+    if(lastLabelInfos[i].y < lastLabelInfos[i-1].y + MIN_LABEL_GAP){
+      lastLabelInfos[i].y = lastLabelInfos[i-1].y + MIN_LABEL_GAP;
+    }
+  }
+  lastLabelInfos.forEach(info=>{
+    seriesSvg += '<text x="'+info.x.toFixed(1)+'" y="'+info.y.toFixed(1)+'" font-size="10.5" font-weight="700" fill="'+info.color+'" text-anchor="'+info.anchor+'">'+info.label+'</text>';
   });
 
   const svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+xLabelSvg+seriesSvg+'</svg>';
@@ -281,6 +337,45 @@ function arcPath(cx,cy,r,a0,a1,strokeW){
   const [x1,y1] = polarPoint(cx,cy,r,end);
   const largeArc = (end-a0) > 180 ? 1 : 0;
   return 'M '+x0.toFixed(2)+' '+y0.toFixed(2)+' A '+r+' '+r+' 0 '+largeArc+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2);
+}
+/* ---------- Semicircle gauge (KPI redesign, post-build review) — for a
+   single "lower is better" cost-ratio metric with a fixed target/threshold,
+   viewed at one point in time (not a trend). NOT for margin %s or anything
+   a reader cares about the trajectory of — those stay a number+sparkline,
+   see the note above every buildGaugeSVG call site. Reuses the exact same
+   polarPoint/arcPath helpers buildDonutSVG already uses, just sweeping the
+   TOP semicircle (clock-angle 180°=left through 270°=top to 360°=right,
+   value 0→max) instead of a full circle. Zones default to green/amber/red
+   at 65%/85% of `max` (opts.greenTo/opts.amberTo override in the metric's
+   own units, not a fraction, if a real industry benchmark is known). */
+function buildGaugeSVG(containerId, value, opts){
+  opts = opts || {};
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 180;
+  const height = opts.height || (container ? container.clientHeight : 0) || 110;
+  const max = opts.max !== undefined ? opts.max : 100;
+  const greenTo = opts.greenTo !== undefined ? opts.greenTo : max*0.65;
+  const amberTo = opts.amberTo !== undefined ? opts.amberTo : max*0.85;
+  const valueFormatter = opts.valueFormatter || (v=>v.toFixed(1)+'%');
+  const cx = width/2, r = Math.min(width/2-8, height-28);
+  const cy = height-14;
+  const strokeW = Math.max(9, r*0.26);
+  const angleAt = v => 180 + Math.min(1,Math.max(0,v/max))*180;
+  const goodColor = cssVar('--good')||'#0ca30c', warnColor = cssVar('--warning')||'#fab219', critColor = cssVar('--critical')||'#d03b3b';
+  const inkOne = cssVar('--ink-1')||'#0b0b0b', inkThree = cssVar('--ink-3')||'#898781';
+  const zonesSvg =
+    '<path d="'+arcPath(cx,cy,r,180,angleAt(greenTo),strokeW)+'" fill="none" stroke="'+goodColor+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>'
+    + '<path d="'+arcPath(cx,cy,r,angleAt(greenTo),angleAt(amberTo),strokeW)+'" fill="none" stroke="'+warnColor+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>'
+    + '<path d="'+arcPath(cx,cy,r,angleAt(amberTo),360,strokeW)+'" fill="none" stroke="'+critColor+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>';
+  const needleAngle = angleAt(value);
+  const [tipX,tipY] = polarPoint(cx,cy,r*0.72,needleAngle);
+  const needleSvg = '<line x1="'+cx+'" y1="'+cy+'" x2="'+tipX.toFixed(2)+'" y2="'+tipY.toFixed(2)+'" stroke="'+inkOne+'" stroke-width="2.4" stroke-linecap="round"/>'
+    + '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="'+inkOne+'"/>';
+  const valueLabel = '<text x="'+cx+'" y="'+(cy-r*0.42).toFixed(1)+'" text-anchor="middle" font-size="'+Math.max(13,Math.round(r*0.34))+'" font-weight="700" fill="'+inkOne+'">'+valueFormatter(value)+'</text>';
+  const scaleLabels = '<text x="'+(cx-r-2)+'" y="'+(cy+12)+'" text-anchor="start" font-size="9" fill="'+inkThree+'">0</text>'
+    + '<text x="'+(cx+r+2)+'" y="'+(cy+12)+'" text-anchor="end" font-size="9" fill="'+inkThree+'">'+valueFormatter(max)+'</text>';
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" overflow="visible">'+zonesSvg+needleSvg+valueLabel+scaleLabels+'</svg>';
 }
 function buildDonutSVG(containerId, segments, size, opts){
   opts = opts || {};
@@ -1135,6 +1230,13 @@ function buildStacked100BarSVG(containerId, opts){
   // this page.
   const highlightSeries = opts.highlightSeries || null;
   const highlightColor = cssVar('--ink-1') || '#0b0b0b';
+  // opts.pctDecimals (post-build review fix): defaults to 0 (unchanged for
+  // every existing caller) -- pass 1 when this chart's % figures are meant
+  // to be directly compared against another widget that displays 1-decimal
+  // precision (e.g. a Ranking table's Net Margin %), so the two don't look
+  // like they disagree when they're actually the same number rounded
+  // differently for a narrow in-bar label vs a spacious table cell.
+  const pctDecimals = opts.pctDecimals!==undefined ? opts.pctDecimals : 0;
 
   // Responsive fix (2026-08-03): labels used to always render both a % line
   // and a ฿ sub-line whenever a segment was tall enough (segH>26), with no
@@ -1161,7 +1263,7 @@ function buildStacked100BarSVG(containerId, opts){
       bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"'+(isHi?' stroke="'+highlightColor+'" stroke-width="2.5"':'')+'/>';
       const showValueLine = !compact && segH > 40;
       if(segH > 22){
-        const pct = (val/total*100).toFixed(0)+'%';
+        const pct = (val/total*100).toFixed(pctDecimals)+'%';
         const cy = y+segH/2;
         const ly = showValueLine ? cy-2 : cy+3;
         bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+ly.toFixed(1)+'" font-size="'+fontPct+'" font-weight="700" text-anchor="middle" fill="#fff">'+pct+'</text>';
