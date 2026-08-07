@@ -10,71 +10,76 @@
 <body>
 <div class="app">
 
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">C</div>
-      <div class="brand-name">Charmiss</div>
-      <div id="navMenuMount"></div>
-    </div>
-    <div class="user-area">
-      <div class="user-meta">
-        <div class="user-name">Nattapong V.</div>
-        <div class="user-role">VP of Sales</div>
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
+          <a class="tab active tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+        </nav>
       </div>
-      <div class="avatar">NV</div>
-      <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
-        <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
-      </button>
-    </div>
-  </header>
-
-  <div class="breadcrumb"><span class="current">P&amp;L Overview</span></div>
-
-  <div class="page-head">
-    <div>
-      <h1 class="page-title">P&amp;L Overview — Cost Structure</h1>
-      <p class="page-subtitle">Cost efficiency deep-dive — OPEX ratios, channel/partner cost allocation, and revenue-to-cost signal, company-wide. P&amp;L is the single source of truth for Trade Spend/Cost breakdown; MT/TT/Ecom Breakdown tabs do not duplicate this view.</p>
-    </div>
-    <div class="data-badge">Data as of Jun 30, 2026 (mock data)</div>
-  </div>
-
-  <nav class="tabs">
-    <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
-    <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
-    <a class="tab active tab-link" href="pnl_cost_structure.html">Cost Structure</a>
-  </nav>
-
-  <nav class="section-nav">
-    <a href="#sec-cost-efficiency">Cost Efficiency</a>
-    <a href="#sec-cost-by-channel-partner">Cost by Channel &amp; Partner</a>
-    <a href="#sec-cost-efficiency-signal">Cost Efficiency Signal</a>
-  </nav>
-
-  <div class="filterbar">
-    <div class="filter-left">
-      <span class="filter-label">Period</span>
-      <button class="period-btn" id="periodBtn">
-        <span id="periodBtnLabel">Year to Date</span>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-      </button>
-      <div class="period-dropdown" id="periodDropdown">
-        <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
-        <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
-        <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
-        <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
-        <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
-        <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
-        <div class="period-divider"></div>
-        <div class="custom-range-label">Custom Range</div>
-        <div class="custom-range-row">
-          <select id="customFrom"></select>
-          <span style="color:var(--ink-3);font-size:11.5px;">to</span>
-          <select id="customTo"></select>
+      <div class="user-area">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
         </div>
-        <button class="apply-btn" id="applyCustom">Apply</button>
+        <div class="avatar">NV</div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
       </div>
+    </header>
+
+  <div class="header-utility-row" id="headerUtilityRow">
+    <nav class="section-nav">
+      <a href="#sec-cost-efficiency">Cost Efficiency</a>
+      <a href="#sec-cost-by-channel-partner">Cost by Channel &amp; Partner</a>
+      <a href="#sec-cost-efficiency-signal">Cost Efficiency Signal</a>
+    </nav>
+    <div class="nav-filter-divider"></div>
+    <div class="filter-bar-group">
+      <div class="filter-left">
+        <span class="filter-label">Period</span>
+        <button class="period-btn" id="periodBtn">
+          <span id="periodBtnLabel">Year to Date</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="period-dropdown" id="periodDropdown">
+          <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+          <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+          <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+          <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+          <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+          <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+          <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+          <div class="period-divider"></div>
+          <div class="custom-range-label">Custom Range</div>
+          <div class="custom-range-row">
+            <select id="customFrom"></select>
+            <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+            <select id="customTo"></select>
+          </div>
+          <button class="apply-btn" id="applyCustom">Apply</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <span class="filter-label">View By</span>
+        <div class="timeframe-toggle" id="timeFrameToggle">
+          <div class="timeframe-thumb" id="timeFrameThumb"></div>
+          <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+          <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+        </div>
+      </div>
+      <div class="filter-scope">Company-wide, all channels</div>
     </div>
-    <div class="filter-scope">Company-wide, all channels</div>
+  </div>
   </div>
 
   <!-- ===== SECTION 1: COST EFFICIENCY ===== -->
@@ -343,6 +348,7 @@ function getPeriodRange(key, custom){
     case 'thisQuarter': return [TODAY-2, TODAY];
     case 'lastQuarter': return [TODAY-5, TODAY-3];
     case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
     case 'custom': return custom;
     case 'ytd': default: return [24, TODAY];
   }
@@ -354,6 +360,7 @@ function periodLabelText(key, custom){
     case 'thisQuarter': return 'Q2 2026';
     case 'lastQuarter': return 'Q1 2026';
     case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
     case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
     case 'ytd': default: return 'Year to Date';
   }
@@ -365,6 +372,34 @@ if (typeof renderNavMenu === 'function') {
 }
 initInfoPopovers();
 initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
+initSectionScrollSpy();
+
+/* ---------- Menu bar collapse (works via CSS class toggle, no layout
+   assumptions — same mechanism works on mobile and desktop). Persists via
+   localStorage so it survives reloads/tab switches. ---------- */
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
 
 /* ---------- Custom range selects ---------- */
 const customFromSel = document.getElementById('customFrom');
@@ -403,6 +438,45 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
   periodDropdown.classList.remove('open');
   renderAll(currentPeriodKey, currentCustom);
 });
+
+/* ---------- Time Frame (Monthly/Quarterly) toggle ---------- */
+let currentTimeFrame = 'monthly';
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll(currentPeriodKey, currentCustom);
+});
+positionTimeFrameThumb();
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+function bucketRatio(numArr, denArr, groups){
+  return groups.map(g=>{
+    const num = g.reduce((s,i)=>s+numArr[i],0), den = g.reduce((s,i)=>s+denArr[i],0);
+    return den ? num/den*100 : 0;
+  });
+}
+function bucketSample(arr, groups){ return groups.map(g=> arr[g[g.length-1]]); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
 
 const invDelta = v => v<=0 ? 'pos' : 'neg';
 /* Ratio-to-sales shifts are small (well under 1pp most periods) — fmtSignedPP's
@@ -444,7 +518,11 @@ function renderAll(periodKey, custom){
   const opexRatioPct = netSalesSum ? opexSum/netSalesSum*100 : 0;
 
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
-  const curYearLabels = curYearIdx.map(i=>monthLabels[i]);
+  // View By (Monthly/Quarterly): curYearGroups buckets curYearIdx into
+  // quarters when Quarterly is active (monthly is a no-op passthrough), and
+  // curYearLabels switches to "Q1".."Q4" accordingly.
+  const curYearGroups = bucketMonths(curYearIdx, currentTimeFrame);
+  const curYearLabels = currentTimeFrame==='quarterly' ? curYearGroups.map(quarterLabel) : curYearIdx.map(i=>monthLabels[i]);
 
   /* === SECTION 1: OPEX Ratio % KPI (mirrors Executive Summary) === */
   const opexAt = i => pnlCompany.netSales[i] ? (pnlCompany.tradeSpend[i]+pnlCompany.logistics[i]+pnlCompany.marketing[i]+pnlCompany.sga[i])/pnlCompany.netSales[i]*100 : 0;
@@ -482,16 +560,22 @@ function renderAll(periodKey, custom){
 
   /* === SECTION 2: OPEX Trend (trailing 18 months, company-wide, ignores Period filter) === */
   const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
-  const shareLabels = shareIdx.map(i=>monthLabels[i]);
+  // View By: shareGroups buckets the trailing-18-month shareIdx into quarters
+  // when Quarterly is active (monthly is a no-op passthrough) — independent
+  // of the Period filter, same as shareIdx itself already was.
+  const shareGroups = bucketMonths(shareIdx, currentTimeFrame);
+  const shareLabels = currentTimeFrame==='quarterly' ? shareGroups.map(quarterLabel) : shareIdx.map(i=>monthLabels[i]);
   const opexLines = [
     { name:'Trade Spend', color: resolveColor('var(--cat-1)'), key:'tradeSpend' },
     { name:'Logistics', color: resolveColor('var(--cat-2)'), key:'logistics' },
     { name:'Marketing/Ads', color: resolveColor('var(--cat-3)'), key:'marketing' },
     { name:'SG&A', color: resolveColor('var(--cat-4)'), key:'sga' }
   ];
+  // ฿-amount series (all months already closed within this trailing window):
+  // sum-of-months per group, no masking needed.
   const opexSeries = opexLines.map(l => ({
     name:l.name, color:l.color,
-    values: shareIdx.map(i => groupKeys.reduce((sum,g)=> sum + pnlByChannel[g][l.key][i], 0))
+    values: shareGroups.map(grp => grp.reduce((sum,i)=> sum + groupKeys.reduce((s,g)=> s + pnlByChannel[g][l.key][i], 0), 0))
   }));
   buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:200 });
   document.getElementById('opexTrendLegend').innerHTML = opexLines.map(l =>
@@ -503,8 +587,19 @@ function renderAll(periodKey, custom){
   document.getElementById('opexRatioTrendLegend').innerHTML = groupKeys.map(g =>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColor[g]+'"></span>'+g+'</span>'
   ).join('');
+  // OPEX Ratio % is a ratio of two summable ฿ series (total OPEX over Net
+  // Sales) — a quarter's ratio is sum(OPEX)÷sum(netSales) within it, NOT an
+  // average of the months' own %, same "ratio of sums" rule used for Net
+  // Margin % Trend by Channel on the Breakdown page. Masked to null until
+  // every month in the group has closed, mirroring the old per-month
+  // `i<=TODAY` mask.
   const opexRatioSeries = groupKeys.map(g => ({
-    data: curYearIdx.map(i => i<=TODAY ? (pnlByChannel[g].netSales[i] ? (pnlByChannel[g].tradeSpend[i]+pnlByChannel[g].logistics[i]+pnlByChannel[g].marketing[i]+pnlByChannel[g].sga[i])/pnlByChannel[g].netSales[i]*100 : 0) : null),
+    data: curYearGroups.map(grp => {
+      if(!grp.every(i=>i<=TODAY)) return null;
+      const opex = grp.reduce((s,i)=>s+pnlByChannel[g].tradeSpend[i]+pnlByChannel[g].logistics[i]+pnlByChannel[g].marketing[i]+pnlByChannel[g].sga[i],0);
+      const ns = grp.reduce((s,i)=>s+pnlByChannel[g].netSales[i],0);
+      return ns ? opex/ns*100 : 0;
+    }),
     color: groupColor[g], width:2.2, showLastLabel:true, lastLabelFormatter: v=>fmtPct(v,1)
   }));
   buildLineChartSVG('opexRatioTrendChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series: opexRatioSeries });

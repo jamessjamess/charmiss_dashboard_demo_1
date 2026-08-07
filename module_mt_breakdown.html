@@ -43,41 +43,51 @@
         <a href="#sec-partner-performance">Partner Performance</a>
         <a href="#sec-product-coverage">Product Coverage</a>
       </nav>
-      <div class="filter-left">
-        <span class="filter-label">Period</span>
-        <button class="period-btn" id="periodBtn">
-          <span id="periodBtnLabel">Year to Date</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="period-dropdown" id="periodDropdown">
-          <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
-          <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
-          <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
-          <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
-          <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
-          <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
-          <div class="period-divider"></div>
-          <div class="custom-range-label">Custom Range</div>
-          <div class="custom-range-row">
-            <select id="customFrom"></select>
-            <span style="color:var(--ink-3);font-size:11.5px;">to</span>
-            <select id="customTo"></select>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
+        <div class="filter-left">
+          <span class="filter-label">Period</span>
+          <button class="period-btn" id="periodBtn">
+            <span id="periodBtnLabel">Year to Date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="periodDropdown">
+            <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+            <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+            <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+            <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+            <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+            <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+            <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+            <div class="period-divider"></div>
+            <div class="custom-range-label">Custom Range</div>
+            <div class="custom-range-row">
+              <select id="customFrom"></select>
+              <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+              <select id="customTo"></select>
+            </div>
+            <button class="apply-btn" id="applyCustom">Apply</button>
           </div>
-          <button class="apply-btn" id="applyCustom">Apply</button>
+          <span class="filter-label" style="margin-left:8px;">Category</span>
+          <select class="level-select" id="categoryFilterSelect">
+            <option value="all">All Categories</option>
+            <option value="skin" disabled>Skin Care (Coming soon)</option>
+            <option value="color" disabled>Color Cosmetics (Coming soon)</option>
+            <option value="hair" disabled>Hair Care (Coming soon)</option>
+          </select>
         </div>
-        <span class="filter-label" style="margin-left:8px;">Category</span>
-        <select class="level-select" id="categoryFilterSelect">
-          <option value="all">All Categories</option>
-          <option value="skin" disabled>Skin Care (Coming soon)</option>
-          <option value="color" disabled>Color Cosmetics (Coming soon)</option>
-          <option value="hair" disabled>Hair Care (Coming soon)</option>
-        </select>
+        <div class="filter-item">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
+        <div class="filter-scope" id="filterScopeNote">Scopes the KPIs and charts below</div>
       </div>
-      <div class="filter-scope" id="filterScopeNote">Scopes the KPIs and charts below</div>
     </div>
   </div>
-
-  <div class="breadcrumb"><a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">MT Overview</span></div>
 
   <!-- ===== ZONE A: PORTFOLIO QUALITY ===== -->
   <div class="section-label" id="sec-portfolio-quality">Portfolio Quality</div>
@@ -607,6 +617,7 @@ function getPeriodRange(key, custom){
     case 'thisQuarter': return [TODAY-2, TODAY];
     case 'lastQuarter': return [TODAY-5, TODAY-3];
     case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
     case 'custom': return custom;
     case 'ytd': default: return [24, TODAY];
   }
@@ -618,6 +629,7 @@ function periodLabelText(key, custom){
     case 'thisQuarter': return 'Q2 2026';
     case 'lastQuarter': return 'Q1 2026';
     case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
     case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
     case 'ytd': default: return 'Year to Date';
   }
@@ -694,6 +706,46 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
   renderAll();
 });
 
+/* ---------- Time Frame (Monthly/Quarterly) toggle — ported from
+   sales_overview.html (2026-08-06 feature). ---------- */
+let currentTimeFrame = 'monthly';
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll();
+});
+positionTimeFrameThumb();
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+function bucketRatio(numArr, denArr, groups){
+  return groups.map(g=>{
+    const num = g.reduce((s,i)=>s+numArr[i],0), den = g.reduce((s,i)=>s+denArr[i],0);
+    return den ? num/den*100 : 0;
+  });
+}
+function bucketSample(arr, groups){ return groups.map(g=> arr[g[g.length-1]]); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
+
 document.getElementById('categoryFilterSelect').disabled = true; // only "All Categories" wired so far
 
 /* ---------- Render ---------- */
@@ -756,14 +808,20 @@ function renderCategoryAndCrossTab(){
      different parent categories that would otherwise collide on color. */
   const shareNodes = allNodes.slice(0,6);
   const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
-  const shareLabels = shareIdx.map(i=>monthLabels[i]);
-  const shareSeries = shareNodes.map((c,i)=>({
-    name:c.name, color: resolveColor('var(--cat-'+(i+1)+')'),
-    values: shareIdx.map(idx=>{
+  // View By (Monthly/Quarterly, 2026-08-06): compute the FULL raw monthly
+  // series first (rand() called once per month, in the same order, regardless
+  // of currentTimeFrame) then bucket-sum the already-computed ฿ amounts —
+  // keeps the seeded random sequence identical between Monthly/Quarterly.
+  const shareGroups = bucketMonths(shareIdx, currentTimeFrame);
+  const shareLabels = currentTimeFrame==='quarterly' ? shareGroups.map(quarterLabel) : shareIdx.map(i=>monthLabels[i]);
+  const shareSeries = shareNodes.map((c,i)=>{
+    const raw = new Array(MONTHS_TOTAL).fill(0);
+    shareIdx.forEach(idx=>{
       const jitter = 1 + (rand()-0.5)*0.1;
-      return c.pct/100 * groupActual.MT[idx] * jitter;
-    })
-  }));
+      raw[idx] = c.pct/100 * groupActual.MT[idx] * jitter;
+    });
+    return { name:c.name, color: resolveColor('var(--cat-'+(i+1)+')'), values: bucketSum(raw, shareGroups) };
+  });
   buildStreamAreaSVG('shareChart', { labels: shareLabels, series: shareSeries, valueFormatter: fmtTHB });
   document.getElementById('shareLegend').innerHTML = shareNodes.map((c,i)=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+resolveColor('var(--cat-'+(i+1)+')')+'"></span>'+c.name+'</span>'
@@ -963,14 +1021,19 @@ function renderAll(){
      biggest gainer/loser (not all 9 like Category's 6) since listing every
      partner would run long. */
   const partnerShareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) partnerShareIdx.push(i);
-  const partnerShareLabels = partnerShareIdx.map(i=>monthLabels[i]);
-  const partnerShareSeries = partners.map((p,i)=>({
-    name:p.id, color: keyAccountColors[i],
-    values: partnerShareIdx.map(idx=>{
+  // View By: same "compute raw monthly array once, then bucket-sum" rule as
+  // Category Share of Sales Over Time above — rand() call order/count never
+  // changes with currentTimeFrame.
+  const partnerShareGroups = bucketMonths(partnerShareIdx, currentTimeFrame);
+  const partnerShareLabels = currentTimeFrame==='quarterly' ? partnerShareGroups.map(quarterLabel) : partnerShareIdx.map(i=>monthLabels[i]);
+  const partnerShareSeries = partners.map((p,i)=>{
+    const raw = new Array(MONTHS_TOTAL).fill(0);
+    partnerShareIdx.forEach(idx=>{
       const jitter = 1 + (rand()-0.5)*0.1;
-      return p.groupPct/100 * groupActual.MT[idx] * jitter;
-    })
-  }));
+      raw[idx] = p.groupPct/100 * groupActual.MT[idx] * jitter;
+    });
+    return { name:p.id, color: keyAccountColors[i], values: bucketSum(raw, partnerShareGroups) };
+  });
   buildStreamAreaSVG('partnerShareChart', { labels: partnerShareLabels, series: partnerShareSeries, valueFormatter: fmtTHB });
   document.getElementById('partnerShareLegend').innerHTML = partners.map((p,i)=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+keyAccountColors[i]+'"></span>'+p.id+'</span>'

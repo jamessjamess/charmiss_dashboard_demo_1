@@ -43,38 +43,48 @@
         <a href="#sec-store-health">Store Health</a>
         <a href="#sec-store-ranking">Store Ranking</a>
       </nav>
-      <div class="filter-left">
-        <span class="filter-label">Period</span>
-        <button class="period-btn" id="periodBtn">
-          <span id="periodBtnLabel">Year to Date</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="period-dropdown" id="periodDropdown">
-          <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
-          <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
-          <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
-          <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
-          <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
-          <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
-          <div class="period-divider"></div>
-          <div class="custom-range-label">Custom Range</div>
-          <div class="custom-range-row">
-            <select id="customFrom"></select>
-            <span style="color:var(--ink-3);font-size:11.5px;">to</span>
-            <select id="customTo"></select>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
+        <div class="filter-left">
+          <span class="filter-label">Period</span>
+          <button class="period-btn" id="periodBtn">
+            <span id="periodBtnLabel">Year to Date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="periodDropdown">
+            <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+            <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+            <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+            <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+            <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+            <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+            <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+            <div class="period-divider"></div>
+            <div class="custom-range-label">Custom Range</div>
+            <div class="custom-range-row">
+              <select id="customFrom"></select>
+              <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+              <select id="customTo"></select>
+            </div>
+            <button class="apply-btn" id="applyCustom">Apply</button>
           </div>
-          <button class="apply-btn" id="applyCustom">Apply</button>
+          <span class="filter-label" style="margin-left:8px;">Partner</span>
+          <select class="level-select" id="storePartnerSelect">
+            <option value="all">All 5 Partners</option>
+          </select>
         </div>
-        <span class="filter-label" style="margin-left:8px;">Partner</span>
-        <select class="level-select" id="storePartnerSelect">
-          <option value="all">All 5 Partners</option>
-        </select>
+        <div class="filter-item">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
+        <div class="filter-scope" id="filterScopeNote">5 of 9 Key Accounts report store-level data</div>
       </div>
-      <div class="filter-scope" id="filterScopeNote">5 of 9 Key Accounts report store-level data</div>
     </div>
   </div>
-
-  <div class="breadcrumb"><a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">MT Overview</span></div>
 
   <div class="chart-subtitle" style="margin:-6px 0 14px;">WATSONS, EVEANDBOY, CJ Express, Beautrium, and Multy report sales by store location. Lotus's, 7-Eleven, KONVY, and Tsuruha currently send one lump-sum Sales Report per account with no store-level breakdown, so they're excluded from every chart and table on this page — same coverage limitation already noted on the Executive Summary tab.</div>
 
@@ -610,6 +620,7 @@ function getPeriodRange(key, custom){
     case 'thisQuarter': return [TODAY-2, TODAY];
     case 'lastQuarter': return [TODAY-5, TODAY-3];
     case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
     case 'custom': return custom;
     case 'ytd': default: return [24, TODAY];
   }
@@ -621,6 +632,7 @@ function periodLabelText(key, custom){
     case 'thisQuarter': return 'Q2 2026';
     case 'lastQuarter': return 'Q1 2026';
     case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
     case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
     case 'ytd': default: return 'Year to Date';
   }
@@ -724,6 +736,46 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
   periodDropdown.classList.remove('open');
   renderAll(currentPeriodKey, currentCustom, currentPartnerFilter());
 });
+
+/* ---------- Time Frame (Monthly/Quarterly) toggle — ported from
+   sales_overview.html (2026-08-06 feature). ---------- */
+let currentTimeFrame = 'monthly';
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll(currentPeriodKey, currentCustom, currentPartnerFilter());
+});
+positionTimeFrameThumb();
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+function bucketRatio(numArr, denArr, groups){
+  return groups.map(g=>{
+    const num = g.reduce((s,i)=>s+numArr[i],0), den = g.reduce((s,i)=>s+denArr[i],0);
+    return den ? num/den*100 : 0;
+  });
+}
+function bucketSample(arr, groups){ return groups.map(g=> arr[g[g.length-1]]); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
 
 /* ---------- Render ---------- */
 let latestData = {};
@@ -906,12 +958,22 @@ function renderAll(periodKey, custom, partnerFilterVal){
     : fmtTHB(avgStoreBest.avg)+'/store';
 
   /* === Store Performance: Sales per Store Trend (all 36 months) === */
+  // View By (Monthly/Quarterly, 2026-08-06): fullMonthIdx/fullMonthGroups
+  // span the whole 36-month history (this chart isn't scoped to Period),
+  // shared with Top Stores Trend below since both plot the same domain.
+  // Each series here is already a per-store ฿ amount per month, so summing
+  // 3 months gives that store's cumulative per-store sales for the quarter
+  // — same "amount" rule as any other ฿ trend line (bucketSum).
+  const fullMonthIdx = []; for(let i=0;i<MONTHS_TOTAL;i++) fullMonthIdx.push(i);
+  const fullMonthGroups = bucketMonths(fullMonthIdx, currentTimeFrame);
+  const fullMonthLabels = currentTimeFrame==='quarterly' ? fullMonthGroups.map(quarterLabel) : monthLabels;
   const trendSeries = activeAccounts.map(a=>{
-    const data = groupActual.MT.map(v => (v*a.pct/100)/a.storeCount);
+    const raw = groupActual.MT.map(v => (v*a.pct/100)/a.storeCount);
+    const data = bucketSum(raw, fullMonthGroups);
     return { data, color: accountColor(a.name), width:2.2, showLastLabel:true, lastLabelFormatter: v => a.name+' '+fmtTHB(v) };
   });
-  buildLineChartSVG('storeTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: trendSeries });
-  latestData.storeTrend = { labels: monthLabels, accounts: activeAccounts.map(a=>({name:a.name, values: groupActual.MT.map(v=>(v*a.pct/100)/a.storeCount)})) };
+  buildLineChartSVG('storeTrendChart', { labels: fullMonthLabels, yFormatter: v=>fmtTHB(v), series: trendSeries });
+  latestData.storeTrend = { labels: fullMonthLabels, accounts: activeAccounts.map((a,i)=>({name:a.name, values: trendSeries[i].data})) };
 
   /* === Store Performance: Same-Store Sales Growth by Partner ===
      Dumbbell rows (2026-08-06), replacing a 2-bar grouped chart that read as
@@ -943,11 +1005,12 @@ function renderAll(periodKey, custom, partnerFilterVal){
   const topStoresList = buildStoreList(topStoresPool, totalActual).slice(0, topStoresCap);
   const topStoresTrendSeries = topStoresList.map(st=>{
     const acct = keyAccounts[accountIndex(st.partner)];
-    const data = groupActual.MT.map(v => v*acct.pct/100*st.weight);
+    const raw = groupActual.MT.map(v => v*acct.pct/100*st.weight);
+    const data = bucketSum(raw, fullMonthGroups);
     return { data, color: st.color, width:2.2, showLastLabel:true, lastLabelFormatter: v => st.name+' '+fmtTHB(v) };
   });
-  buildLineChartSVG('topStoresTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: topStoresTrendSeries });
-  latestData.topStoresTrend = { labels: monthLabels, stores: topStoresList.map((st,i)=>({name:st.name, values: topStoresTrendSeries[i].data})) };
+  buildLineChartSVG('topStoresTrendChart', { labels: fullMonthLabels, yFormatter: v=>fmtTHB(v), series: topStoresTrendSeries });
+  latestData.topStoresTrend = { labels: fullMonthLabels, stores: topStoresList.map((st,i)=>({name:st.name, values: topStoresTrendSeries[i].data})) };
 
   /* Roster-stability callout — generalized from the old per-partner
      "#1 store" check to whatever pool is currently selected: for each of
@@ -1043,22 +1106,30 @@ function renderAll(periodKey, custom, partnerFilterVal){
      with 920 stores a name-by-name trend is unreadable, but 6 bucket-share
      lines read the same whether there are 920 stores or 9,200. */
   const mixIdx = []; for(let i=TODAY-17;i<=TODAY;i++) mixIdx.push(i);
-  const mixLabels = mixIdx.map(i=>monthLabels[i]);
-  const mixBucketCounts = mixIdx.map(()=> bucketDefs.map(()=>0));
+  // View By: this is a %-of-stores ratio (count in bucket ÷ total stores),
+  // not a ฿ amount, so a quarter's value is ratio-of-sums (bucketRatio) —
+  // average share across the quarter's months — same rule as any other %
+  // metric on this page. mixBucketCountsRaw/mixTotalStoresArr are full
+  // MONTHS_TOTAL-length arrays (only mixIdx positions filled) so bucketRatio
+  // can index them directly by absolute month.
+  const mixGroups = bucketMonths(mixIdx, currentTimeFrame);
+  const mixLabels = currentTimeFrame==='quarterly' ? mixGroups.map(quarterLabel) : mixIdx.map(i=>monthLabels[i]);
+  const mixBucketCountsRaw = bucketDefs.map(()=> new Array(MONTHS_TOTAL).fill(0));
   storeAccounts.forEach(a=>{
-    mixIdx.forEach((mi,ti)=>{
+    mixIdx.forEach(mi=>{
       const accountTotalAtMonth = groupActual.MT[mi]*a.pct/100;
       a.storeWeights.forEach(w=>{
         const storeSales = accountTotalAtMonth*w;
         const bi = bucketDefs.findIndex(b=> storeSales>=b.min && storeSales<b.max);
-        if(bi>=0) mixBucketCounts[ti][bi]++;
+        if(bi>=0) mixBucketCountsRaw[bi][mi]++;
       });
     });
   });
   const mixTotalStores = storeAccounts.reduce((a,acc)=>a+acc.storeCount,0);
+  const mixTotalStoresArr = new Array(MONTHS_TOTAL).fill(mixTotalStores);
   const mixSeries = bucketDefs.map((b,bi)=>({
     name:b.label, color: cssVar('--cat-'+(bi+1)),
-    values: mixIdx.map((mi,ti)=> mixTotalStores ? mixBucketCounts[ti][bi]/mixTotalStores*100 : 0)
+    values: bucketRatio(mixBucketCountsRaw[bi], mixTotalStoresArr, mixGroups)
   }));
   buildStreamAreaSVG('storeMixChart', { labels: mixLabels, series: mixSeries, valueFormatter: v=>fmtPct(v,1) });
   document.getElementById('storeMixLegend').innerHTML = bucketDefs.map((b,bi)=>

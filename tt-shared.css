@@ -198,6 +198,15 @@
   .filter-shortcut-btn:hover{ background:var(--page); }
   .filter-shortcut-btn[aria-pressed="true"]{ background:var(--brand); border-color:var(--brand); color:#fff; }
 
+  /* ---------- View By (Monthly/Quarterly) toggle (2026-08-06 feature parity with Sales
+     Overview/Product Analysis' own Monthly/Quarterly toggle) — a sliding-thumb segmented
+     control, same visual language as .filter-shortcut-btn/.ar-status-toggle above but with an
+     animated thumb instead of a flat background swap on the active option. ---------- */
+  .timeframe-toggle{position:relative;display:inline-flex;border:1px solid var(--border);border-radius:8px;padding:2px;background:var(--wash);}
+  .timeframe-thumb{position:absolute;top:2px;left:2px;bottom:2px;width:0;border-radius:6px;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.10);transition:transform .2s cubic-bezier(.4,0,.2,1),width .2s cubic-bezier(.4,0,.2,1);}
+  .timeframe-opt{position:relative;z-index:1;background:transparent;border:none;font-size:12px;font-weight:600;color:var(--ink-3);padding:6px 14px;cursor:pointer;font-family:inherit;transition:color .15s ease;}
+  .timeframe-opt.selected{color:var(--ink-1);font-weight:700;}
+
   /* Round 32 direct feedback (Task 7): compact segmented toggle for AR By Due Date's
      Within Due / Overdue switch — same aria-pressed convention as .filter-shortcut-btn above,
      just smaller and grouped into a single bordered pill since these two buttons are mutually
@@ -366,8 +375,13 @@
      shared.css's own comment: harmless global upgrade for anchor jumps. */
   html{ scroll-behavior:smooth; }
   .section-nav{ display:flex; gap:8px; flex-wrap:wrap; margin:2px 0 22px; }
-  .section-nav a{ font-size:12px; font-weight:600; color:var(--ink-2); background:var(--card); border:1px solid var(--border-2); border-radius:999px; padding:6px 14px; text-decoration:none; transition:border-color .15s,color .15s; }
+  .section-nav a{ font-size:12px; font-weight:600; color:var(--ink-2); background:var(--card); border:1px solid var(--border-2); border-radius:999px; padding:6px 14px; text-decoration:none; transition:border-color .15s,color .15s,background .15s; }
   .section-nav a:hover{ border-color:var(--brand); color:var(--brand); }
+  /* Fix (2026-08-06): the byte-for-byte port above only copied the hover
+     rule — .section-nav a.active (set by initSectionScrollSpy below) had
+     no matching style here, so the scroll-spy class was toggling correctly
+     but never visibly changed anything on tt_executive_summary.html. */
+  .section-nav a.active{ border-color:var(--brand); color:var(--brand); background:var(--brand-wash); }
 
   /* ---------- Card ---------- */
   .card{

@@ -759,9 +759,13 @@
     thisQuarter:{ label:"This Quarter (Q2 2026)",  range:[15,17] },
     lastQuarter:{ label:"Last Quarter (Q1 2026)",  range:[12,14] },
     ytd:        { label:"Year to Date",            range:[12,17] },
+    // "Last Year (2025)" (2026-08-06 feature parity with Sales Overview/Product Analysis) —
+    // idx 0..11 is exactly the 12 calendar months of 2025, already sitting at the start of
+    // actualMonths, so this is a clean slice with no new mock data needed.
+    lastYear:   { label:"Last Year (2025)",        range:[0,11]  },
     t12:        { label:"Trailing 12 Months",      range:[6,17]  },
   };
-  const PRESET_ORDER = ["thisMonth","lastMonth","thisQuarter","lastQuarter","ytd","t12"];
+  const PRESET_ORDER = ["thisMonth","lastMonth","thisQuarter","lastQuarter","ytd","lastYear","t12"];
 
   function windowMonths(){
     if (state.dateRange.mode === "custom"){
@@ -785,6 +789,103 @@
     return win.length===1 ? win[0].key : (win[0].key + " - " + win[win.length-1].key);
   }
 
+  /* ============ VIEW BY (Monthly/Quarterly) — 2026-08-06 feature parity with Sales
+     Overview/Product Analysis' Monthly/Quarterly toggle. Those pages operate on flat parallel
+     arrays indexed by absolute month number and have their own local bucketMonths/bucketSum/
+     bucketRatio/quarterLabel helpers; TT's month data is instead an array of OBJECTS
+     (actualMonths, each {idx, year, calIdx, label, key, total, ...}), so the equivalent
+     toolkit here operates on arrays of those objects rather than plain index numbers. Shared by
+     every chart across all 3 pages (declared once here, not per-page) since currentTimeFrame is
+     one global switch for the whole TT engine, same as the other pages' single switch per page. */
+  let currentTimeFrame = "monthly";
+  // Groups an ordered array of TT month OBJECTS into quarter buckets (by absolute quarter
+  // number floor(idx/3), which always lands on real calendar-quarter boundaries since
+  // actualMonths' idx 0 = Jan 2025 — a calendar-aligned start). Monthly mode is a no-op
+  // (one-month groups) so every existing per-month chart path still works unchanged.
+  function bucketTTMonths(monthsArr, timeFrame){
+    if (timeFrame !== "quarterly") return monthsArr.map(m => [m]);
+    const groups = []; let curQ = null;
+    monthsArr.forEach(m => {
+      const q = Math.floor(m.idx/3);
+      if (q !== curQ){ curQ = q; groups.push([]); }
+      groups[groups.length-1].push(m);
+    });
+    return groups;
+  }
+  // "Q1 25" style label for a quarter group — uses the group's own real .idx/.year fields
+  // (never invents new label logic), same convention as the group's last month's year so a
+  // quarter that happens to straddle... it never does here, quarters are always within one
+  // calendar year by construction above, so any month in the group gives the same year.
+  function ttQuarterLabel(group){
+    const q = (Math.floor(group[0].idx/3) % 4) + 1;
+    return "Q" + q + " " + String(group[0].year).slice(2);
+  }
+  // Label for a group in whichever mode is active — the group's own month key when Monthly,
+  // the quarter label when Quarterly.
+  function ttBucketLabel(group, timeFrame){
+    return timeFrame === "quarterly" ? ttQuarterLabel(group) : group[0].key;
+  }
+  // ฿-amount / count series: sum a field (or field-fn) across each group's months.
+  function ttBucketSum(groups, field){
+    return groups.map(g => g.reduce((s,m) => s + (typeof field==="function" ? field(m) : m[field]), 0));
+  }
+  // %-ratio series (e.g. Return Rate = CN / Gross): ratio of SUMS within each group, never an
+  // average of pre-computed per-month percentages — matches the "recompute from raw
+  // numerator/denominator" convention used everywhere else in this file (e.g. returnRatePct).
+  function ttBucketRatio(groups, numField, denField){
+    return groups.map(g => {
+      const num = g.reduce((s,m) => s + (typeof numField==="function" ? numField(m) : m[numField]), 0);
+      const den = g.reduce((s,m) => s + (typeof denField==="function" ? denField(m) : m[denField]), 0);
+      return den ? num/den : 0;
+    });
+  }
+  // Stock/level series (e.g. Active Stores, a snapshot count, not a flow): sample the group's
+  // LAST month rather than summing — a stock metric isn't additive across months, it's the
+  // balance AT a point in time, so "Active Stores this quarter" = active stores at quarter end.
+  function ttBucketSample(groups, field){
+    return groups.map(g => { const m = g[g.length-1]; return typeof field==="function" ? field(m) : m[field]; });
+  }
+  // MoM/QoQ-equivalent: compares group gi's summed field against the immediately preceding
+  // group of the SAME SIZE (the previous quarter when grouped by 3, the previous month when
+  // grouped by 1) — generalizes the file's existing globalPrev() month-over-month comparisons
+  // to work for quarter groups too. Returns null if the preceding period isn't fully covered by
+  // actualMonths (mirrors globalPrev returning null at the start of the series).
+  function ttGroupMoM(groups, gi, field){
+    const g = groups[gi];
+    const n = g.length;
+    const prevMonths = actualMonths.filter(m => m.idx < g[0].idx && m.idx >= g[0].idx-n);
+    if (prevMonths.length !== n) return null;
+    const cur = g.reduce((s,m) => s + (typeof field==="function" ? field(m) : m[field]), 0);
+    const prev = prevMonths.reduce((s,m) => s + (typeof field==="function" ? field(m) : m[field]), 0);
+    return prev>0 ? (cur/prev-1)*100 : null;
+  }
+  // YoY-equivalent: compares group gi's summed field against its exact calendar twin one year
+  // earlier (each month's own priorYearTwin, generalized to a whole group) — generalizes the
+  // file's existing calIdx/year-1 YoY comparisons to work for quarter groups too. Returns null
+  // unless EVERY month in the group has a same-calendar-year-earlier twin inside actualMonths
+  // (mirrors the existing per-month yoy lookup returning null for the first calendar year).
+  function ttGroupYoY(groups, gi, field){
+    const g = groups[gi];
+    const twins = g.map(m => actualMonths.find(mm => mm.calIdx===m.calIdx && mm.year===m.year-1));
+    if (twins.some(t => !t)) return null;
+    const cur = g.reduce((s,m) => s + (typeof field==="function" ? field(m) : m[field]), 0);
+    const yv = twins.reduce((s,m) => s + (typeof field==="function" ? field(m) : m[field]), 0);
+    return yv>0 ? (cur/yv-1)*100 : null;
+  }
+  // Sliding thumb (same segmented-control pattern as Sales Overview/Product Analysis' own
+  // Monthly/Quarterly toggle) — measures the selected option's own box and moves/resizes the
+  // thumb behind it. Guarded: tt_sales_person.html and any future page share this one function,
+  // and not every page is guaranteed to have rendered the toggle at call time.
+  function positionTimeFrameThumb(){
+    const toggle = document.getElementById("timeFrameToggle");
+    if (!toggle) return;
+    const thumb = document.getElementById("timeFrameThumb");
+    const selected = toggle.querySelector(".timeframe-opt.selected");
+    if (!thumb || !selected) return;
+    thumb.style.width = selected.offsetWidth + "px";
+    thumb.style.transform = "translateX(" + (selected.offsetLeft - 2) + "px)";
+  }
+
   // ---- BCG Matrix dynamic Y-axis wording (design-brief requirement: never say "YoY" when
   // Trailing 12 Months is selected, since it invites confusion with a literal calendar year —
   // growthComparisonWindow always shifts back exactly 12 months regardless of preset, so the
@@ -797,6 +898,10 @@
       case "ytd": return "Growth (%) vs Same Period Last Year";
       case "thisMonth": case "lastMonth": return "Growth (%) vs Same Month Last Year";
       case "thisQuarter": case "lastQuarter": return "Growth (%) vs Same Quarter Last Year";
+      // Explicit case (not left to default): the selected period itself IS "Last Year (2025)",
+      // so the generic "vs Same Period Last Year" wording would read as a confusing double
+      // "last year" — spelling out the actual comparison year (2024) avoids that ambiguity.
+      case "lastYear": return "Growth (%) vs Prior Year (2024)";
       default: return "Growth (%) vs Same Period Last Year";
     }
   }
@@ -807,6 +912,7 @@
       case "ytd": return "อัตราการเติบโตคำนวณจากยอดขายสะสมตั้งแต่ต้นปีถึงเดือนล่าสุด (Year to Date) เทียบกับช่วงเวลาเดียวกันของปีก่อนหน้า";
       case "thisMonth": case "lastMonth": return "อัตราการเติบโตคำนวณจากยอดขายเดือนที่เลือก เทียบกับเดือนเดียวกันของปีก่อนหน้า";
       case "thisQuarter": case "lastQuarter": return "อัตราการเติบโตคำนวณจากยอดขายไตรมาสที่เลือก เทียบกับไตรมาสเดียวกันของปีก่อนหน้า";
+      case "lastYear": return "อัตราการเติบโตคำนวณจากยอดขายปี 2025 (ปีที่เลือก) เทียบกับปี 2024 (ปีก่อนหน้า)";
       default: return "อัตราการเติบโตคำนวณจากยอดขายสุทธิในช่วงเวลาที่เลือก เทียบกับช่วงเวลาเดียวกันของปีก่อนหน้า";
     }
   }
@@ -2621,14 +2727,20 @@
     const outlierSet = new Set(riskRates.filter(r=>r.rate>poolAvgRate*1.5).map(r=>r.store.id));
 
     document.getElementById("returnRateTopline").innerHTML = returnRatePct.toFixed(1) + `<span class="unit">% average CN rate · ${rangeLabel}</span>`;
+    // View By (Monthly/Quarterly, 2026-08-06): Return Rate is a %, so quarterly buckets recompute
+    // it from the SUMMED gross/net totals of the group (never average the pre-computed monthly
+    // m.cnRate values) — same "ratio of sums, not average of ratios" rule ttBucketRatio encodes.
+    const returnRateGroups = bucketTTMonths(win, currentTimeFrame);
+    const returnRateLabels = returnRateGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const returnRateVals = ttBucketRatio(returnRateGroups, m => m.grossTotal-m.total, "grossTotal").map(v=>v*100);
     renderLineChart(document.getElementById("returnRateChart"), {
-      labels: win.map(m=>m.key), ariaLabel: "Return rate (CN) trend",
-      series: [{ name:"Return Rate (CN)", color:getVar("--brand"), values: win.map(m=>m.cnRate*100), area:true, directLabel:true }],
+      labels: returnRateLabels, ariaLabel: "Return rate (CN) trend",
+      series: [{ name:"Return Rate (CN)", color:getVar("--brand"), values: returnRateVals, area:true, directLabel:true }],
       refLine: { value:RETURN_RATE_CEILING_PCT, label:RETURN_RATE_CEILING_PCT+"% ceiling", color:getVar("--critical") },
       formatValue: v => v.toFixed(1)+"%"
     });
-    renderTable(document.getElementById("returnRateTable"), ["Month","Return Rate (CN)"],
-      win.map(m=>[m.key, (m.cnRate*100).toFixed(1)+"%"]));
+    renderTable(document.getElementById("returnRateTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Return Rate (CN)"],
+      returnRateLabels.map((lb,i)=>[lb, returnRateVals[i].toFixed(1)+"%"]));
 
     // High Return Rate Stores: a concrete, ranked list of stores over the shared 2% ceiling —
     // easier to read and directly actionable than an abstract month-by-month count. Threshold
@@ -2750,38 +2862,51 @@
         ty.push(c<=5 ? scopedTotal(actualMonths[12+c]) : null);
         targetSeries.push(c<=5 ? bulletData[c].target : null);
       }
+      // View By (Monthly/Quarterly, 2026-08-06): this chart's axis is a fixed Jan-Dec calendar
+      // grid (not windowMonths()), so it's bucketed with a plain 4-groups-of-3 chunk on the same
+      // 0..11 calendar index rather than the actualMonths-object bucketTTMonths() helper above.
+      // A quarter only gets a "This Year"/Target value once every month within it has closed
+      // data (mirrors the existing per-month "c<=5" partial-year mask) — a partially-elapsed
+      // quarter stays null rather than showing an understated partial sum.
+      const trendGroups = currentTimeFrame==="quarterly" ? [[0,1,2],[3,4,5],[6,7,8],[9,10,11]] : MONTH_LABELS.map((_,c)=>[c]);
+      const trendLabels = currentTimeFrame==="quarterly" ? trendGroups.map((g,qi)=>"Q"+(qi+1)) : MONTH_LABELS;
+      const trendColLabel = currentTimeFrame==="quarterly" ? "Quarter" : "Month";
+      const lyB = trendGroups.map(g => g.reduce((s,c)=>s+ly[c],0));
+      const tyB = trendGroups.map(g => g.every(c=>ty[c]!=null) ? g.reduce((s,c)=>s+ty[c],0) : null);
+      const targetB = trendGroups.map(g => g.every(c=>targetSeries[c]!=null) ? g.reduce((s,c)=>s+targetSeries[c],0) : null);
       document.getElementById("trendTopline").innerHTML = fmtTHBFull(ty.filter(v=>v!=null).reduce((a,b)=>a+b,0)) + `<span class="unit">THB · Jan–Jun 2026, company-wide</span>`;
       renderLineChart(document.getElementById("trendChart"), {
-        labels: MONTH_LABELS,
+        labels: trendLabels,
         ariaLabel: "Revenue trend, this year vs last year, with target",
         height: 204, // 170*1.2 (Round 25 direct feedback — Round 24's shrink went a bit too far)
         series: [
-          { name:"Last Year (2025)", color:getVar("--ink-3"), values:ly },
-          { name:"Target (2026)", color:getVar("--ink-1"), values:targetSeries, dashed:true },
-          { name:"This Year (2026)", color:getVar("--brand"), values:ty, area:true, directLabel:true }
+          { name:"Last Year (2025)", color:getVar("--ink-3"), values:lyB },
+          { name:"Target (2026)", color:getVar("--ink-1"), values:targetB, dashed:true },
+          { name:"This Year (2026)", color:getVar("--brand"), values:tyB, area:true, directLabel:true }
         ],
         formatValue: fmtTHBFull
       });
-      renderTable(document.getElementById("trendTable"), ["Month","Last Year (THB)","Target (THB)","This Year (THB)"],
-        MONTH_LABELS.map((lb,i)=>[lb, fmtTHBFull(ly[i]), targetSeries[i]!=null?fmtTHBFull(targetSeries[i]):"—", ty[i]!=null?fmtTHBFull(ty[i]):"—"]));
+      renderTable(document.getElementById("trendTable"), [trendColLabel,"Last Year (THB)","Target (THB)","This Year (THB)"],
+        trendLabels.map((lb,i)=>[lb, fmtTHBFull(lyB[i]), targetB[i]!=null?fmtTHBFull(targetB[i]):"—", tyB[i]!=null?fmtTHBFull(tyB[i]):"—"]));
 
       // ---- Monthly YoY Growth % (Round 27, Task 1 revised — replaces the Growth Gauge in this
       // position). Direct feedback: a single dial for the whole Period-filter window duplicated
       // info already summarized elsewhere on this page, and doesn't say WHICH month drove a
-      // slowdown/pickup. Reuses the exact ly/ty arrays already computed above for Revenue Trend
-      // (same Jan-Dec axis, same "This Year stops at the latest closed month" rule) instead of an
-      // independent calculation — per the "aggregation, not a parallel mock economy" convention,
-      // a derived chart should read a real sibling's numbers, not recompute its own, so the two
-      // cards can never silently disagree. growthComparisonWindow/growthAxisLabel/windowRangeText
-      // stay in use elsewhere (Portfolio Matrix's Y-axis) — untouched by this change.
-      const yoyGrowth = MONTH_LABELS.map((_,c) => (ty[c]!=null && ly[c]>0) ? (ty[c]/ly[c]-1)*100 : null);
+      // slowdown/pickup. Reuses the exact lyB/tyB groups already computed above for Revenue
+      // Trend (same axis, same bucketing, same "This Year stops at the latest closed
+      // quarter/month" rule) instead of an independent calculation — per the "aggregation, not a
+      // parallel mock economy" convention, a derived chart should read a real sibling's numbers,
+      // not recompute its own, so the two cards can never silently disagree.
+      // growthComparisonWindow/growthAxisLabel/windowRangeText stay in use elsewhere (Portfolio
+      // Matrix's Y-axis) — untouched by this change.
+      const yoyGrowth = trendGroups.map((g,qi) => (tyB[qi]!=null && lyB[qi]>0) ? (tyB[qi]/lyB[qi]-1)*100 : null);
       const yoyKnown = yoyGrowth.map((v,i)=>({v,i})).filter(o=>o.v!=null);
       const yoyLatest = yoyKnown.length ? yoyKnown[yoyKnown.length-1] : null;
       document.getElementById("growthYoyTopline").innerHTML = yoyLatest==null ? "—" :
-        `${yoyLatest.v>=0?"+":""}${yoyLatest.v.toFixed(1)}%<span class="unit"> vs ${MONTH_LABELS[yoyLatest.i]} 25 · latest closed month</span>`;
+        `${yoyLatest.v>=0?"+":""}${yoyLatest.v.toFixed(1)}%<span class="unit"> vs ${trendLabels[yoyLatest.i]} 25 · latest closed ${trendColLabel.toLowerCase()}</span>`;
       renderLineChart(document.getElementById("growthYoyChart"), {
-        labels: MONTH_LABELS,
-        ariaLabel: "Monthly year-over-year growth percentage",
+        labels: trendLabels,
+        ariaLabel: "Year-over-year growth percentage",
         height: 204,
         zeroBaseline: false,
         refLine: { value: 0, label: "0%", color: getVar("--ink-3") },
@@ -2790,8 +2915,8 @@
         ],
         formatValue: v => (v>=0?"+":"") + v.toFixed(1) + "%"
       });
-      renderTable(document.getElementById("growthYoyTable"), ["Month","YoY Growth %"],
-        MONTH_LABELS.map((lb,i)=>[lb, yoyGrowth[i]!=null ? (yoyGrowth[i]>=0?"+":"")+yoyGrowth[i].toFixed(1)+"%" : "—"]));
+      renderTable(document.getElementById("growthYoyTable"), [trendColLabel,"YoY Growth %"],
+        trendLabels.map((lb,i)=>[lb, yoyGrowth[i]!=null ? (yoyGrowth[i]>=0?"+":"")+yoyGrowth[i].toFixed(1)+"%" : "—"]));
 
       // ---- Sales by Customer Group (donut, replaces old Sales by Region on this page) —
       // aggregates windowStoreRevenue (store+window only, doesn't read state) across ALL stores
@@ -2924,19 +3049,23 @@
     // lookup, same pattern used elsewhere in the file (e.g. Executive Summary's KPI tiles),
     // null when there's no prior month/year to compare against (first row of a window, or any
     // month in the shadow year's first calendar year).
-    const winBulletData = win.map(m => {
-      const prevM = globalPrev(m);
-      const yoyM = actualMonths.find(mm => mm.calIdx===m.calIdx && mm.year===m.year-1);
-      return {
-        label: m.key, actual: m.total, target: monthlyTargets[m.idx],
-        mom: (prevM && prevM.total>0) ? (m.total/prevM.total-1)*100 : null,
-        yoy: (yoyM && yoyM.total>0) ? (m.total/yoyM.total-1)*100 : null,
-      };
-    });
+    // View By (Monthly/Quarterly, 2026-08-06): win is bucketed into quarter groups via
+    // bucketTTMonths when Quarterly is selected (a no-op, one-month-per-group pass-through
+    // otherwise) — actual/target are summed per group (additive ฿ amounts), MoM/YoY recomputed
+    // from the group's own summed total against the matching prior-quarter/prior-year-quarter
+    // group via ttGroupMoM/ttGroupYoY (never averaged from the underlying monthly %s).
+    const winGroups = bucketTTMonths(win, currentTimeFrame);
+    const winBulletData = winGroups.map((g,gi) => ({
+      label: ttBucketLabel(g, currentTimeFrame),
+      actual: g.reduce((s,m)=>s+m.total,0),
+      target: g.reduce((s,m)=>s+monthlyTargets[m.idx],0),
+      mom: ttGroupMoM(winGroups, gi, "total"),
+      yoy: ttGroupYoY(winGroups, gi, "total"),
+    }));
     const totalActual = winBulletData.reduce((a,d)=>a+d.actual,0);
     const totalTarget = winBulletData.reduce((a,d)=>a+d.target,0);
     document.getElementById("bulletTopline").innerHTML = (totalTarget>0 ? (totalActual/totalTarget*100).toFixed(0) : "0") + `<span class="unit">% of target, ${rangeLabel}</span>`;
-    document.getElementById("bulletSub").textContent = `Monthly · ${rangeLabel}`;
+    document.getElementById("bulletSub").textContent = `${currentTimeFrame==="quarterly"?"Quarterly":"Monthly"} · ${rangeLabel}`;
     // Round 29 direct feedback (Task 3): switched from renderBullet's horizontal bullet-rows to
     // renderBulletBarChart — the same vertical bar (Actual, brand pink) + horizontal tick
     // (Target, ink) chart already built for Task 8.1 on Sales Person's "Target vs Actual vs
@@ -2961,7 +3090,7 @@
       ariaLabel: "Target vs Actual by month, " + rangeLabel,
       height: 200,
     });
-    renderTable(document.getElementById("bulletTable"), ["Month","Actual (THB)","Target (THB)","Attainment","MoM","YoY"],
+    renderTable(document.getElementById("bulletTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Actual (THB)","Target (THB)","Attainment","MoM","YoY"],
       winBulletData.map(d=>[d.label, fmtTHBFull(d.actual), fmtTHBFull(d.target),
         (d.target>0?(d.actual/d.target*100).toFixed(0):"0")+"%",
         d.mom!=null ? (d.mom>=0?"+":"")+d.mom.toFixed(1)+"%" : "—",
@@ -3037,11 +3166,17 @@
     // now measures a genuinely different thing instead of repeating it.
     document.getElementById("repCoverageTopline").textContent =
       `${rangeLabel}: ${reps.length} active reps · ${fmtTHBFull(scopedTotal(latestMonth)/reps.length)}/rep this month`;
+    // View By (Monthly/Quarterly, 2026-08-06): Active Reps is a constant roster count (unaffected
+    // by grouping); Avg Sales/Sales Rep is a ฿ amount = summed scopedTotal over the group ÷ the
+    // same constant rep count, so summing (not averaging) the per-month values is correct here.
+    const repCoverageGroups = bucketTTMonths(win, currentTimeFrame);
+    const repCoverageLabels = repCoverageGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const avgSalesPerRep = ttBucketSum(repCoverageGroups, m => scopedTotal(m)/reps.length);
     renderLineChart(document.getElementById("repCoverageChart"), {
-      labels: win.map(m=>m.key),
+      labels: repCoverageLabels,
       series: [
-        { name:"Active Reps", color:getVar("--ink-2"), values: win.map(()=>reps.length) },
-        { name:"Avg Sales / Sales Rep", color:getVar("--brand"), axis:"right", values: win.map(m=>scopedTotal(m)/reps.length) },
+        { name:"Active Reps", color:getVar("--ink-2"), values: repCoverageLabels.map(()=>reps.length) },
+        { name:"Avg Sales / Sales Rep", color:getVar("--brand"), axis:"right", values: avgSalesPerRep },
       ],
       formatValue: fmtInt,
       formatValueRight: fmtTHBFull,
@@ -3049,8 +3184,8 @@
       yAxisLabelRight: "Avg Sales / Sales Rep",
       height: 200, // Round 32 direct feedback (Task 3): ~10% shorter than the 220 default
     });
-    renderTable(document.getElementById("repCoverageTable"), ["Month","Active Reps","Avg Sales/Sales Rep"],
-      win.map(m => [m.key, String(reps.length), fmtTHBFull(scopedTotal(m)/reps.length)]));
+    renderTable(document.getElementById("repCoverageTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Active Reps","Avg Sales/Sales Rep"],
+      repCoverageLabels.map((lb,i) => [lb, String(reps.length), fmtTHBFull(avgSalesPerRep[i])]));
 
     // Target vs Actual (per rep) — scoped: 1 row if a specific rep is filtered, else flat roster
     // list (cap-8 + "See all" via the same Table+Focus toolbar pattern used everywhere else).
@@ -3082,14 +3217,22 @@
       const act = list.reduce((s,r)=>s+r.actualVisits[mIdx],0);
       return { planned, act, pct: planned>0 ? act/planned*100 : 0 };
     }
+    // View By (Monthly/Quarterly, 2026-08-06): Visit Compliance is a %, so quarterly buckets sum
+    // Planned/Actual visits (additive counts) across the group and recompute the ratio from
+    // those sums — never averaging the pre-computed monthly pct values.
+    const visitGroups = bucketTTMonths(win, currentTimeFrame);
+    const visitLabels = visitGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const visitPlanned = ttBucketSum(visitGroups, m => scopedVisits(m.idx).planned);
+    const visitActual = ttBucketSum(visitGroups, m => scopedVisits(m.idx).act);
+    const visitPct = visitPlanned.map((p,i) => p>0 ? visitActual[i]/p*100 : 0);
     renderLineChart(document.getElementById("visitTrendChart"), {
-      labels: win.map(m=>m.key),
-      series: [ { name:"Visit Compliance", color:getVar("--brand"), values: win.map(m=>scopedVisits(m.idx).pct) } ],
+      labels: visitLabels,
+      series: [ { name:"Visit Compliance", color:getVar("--brand"), values: visitPct } ],
       formatValue: v => v.toFixed(0)+"%",
       refLine: { value:100, label:"100% (fully compliant)", color:getVar("--critical") },
     });
-    renderTable(document.getElementById("visitTrendTable"), ["Month","Planned Visits","Actual Visits","Compliance"],
-      win.map(m => { const v = scopedVisits(m.idx); return [m.key, fmtInt(v.planned), fmtInt(v.act), v.pct.toFixed(0)+"%"]; }));
+    renderTable(document.getElementById("visitTrendTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Planned Visits","Actual Visits","Compliance"],
+      visitLabels.map((lb,i) => [lb, fmtInt(visitPlanned[i]), fmtInt(visitActual[i]), visitPct[i].toFixed(0)+"%"]));
 
     // Sales Ranking's full leaderboard moved to Level 1 (Sales Overview, Top 5 only) in Round 25
     // — see the renderOverviewAlwaysCompanyWide IIFE earlier in this same render() call for that
@@ -3277,23 +3420,23 @@
       daily.map((v,i) => [String(i+1), fmtTHBFull(v)]));
 
     // ---- Monthly Performance: Target / Actual / Diff, same trailing window as the sparklines ----
-    const monLabels = sparkIdxs.map(i=>actualMonths[i].key);
-    const monTarget = sparkIdxs.map(i=>repTargetForMonth(rep.repId,i));
-    const monActual = sparkIdxs.map(i=>repNetForMonth(rep,i));
+    // View By (Monthly/Quarterly, 2026-08-06): sparkMonths (the trailing-up-to-6-month window)
+    // is bucketed into quarter groups via bucketTTMonths when Quarterly is selected — Target/
+    // Actual are summed per group (additive ฿ amounts), MoM/YoY recomputed via ttGroupMoM/
+    // ttGroupYoY against this rep's own repNetForMonth (a field-fn, since that figure lives on
+    // the rep, not on the month object itself).
+    const sparkMonths = sparkIdxs.map(i=>actualMonths[i]);
+    const monGroups = bucketTTMonths(sparkMonths, currentTimeFrame);
+    const monLabels = monGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const monTarget = ttBucketSum(monGroups, m=>repTargetForMonth(rep.repId, m.idx));
+    const monActual = ttBucketSum(monGroups, m=>repNetForMonth(rep, m.idx));
     const monDiff = monActual.map((v,k)=>v-monTarget[k]);
     // Round 31 direct feedback: MoM/YoY added (same globalPrev/calIdx pattern used for the
     // Sales Breakdown "Target vs Actual" card's winBulletData), plus colorByHit so each bar
     // itself is green/red by hit-or-miss rather than a flat brand color.
-    const monMom = sparkIdxs.map((i,k) => {
-      const prevNet = i>0 ? repNetForMonth(rep, i-1) : null;
-      return (prevNet!=null && prevNet>0) ? (monActual[k]/prevNet-1)*100 : null;
-    });
-    const monYoy = sparkIdxs.map((i,k) => {
-      const m = actualMonths[i];
-      const yoyM = actualMonths.find(mm => mm.calIdx===m.calIdx && mm.year===m.year-1);
-      const yoyNet = yoyM ? repNetForMonth(rep, yoyM.idx) : null;
-      return (yoyNet!=null && yoyNet>0) ? (monActual[k]/yoyNet-1)*100 : null;
-    });
+    const repNetField = m => repNetForMonth(rep, m.idx);
+    const monMom = monGroups.map((g,k) => ttGroupMoM(monGroups, k, repNetField));
+    const monYoy = monGroups.map((g,k) => ttGroupYoY(monGroups, k, repNetField));
     renderBulletBarChart(document.getElementById("spMonthlyChart"), {
       labels: monLabels,
       actual: { name:"Sales Actual", values:monActual, color:"var(--brand)" },
@@ -3305,7 +3448,7 @@
       formatValue: fmtTHBFull,
       ariaLabel: "Target vs Actual vs Diff by month for " + rep.name,
     });
-    renderTable(document.getElementById("spMonthlyTable"), ["Month","Target (THB)","Actual (THB)","Diff (THB)"],
+    renderTable(document.getElementById("spMonthlyTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Target (THB)","Actual (THB)","Diff (THB)"],
       monLabels.map((lb,k) => [lb, fmtTHBFull(monTarget[k]), fmtTHBFull(monActual[k]), (monDiff[k]>=0?"+":"")+fmtTHBFull(monDiff[k])]));
 
     // ---- CN Record (Round 31 direct feedback, Task 7) — redesigned from a flat list of
@@ -3935,18 +4078,32 @@
     // whether store-count growth is cannibalizing per-store spend (both lines flat/rising) or
     // not (stores up, per-store average holding or rising too). Different units/scale by
     // design, hence the second axis — not meant to be read as a shared scale.
+    // View By (Monthly/Quarterly, 2026-08-06): Active Stores is a STOCK metric (a snapshot count,
+    // not a flow) — quarterly buckets sample the group's LAST month (end-of-quarter balance) via
+    // ttBucketSample rather than summing. Avg Sales / Customer stays a ratio of sums: the
+    // group's total scopedTotal (a ฿ flow, correctly additive) divided by the group's AVERAGE
+    // active-store count across its months (a fairer denominator for a summed numerator than a
+    // single end-of-quarter snapshot).
+    const activeGroups = bucketTTMonths(win, currentTimeFrame);
+    const activeLabels = activeGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const activeStoresSeries = ttBucketSample(activeGroups, "activeStores");
+    const avgSalesPerCustomer = activeGroups.map(g => {
+      const totalSum = g.reduce((s,m)=>s+scopedTotal(m),0);
+      const avgActive = g.reduce((s,m)=>s+m.activeStores,0)/g.length;
+      return avgActive>0 ? totalSum/avgActive : 0;
+    });
     renderLineChart(document.getElementById("activeStoresChart"), {
-      labels: win.map(m=>m.key), ariaLabel:"Active stores trend, with avg sales per customer on the right axis",
+      labels: activeLabels, ariaLabel:"Active stores trend, with avg sales per customer on the right axis",
       series: [
-        { name:"Active Stores", color:getVar("--brand"), values: win.map(m=>m.activeStores), area:true, directLabel:true },
-        { name:"Avg Sales / Customer", color:getVar("--ink-1"), values: win.map(m=>scopedTotal(m)/m.activeStores), axis:"right", directLabel:true }
+        { name:"Active Stores", color:getVar("--brand"), values: activeStoresSeries, area:true, directLabel:true },
+        { name:"Avg Sales / Customer", color:getVar("--ink-1"), values: avgSalesPerCustomer, axis:"right", directLabel:true }
       ],
       formatValue: fmtInt,
       formatValueRight: fmtTHBFull,
       yAxisLabel: "Active Stores", yAxisLabelRight: "Avg Sales / Customer (THB)"
     });
-    renderTable(document.getElementById("activeStoresTable"), ["Month","Active Stores","Avg Sales / Customer"],
-      win.map(m=>[m.key, fmtInt(m.activeStores), fmtTHBFull(scopedTotal(m)/m.activeStores)]));
+    renderTable(document.getElementById("activeStoresTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Active Stores","Avg Sales / Customer"],
+      activeLabels.map((lb,i)=>[lb, fmtInt(activeStoresSeries[i]), fmtTHBFull(avgSalesPerCustomer[i])]));
   }
 
   function renderStoreFlowChart(win, last, prev){
@@ -3976,18 +4133,29 @@
     // month-to-month movement that explains Active Stores' own ups and downs directly visible,
     // instead of two same-direction lines you have to mentally subtract. Green/red (not
     // brand-pink/red, which read too close in hue) for a clearer gain/loss distinction.
-    const netVals = win.map((m,i) => churnedVals[i]==null ? null : m.newStores - churnedVals[i]);
+    // View By (Monthly/Quarterly, 2026-08-06): New/Inactive Stores are additive flow counts, so
+    // quarterly buckets sum them across the group; a group's churned total stays null if ANY
+    // month inside it lacks a prior month to compare against (mirrors the existing single-month
+    // null case, just extended to "any month in the group", not only the first one).
+    const flowGroups = bucketTTMonths(win, currentTimeFrame);
+    const flowLabels = flowGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const newStoresB = ttBucketSum(flowGroups, "newStores");
+    const churnedB = flowGroups.map(g => {
+      const vals = g.map(churnedForMonth);
+      return vals.some(v=>v==null) ? null : vals.reduce((a,b)=>a+b,0);
+    });
+    const netVals = newStoresB.map((v,i) => churnedB[i]==null ? null : v - churnedB[i]);
     renderBarLineChart(document.getElementById("storeFlowChart"), {
-      labels: win.map(m=>m.key), ariaLabel:"New vs inactive stores, with net change",
+      labels: flowLabels, ariaLabel:"New vs inactive stores, with net change",
       bars: [
-        { name:"New Stores", color:getVar("--good-text"), values: win.map(m=>m.newStores) },
-        { name:"Inactive Stores", color:getVar("--critical"), values: churnedVals.map(v=>v==null?null:-v) }
+        { name:"New Stores", color:getVar("--good-text"), values: newStoresB },
+        { name:"Inactive Stores", color:getVar("--critical"), values: churnedB.map(v=>v==null?null:-v) }
       ],
       line: { name:"Net Change", color:getVar("--ink-1"), values: netVals },
       formatValue: v => (v>=0?"+":"") + fmtInt(v)
     });
-    renderTable(document.getElementById("storeFlowTable"), ["Month","New Stores","Inactive Stores","Net Change"],
-      win.map((m,i)=>[m.key, fmtInt(m.newStores), churnedVals[i]==null?"—":fmtInt(churnedVals[i]), netVals[i]==null?"—":(netVals[i]>=0?"+":"")+fmtInt(netVals[i])]));
+    renderTable(document.getElementById("storeFlowTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","New Stores","Inactive Stores","Net Change"],
+      flowLabels.map((lb,i)=>[lb, fmtInt(newStoresB[i]), churnedB[i]==null?"—":fmtInt(churnedB[i]), netVals[i]==null?"—":(netVals[i]>=0?"+":"")+fmtInt(netVals[i])]));
   }
 
   function renderCategorySection(win){
@@ -4156,20 +4324,29 @@
   // simplification, not an oversight (same one the prior bump chart already used for rank).
   function syncProductRanking(rows, levelName){
     document.getElementById("productRankingLevelLabel").textContent = levelName;
-    document.getElementById("productRankingSub").textContent = `Top ${rows.length}, full 18-month history`;
+    // View By (Monthly/Quarterly, 2026-08-06): this chart's time axis is ALWAYS the full 18-month
+    // actualMonths history regardless of the Period filter (unchanged design decision, see the
+    // header comment above) — bucketTTMonths groups that same full history into quarters when
+    // Quarterly is selected. Each entity's per-bucket value is a ฿ amount, so summing the
+    // group's months is correct (share % below is then a ratio of those summed values, not an
+    // average of monthly shares).
+    const prGroups = bucketTTMonths(actualMonths, currentTimeFrame);
+    const prLabels = prGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    document.getElementById("productRankingSub").textContent =
+      currentTimeFrame==="quarterly" ? `Top ${rows.length}, full 6-quarter history` : `Top ${rows.length}, full 18-month history`;
     const entities = rows.map(r => ({ label:r.label, tooltipLabel:r.tooltipLabel||r.path.join(" › ") }));
-    const valuesByMonth = rows.map(r => actualMonths.map(m => windowValueForPath([m], r.path)));
+    const valuesByMonth = rows.map(r => prGroups.map(g => g.reduce((s,m)=>s+windowValueForPath([m], r.path),0)));
     const n = rows.length;
     renderStackedAreaChart(document.getElementById("productRankingChart"), {
-      entities, months: actualMonths.map(m=>m.key), valuesByMonth, formatValue: fmtTHBFull,
+      entities, months: prLabels, valuesByMonth, formatValue: fmtTHBFull,
       ariaLabel: `Product ranking, share of top ${n} ${levelName.toLowerCase()}(s) over time`,
       height: 160, // Round 31 direct feedback: shortened again (200→160)
     });
-    const monthTotals = actualMonths.map((_,mi) => entities.reduce((a,_,ei)=>a+(valuesByMonth[ei][mi]||0), 0));
+    const periodTotals = prLabels.map((_,mi) => entities.reduce((a,_,ei)=>a+(valuesByMonth[ei][mi]||0), 0));
     renderTable(document.getElementById("productRankingTable"),
-      [levelName, ...actualMonths.map(m=>m.key)],
+      [levelName, ...prLabels],
       rows.map((r,ei) => [r.tooltipLabel||r.path.join(" › "),
-        ...actualMonths.map((m,mi) => monthTotals[mi]>0 ? (valuesByMonth[ei][mi]/monthTotals[mi]*100).toFixed(1)+"%" : "—")]));
+        ...prLabels.map((_,mi) => periodTotals[mi]>0 ? (valuesByMonth[ei][mi]/periodTotals[mi]*100).toFixed(1)+"%" : "—")]));
   }
 
   // Round 25: parameterized (mount ids + optional explicit `pool`) the same way

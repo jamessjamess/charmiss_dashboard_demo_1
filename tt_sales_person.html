@@ -49,6 +49,8 @@
         <a href="#l3Customers" class="l2-mini-nav-item">Customers &amp; Products</a>
         <a href="#l3CN" class="l2-mini-nav-item">Credit Notes</a>
       </div>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
       <div class="sp-toolbar" id="spToolbar">
         <div class="filter-group">
           <span class="filter-label">Sales Person</span>
@@ -62,14 +64,18 @@
           <span class="filter-label">Month</span>
           <select class="filter-input" id="spMonthSelect"></select>
         </div>
+        <div class="filter-group">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" type="button" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" type="button" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
         <div class="filter-spacer"></div>
-        <div class="sp-identity-note">Auto-scoped to this Sales Person's assigned stores — no additional filtering needed</div>
+      </div>
       </div>
     </div>
-  </div>
-
-  <div class="breadcrumb">
-    <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
   </div>
 
   <div id="pageSalesPerson" class="page-view">
@@ -429,6 +435,24 @@
     });
   });
   document.getElementById("cnDownloadBtn").addEventListener("click", () => downloadTableCsv(document.getElementById("cnTable"), "cn-record"));
+
+  /* ---- View By (Monthly/Quarterly) toggle (2026-08-06) — currentTimeFrame/
+     positionTimeFrameThumb live in tt-shared.js (shared across all 3 TT pages); this page
+     re-renders via renderSalesPersonPage() (this page's own orchestrator, not the Executive
+     Summary/Breakdown render()), same distinction the dark-mode toggle below already makes. ---- */
+  const timeFrameToggle = document.getElementById("timeFrameToggle");
+  if (timeFrameToggle){
+    timeFrameToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".timeframe-opt");
+      if (!btn || btn.classList.contains("selected")) return;
+      timeFrameToggle.querySelectorAll(".timeframe-opt").forEach(o => o.classList.remove("selected"));
+      btn.classList.add("selected");
+      positionTimeFrameThumb();
+      currentTimeFrame = btn.dataset.key;
+      renderSalesPersonPage();
+    });
+    positionTimeFrameThumb();
+  }
 
   /* ---- AR By Due Date: Within Due / Overdue toggle (missed in the first pass — this page's
      own control, was wired in the original tail section). ---- */

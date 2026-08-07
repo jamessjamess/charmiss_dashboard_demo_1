@@ -5,7 +5,11 @@
       "Read(//g/My Drive/**)",
       "mcp__claude-in-chrome__tabs_context_mcp",
       "Bash(python -c \"print\\(1\\)\")",
-      "Bash(where python *)"
+      "Bash(where python *)",
+      "Bash(node -c tt-shared.js)",
+      "Bash(pkill -f \"http.server 8791\")",
+      "Bash(pkill -f \"http.server 8792\")",
+      "Bash(node -e ' *)"
     ]
   }
 }

@@ -400,7 +400,12 @@ function buildStackedAreaSVG(containerId, opts){
   const measuredWidth = container ? container.clientWidth : 0;
   const width = opts.width || measuredWidth || 900, height = opts.height || 190;
   const labels = opts.labels, series = opts.series; // series: [{color, values:[...]}]
-  const padL=6, padR=6, padT=8, padB=18;
+  // showAxis (2026-08-06) — opt-in Y-axis gridlines+labels, off by default so
+  // existing callers (e.g. OPEX Trend) render byte-identical to before.
+  // valueFormatter only matters when showAxis is on.
+  const showAxis = !!opts.showAxis;
+  const valueFormatter = opts.valueFormatter || (v=>v);
+  const padL = showAxis ? 54 : 6, padR=6, padT=8, padB = showAxis ? 28 : 18;
   const plotW = width-padL-padR, plotH = height-padT-padB;
   const n = labels.length;
   const stepX = plotW/Math.max(1,n-1);
@@ -413,7 +418,20 @@ function buildStackedAreaSVG(containerId, opts){
     cum.push(arr);
   }
   const maxTotal = Math.max(...cum.map(arr => arr[arr.length-1])) || 1;
-  const yAt = v => padT + (1 - v/maxTotal) * plotH;
+  const niceMax = showAxis ? maxTotal*1.12 : maxTotal;
+  const yAt = v => padT + (1 - v/niceMax) * plotH;
+
+  let grid = '';
+  if(showAxis){
+    const inkTertiary = cssVar('--ink-3')||'#898781';
+    const hairline = cssVar('--hairline') || '#e1e0d9';
+    for(let g=0; g<=4; g++){
+      const v = niceMax * g/4;
+      const y = yAt(v);
+      grid += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+      grid += '<text x="'+(padL-8)+'" y="'+(y+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+valueFormatter(v)+'</text>';
+    }
+  }
 
   let paths = '';
   for(let si = series.length-1; si >= 0; si--){
@@ -437,8 +455,24 @@ function buildStackedAreaSVG(containerId, opts){
     xLabels += '<text x="'+xAt(i).toFixed(1)+'" y="'+(height-4)+'" font-size="9" text-anchor="'+anchor+'" fill="'+cssVar('--ink-3')+'">'+lb+'</text>';
   });
 
+  // showTopPoints (2026-08-06) — opt-in dot + value label on the topmost
+  // (grand-total) edge of the stack at every data point, so peaks across
+  // months can be compared without having to eyeball the filled area's
+  // curve. Off by default, same reasoning as showAxis above.
+  let topPoints = '';
+  if(opts.showTopPoints){
+    const dotColor = cssVar('--ink-1') || '#0b0b0b';
+    for(let i=0;i<n;i++){
+      const topVal = cum[i][cum[i].length-1];
+      const x = xAt(i), y = yAt(topVal);
+      const anchor = i===0 ? 'start' : (i===n-1 ? 'end' : 'middle');
+      topPoints += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+dotColor+'" stroke="#fff" stroke-width="1.5"/>';
+      topPoints += '<text x="'+x.toFixed(1)+'" y="'+(y-8).toFixed(1)+'" font-size="9.5" font-weight="700" text-anchor="'+anchor+'" fill="'+dotColor+'">'+valueFormatter(topVal)+'</text>';
+    }
+  }
+
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+paths+xLabels+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+grid+paths+topPoints+xLabels+'</svg>';
 }
 
 /* ---------- Grouped (clustered) vertical bar chart — used for "Growth YoY by
@@ -1093,6 +1127,14 @@ function buildStacked100BarSVG(containerId, opts){
   const slotW = plotW/n;
   const barW = slotW*0.6;
   const inkTertiary = cssVar('--ink-3')||'#898781';
+  // highlightSeries (2026-08-06, Focus filter fix): outlines every segment
+  // belonging to the named series so picking a Focus node actually shows up
+  // on the chart itself, not just in whatever Top-N list it got pinned into
+  // — matches the box-shadow/border highlight convention used by the
+  // Heatmap/Sales-by-Category/Growth-Ranking/Return-Rate cards elsewhere on
+  // this page.
+  const highlightSeries = opts.highlightSeries || null;
+  const highlightColor = cssVar('--ink-1') || '#0b0b0b';
 
   // Responsive fix (2026-08-03): labels used to always render both a % line
   // and a ฿ sub-line whenever a segment was tall enough (segH>26), with no
@@ -1115,7 +1157,8 @@ function buildStacked100BarSVG(containerId, opts){
       const val = s.values[i];
       const segH = val/total*plotH;
       const y = padT + (plotH - cum - segH);
-      bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"/>';
+      const isHi = highlightSeries && s.name === highlightSeries;
+      bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"'+(isHi?' stroke="'+highlightColor+'" stroke-width="2.5"':'')+'/>';
       const showValueLine = !compact && segH > 40;
       if(segH > 22){
         const pct = (val/total*100).toFixed(0)+'%';
@@ -1133,6 +1176,71 @@ function buildStacked100BarSVG(containerId, opts){
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+bars+xLabels+'</svg>';
+}
+
+/* ---------- Absolute-value stacked vertical bar chart (2026-08-06) — same
+   segment-per-series layout as buildStacked100BarSVG, but bars are scaled to
+   their own ฿ totals against a shared Y-axis instead of every bar being
+   normalized to a full-height 100%. Use this when the TOTAL height itself is
+   part of the story (e.g. "Revenue Trend by Product Level" — both the mix
+   AND the overall growth matter); use buildStacked100BarSVG when only the mix
+   shift matters and every bucket should fill the same height. ---------- */
+function buildStackedBarSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 700;
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
+  const labels = opts.labels, series = opts.series; // series: [{name,color,values:[absolute per bucket]}]
+  const valueFormatter = opts.valueFormatter || (v=>v);
+  const padL=54, padR=10, padT=10, padB=28;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const n = labels.length;
+  const slotW = plotW/n;
+  const barW = slotW*0.6;
+  const inkTertiary = cssVar('--ink-3')||'#898781';
+  const hairline = cssVar('--hairline') || '#e1e0d9';
+  // highlightSeries — see buildStacked100BarSVG's comment above; same fix,
+  // same reasoning, applied to this chart's segments too.
+  const highlightSeries = opts.highlightSeries || null;
+  const highlightColor = cssVar('--ink-1') || '#0b0b0b';
+
+  const totals = [];
+  for(let i=0;i<n;i++) totals.push(series.reduce((a,s)=>a+s.values[i],0));
+  const maxTotal = Math.max(...totals) || 1;
+  const niceMax = maxTotal * 1.12;
+  const yAt = v => padT + (1 - v/niceMax) * plotH;
+
+  let grid = '';
+  const gridSteps = 4;
+  for(let g=0; g<=gridSteps; g++){
+    const v = niceMax * g/gridSteps;
+    const y = yAt(v);
+    grid += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    grid += '<text x="'+(padL-8)+'" y="'+(y+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+valueFormatter(v)+'</text>';
+  }
+
+  const compact = barW < 34;
+  const fontVal = compact ? 8 : 9.5;
+
+  let bars='', xLabels='';
+  for(let i=0;i<n;i++){
+    let cum = 0;
+    const x = padL + i*slotW + (slotW-barW)/2;
+    series.forEach(s=>{
+      const val = s.values[i];
+      const segH = (val/niceMax)*plotH;
+      const y = padT + (plotH - cum - segH);
+      const isHi = highlightSeries && s.name === highlightSeries;
+      bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"'+(isHi?' stroke="'+highlightColor+'" stroke-width="2.5"':'')+'/>';
+      if(segH > 16){
+        bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y+segH/2+3).toFixed(1)+'" font-size="'+fontVal+'" font-weight="700" text-anchor="middle" fill="#fff">'+valueFormatter(val)+'</text>';
+      }
+      cum += segH;
+    });
+    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="'+(compact?9:10)+'" text-anchor="middle" fill="'+inkTertiary+'">'+labels[i]+'</text>';
+  }
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+grid+bars+xLabels+'</svg>';
 }
 
 /* ---------- Pareto / Concentration chart — individual-share bars + a

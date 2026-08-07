@@ -41,27 +41,39 @@
         <a href="#sec-glance">Performance Overview</a>
         <a href="#sec-comparison">Channel Comparison</a>
       </nav>
-      <div class="filter-left">
-        <span class="filter-label">Period</span>
-        <button class="period-btn" id="periodBtn">
-          <span id="periodBtnLabel">Year to Date</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-        <div class="period-dropdown" id="periodDropdown">
-          <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
-          <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
-          <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
-          <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
-          <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
-          <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
-          <div class="period-divider"></div>
-          <div class="custom-range-label">Custom Range</div>
-          <div class="custom-range-row">
-            <select id="customFrom"></select>
-            <span style="color:var(--ink-3);font-size:11.5px;">to</span>
-            <select id="customTo"></select>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
+        <div class="filter-left">
+          <span class="filter-label">Period</span>
+          <button class="period-btn" id="periodBtn">
+            <span id="periodBtnLabel">Year to Date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="periodDropdown">
+            <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+            <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+            <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+            <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+            <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+            <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+            <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+            <div class="period-divider"></div>
+            <div class="custom-range-label">Custom Range</div>
+            <div class="custom-range-row">
+              <select id="customFrom"></select>
+              <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+              <select id="customTo"></select>
+            </div>
+            <button class="apply-btn" id="applyCustom">Apply</button>
           </div>
-          <button class="apply-btn" id="applyCustom">Apply</button>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+          </div>
         </div>
       </div>
     </div>
@@ -126,7 +138,7 @@
         </div>
       </div>
       <div class="chart-legend" id="retTrendLegend"></div>
-      <div class="canvas-wrap" id="retTrendCanvasWrap" style="height:160px;margin-top:4px;"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="canvas-wrap" id="retTrendCanvasWrap" style="height:130px;margin-top:4px;"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="retTrendCallout" style="margin-top:auto;margin-bottom:0;padding-top:10px;">–</div>
       <div class="data-table-wrap" id="retTrendTableWrap"></div>
     </div>
@@ -145,12 +157,8 @@
           <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-legend">
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
-        <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
-      </div>
-      <div class="canvas-wrap" id="revCanvasWrap" style="height:320px;"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
+      <div class="chart-legend" id="revLegend"></div>
+      <div class="canvas-wrap" id="revCanvasWrap" style="height:260px;"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="revCallout">–</div>
       <div class="data-table-wrap" id="revTableWrap"></div>
     </div>
@@ -349,6 +357,7 @@ function getPeriodRange(key, custom){
     case 'thisQuarter': return [TODAY-2, TODAY];
     case 'lastQuarter': return [TODAY-5, TODAY-3];
     case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
     case 'custom': return custom;
     case 'ytd': default: return [24, TODAY];
   }
@@ -360,6 +369,7 @@ function periodLabelText(key, custom){
     case 'thisQuarter': return 'Q2 2026';
     case 'lastQuarter': return 'Q1 2026';
     case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
     case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
     case 'ytd': default: return 'Year to Date';
   }
@@ -454,6 +464,65 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
    just permanently all-true now with nothing left to un-check it. ---------- */
 const channelVisible = {MT:true, TT:true, Ecom:true};
 
+/* ---------- Time Frame (Monthly/Quarterly) toggle (2026-08-06 feature) —
+   global switch for every trend-line chart on the page. Quarterly
+   re-aggregates the SAME underlying monthly data into quarters (sum for ฿
+   amounts, sum-of-parts ratio for %, last-month sample for series that are
+   already cumulative) rather than recalculating anything new — same time
+   span as Monthly, just fewer/bigger buckets. */
+let currentTimeFrame = 'monthly';
+// Sliding thumb (2026-08-06, segmented-control redesign) — measures the
+// selected option's own box and moves/resizes the thumb behind it, so the
+// highlight animates between Monthly/Quarterly instead of two independent
+// buttons swapping styles.
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll(currentPeriodKey, currentCustom);
+});
+positionTimeFrameThumb();
+// Groups an ordered list of absolute month indices into quarter buckets (by
+// absolute quarter number floor(i/3)), preserving order and boundaries even
+// when idx doesn't start/end on a quarter edge. Monthly mode is a no-op
+// (one-month groups) so every existing per-month chart path still works.
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+// ฿-amount series: sum each group's months.
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+// %-ratio series (e.g. actual/target): ratio of SUMS within each group, not
+// an average of per-month ratios — matches how every other cumulative %
+// figure on this page is computed.
+function bucketRatio(numArr, denArr, groups){
+  return groups.map(g=>{
+    const num = g.reduce((s,i)=>s+numArr[i],0), den = g.reduce((s,i)=>s+denArr[i],0);
+    return den ? num/den*100 : 0;
+  });
+}
+// Already-cumulative series (e.g. Jan-to-date YoY %): sample the group's
+// LAST month rather than summing/averaging, since the last month's value
+// already reflects the whole group.
+function bucketSample(arr, groups){ return groups.map(g=> arr[g[g.length-1]]); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
+
 /* ---------- Render ---------- */
 let latestData = {};
 
@@ -467,31 +536,61 @@ function renderAll(periodKey, custom){
   const attainPct = totalTarget ? (totalActual/totalTarget*100) : 0;
   const attainAt = i => companyTarget[i] ? (companyActual[i]/companyTarget[i]*100) : 0;
 
-  const ytdStart = 24;
-  const ytdActual = sumRange(companyActual, ytdStart, TODAY);
-  const ytdTarget = sumRange(companyTarget, ytdStart, TODAY);
+  /* Fix (2026-08-06, period-filter review): several charts/cards below used
+     to hardcode "current year" as 2026 (ytdStart=24, curYearIdx=[24..35])
+     regardless of the selected Period — switching Period to a full past
+     year (e.g. "Jan 25 – Dec 25") left those charts frozen on 2026 while
+     their own callouts (already s/e-scoped) correctly showed 2025 numbers.
+     periodYearStart generalizes "start of year" to whichever year the
+     selected period's end month (e) falls in — for the default YTD period
+     (e=TODAY, within 2026) this evaluates to the same 24 as before, so
+     nothing changes for that case. */
+  const periodYearStart = Math.floor(e/12)*12;
+  const periodYearEnd = periodYearStart + 11;
+  const ytdStart = periodYearStart;
+  const ytdActual = sumRange(companyActual, ytdStart, e);
+  const ytdTarget = sumRange(companyTarget, ytdStart, e);
+  const ytdAttainPct = ytdTarget ? (ytdActual/ytdTarget*100) : 0;
   const gapValue = ytdActual - ytdTarget;
   const gapClass = gapValue>=0 ? 'pos' : 'neg';
 
-  const monthsElapsed = TODAY - ytdStart + 1;
+  const monthsElapsed = e - ytdStart + 1;
   const runRateAnnual = (ytdActual / monthsElapsed) * 12;
-  const fullYearTarget = sumRange(companyTarget, ytdStart, 35);
+  const fullYearTarget = sumRange(companyTarget, ytdStart, periodYearEnd);
   const projectedAttainPct = fullYearTarget ? (runRateAnnual / fullYearTarget * 100) : 0;
   const fullYearGapValue = runRateAnnual - fullYearTarget;
   const fullYearGapClass = fullYearGapValue>=0 ? 'pos' : 'neg';
 
   /* === Target Attainment & Full Year Outlook (merged card) === */
   document.getElementById('attainOutlookGapCaption').innerHTML =
-    '<b>'+fmtPct(attainPct,0)+'</b> YTD → <b style="color:var(--brand);">'+fmtPct(projectedAttainPct,0)+'</b> Projected Full Year'
+    '<b>'+fmtPct(ytdAttainPct,0)+'</b> YTD → <b style="color:var(--brand);">'+fmtPct(projectedAttainPct,0)+'</b> Projected Full Year'
     + ' · Gap to Target (YTD): <span class="'+gapClass+'">'+(gapValue>=0?'+':'−')+fmtTHB(Math.abs(gapValue))+'</span>'
     + ' · Projected Gap (Full Year): <span class="'+fullYearGapClass+'">'+(fullYearGapValue>=0?'+':'−')+fmtTHB(Math.abs(fullYearGapValue))+'</span>';
 
   /* === Revenue Trend + Sales by Channel/Category (part of Performance Overview) === */
-  const curYearIdx = []; for(let i=24;i<36;i++) curYearIdx.push(i);
-  const curYearLabels = curYearIdx.map(i => monthNames[i%12]);
-  const revenueThisYear = curYearIdx.map(i => i<=TODAY ? companyActual[i] : null);
-  const revenueTarget = curYearIdx.map(i => companyTarget[i]);
-  const revenueLastYear = curYearIdx.map(i => companyActual[i-12]);
+  const curYearIdx = []; for(let i=periodYearStart;i<periodYearStart+12;i++) curYearIdx.push(i);
+  // Time Frame (2026-08-06 feature): curYearGroups buckets curYearIdx into
+  // quarters when Quarterly is active (monthly is a no-op passthrough), and
+  // curYearLabels switches to "Q1".."Q4" accordingly — shared by this chart,
+  // Target Attainment & Full Year Outlook, and Return/Cancellation Rate
+  // Trend below, since all three plot across the same curYearIdx range.
+  const curYearGroups = bucketMonths(curYearIdx, currentTimeFrame);
+  const curYearLabels = currentTimeFrame==='quarterly' ? curYearGroups.map(quarterLabel) : curYearIdx.map(i=>monthNames[i%12]);
+  // A quarter only gets an "actual" value once every month in it has closed
+  // (mirrors the old i<=TODAY per-month mask) — a partially-elapsed quarter
+  // stays null rather than showing an understated partial sum.
+  const revenueThisYear = curYearGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+companyActual[i],0) : null);
+  const revenueTarget = bucketSum(companyTarget, curYearGroups);
+  const revenueLastYear = curYearGroups.map(g => g.reduce((s,i)=>s+companyActual[i-12],0));
+  // Fix (2026-08-06 — legend was hardcoded "2025"/"2026" in the static HTML,
+  // so it kept saying "This Year (2026)" even after switching Period to a
+  // fully-past year like "Jan 25 – Dec 25"). curYear derives from
+  // periodYearStart, the same year curYearIdx/curYearLabels above use.
+  const curYear = 2024 + periodYearStart/12;
+  document.getElementById('revLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year ('+(curYear-1)+')</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year ('+curYear+')</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dash"></span>Target ('+curYear+')</span>';
   buildLineChartSVG('revenueChart', {
     labels: curYearLabels, yFormatter: fmtTHB,
     series:[
@@ -519,9 +618,22 @@ function renderAll(periodKey, custom){
      standalone Full Year Forecast card, just built as two buildLineChartSVG
      series instead so it can share one full chart (with axis/gridlines) with
      the Attainment % Trend line rather than a separate sparkline-only card. */
-  const attainActualSeries = curYearIdx.map(i => i<=TODAY ? attainAt(i) : null);
-  const attainProjectedSeries = curYearIdx.map(i => i===TODAY ? attainAt(TODAY) : (i===35 ? projectedAttainPct : null));
-  const attainTargetLine = curYearIdx.map(()=>100);
+  // Time Frame: attainActualSeries is a ratio (actual/target), so a quarter's
+  // value is sum-of-actual÷sum-of-target within it, not an average of its
+  // months' own ratios — same "ratio of sums" rule used everywhere else on
+  // this page. Only fully-closed groups (every month <=TODAY) get a value.
+  const attainActualSeries = curYearGroups.map(g => {
+    if(!g.every(i=>i<=TODAY)) return null;
+    const a = g.reduce((s,i)=>s+companyActual[i],0), t = g.reduce((s,i)=>s+companyTarget[i],0);
+    return t ? a/t*100 : 0;
+  });
+  // No dashed "Projected" segment for a year that's already fully elapsed
+  // (e.g. 2025 selected) — there's nothing left to project, the solid
+  // Actual line already covers all 12 months/quarters on its own.
+  const closedGroupCount = attainActualSeries.filter(v=>v!==null).length;
+  const attainProjectedSeries = TODAY>=periodYearEnd ? curYearGroups.map(()=>null)
+    : curYearGroups.map((g,gi) => gi===closedGroupCount-1 ? attainActualSeries[gi] : (gi===curYearGroups.length-1 ? projectedAttainPct : null));
+  const attainTargetLine = curYearGroups.map(()=>100);
   const attainValsForDomain = [...attainActualSeries.filter(v=>v!==null), projectedAttainPct];
   buildLineChartSVG('attainOutlookChart', {
     labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%',
@@ -572,7 +684,7 @@ function renderAll(periodKey, custom){
     const delta = thisPct - lastPct;
     return '<b>'+g+'</b>: '+lastPct.toFixed(0)+'% → '+thisPct.toFixed(0)+'% <span class="'+deltaClass(delta)+'">('+(delta>=0?'+':'')+delta.toFixed(0)+'pp)</span>';
   });
-  document.getElementById('mixShiftCallout').innerHTML = 'Mix shift, same period YoY (' + label + ') — ' + mixShiftParts.join(' · ');
+  document.getElementById('mixShiftCallout').innerHTML = 'Mix shift YoY (' + label + ') — ' + mixShiftParts.join(' · ');
 
   // Fix (2026-08-03, James's feedback): used to always plot the full Jan-Dec
   // frame with future months masked to null, which left a large empty stretch
@@ -580,17 +692,31 @@ function renderAll(periodKey, custom){
   // it in here, unlike Revenue Trend's Target/Last Year lines). Trimmed to
   // just the months that actually have a YoY value.
   const chGrowthIdx = curYearIdx.filter(i=>i<=TODAY);
-  const chGrowthLabels = chGrowthIdx.map(i=>monthNames[i%12]);
+  // Time Frame: chGrowthGroups/chGrowthLabels are shared with "Target
+  // Attainment % by Channel" below (paired in the same chart-grid row), so
+  // both stay on the same monthly/quarterly x-axis.
+  const chGrowthGroups = bucketMonths(chGrowthIdx, currentTimeFrame);
+  const chGrowthLabels = currentTimeFrame==='quarterly' ? chGrowthGroups.map(quarterLabel) : chGrowthIdx.map(i=>monthNames[i%12]);
   // Fix (2026-08-06 review — problem #1): was plotting latest-month-only YoY
   // (month i vs same month last year), which doesn't match this card's own
   // callout below or "Channel Growth & Target Gap" (both use YTD cumulative
   // YoY) — same number, two definitions, looked like conflicting data. Now
   // each point is Jan-to-that-month cumulative YoY, so the endpoint matches
   // the callout exactly under the default (YTD) Period filter.
-  const chGrowthSeries = groupKeys.map(g=>({
-    data: chGrowthIdx.map(i => pctChange(sumRange(groupActual[g],24,i), sumRange(groupActual[g],12,i-12))),
-    color: groupColorVar[g], width:2.2, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)
-  }));
+  // Fix (2026-08-06, follow-up): this hardcoded 24/12 (2026's and 2025's Jan)
+  // instead of periodYearStart/periodYearStart-12, so picking a fully-past
+  // year like "Jan 25 – Dec 25" made both sumRange calls start-after-end
+  // (e.g. sumRange(arr,24,i) for i<24) — those silently return 0, collapsing
+  // every point to pctChange(0,0)=0% and breaking the chart's Y-axis.
+  // Time Frame (quarterly): this series is already cumulative-since-Jan, so
+  // a quarter's point is a SAMPLE of its last month's value, not a sum/avg —
+  // the last month's cumulative-to-date figure already covers the quarter.
+  const chGrowthSeries = groupKeys.map(g=>{
+    const monthly = chGrowthIdx.map(i => pctChange(sumRange(groupActual[g],periodYearStart,i), sumRange(groupActual[g],periodYearStart-12,i-12)));
+    const byMonth = {}; chGrowthIdx.forEach((i,k)=> byMonth[i]=monthly[k]);
+    const data = currentTimeFrame==='quarterly' ? chGrowthGroups.map(grp=>byMonth[grp[grp.length-1]]) : monthly;
+    return {data, color: groupColorVar[g], width:2.2, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)};
+  });
   buildLineChartSVG('chGrowthChart', { labels: chGrowthLabels, yFormatter: v=>v.toFixed(0)+'%', series: chGrowthSeries });
   // Fix (2026-08-03): folded the old standalone section-note ("Growth YoY on
   // the cards/table above = selected Period vs same Period last year...")
@@ -618,15 +744,27 @@ function renderAll(periodKey, custom){
      has been removed, mtCNRate/ttCNRate were split into genuinely independent
      series (see the Part-1 mock-data block above), so this is now a true,
      honest 3-line chart: MT, TT, Ecom. */
-  const mtRateSeries = curYearIdx.map(i => i<=TODAY ? mtCNRate[i]*100 : null);
-  const ttRateSeries = curYearIdx.map(i => i<=TODAY ? ttCNRate[i]*100 : null);
-  const ecomRateSeries = curYearIdx.map(i => i<=TODAY ? ecomCancelRate[i]*100 : null);
   // Fix (2026-08-03, James's feedback round C item 5): show the ฿ amount
-  // alongside the % on the chart's last-point label, not just the % — these
-  // parallel THB arrays line up index-for-index with the % series above.
-  const mtCNAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.MT[i]*mtCNRate[i] : null);
-  const ttCNAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.TT[i]*ttCNRate[i] : null);
-  const ecomCancelAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.Ecom[i]*ecomCancelRate[i] : null);
+  // alongside the % on the chart's last-point label, not just the % — the
+  // amount arrays line up index-for-index with the % series below.
+  // Time Frame: a quarter's rate is (sum of ฿ CN/cancel amount)÷(sum of ฿
+  // actual) within it, not an average of its months' own rates — ratio of
+  // sums, same rule as every other %-over-time figure on this page.
+  function retTrendSeriesFor(groupKey, rateArr){
+    const amount = curYearGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual[groupKey][i]*rateArr[i],0) : null);
+    const rate = curYearGroups.map((g,gi) => {
+      if(amount[gi]===null) return null;
+      const actualSum = g.reduce((s,i)=>s+groupActual[groupKey][i],0);
+      return actualSum ? amount[gi]/actualSum*100 : 0;
+    });
+    return {rate, amount};
+  }
+  const mtRet = retTrendSeriesFor('MT', mtCNRate);
+  const ttRet = retTrendSeriesFor('TT', ttCNRate);
+  const ecomRet = retTrendSeriesFor('Ecom', ecomCancelRate);
+  const mtRateSeries = mtRet.rate, mtCNAmountSeries = mtRet.amount;
+  const ttRateSeries = ttRet.rate, ttCNAmountSeries = ttRet.amount;
+  const ecomRateSeries = ecomRet.rate, ecomCancelAmountSeries = ecomRet.amount;
   buildLineChartSVG('retTrendChart', {
     labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
     series:[
@@ -779,7 +917,7 @@ function renderAll(periodKey, custom){
   const allBelowTarget = pcGroups.every((g,gi)=>pcAttainPct[gi]<100);
   const attainPart = allAboveTarget ? 'All channels above 100% attainment YTD'
     : allBelowTarget ? 'All channels below 100% attainment YTD'
-    : groupNames[pcGroups[highestGi]]+' leads attainment ('+fmtPct(pcAttainPct[highestGi],1)+'%) while '+groupNames[pcGroups[lowestGi]]+' trails ('+fmtPct(pcAttainPct[lowestGi],1)+'%)';
+    : groupNames[pcGroups[highestGi]]+' leads attainment ('+fmtPct(pcAttainPct[highestGi],1)+') while '+groupNames[pcGroups[lowestGi]]+' trails ('+fmtPct(pcAttainPct[lowestGi],1)+')';
   document.getElementById('chGapAction').innerHTML = growthPart + ' · ' + attainPart;
   latestData.periodCompare = {
     labels: pcGroups.concat(['Total']),
@@ -791,25 +929,45 @@ function renderAll(periodKey, custom){
 
   /* Revenue Trend by Channel (2026-08-06, direct feedback — dropped the
      Target Hit/Miss markers added earlier this pass) — the chart now shows
-     only the months inside the currently selected Period filter (s..e,
-     clamped to 24..TODAY) instead of always the full Jan-Dec frame, so
-     changing Period above actually changes what's plotted here too. */
-  const trendIdx = []; for(let i=Math.max(24,s); i<=Math.min(TODAY,e); i++) trendIdx.push(i);
-  const trendLabels = trendIdx.map(i=>monthNames[i%12]);
+     only the months inside the currently selected Period filter (s..e)
+     instead of always the full Jan-Dec frame, so changing Period above
+     actually changes what's plotted here too.
+     Fix (2026-08-06, period-filter review): was clamped to Math.max(24,s)/
+     Math.min(TODAY,e), which assumed the filter always overlapped 2026 —
+     picking a fully-past period like "Jan 25 – Dec 25" (s=12,e=23) made
+     the clamped range empty (24>23) and the chart went blank. s/e from
+     getPeriodRange are already valid (s<=e<=TODAY always), so no clamp
+     is actually needed. */
+  const trendIdx = []; for(let i=s; i<=e; i++) trendIdx.push(i);
+  // Time Frame: trendGroups buckets the Period filter's own s..e range into
+  // quarters (partial quarters at either edge are kept as-is, summing only
+  // the months actually inside the filter — bucketMonths handles this).
+  const trendGroups = bucketMonths(trendIdx, currentTimeFrame);
+  const trendLabels = currentTimeFrame==='quarterly' ? trendGroups.map(quarterLabel) : trendIdx.map(i=>monthNames[i%12]);
+  // Last-point change label switches from MoM to QoQ in quarterly mode —
+  // stats[g].momG (month-over-month) doesn't apply once each point is a
+  // whole quarter, so this compares the last quarter's sum against the
+  // 3 months immediately before it instead.
+  function lastPeriodChangeLabel(g){
+    if(currentTimeFrame!=='quarterly') return fmtSignedPct(stats[g].momG)+' MoM';
+    const lastGroup = trendGroups[trendGroups.length-1];
+    const curSum = lastGroup.reduce((s2,i)=>s2+groupActual[g][i],0);
+    const prevSum = lastGroup.reduce((s2,i)=>s2+groupActual[g][i-3],0);
+    return fmtSignedPct(pctChange(curSum,prevSum))+' QoQ';
+  }
   const trendSeries = groupKeys.filter(g=>channelVisible[g]).map(g=>({
-    data: trendIdx.map(i => groupActual[g][i]),
+    data: bucketSum(groupActual[g], trendGroups),
     color: groupColorVar[g], width:2.2, showLastLabel:true,
-    // MoM (2026-08-06 feedback) — only ever shown on the last point, since
-    // lastLabelFormatter only fires once per series (shared.js). Reuses
-    // stats[g].momG (same last-month MoM already computed for the At a
-    // Glance KPI cards), no new calculation.
-    lastLabelFormatter: v => fmtTHB(v)+' ('+fmtSignedPct(stats[g].momG)+' MoM)'
+    // Last-point change (2026-08-06 feedback) — only ever shown on the last
+    // point, since lastLabelFormatter only fires once per series
+    // (shared.js). Reuses stats[g].momG in monthly mode, no new calculation.
+    lastLabelFormatter: v => fmtTHB(v)+' ('+lastPeriodChangeLabel(g)+')'
   }));
-  buildLineChartSVG('trendChart', { labels: trendLabels, yFormatter: fmtTHB, series: trendSeries.length?trendSeries:[{data:trendIdx.map(()=>0)}] });
+  buildLineChartSVG('trendChart', { labels: trendLabels, yFormatter: fmtTHB, series: trendSeries.length?trendSeries:[{data:trendGroups.map(()=>0)}] });
   document.getElementById('trendLegend').innerHTML = groupKeys.map(g=>
     '<span class="chart-legend-item" style="'+(channelVisible[g]?'':'opacity:.35;')+'"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
   ).join('');
-  latestData.trendByChannel = { labels: trendLabels, series: groupKeys.filter(g=>channelVisible[g]).map(g=>({name:g, values: trendIdx.map(i => groupActual[g][i])})) };
+  latestData.trendByChannel = { labels: trendLabels, series: groupKeys.filter(g=>channelVisible[g]).map(g=>({name:g, values: bucketSum(groupActual[g], trendGroups)})) };
 
   /* Revenue leaderboard callout (direct feedback: "not about Target") —
      reuses groupTotals[g], the exact same per-channel sum (s..e) the KPI
@@ -828,8 +986,14 @@ function renderAll(periodKey, custom){
      Growth Comparison's own convention, not Period-filter-scoped, since
      both sit in this same Channel Comparison section) — reuses chGrowthIdx/
      chGrowthLabels defined just above for exactly that same range. */
+  // Time Frame: reuses chGrowthGroups (shared with Channel Growth Comparison
+  // above) — a quarter's value is sum-of-actual÷sum-of-target within it, the
+  // same "ratio of sums" rule used everywhere else on this page.
   const attainByChannelSeries = groupKeys.map(g=>({
-    data: chGrowthIdx.map(i => groupTarget[g][i] ? (groupActual[g][i]/groupTarget[g][i]*100) : 0),
+    data: chGrowthGroups.map(grp => {
+      const a = grp.reduce((s,i)=>s+groupActual[g][i],0), t = grp.reduce((s,i)=>s+groupTarget[g][i],0);
+      return t ? a/t*100 : 0;
+    }),
     color: groupColorVar[g], width:2.2, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,0)
   }));
   const attainByChannelVals = attainByChannelSeries.flatMap(s=>s.data);
@@ -838,7 +1002,7 @@ function renderAll(periodKey, custom){
     domainMin: Math.min(80, Math.floor(Math.min(...attainByChannelVals)/5)*5),
     domainMax: Math.max(120, Math.ceil(Math.max(...attainByChannelVals)/5)*5),
     series: [
-      {data: chGrowthIdx.map(()=>100), color: cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
+      {data: chGrowthGroups.map(()=>100), color: cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
       ...attainByChannelSeries
     ]
   });
@@ -852,35 +1016,69 @@ function renderAll(periodKey, custom){
   // Year Outlook, Attainment vs Growth by Channel): averaging each month's
   // own ratio surfaces volatility that a single YTD cumulative figure nets
   // away (a strong month offsetting a weak one). Scoped to the Period
-  // filter (s..e, clamped to closed months) so it updates with Period above,
-  // same clamping pattern used for the old marker-based hit-rate callout.
-  const attainInsightStart = Math.max(s, 24), attainInsightEnd = Math.min(e, TODAY);
+  // filter (s..e) so it updates with Period above.
+  // Fix (2026-08-06, period-filter review): was clamped to Math.max(s,24)/
+  // Math.min(e,TODAY), same bug as trendIdx above — picking a fully-past
+  // period made this show "no closed months" even though every month in
+  // that period was closed. s/e are already valid, no clamp needed.
+  const attainInsightStart = s, attainInsightEnd = e;
   if(attainInsightStart <= attainInsightEnd){
+    // Time Frame: bucket the Period filter's own s..e range into quarters
+    // too, so "hit rate" counts quarters-hit instead of months-hit and the
+    // averaged ratio matches the chart's own quarterly points above.
+    const attainInsightIdx = []; for(let i=attainInsightStart;i<=attainInsightEnd;i++) attainInsightIdx.push(i);
+    const attainInsightGroups = bucketMonths(attainInsightIdx, currentTimeFrame);
+    const periodWord = currentTimeFrame==='quarterly' ? 'quarterly' : 'monthly';
+    const unitWord = currentTimeFrame==='quarterly' ? 'quarters' : 'months';
     const attainInsightParts = groupKeys.map(g=>{
-      let sum=0, hits=0, total=0;
-      for(let i=attainInsightStart;i<=attainInsightEnd;i++){
-        total++;
-        sum += groupTarget[g][i] ? (groupActual[g][i]/groupTarget[g][i]*100) : 0;
-        if(groupActual[g][i] >= groupTarget[g][i]) hits++;
-      }
-      return '<b>'+g+'</b>: '+fmtPct(total?sum/total:0,0)+' ('+hits+'/'+total+' months hit)';
+      let sum=0, hits=0, total=attainInsightGroups.length;
+      attainInsightGroups.forEach(grp=>{
+        const a = grp.reduce((s2,i)=>s2+groupActual[g][i],0), t = grp.reduce((s2,i)=>s2+groupTarget[g][i],0);
+        sum += t ? a/t*100 : 0;
+        if(a>=t) hits++;
+      });
+      return '<b>'+g+'</b>: '+fmtPct(total?sum/total:0,0)+' ('+hits+'/'+total+' '+unitWord+' hit)';
     });
-    document.getElementById('targetByChannelCallout').innerHTML = 'Average monthly attainment ('+monthNames[attainInsightStart%12]+'–'+monthNames[attainInsightEnd%12]+') — ' + attainInsightParts.join(' · ');
+    document.getElementById('targetByChannelCallout').innerHTML = 'Average '+periodWord+' attainment ('+monthNames[attainInsightStart%12]+'–'+monthNames[attainInsightEnd%12]+') — ' + attainInsightParts.join(' · ');
   } else {
     document.getElementById('targetByChannelCallout').innerHTML = 'Average monthly attainment — no closed months in the selected period yet';
   }
 
-  /* --- Channel Mix Over Time (Quarterly 100% stacked bar, Q1/25 to latest quarter) --- */
-  const quarterDefs = [
-    {label:'Q1/25', idx:[12,13,14]}, {label:'Q2/25', idx:[15,16,17]}, {label:'Q3/25', idx:[18,19,20]},
-    {label:'Q4/25', idx:[21,22,23]}, {label:'Q1/26', idx:[24,25,26]}, {label:'Q2/26', idx:[27,28,29]}
-  ];
-  const quarterLabels = quarterDefs.map(q=>q.label);
+  /* --- Channel Mix Over Time (100% stacked bar, 1 year + 1 more bucket —
+     5 quarters or 13 months depending on Time Frame — ending at whichever
+     bucket contains the selected period's end month) ---
+     Fix (2026-08-06, period-filter review): the window used to be a fixed
+     Q1/25→Q2/26 span regardless of Period — now slides so selecting a
+     different period (e.g. "Jan 25 – Dec 25") shows the buckets ending
+     there instead of always the same fixed window.
+     Window length changed 2026-08-06 (feedback) to "1 ปี + 1 Period" — 1
+     year of buckets plus 1 extra for lead-in context (4+1 quarters, or
+     12+1 months).
+     Time Frame (2026-08-06 feature): this chart is a stacked bar, not a
+     line, so it sat outside the original "every trend chart" toggle scope
+     — added on direct follow-up request so Monthly/Quarterly covers it too.
+     Month labels include the year ("Jun 25") since a 13-month window can
+     straddle a year boundary, unlike the single-year line charts above. */
+  const mixDefs = currentTimeFrame==='quarterly' ? (()=>{
+    const eQuarter = Math.floor(e/3), defs = [];
+    for(let qi=Math.max(0,eQuarter-4); qi<=eQuarter; qi++){
+      const qYear = 2024 + Math.floor(qi/4), qNum = (qi%4)+1, qStart = qi*3;
+      defs.push({label:'Q'+qNum+'/'+String(qYear).slice(2), idx:[qStart,qStart+1,qStart+2]});
+    }
+    return defs;
+  })() : (()=>{
+    const defs = [];
+    for(let mi=Math.max(0,e-12); mi<=e; mi++){
+      defs.push({label: monthNames[mi%12]+' '+String(2024+Math.floor(mi/12)).slice(2), idx:[mi]});
+    }
+    return defs;
+  })();
+  const mixLabels = mixDefs.map(d=>d.label);
   const mixSeries = groupKeys.map(g=>({
     name:g, color: groupColorVar[g],
-    values: quarterDefs.map(q => q.idx.reduce((sum,i)=>sum+groupActual[g][i],0))
+    values: mixDefs.map(d => d.idx.reduce((sum,i)=>sum+groupActual[g][i],0))
   }));
-  buildStacked100BarSVG('mixChart', { labels: quarterLabels, series: mixSeries, valueFormatter: fmtTHB });
+  buildStacked100BarSVG('mixChart', { labels: mixLabels, series: mixSeries, valueFormatter: fmtTHB });
   document.getElementById('mixLegend').innerHTML = groupKeys.map(g=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColorVar[g]+'"></span>'+groupNames[g]+'</span>'
   ).join('');
@@ -893,7 +1091,7 @@ function renderAll(periodKey, custom){
     const delta = lastPct-firstPct;
     return '<b>'+g+'</b>: '+firstPct.toFixed(0)+'% → '+lastPct.toFixed(0)+'% <span class="'+deltaClass(delta)+'">('+(delta>=0?'+':'')+delta.toFixed(0)+'pp)</span>';
   });
-  document.getElementById('mixCallout').innerHTML = 'Mix shift, Q1/25→Q2/26 — ' + calloutParts.join(' · ');
+  document.getElementById('mixCallout').innerHTML = 'Mix shift, '+mixLabels[0]+'→'+mixLabels[mixLabels.length-1]+' — ' + calloutParts.join(' · ');
 
   latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
   latestData.chGrowth = { labels: chGrowthLabels, series: chGrowthSeries.map((s,i)=>({name:groupKeys[i], values:s.data})) };

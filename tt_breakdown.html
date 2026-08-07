@@ -46,6 +46,8 @@
         <a href="#l2Customer" class="l2-mini-nav-item">Customer</a>
         <a href="#l2Product" class="l2-mini-nav-item">Product</a>
       </div>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
       <button class="mobile-filter-trigger" id="mobileFilterTrigger" type="button">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
         <span>Filters</span>
@@ -78,6 +80,14 @@
             </div>
           </div>
         </div>
+        <div class="filter-group">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" type="button" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" type="button" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
         <div class="filter-group" id="filterGroupRegion">
           <span class="filter-label">Region</span>
           <select class="filter-input" id="regionFilter"></select>
@@ -91,14 +101,10 @@
           <select class="filter-input" id="repFilter"></select>
         </div>
         <div class="filter-spacer"></div>
-        <div class="filter-note" id="filterNote">Scopes the KPIs and charts below</div>
         <button type="button" class="mobile-filter-apply-btn" id="mobileFilterApplyBtn">Show Results</button>
       </div>
+      </div>
     </div>
-  </div>
-
-  <div class="breadcrumb">
-    <a href="sales_overview.html">Sales Overview</a><span class="sep">/</span><span class="current">TT Overview</span>
   </div>
 
   <div id="pageBreakdown" class="page-view">
@@ -593,6 +599,23 @@
     closeDatePanel();
     render();
   });
+
+  /* ---- View By (Monthly/Quarterly) toggle (2026-08-06) — currentTimeFrame/
+     positionTimeFrameThumb live in tt-shared.js (shared across all 3 TT pages); this page just
+     wires the click and re-renders, same pattern as the Period preset buttons above. ---- */
+  const timeFrameToggle = document.getElementById("timeFrameToggle");
+  if (timeFrameToggle){
+    timeFrameToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".timeframe-opt");
+      if (!btn || btn.classList.contains("selected")) return;
+      timeFrameToggle.querySelectorAll(".timeframe-opt").forEach(o => o.classList.remove("selected"));
+      btn.classList.add("selected");
+      positionTimeFrameThumb();
+      currentTimeFrame = btn.dataset.key;
+      render();
+    });
+    positionTimeFrameThumb();
+  }
 
   /* ---- Mobile filter sheet ---- */
   const mobileFilterTrigger = document.getElementById("mobileFilterTrigger");
