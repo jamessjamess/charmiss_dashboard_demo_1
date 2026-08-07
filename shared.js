@@ -363,10 +363,15 @@ function buildGaugeSVG(containerId, value, opts){
   const angleAt = v => 180 + Math.min(1,Math.max(0,v/max))*180;
   const goodColor = cssVar('--good')||'#0ca30c', warnColor = cssVar('--warning')||'#fab219', critColor = cssVar('--critical')||'#d03b3b';
   const inkOne = cssVar('--ink-1')||'#0b0b0b', inkThree = cssVar('--ink-3')||'#898781';
+  // opts.invert: for "higher = better" metrics (e.g. margin %), the two
+  // outer zones swap color -- low values read as critical, high values as
+  // good -- while greenTo/amberTo keep their normal ascending-threshold
+  // meaning (still the boundary nearer zero, then the boundary nearer max).
+  const zoneLow = opts.invert ? critColor : goodColor, zoneHigh = opts.invert ? goodColor : critColor;
   const zonesSvg =
-    '<path d="'+arcPath(cx,cy,r,180,angleAt(greenTo),strokeW)+'" fill="none" stroke="'+goodColor+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>'
+    '<path d="'+arcPath(cx,cy,r,180,angleAt(greenTo),strokeW)+'" fill="none" stroke="'+zoneLow+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>'
     + '<path d="'+arcPath(cx,cy,r,angleAt(greenTo),angleAt(amberTo),strokeW)+'" fill="none" stroke="'+warnColor+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>'
-    + '<path d="'+arcPath(cx,cy,r,angleAt(amberTo),360,strokeW)+'" fill="none" stroke="'+critColor+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>';
+    + '<path d="'+arcPath(cx,cy,r,angleAt(amberTo),360,strokeW)+'" fill="none" stroke="'+zoneHigh+'" stroke-width="'+strokeW+'" stroke-linecap="butt"/>';
   const needleAngle = angleAt(value);
   const [tipX,tipY] = polarPoint(cx,cy,r*0.72,needleAngle);
   const needleSvg = '<line x1="'+cx+'" y1="'+cy+'" x2="'+tipX.toFixed(2)+'" y2="'+tipY.toFixed(2)+'" stroke="'+inkOne+'" stroke-width="2.4" stroke-linecap="round"/>'

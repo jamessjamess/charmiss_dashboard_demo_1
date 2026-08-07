@@ -17,7 +17,8 @@
       "Bash(awk '/function computeChannelMonthlySeries/,/^}/' pnl_breakdown.html)",
       "Bash(awk '/function computeChannelMonthlySeries/,/^}/' pnl_quarterly_trend.html)",
       "mcp__visualize__read_me",
-      "Bash(node -e \"new Function\\(require\\('fs'\\).readFileSync\\('shared.js','utf8'\\)\\); console.log\\('shared.js OK'\\)\")"
+      "Bash(node -e \"new Function\\(require\\('fs'\\).readFileSync\\('shared.js','utf8'\\)\\); console.log\\('shared.js OK'\\)\")",
+      "Bash(node -e \"new Function\\(require\\('fs'\\).readFileSync\\('shared.js','utf8'\\)\\)\")"
     ]
   }
 }

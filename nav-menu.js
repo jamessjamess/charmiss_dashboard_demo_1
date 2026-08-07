@@ -8,14 +8,16 @@
    ============================================================================ */
 const MODULE_MAP = [
   {
-    group: 'P&L Overview',
+    group: 'Financial Statement',
     ready: true,
     items: [
-      { key:'pnl-exec',      label:'Executive Summary', href:'pnl_executive_summary.html' },
-      { key:'pnl-quarterly', label:'Quarterly Trend',    href:'pnl_quarterly_trend.html' },
-      { key:'pnl-breakdown', label:'Breakdown',          href:'pnl_breakdown.html' },
-      { key:'pnl-cost',      label:'Cost Structure',     href:'pnl_cost_structure.html' },
-      { key:'pnl-balance',   label:'Balance Sheet',      href:'pnl_balance_sheet.html' },
+      { key:'pnl-exec',      label:'P&L · Summary',         href:'pnl_executive_summary.html' },
+      { key:'pnl-quarterly', label:'P&L · Quarterly Trend',  href:'pnl_quarterly_trend.html' },
+      { key:'pnl-breakdown', label:'P&L · Breakdown',        href:'pnl_breakdown.html' },
+      { key:'pnl-cost',      label:'P&L · Cost Structure',   href:'pnl_cost_structure.html' },
+      { key:'fs-cashflow',   label:'Cash Flow',              href:'pnl_cash_flow.html' },
+      { key:'pnl-balance',   label:'Balance Sheet',          href:'pnl_balance_sheet.html' },
+      { key:'fs-analysis',   label:'Financial Analysis',     href:'pnl_financial_analysis.html' },
     ],
   },
   {

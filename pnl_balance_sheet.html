@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Charmiss — P&amp;L Overview · Balance Sheet</title>
+<title>Charmiss — Financial Statement · Balance Sheet</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
 </head>
@@ -17,11 +17,10 @@
         <div class="brand-name">Charmiss</div>
         <div id="navMenuMount"></div>
         <nav class="tabs header-topbar-tabs">
-          <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
-          <a class="tab tab-link" href="pnl_quarterly_trend.html">Quarterly Trend</a>
-          <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
-          <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+          <a class="tab tab-link" href="pnl_executive_summary.html">P&amp;L</a>
+          <a class="tab tab-link" href="pnl_cash_flow.html">Cash Flow</a>
           <a class="tab active tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
+          <a class="tab tab-link" href="pnl_financial_analysis.html">Financial Analysis</a>
         </nav>
       </div>
       <div class="user-area">
@@ -41,32 +40,28 @@
 
   <div class="header-utility-row" id="headerUtilityRow">
     <nav class="section-nav">
-      <a href="#sec-key-ratio">Key Financial Ratio</a>
       <a href="#sec-balance-sheet">Balance Sheet</a>
-      <a href="#sec-leverage">Financial Leverage</a>
     </nav>
     <div class="nav-filter-divider"></div>
-    <div class="filter-scope">Company-wide · Balance Sheet items are new to this dashboard (no prior module owns this data) · 100% mock, for design/demo purposes</div>
+    <div class="filter-scope">Company-wide · Balance Sheet items are new to this dashboard (no prior module owns this data) · Key Financial Ratio + Financial Leverage moved to <a href="pnl_financial_analysis.html">Financial Analysis</a> · 100% mock, for design/demo purposes</div>
   </div>
-  </div>
-
-  <!-- ===== KEY FINANCIAL RATIO ===== -->
-  <div class="section-label" id="sec-key-ratio">Key Financial Ratio</div>
-  <div class="card table-card single-label-col" style="margin-bottom:14px;">
-    <div class="card-head">
-      <span class="card-title">Key Financial Ratio (5Q)</span>
-      <button class="info-icon" data-info-title="Key Financial Ratio" data-info-text="Current Ratio = Total Current Assets ÷ Total Current Liabilities · Inventory/AR/AP Turnover (days) = 90 ÷ (COGS or Net Sales ÷ Balance) โดยประมาณ · Cash Conversion Cycle = Inventory Days + AR Days − AP Days — ทั้งหมดเป็น Mock Data 100% เพื่อ Design/Demo">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="ratioDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
-    <table id="ratioTable"></table>
-    <div class="callout-text" id="ratioCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
 
   <!-- ===== BALANCE SHEET ===== -->
   <div class="section-label" id="sec-balance-sheet">Balance Sheet</div>
+
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Condensed Balance Sheet</span>
+      <button class="info-icon" data-info-title="Condensed Balance Sheet" data-info-text="งบแสดงฐานะการเงินแบบย่อ Q1'26 vs Q2'26 — ตัวเลขเดียวกับกราฟ Asset Breakdown/Liabilities &amp; Equity Breakdown ด้านล่าง แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Stacked Bar — Total Assets = Total Liabilities + Equity ทั้ง 2 งวด — Mock Data 100%">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="condensedDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Q1'26 vs Q2'26 · THB</div>
+    <table id="condensedTable"></table>
+  </div>
+
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -99,25 +94,7 @@
   </div>
   <div class="callout-text" id="bsCallout" style="margin:-6px 0 14px;">–</div>
 
-  <!-- ===== FINANCIAL LEVERAGE ===== -->
-  <div class="section-label" id="sec-leverage">Financial Leverage</div>
-  <div class="card" style="margin-bottom:6px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">D/E &amp; IBD/E Trend (5Q)</span>
-        <button class="info-icon" data-info-title="D/E & IBD/E Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity — Charmiss ไม่มีเงินกู้ยืมที่มีภาระดอกเบี้ย ณ ปัจจุบัน จึง IBD/E = 0.00x ตลอด แทนการเดาตัวเลขหนี้ใหม่ — Mock Data 100%">i</button>
-      </div>
-    </div>
-    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
-    <div class="chart-legend">
-      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>D/E</span>
-      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>IBD/E</span>
-    </div>
-    <div class="canvas-wrap" id="leverageCanvasWrap"><div id="leverageChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="leverageCallout" style="margin-top:10px;margin-bottom:0;">–</div>
-  </div>
-
-  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้ทั้งหมดเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo — ยังไม่มี Data Source Balance Sheet ระดับบริษัทจริงเชื่อมต่อกับ Dashboard นี้ ณ ปัจจุบัน ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง</div>
+  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้ทั้งหมดเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo — ยังไม่มี Data Source Balance Sheet ระดับบริษัทจริงเชื่อมต่อกับ Dashboard นี้ ณ ปัจจุบัน ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง · Key Financial Ratio และ Financial Leverage ย้ายไปหน้า <a href="pnl_financial_analysis.html">Financial Analysis</a></div>
 
 </div>
 
@@ -135,74 +112,43 @@
    file there is no existing ฿ figure to reconcile against. The only
    consistency rule that applies is the accounting identity itself: Total
    Assets must equal Total Liabilities + Equity in every period, by
-   construction (Equity is solved as a plug, not generated independently).
-   Uses its own dedicated PRNG (seed 20260633), isolated from every other
-   P&L file's `rand`/`addbackRand` sequences.
+   construction. Key Financial Ratio (5Q) and Financial Leverage (5Q) moved
+   to the Financial Analysis page (Financial Statement restructure) — this
+   page now owns only the two-quarter snapshot (Condensed table + the
+   existing Asset/Liabilities&Equity Breakdown charts).
    ============================================================================ */
-const bsRand = mulberry32(20260633);
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
   return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
 }
-function quarterYearLabel(startIdx){
-  const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
-  return 'Q'+q+"'"+String(yr).slice(2);
-}
-const TODAY = 29;
-const curQuarterStart = Math.floor(TODAY/3)*3;
-const quarterStarts = [curQuarterStart-12, curQuarterStart-9, curQuarterStart-6, curQuarterStart-3, curQuarterStart];
-const quarterLabels = quarterStarts.map(quarterYearLabel);
 
-/* --- Key Financial Ratio (5Q): Current Ratio and D/E are smooth trends with
-   small seeded jitter; Inventory/AR/AP Turnover (days) trend the direction
-   noted in the spec (Inventory & AR days shortening, AP days lengthening —
-   i.e. collecting faster, paying slower, both cash-flow-positive); Cash
-   Conversion Cycle is DERIVED from those three (CCC = Inventory Days + AR
-   Days − AP Days), not an independent random series, so it's a real
-   formula relationship, not just another mock line. --- */
-function trendSeries(startVal, endVal, jitterPct){
-  const vals = [];
-  for(let i=0;i<5;i++){
-    const t = i/4;
-    const base = startVal + (endVal-startVal)*t;
-    vals.push(base * (1 + (bsRand()-0.5)*jitterPct));
-  }
-  return vals;
-}
-const currentRatioQ = trendSeries(2.70, 2.59, 0.015);
-/* Bug fix (post-build review, P0-4): CCC = Inventory Days + AR Days − AP
-   Days must tie EXACTLY to whatever the table displays for those 3 rows.
-   The exact floats already summed correctly (199.4+68.3-70.2 IS exactly
-   197.5), but each of the 3 component rows rounds independently for
-   display (Math.round) and round(a)+round(b)-round(c) doesn't always equal
-   round(a+b-c) -- e.g. Q2'25 displayed as 199 + 68 - 70 = 197 while CCC
-   independently rounded 197.5 up to 198. Fix: round Inventory/AR/AP Days
-   to whole numbers FIRST (days are always displayed as whole numbers
-   anyway) and treat those rounded values as canonical everywhere,
-   including deriving CCC from them -- guarantees CCC always equals
-   exactly DIO+DSO-DPO using the SAME numbers the table shows. */
-const invDaysQ = trendSeries(201, 187, 0.03).map(Math.round);
-const arDaysQ = trendSeries(68, 61, 0.03).map(Math.round);
-const apDaysQ = trendSeries(70, 78, 0.03).map(Math.round);
-const cccDaysQ = invDaysQ.map((v,i)=> v + arDaysQ[i] - apDaysQ[i]);
-const deRatioQ = [0.58, 0.56, 0.54, 0.53, 0.55].map(v => v * (1 + (bsRand()-0.5)*0.01));
-const ibdeRatioQ = [0,0,0,0,0];
-
-/* --- Balance Sheet snapshot (Q1'26 vs Q2'26) — Equity is solved as a plug
-   (TotalAssets − AP − Lease − OtherLiab) so Total Assets always equals
-   Total Liabilities + Equity exactly, by construction. --- */
+/* --- Balance Sheet snapshot (Q1'26 vs Q2'26). Q1 categories are already
+   clean round numbers by construction (sum to exactly 310). Q2 categories
+   are each independently grown, which (bug fix, Financial Statement
+   restructure) does NOT tie to a clean total at display precision on its
+   own (raw sum was 324.927M, e.g. "Others" alone raw-computes to ~10.01M) --
+   fixed the same way every other rounding-sum mismatch in this dashboard is
+   fixed: round the anchor total first, round every category except the
+   smallest ("Others") to the nearest ฿0.1M, then derive "Others" as the
+   plug so the categories always sum to EXACTLY the rounded total. Equity is
+   solved as its own plug (TotalAssetsR − AP − Lease − OtherLiab) so Total
+   Assets always equals Total Liabilities + Equity exactly. */
 const ASSET_Q1 = { 'Cash & cash equivalents':40e6, 'Trade & other receivables':54e6, 'Inventories':88e6, 'Prepaid expenses':11e6, 'Property & Equipment':54e6, 'Right-of-use assets':37e6, 'Intangible assets':15e6, 'Others':11e6 };
 const ASSET_GROWTH = { 'Cash & cash equivalents':0.125, 'Trade & other receivables':0.074, 'Inventories':0.045, 'Prepaid expenses':0.09, 'Property & Equipment':0.018, 'Right-of-use assets':0.027, 'Intangible assets':0.0, 'Others':-0.09 };
 const ASSET_CATEGORIES = Object.keys(ASSET_Q1);
+const OTHERS_IDX = ASSET_CATEGORIES.indexOf('Others');
 const assetQ1 = ASSET_CATEGORIES.map(k=>ASSET_Q1[k]);
-const assetQ2 = ASSET_CATEGORIES.map(k=>ASSET_Q1[k]*(1+ASSET_GROWTH[k]));
-const totalAssetsQ1 = assetQ1.reduce((a,b)=>a+b,0), totalAssetsQ2 = assetQ2.reduce((a,b)=>a+b,0);
+const assetQ2Raw = ASSET_CATEGORIES.map(k=>ASSET_Q1[k]*(1+ASSET_GROWTH[k]));
+const totalAssetsQ1 = assetQ1.reduce((a,b)=>a+b,0);
+const totalAssetsQ2 = roundToNearestTHB100K(assetQ2Raw.reduce((a,b)=>a+b,0));
+const assetQ2 = assetQ2Raw.map((v,i)=> i===OTHERS_IDX ? v : roundToNearestTHB100K(v));
+assetQ2[OTHERS_IDX] = totalAssetsQ2 - assetQ2.reduce((a,b,i)=> i===OTHERS_IDX ? a : a+b, 0);
 
 const LIAB_Q1 = { 'Trade & other payables':58e6, 'Lease liabilities':34e6, 'Other liabilities':16e6 };
 const LIAB_GROWTH = { 'Trade & other payables':0.069, 'Lease liabilities':0.029, 'Other liabilities':0.125 };
 const LIAB_CATEGORIES = Object.keys(LIAB_Q1);
 const liabQ1 = LIAB_CATEGORIES.map(k=>LIAB_Q1[k]);
-const liabQ2 = LIAB_CATEGORIES.map(k=>LIAB_Q1[k]*(1+LIAB_GROWTH[k]));
+const liabQ2 = LIAB_CATEGORIES.map(k=>roundToNearestTHB100K(LIAB_Q1[k]*(1+LIAB_GROWTH[k])));
 const equityQ1 = totalAssetsQ1 - liabQ1.reduce((a,b)=>a+b,0);
 const equityQ2 = totalAssetsQ2 - liabQ2.reduce((a,b)=>a+b,0);
 const liabEquityCategories = [...LIAB_CATEGORIES, 'Equity'];
@@ -211,7 +157,7 @@ const liabEquityQ2 = [...liabQ2, equityQ2];
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
-  try { renderNavMenu('pnl-balance', 'P&L Overview · Balance Sheet'); } catch(e) { console.error('Nav menu render failed:', e); }
+  try { renderNavMenu('pnl-balance', 'Financial Statement · Balance Sheet'); } catch(e) { console.error('Nav menu render failed:', e); }
 }
 initInfoPopovers();
 initThemeToggle(()=> renderAll());
@@ -245,25 +191,33 @@ const RAG_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)',
 let latestData = {};
 
 function renderAll(){
-  /* === Key Financial Ratio table === */
-  const ratioRows = [
-    { label:'Current Ratio (Times)', vals: currentRatioQ, fmt: v=>v.toFixed(2)+'x' },
-    { label:'Inventory Turnover (days)', vals: invDaysQ, fmt: v=>Math.round(v)+' days' },
-    { label:'AR Turnover (days)', vals: arDaysQ, fmt: v=>Math.round(v)+' days' },
-    { label:'AP Turnover (days)', vals: apDaysQ, fmt: v=>Math.round(v)+' days' },
-    { label:'Cash Conversion Cycle (days)', vals: cccDaysQ, fmt: v=>Math.round(v)+' days', bold:true }
-  ];
-  document.getElementById('ratioTable').innerHTML =
-    '<thead><tr><th>Ratio</th>' + quarterLabels.map(q=>'<th>'+q+'</th>').join('') + '</tr></thead><tbody>'
-    + ratioRows.map(r=>{
+  /* === Condensed Balance Sheet table === Same figures as the Asset/
+     Liabilities & Equity Breakdown charts below (both bold subtotal rows
+     derive from the SAME assetQ2/liabEquityQ2 arrays those charts plot), so
+     this table and those charts never drift apart. */
+  const condensedRows = [];
+  ASSET_CATEGORIES.forEach((name,i)=> condensedRows.push({ label:name, q1:assetQ1[i], q2:assetQ2[i] }));
+  condensedRows.push({ label:'รวมสินทรัพย์ (Total Assets)', q1:totalAssetsQ1, q2:totalAssetsQ2, bold:true });
+  liabEquityCategories.forEach((name,i)=>{
+    if(name==='Equity') return; // Equity row inserted after Total Liabilities, per statement convention
+    condensedRows.push({ label:name, q1:liabEquityQ1[i], q2:liabEquityQ2[i] });
+  });
+  const totalLiabQ1 = liabQ1.reduce((a,b)=>a+b,0), totalLiabQ2 = liabQ2.reduce((a,b)=>a+b,0);
+  condensedRows.push({ label:'รวมหนี้สิน (Total Liabilities)', q1:totalLiabQ1, q2:totalLiabQ2, bold:true });
+  condensedRows.push({ label:'ส่วนของผู้ถือหุ้น (Equity)', q1:equityQ1, q2:equityQ2 });
+  condensedRows.push({ label:'รวมหนี้สินและส่วนผู้ถือหุ้น', q1:totalLiabQ1+equityQ1, q2:totalLiabQ2+equityQ2, bold:true });
+  document.getElementById('condensedTable').innerHTML =
+    '<thead><tr><th>Line Item</th><th>Q1\'26</th><th>Q2\'26</th><th>Δ</th><th>% Change</th></tr></thead><tbody>'
+    + condensedRows.map(r=>{
         const rowClass = r.bold ? ' class="income-stmt-total"' : '';
-        return '<tr'+rowClass+'><td>'+r.label+'</td>' + r.vals.map(v=>'<td class="tnum">'+r.fmt(v)+'</td>').join('') + '</tr>';
+        const delta = r.q2 - r.q1;
+        const pct = r.q1 ? (delta/r.q1*100) : 0;
+        return '<tr'+rowClass+'><td>'+r.label+'</td><td class="tnum">'+fmtTHB(r.q1)+'</td><td class="tnum">'+fmtTHB(r.q2)+'</td>'
+          + '<td class="tnum"><span class="'+deltaClass(delta)+'">'+(delta>=0?'+':'')+fmtTHB(delta)+'</span></td>'
+          + '<td class="tnum"><span class="'+deltaClass(pct)+'">'+fmtSignedPct(pct,1)+'</span></td></tr>';
       }).join('')
     + '</tbody>';
-  latestData.ratio = ratioRows;
-  const cccStart = cccDaysQ[0], cccEnd = cccDaysQ[4];
-  document.getElementById('ratioCallout').innerHTML =
-    'Cash Conversion Cycle '+(cccEnd<cccStart?'shortened':'lengthened')+' from <b>'+Math.round(cccStart)+'</b> to <b>'+Math.round(cccEnd)+' days</b> across the 5 quarters — AP days stretched ('+Math.round(apDaysQ[0])+'→'+Math.round(apDaysQ[4])+' days) helping offset slower Inventory Turnover in some quarters';
+  latestData.condensed = condensedRows;
 
   /* === Asset Breakdown === */
   const assetSeries = ASSET_CATEGORIES.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values:[assetQ1[i], assetQ2[i]] }));
@@ -278,24 +232,13 @@ function renderAll(){
   const assetGrowthPct = (totalAssetsQ2-totalAssetsQ1)/totalAssetsQ1*100;
   document.getElementById('bsCallout').innerHTML =
     'Total Assets grew <b>'+fmtSignedPct(assetGrowthPct,1)+'</b> QoQ (Q1\'26 '+fmtTHB(totalAssetsQ1)+' → Q2\'26 '+fmtTHB(totalAssetsQ2)+'), driven mostly by Cash and Inventories increasing alongside higher Net Sales — Total Assets ties to Total Liabilities + Equity in both quarters ('+fmtTHB(totalAssetsQ1)+' = '+fmtTHB(liabEquityQ1.reduce((a,b)=>a+b,0))+', '+fmtTHB(totalAssetsQ2)+' = '+fmtTHB(liabEquityQ2.reduce((a,b)=>a+b,0))+')';
-
-  /* === Financial Leverage trend === */
-  buildLineChartSVG('leverageChart', {
-    labels: quarterLabels, yFormatter: v=>v.toFixed(2)+'x',
-    series: [
-      { data: deRatioQ, color: cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' },
-      { data: ibdeRatioQ, color: cssVar('--ink-3')||'#898781', width:1.8, dash:'4,3', showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' }
-    ]
-  });
-  document.getElementById('leverageCallout').innerHTML =
-    'D/E '+(deRatioQ[4]>=deRatioQ[3]?'ticked up':'eased')+' to <b>'+deRatioQ[4].toFixed(2)+'x</b> in '+quarterLabels[4]+' from Trade Payables and Lease Liabilities growing with store expansion · no interest-bearing debt (IBD/E = 0.00x throughout)';
 }
 
 /* --- Toolbar --- */
-document.getElementById('ratioDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Ratio', ...quarterLabels]];
-  latestData.ratio.forEach(r=> rows.push([r.label, ...r.vals.map(v=>v.toFixed(2))]));
-  downloadCSV(rows, 'pnl_key_financial_ratio.csv');
+document.getElementById('condensedDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Line Item', "Q1'26", "Q2'26", 'Delta', '% Change']];
+  latestData.condensed.forEach(r=> rows.push([r.label, Math.round(r.q1), Math.round(r.q2), Math.round(r.q2-r.q1), (r.q1?((r.q2-r.q1)/r.q1*100):0).toFixed(1)]));
+  downloadCSV(rows, 'pnl_condensed_balance_sheet.csv');
 });
 document.getElementById('assetDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('assetChart', 'pnl_balance_sheet_assets.svg'));
 document.getElementById('liabDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('liabChart', 'pnl_balance_sheet_liabilities_equity.svg'));

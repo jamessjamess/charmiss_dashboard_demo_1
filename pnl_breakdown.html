@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Charmiss — P&amp;L Overview · Breakdown</title>
+<title>Charmiss — Financial Statement · P&amp;L Breakdown</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
 </head>
@@ -17,11 +17,10 @@
         <div class="brand-name">Charmiss</div>
         <div id="navMenuMount"></div>
         <nav class="tabs header-topbar-tabs">
-          <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
-          <a class="tab tab-link" href="pnl_quarterly_trend.html">Quarterly Trend</a>
-          <a class="tab active tab-link" href="pnl_breakdown.html">Breakdown</a>
-          <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+          <a class="tab active tab-link" href="pnl_executive_summary.html">P&amp;L</a>
+          <a class="tab tab-link" href="pnl_cash_flow.html">Cash Flow</a>
           <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
+          <a class="tab tab-link" href="pnl_financial_analysis.html">Financial Analysis</a>
         </nav>
       </div>
       <div class="user-area">
@@ -38,6 +37,13 @@
         </button>
       </div>
     </header>
+
+    <nav class="pill-nav">
+      <a href="pnl_executive_summary.html">Summary</a>
+      <a href="pnl_quarterly_trend.html">Quarterly Trend</a>
+      <a class="active" href="pnl_breakdown.html">Breakdown</a>
+      <a href="pnl_cost_structure.html">Cost Structure</a>
+    </nav>
 
   <div class="header-utility-row" id="headerUtilityRow">
     <nav class="section-nav">
@@ -394,7 +400,7 @@ function periodLabelText(key, custom){
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
-  try { renderNavMenu('pnl-breakdown', 'P&L Overview · Breakdown'); } catch(e) { console.error('Nav menu render failed:', e); }
+  try { renderNavMenu('pnl-breakdown', 'Financial Statement · P&L Breakdown'); } catch(e) { console.error('Nav menu render failed:', e); }
 }
 initInfoPopovers();
 initThemeToggle(()=> renderAll());

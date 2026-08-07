@@ -118,6 +118,18 @@ button,select{font-family:inherit;}
    section) — highlights which section is currently under the sticky header. */
 .section-nav a.active{border-color:var(--brand);color:var(--brand);background:var(--brand-wash);}
 
+/* Level-2 "pill" sub-navigation (Financial Statement module: the P&L tab's
+   4 sub-pages — Summary/Quarterly Trend/Breakdown/Cost Structure). Visually
+   identical to .section-nav on purpose (same secondary-nav language) but a
+   DELIBERATELY separate class: initSectionScrollSpy()'s `.section-nav a`
+   query would otherwise pick up these plain page-navigation links too and
+   fight over the .active class with real in-page anchor nav on pages that
+   have both (e.g. Balance Sheet). */
+.pill-nav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 10px;}
+.pill-nav a{font-size:12px;font-weight:600;color:var(--ink-2);background:var(--card);border:1px solid var(--border-2);border-radius:999px;padding:6px 14px;text-decoration:none;transition:border-color .15s,color .15s,background .15s;}
+.pill-nav a:hover{border-color:var(--brand);color:var(--brand);}
+.pill-nav a.active{border-color:var(--brand);color:var(--brand);background:var(--brand-wash);}
+
 /* Opt-in compact/sticky/collapsible header experiment (Sales Overview —
    Executive Outlook only, for now). Scoped entirely under .page-header-sticky
    so .topbar/.tabs/.section-nav/.filterbar keep their normal standalone
@@ -310,6 +322,12 @@ button,select{font-family:inherit;}
    Opt-in modifier so existing Ranking tables are unaffected. */
 .table-card.single-label-col th:nth-child(2),.table-card.single-label-col td:nth-child(2){text-align:right;}
 .income-stmt-total td,.income-stmt-total th{font-weight:700;color:var(--ink-1);}
+/* Grouped-ratio table (Financial Analysis > Key Ratios Summary) — a single
+   full-width colored band row between groups (Profitability/Efficiency/
+   Liquidity/Leverage/Cash Generation), reusing --brand-wash so it matches
+   the dashboard's one existing "highlighted band" language rather than
+   inventing a new color. */
+.ratio-group-row td{background:var(--brand-wash);color:var(--brand);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.04em;padding:8px 12px;border-bottom:1px solid var(--hairline);}
 .rank-num{color:var(--ink-3);font-weight:700;}
 .channel-name-cell{display:flex;align-items:center;gap:8px;font-weight:600;}
 .channel-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}

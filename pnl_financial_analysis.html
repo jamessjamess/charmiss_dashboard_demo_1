@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — Financial Statement · Financial Analysis</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="pnl_executive_summary.html">P&amp;L</a>
+          <a class="tab tab-link" href="pnl_cash_flow.html">Cash Flow</a>
+          <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
+          <a class="tab active tab-link" href="pnl_financial_analysis.html">Financial Analysis</a>
+        </nav>
+      </div>
+      <div class="user-area">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="avatar">NV</div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+  <div class="header-utility-row" id="headerUtilityRow">
+    <nav class="section-nav">
+      <a href="#sec-key-ratios">Key Ratios Summary</a>
+      <a href="#sec-leverage">Financial Leverage</a>
+      <a href="#sec-ccc-bridge">Cash Conversion Cycle</a>
+      <a href="#sec-inventory-provision">Inventory Provision</a>
+    </nav>
+    <div class="nav-filter-divider"></div>
+    <div class="filter-scope">Company-wide · reads across P&amp;L, Cash Flow and Balance Sheet — no new figures generated here, every ratio ties to those pages · 100% mock, for design/demo purposes</div>
+  </div>
+  </div>
+
+  <!-- ===== KEY RATIOS SUMMARY ===== -->
+  <div class="section-label" id="sec-key-ratios">Key Ratios Summary</div>
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Key Ratios Summary (5Q)</span>
+      <button class="info-icon" data-info-title="Key Ratios Summary" data-info-text="Profitability margins = ตัวเลขเดียวกับ P&amp;L Quarterly Trend's 5-Quarter table เป๊ะ (ไม่สร้างเลขใหม่) · Efficiency/Liquidity/Leverage = ตัวเลขเดียวกับที่เคยอยู่หน้า Balance Sheet (ย้ายมาที่นี่) · Cash Generation อ้างอิงจากหน้า Cash Flow — Current Ratio = Current Assets ÷ Current Liabilities, Quick Ratio = (Current Assets − Inventory) ÷ Current Liabilities · CCC = Inventory Days + AR Days − AP Days · D/E = Total Liabilities ÷ Equity, IBD/E = Interest-Bearing Debt ÷ Equity · CFO/EBITDA % และ FCF Margin % จากหน้า Cash Flow — ทั้งหมดเป็น Mock Data 100%">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="ratioSummaryDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
+    <table id="ratioSummaryTable"></table>
+  </div>
+
+  <!-- ===== FINANCIAL LEVERAGE ===== -->
+  <div class="section-label" id="sec-leverage">Financial Leverage</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">D/E &amp; IBD/E Trend (5Q)</span>
+        <button class="info-icon" data-info-title="D/E & IBD/E Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity — Charmiss ไม่มีเงินกู้ยืมที่มีภาระดอกเบี้ย ณ ปัจจุบัน จึง IBD/E = 0.00x ตลอด แทนการเดาตัวเลขหนี้ใหม่ — Mock Data 100% (ย้ายมาจากหน้า Balance Sheet — ตัวเลขเดิมทุกจุด)">i</button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>D/E</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>IBD/E</span>
+    </div>
+    <div class="canvas-wrap" id="leverageCanvasWrap"><div id="leverageChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="leverageCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <!-- ===== CASH CONVERSION CYCLE ===== -->
+  <div class="section-label" id="sec-ccc-bridge">Cash Conversion Cycle</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Cash Conversion Cycle Bridge</span>
+        <button class="info-icon" data-info-title="Cash Conversion Cycle Bridge" data-info-text="CCC = Inventory Days + AR Days − AP Days — AP Days ที่ยืดออก (แถบลบ) ช่วยลด CCC โดยรวม แม้ Inventory Days ยังสูง — ตัวเลขเดียวกับ Key Ratios Summary ด้านบน (Q2'26) — Mock Data 100%">i</button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Q2'26 · company-wide · days</div>
+    <div class="canvas-wrap" id="cccBridgeCanvasWrap" style="height:260px;"><div id="cccBridgeChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="cccBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <!-- ===== INVENTORY PROVISION ===== -->
+  <div class="section-label" id="sec-inventory-provision">Inventory Provision</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Inventory Provision Balance (5Q)</span>
+          <button class="info-icon" data-info-title="Inventory Provision Balance" data-info-text="เครื่องสำอางมีความเสี่ยงสินค้าหมดอายุ — Provision for Obsolescence กันไว้เป็น % ของ Inventory คงเหลือ (ประมาณการ) — Inventory Q1'26/Q2'26 ตรงกับหน้า Balance Sheet เป๊ะ (88/92 ล้านบาท) — Mock Data 100%">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · Provision as % of Inventory</div>
+      <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>Inventory</span>
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--critical)"></span>Provision Balance</span>
+      </div>
+      <div class="canvas-wrap" id="provisionCanvasWrap"><div id="provisionChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="provisionCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Inventory Aging (Q2'26)</span>
+          <button class="info-icon" data-info-title="Inventory Aging" data-info-text="สัดส่วน Inventory คงเหลือ Q2'26 (฿92M) แบ่งตามระยะเวลาที่เหลือก่อนหมดอายุ — กลุ่ม '&lt;3 เดือน' คือกลุ่มเสี่ยงสูงสุดที่จะต้องตัดสต๊อกหรือลดราคาเร่งขาย — Mock Data 100%">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Q2'26 · ฿92M total inventory</div>
+      <div class="canvas-wrap" id="agingCanvasWrap"><div id="agingChart" style="width:100%;height:100%;"></div></div>
+      <div class="chart-legend" id="agingLegend"></div>
+    </div>
+  </div>
+
+  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้เป็นชั้นวิเคราะห์ (ไม่ใช่ตัวงบ) ที่รวม Ratio ข้ามงบ P&amp;L / Cash Flow / Balance Sheet — ตัวเลขทั้งหมดยังเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง</div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   Financial Analysis — a cross-statement ratio layer, not its own data
+   domain. Every figure below is either (a) copied verbatim from the page
+   that already owns it (Efficiency/Liquidity/Leverage ratios moved from
+   Balance Sheet; Cash Generation ratios derived the same way Cash Flow
+   derives them) or (b) computed live from this file's own tiny slice of the
+   shared company-wide P&L series (Profitability margins), so it ties to the
+   P&L Quarterly Trend 5-Quarter table by construction, per Financial
+   Statement Restructure spec Section 5, rule 6. Quick Ratio and the
+   Inventory Provision/Aging widget are the only genuinely new mock series
+   on this page (no prior page owns them).
+   ============================================================================ */
+function quarterYearLabel(startIdx){
+  const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
+  return 'Q'+q+"'"+String(yr).slice(2);
+}
+const TODAY = 29;
+const curQuarterStart = Math.floor(TODAY/3)*3;
+const quarterStarts = [curQuarterStart-12, curQuarterStart-9, curQuarterStart-6, curQuarterStart-3, curQuarterStart];
+const quarterLabels = quarterStarts.map(quarterYearLabel);
+
+/* --- Profitability: real Net Sales/Gross Profit/EBIT/EBITDA/Net Profit
+   (after tax), same 5 quarters and same derivation (EBIT = GP - OPEX per
+   quarter, EBITDA = EBIT + D&A, Net Profit = EBIT x 0.8) as P&L Quarterly
+   Trend's 5-Quarter table -- ties to that table exactly, not re-guessed. */
+const TAX_RATE = 0.20;
+const netSalesQAll = [75634743, 75789637, 89098922, 81075377, 84539114];
+const grossProfitQAll = [36373120, 36207364, 42145971, 38754030, 40566408];
+const ebitQAll = [21645964, 21446912, 23509011, 22843778, 23908891];
+const daQAll = [2224597, 2262202, 2644779, 2475973, 2536173];
+const ebitdaQAll = ebitQAll.map((v,i)=>v+daQAll[i]);
+const gmQAll = grossProfitQAll.map((v,i)=> v/netSalesQAll[i]*100);
+const ebitMQAll = ebitQAll.map((v,i)=> v/netSalesQAll[i]*100);
+const ebitdaMQAll = ebitdaQAll.map((v,i)=> v/netSalesQAll[i]*100);
+const nmQAll = [22.8, 22.6, 21.1, 22.6, 22.6]; // exact match to P&L Quarterly Trend's 5Q table (EBIT x 0.8 / Net Sales, at display precision)
+
+/* --- Efficiency/Liquidity/Leverage: moved verbatim from Balance Sheet
+   (that page no longer shows these -- this is their only owner now). --- */
+const currentRatioQ = [2.71, 2.69, 2.66, 2.60, 2.58];
+const quickRatioQ = [1.42, 1.41, 1.40, 1.37, 1.36]; // new metric, no prior page owned it
+const invDaysQ = [199, 196, 192, 192, 188];
+const arDaysQ = [68, 67, 65, 63, 60];
+const apDaysQ = [70, 72, 73, 76, 77];
+const cccDaysQ = invDaysQ.map((v,i)=> v + arDaysQ[i] - apDaysQ[i]);
+const deRatioQ = [0.58, 0.56, 0.54, 0.53, 0.55];
+const ibdeRatioQ = [0, 0, 0, 0, 0];
+
+/* --- Cash Generation: same CFO/FCF figures as the Cash Flow page (CFO set
+   as ~72-73% of that quarter's real EBITDA there, so this ratio is smooth
+   by construction rather than independently re-guessed here). --- */
+const cfoQAll = [0.72,0.73,0.71,0.73].map((r,i)=> ebitdaQAll[i]*r).concat([19700000]);
+const capexQAll = [2.8e6, 3.0e6, 3.1e6, 3.3e6, 3.6e6];
+const fcfQAll = cfoQAll.map((v,i)=>v-capexQAll[i]);
+const cfoOverEbitdaQ = cfoQAll.map((v,i)=> v/ebitdaQAll[i]*100);
+const fcfMarginQ = fcfQAll.map((v,i)=> v/netSalesQAll[i]*100);
+
+/* ---------- Nav menu / popovers / theme ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('fs-analysis', 'Financial Statement · Financial Analysis'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+initThemeToggle(()=> renderAll());
+initSectionScrollSpy();
+
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+
+const RAG_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--brand)','var(--ink-3)'];
+function resolveColor(cssColorOrVar){
+  const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
+  return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+let latestData = {};
+
+function renderAll(){
+  /* === Key Ratios Summary (grouped table) === */
+  const groups = [
+    { name:'Profitability', rows:[
+      { label:'Gross Margin %', vals:gmQAll, fmt:v=>fmtPct(v,1) },
+      { label:'EBIT Margin %', vals:ebitMQAll, fmt:v=>fmtPct(v,1) },
+      { label:'EBITDA Margin %', vals:ebitdaMQAll, fmt:v=>fmtPct(v,1) },
+      { label:'Net Margin % (after tax)', vals:nmQAll, fmt:v=>fmtPct(v,1) }
+    ]},
+    { name:'Efficiency', rows:[
+      { label:'Inventory Turnover (days)', vals:invDaysQ, fmt:v=>Math.round(v)+' days' },
+      { label:'AR Turnover (days)', vals:arDaysQ, fmt:v=>Math.round(v)+' days' },
+      { label:'AP Turnover (days)', vals:apDaysQ, fmt:v=>Math.round(v)+' days' },
+      { label:'Cash Conversion Cycle (days)', vals:cccDaysQ, fmt:v=>Math.round(v)+' days', bold:true }
+    ]},
+    { name:'Liquidity', rows:[
+      { label:'Current Ratio (x)', vals:currentRatioQ, fmt:v=>v.toFixed(2)+'x' },
+      { label:'Quick Ratio (x)', vals:quickRatioQ, fmt:v=>v.toFixed(2)+'x' }
+    ]},
+    { name:'Leverage', rows:[
+      { label:'D/E (x)', vals:deRatioQ, fmt:v=>v.toFixed(2)+'x' },
+      { label:'IBD/E (x)', vals:ibdeRatioQ, fmt:v=>v.toFixed(2)+'x' }
+    ]},
+    { name:'Cash Generation', rows:[
+      { label:'CFO / EBITDA %', vals:cfoOverEbitdaQ, fmt:v=>fmtPct(v,1) },
+      { label:'FCF Margin %', vals:fcfMarginQ, fmt:v=>fmtPct(v,1) }
+    ]}
+  ];
+  let bodyHtml = '';
+  groups.forEach(g=>{
+    bodyHtml += '<tr class="ratio-group-row"><td colspan="6">'+g.name+'</td></tr>';
+    bodyHtml += g.rows.map(r=>{
+      const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+      return '<tr'+rowClass+'><td>'+r.label+'</td>' + r.vals.map(v=>'<td class="tnum">'+r.fmt(v)+'</td>').join('') + '</tr>';
+    }).join('');
+  });
+  document.getElementById('ratioSummaryTable').innerHTML =
+    '<thead><tr><th>Ratio</th>' + quarterLabels.map(q=>'<th>'+q+'</th>').join('') + '</tr></thead><tbody>' + bodyHtml + '</tbody>';
+  latestData.groups = groups;
+
+  /* === Financial Leverage trend === */
+  buildLineChartSVG('leverageChart', {
+    labels: quarterLabels, yFormatter: v=>v.toFixed(2)+'x',
+    series: [
+      { data: deRatioQ, color: cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' },
+      { data: ibdeRatioQ, color: cssVar('--ink-3')||'#898781', width:1.8, dash:'4,3', showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' }
+    ]
+  });
+  document.getElementById('leverageCallout').innerHTML =
+    'D/E '+(deRatioQ[4]>=deRatioQ[3]?'ticked up':'eased')+' to <b>'+deRatioQ[4].toFixed(2)+'x</b> in '+quarterLabels[4]+' from Trade Payables and Lease Liabilities growing with store expansion · no interest-bearing debt (IBD/E = 0.00x throughout)';
+
+  /* === Cash Conversion Cycle Bridge (Q2'26) === */
+  const cccSteps = [
+    { label:'Inventory Days', value: invDaysQ[4], type:'start' },
+    { label:'AR Days', value: arDaysQ[4], type:'delta' },
+    { label:'AP Days', value: -apDaysQ[4], type:'delta' },
+    { label:'CCC', value: cccDaysQ[4], type:'end' }
+  ];
+  buildWaterfallSVG('cccBridgeChart', cccSteps, { yFormatter: v=>Math.round(v)+'d', height:260 });
+  document.getElementById('cccBridgeCallout').innerHTML =
+    'Inventory '+invDaysQ[4]+'d + AR '+arDaysQ[4]+'d − AP '+apDaysQ[4]+'d = <b>'+cccDaysQ[4]+' days</b> — AP days stretching ('+apDaysQ[0]+'→'+apDaysQ[4]+' days across 5Q) is the main lever offsetting still-high Inventory Days';
+  latestData.cccBridge = cccSteps;
+
+  /* === Inventory Provision Balance (5Q) === */
+  const inventoryQ = [82e6, 84e6, 87e6, 88e6, 92e6]; // Q1'26/Q2'26 tie to Balance Sheet exactly (88/92)
+  const provisionBalanceQ = [5.7e6, 5.9e6, 6.1e6, 6.3e6, 6.5e6];
+  const provisionPctQ = provisionBalanceQ.map((v,i)=> v/inventoryQ[i]*100);
+  buildGroupedBarSVG('provisionChart', {
+    labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:false,
+    series: [ {name:'Inventory', color: cssVar('--ink-3')||'#898781', values: inventoryQ}, {name:'Provision Balance', color: cssVar('--critical')||'#d03b3b', values: provisionBalanceQ} ]
+  });
+  document.getElementById('provisionCallout').innerHTML =
+    'Provision for Obsolescence คงที่ราว '+fmtPct(Math.min(...provisionPctQ),1)+'–'+fmtPct(Math.max(...provisionPctQ),1)+' ของ Inventory ตลอด 5 ไตรมาส — '+quarterLabels[4]+': Inventory '+fmtTHB(inventoryQ[4])+', Provision '+fmtTHB(provisionBalanceQ[4])+' ('+fmtPct(provisionPctQ[4],1)+')';
+  latestData.provision = quarterLabels.map((q,i)=>({quarter:q, inventory:inventoryQ[i], provision:provisionBalanceQ[i], pct:provisionPctQ[i]}));
+
+  /* === Inventory Aging (Q2'26) === */
+  const agingBuckets = [
+    { name:'>12 เดือนถึงหมดอายุ', value: 64e6, color: resolveColor(RAG_COLORS[0]) },
+    { name:'6–12 เดือน', value: 18e6, color: resolveColor(RAG_COLORS[1]) },
+    { name:'3–6 เดือน', value: 7e6, color: resolveColor(RAG_COLORS[2]) },
+    { name:'<3 เดือน (เสี่ยง)', value: 3e6, color: resolveColor('var(--critical)') }
+  ];
+  buildDonutSVG('agingChart', agingBuckets, 200, { showLabels:true });
+  document.getElementById('agingLegend').innerHTML = agingBuckets.map(b=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+b.color+'"></span>'+b.name+' ('+fmtTHB(b.value)+')</span>').join('');
+  latestData.aging = agingBuckets;
+}
+
+/* --- Toolbar --- */
+document.getElementById('ratioSummaryDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Group','Ratio', ...quarterLabels]];
+  latestData.groups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> typeof v==='number' ? v.toFixed(2) : v)])));
+  downloadCSV(rows, 'financial_analysis_key_ratios.csv');
+});
+
+/* ---------- Init ---------- */
+renderAll();
+</script>
+</body>
+</html>
