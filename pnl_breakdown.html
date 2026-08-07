@@ -18,8 +18,10 @@
         <div id="navMenuMount"></div>
         <nav class="tabs header-topbar-tabs">
           <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="pnl_quarterly_trend.html">Quarterly Trend</a>
           <a class="tab active tab-link" href="pnl_breakdown.html">Breakdown</a>
           <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+          <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
         </nav>
       </div>
       <div class="user-area">
@@ -128,7 +130,9 @@
         </div>
       </div>
       <div class="chart-subtitle">This period · % of each channel's own Net Sales</div>
+      <div class="chart-legend" id="costStructLegend"></div>
       <div class="canvas-wrap" id="costStructCanvasWrap" style="height:280px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="costStructCallout" style="margin-top:10px;margin-bottom:0;">–</div>
       <div class="data-table-wrap" id="costStructTableWrap"></div>
     </div>
   </div>
@@ -537,12 +541,39 @@ function renderAll(){
     { key:'sga', name:'SG&A', color: resolveColor('var(--cat-4)') },
     { key:'netProfit', name:'Net Profit', color: good }
   ];
+  document.getElementById('costStructLegend').innerHTML = costLines.map(cl =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+cl.color+'"></span>'+cl.name+'</span>'
+  ).join('');
   buildStacked100BarSVG('costStructChart', {
     labels: groupKeys, height:280,
     series: costLines.map(cl => ({ name:cl.name, color:cl.color, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })),
     valueFormatter: fmtTHB
   });
   latestData.costStruct = { channels: groupKeys, lines: costLines.map(cl => ({ name:cl.name, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })) };
+
+  /* Insight: each channel's own cost structure is a fixed %-of-sales rate
+     (OPEX_RATES), so the "top differentiating cost driver" per channel is
+     stable regardless of period. Excludes COGS (passive, not a spend
+     decision) and Net Profit (the result, not a driver) from the
+     comparison, then reports the 2 channel/driver combos with the highest
+     %-of-sales, drawn from different channels so the callout doesn't repeat
+     the same channel twice. */
+  const costDriverKeys = ['tradeSpend','logistics','marketing','sga'];
+  const driverCombos = [];
+  groupKeys.forEach(g=>{
+    const netSalesSum = sumRange(pnlByChannel[g].netSales, s, e);
+    costDriverKeys.forEach(key=>{
+      const line = costLines.find(cl=>cl.key===key);
+      const pct = netSalesSum ? sumRange(pnlByChannel[g][key], s, e)/netSalesSum*100 : 0;
+      driverCombos.push({ channel:g, name:line.name, pct });
+    });
+  });
+  driverCombos.sort((a,b)=>b.pct-a.pct);
+  const topCombo = driverCombos[0];
+  const secondCombo = driverCombos.find(c=>c.channel!==topCombo.channel);
+  document.getElementById('costStructCallout').innerHTML =
+    '<b>'+topCombo.channel+'</b> has the highest '+topCombo.name+' <span class="pos">('+topCombo.pct.toFixed(0)+'% of Net Sales)</span>'
+    + (secondCombo ? ' · <b>'+secondCombo.channel+'</b> has the highest '+secondCombo.name+' <span class="pos">('+secondCombo.pct.toFixed(0)+'% of Net Sales)</span>' : '');
 
   /* === ZONE B: Category margins under current Channel filter === */
   const catMargins = CATEGORY_NAMES.map(cat => ({ name:cat, ...categoryMarginsFor(cat, channelFilter, s, e) }));

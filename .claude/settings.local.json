@@ -9,7 +9,10 @@
       "Bash(node -c tt-shared.js)",
       "Bash(pkill -f \"http.server 8791\")",
       "Bash(pkill -f \"http.server 8792\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(awk 'END{print NR}' \"G:\\\\My Drive\\\\[Charmiss] - Sales Overview Dashboard\\\\Charmiss Dashboard Dev\\\\Charmiss_Dashboard_Spec.md\")",
+      "Bash(python3 -c ' *)",
+      "Bash(awk '{ *)"
     ]
   }
 }

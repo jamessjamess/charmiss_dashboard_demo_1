@@ -18,8 +18,10 @@
         <div id="navMenuMount"></div>
         <nav class="tabs header-topbar-tabs">
           <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="pnl_quarterly_trend.html">Quarterly Trend</a>
           <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
           <a class="tab active tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+          <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
         </nav>
       </div>
       <div class="user-area">
@@ -41,6 +43,7 @@
     <nav class="section-nav">
       <a href="#sec-cost-efficiency">Cost Efficiency</a>
       <a href="#sec-cost-by-channel-partner">Cost by Channel &amp; Partner</a>
+      <a href="#sec-cost-category-detail">Cost Category Detail</a>
       <a href="#sec-cost-efficiency-signal">Cost Efficiency Signal</a>
     </nav>
     <div class="nav-filter-divider"></div>
@@ -178,6 +181,65 @@
     <div class="callout-text" style="margin-top:2px;">⚠️ ยังไม่มี Data Source ระดับนี้: Trade Spend ต่อ Partner ต้องอาศัยเงื่อนไข Deal ที่เจรจาต่อคู่ค้าแต่ละราย (ไม่ใช่สัดส่วนตามยอดขาย) ซึ่งยังไม่ถูกส่งเข้าระบบนี้ — แถบด้านล่างเป็นภาพร่างโครงสร้าง Chart ที่ตั้งใจไว้เท่านั้น ไม่ใช่ตัวเลขจริงหรือประมาณการ (No fake numbers).</div>
     <div class="cat-bars" id="tradeSpendByPartnerPlaceholder" style="margin-top:10px;"></div>
   </div>
+
+  <!-- ===== SECTION 2b: COST CATEGORY DETAIL ===== -->
+  <div class="section-label" id="sec-cost-category-detail">Cost Category Detail</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Selling Expense Breakdown (5Q)</span>
+          <button class="info-icon" data-info-title="Selling Expense Breakdown" data-info-text="แตก Marketing/Ads เป็นหมวดย่อย (Advertising &amp; Promotion, Digital/Content Marketing, People cost, Others) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ Marketing/Ads รวมเป๊ะทุกไตรมาส (ตัวเลขเดียวกับ OPEX Trend/Cost-to-Sales Ratio ด้านบน)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="sellingExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · THB</div>
+      <div class="chart-legend" id="sellingExpLegend"></div>
+      <div class="canvas-wrap" id="sellingExpCanvasWrap" style="height:260px;"><div id="sellingExpChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="sellingExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Selling Expense-to-Sales % Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Selling Expense-to-Sales % Trend" data-info-text="Marketing/Ads (=Selling Expense รวม) หารด้วย Net Sales ต่อไตรมาส — เทียบเคียงกับ Stacked Bar ด้านซ้าย">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="canvas-wrap" id="sellingExpRatioCanvasWrap"><div id="sellingExpRatioChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Administration Expense Breakdown (5Q)</span>
+          <button class="info-icon" data-info-title="Administration Expense Breakdown" data-info-text="แตก SG&A เป็นหมวดย่อย (People cost, Rental &amp; Depreciation, Other Admin Expenses, Advisor &amp; Professional Fees, Service Cost) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ SG&A รวมเป๊ะทุกไตรมาส">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="adminExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · THB</div>
+      <div class="chart-legend" id="adminExpLegend"></div>
+      <div class="canvas-wrap" id="adminExpCanvasWrap" style="height:260px;"><div id="adminExpChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="adminExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Administration Expense-to-Sales % Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Administration Expense-to-Sales % Trend" data-info-text="SG&A (=Administration Expense รวม) หารด้วย Net Sales ต่อไตรมาส — เทียบเคียงกับ Stacked Bar ด้านซ้าย">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="canvas-wrap" id="adminExpRatioCanvasWrap"><div id="adminExpRatioChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+  <div class="kpi-caption" style="margin:-6px 0 14px;">Trade Spend และ Logistics ยังคงแสดงเป็นก้อนเดียวไม่แตกย่อย (OPEX Trend/Cost-to-Sales Ratio ด้านบน) — ทั้ง 2 ก้อนไม่มีองค์ประกอบ People/Rental/Advertising แบบเดียวกับ Selling/Admin Expense จริงในธุรกิจนี้</div>
 
   <!-- ===== SECTION 3: COST EFFICIENCY SIGNAL ===== -->
   <div class="section-label" id="sec-cost-efficiency-signal">Cost Efficiency Signal</div>
@@ -497,6 +559,43 @@ const fmtSignedPPDecimal = v => (v>=0?'+':'') + v.toFixed(1) + 'pp';
   ).join('');
 })();
 
+/* ---------- Cost Category Detail: fixed-ratio decomposition of Marketing/Ads
+   and SG&A into named sub-categories. Splits sum to exactly 1.0 so each
+   quarter's sub-category values sum to EXACTLY that quarter's existing
+   Marketing/Ads or SG&A total (no drift possible) — Trade Spend and
+   Logistics are deliberately NOT split (per spec: they're rebates/freight,
+   not People/Rental/Advertising cost pools). Data grain is fixed rolling 5
+   quarters (independent of the page's Period filter, like OPEX Trend). ---------- */
+const SELLING_EXPENSE_SPLIT = { 'Advertising & Promotion':0.60, 'Digital/Content Marketing':0.25, 'People cost':0.10, 'Others':0.05 };
+const ADMIN_EXPENSE_SPLIT = { 'People cost':0.45, 'Rental & Depreciation':0.20, 'Other Admin Expenses':0.15, 'Advisor & Professional Fees':0.10, 'Service Cost':0.10 };
+const COST_DETAIL_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)'];
+function quarterYearLabel(startIdx){
+  const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
+  return 'Q'+q+"'"+String(yr).slice(2);
+}
+const cdQuarterStart = Math.floor(TODAY/3)*3;
+const cdQuarterStarts = [cdQuarterStart-12, cdQuarterStart-9, cdQuarterStart-6, cdQuarterStart-3, cdQuarterStart];
+const cdQuarterLabels = cdQuarterStarts.map(quarterYearLabel);
+function renderCostCategoryDetail(){
+  function renderSplit(totalSeries, split, chartId, ratioChartId, legendId, calloutId, calloutNoun){
+    const names = Object.keys(split);
+    const totalsByQ = cdQuarterStarts.map(qs => sumRange(totalSeries, qs, qs+2));
+    const series = names.map((name,i) => ({ name, color: resolveColor(COST_DETAIL_COLORS[i % COST_DETAIL_COLORS.length]),
+      values: totalsByQ.map(t => t * split[name]) }));
+    buildStackedBarSVG(chartId, { labels: cdQuarterLabels, series, valueFormatter: fmtTHB });
+    document.getElementById(legendId).innerHTML = series.map(s=>
+      '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>'
+    ).join('');
+    const netSalesByQ = cdQuarterStarts.map(qs => sumRange(pnlCompany.netSales, qs, qs+2));
+    const ratioSeries = totalsByQ.map((t,i)=> netSalesByQ[i] ? t/netSalesByQ[i]*100 : 0);
+    buildLineChartSVG(ratioChartId, { labels: cdQuarterLabels, yFormatter: v=>v.toFixed(1)+'%', series:[{data:ratioSeries, color:cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}] });
+    const latestShare = names.map((name,i)=>({ name, value: series[i].values[4], pct: totalsByQ[4] ? series[i].values[4]/totalsByQ[4]*100 : 0 })).sort((a,b)=>b.value-a.value);
+    document.getElementById(calloutId).innerHTML = '<b>'+latestShare[0].name+'</b> คิดเป็นสัดส่วนใหญ่สุดของ '+calloutNoun+' ('+latestShare[0].pct.toFixed(0)+'%) ต่อเนื่องทุกไตรมาส';
+  }
+  renderSplit(pnlCompany.marketing, SELLING_EXPENSE_SPLIT, 'sellingExpChart', 'sellingExpRatioChart', 'sellingExpLegend', 'sellingExpCallout', 'Selling Expense');
+  renderSplit(pnlCompany.sga, ADMIN_EXPENSE_SPLIT, 'adminExpChart', 'adminExpRatioChart', 'adminExpLegend', 'adminExpCallout', 'Admin Expense');
+}
+
 /* ---------- Render ---------- */
 let latestData = {};
 
@@ -641,6 +740,8 @@ function renderAll(periodKey, custom){
   } else {
     document.getElementById('costSignalCallout').innerHTML = '✓ ไม่มี Cost Line ใดโตเร็วกว่า Net Sales ('+fmtSignedPct(salesYoY)+' YoY) ในช่วงเวลานี้ — Cost Structure ยังควบคุมได้ดี';
   }
+
+  renderCostCategoryDetail();
 }
 
 /* --- Toolbar --- */
@@ -695,6 +796,9 @@ document.getElementById('mktByChannelTableBtn').addEventListener('click', ()=>{
 
 document.getElementById('perBahtDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('perBahtChart', 'pnl_for_every_1_baht_revenue.svg'));
 document.getElementById('perBahtExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('sellingExpDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('sellingExpChart', 'pnl_selling_expense_breakdown.svg'));
+document.getElementById('adminExpDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('adminExpChart', 'pnl_admin_expense_breakdown.svg'));
 
 /* ---------- Init ---------- */
 renderAll(currentPeriodKey, currentCustom);

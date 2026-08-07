@@ -776,6 +776,65 @@ function renderAll(periodKey, custom){
   // end (or through TODAY if that year is still in progress) instead.
   const periodYearStart = Math.floor(e/12)*12;
 
+  /* === Channel-split reconciliation (bug fix, data integrity) ==============
+     categoryChannelValue(node,ch,companyTotal) = node.pct/100*companyTotal*
+     node.channelMix[ch] guarantees each node's 3 channel values sum to its
+     own company-wide total (column sums always matched Sales by Category)
+     but has NO relationship to the REAL per-channel totals from
+     groupActual/companyActual (row sums) — those are two independently
+     generated mock series, so the Heatmap's row sums silently drifted from
+     Total Net Sales by Channel on the Executive Outlook. Reconcile the full
+     Series-level (depth 3, all 48 leaf nodes — a complete partition of the
+     company) matrix once per render via iterative proportional fitting (RAS)
+     so BOTH margins hold exactly: each node's own pct-based total (column)
+     AND each channel's real actual total for the period (row). Every
+     shallower level (Category/Sub-Category/Type) is then just the sum of its
+     descendant Series' reconciled values, so the fix is a single source of
+     truth shared by every caller (Heatmap, Category Growth by Channel's
+     weighting, Top 10 Product Selling's MT/TT/Ecom split) instead of being
+     patched per-component. ========================================== */
+  const channelActualTotal = {};
+  groupKeys.forEach(ch=>{ channelActualTotal[ch] = sumRange(groupActual[ch], s, e); });
+  const allSeriesNodes = enumerateLevel(3);
+  const seriesChannelMatrix = {};
+  allSeriesNodes.forEach(n=>{
+    seriesChannelMatrix[n.name] = {};
+    groupKeys.forEach(ch=> seriesChannelMatrix[n.name][ch] = categoryChannelValue(n, ch, companyTotal));
+  });
+  for(let iter=0; iter<8; iter++){
+    groupKeys.forEach(ch=>{
+      const rowSum = allSeriesNodes.reduce((sum,n)=> sum+seriesChannelMatrix[n.name][ch], 0);
+      const rowScale = rowSum>0 ? channelActualTotal[ch]/rowSum : 1;
+      allSeriesNodes.forEach(n=> seriesChannelMatrix[n.name][ch] *= rowScale);
+    });
+    allSeriesNodes.forEach(n=>{
+      const colTarget = n.pct/100 * companyTotal;
+      const colSum = groupKeys.reduce((sum,ch)=> sum+seriesChannelMatrix[n.name][ch], 0);
+      const colScale = colSum>0 ? colTarget/colSum : 1;
+      groupKeys.forEach(ch=> seriesChannelMatrix[n.name][ch] *= colScale);
+    });
+  }
+  function seriesAncestryPath(n){ return [n.rootCategory, n.subCategory, n.parent, n.name]; }
+  function nodeAncestryKey(n, depth){
+    if(depth===0) return n.name;
+    if(depth===1) return n.parent+'|'+n.name;
+    if(depth===2) return n.rootCategory+'|'+n.subCategory+'|'+n.name;
+    return n.rootCategory+'|'+n.subCategory+'|'+n.parent+'|'+n.name;
+  }
+  const reconciledByDepth = [{},{},{},{}];
+  allSeriesNodes.forEach(n=>{
+    const path = seriesAncestryPath(n);
+    for(let d=0; d<4; d++){
+      const key = path.slice(0, d+1).join('|');
+      if(!reconciledByDepth[d][key]) reconciledByDepth[d][key] = {MT:0,TT:0,Ecom:0};
+      groupKeys.forEach(ch=> reconciledByDepth[d][key][ch] += seriesChannelMatrix[n.name][ch]);
+    }
+  });
+  function reconciledChannelValue(node, depth, ch){
+    const bucket = reconciledByDepth[depth][nodeAncestryKey(node, depth)];
+    return bucket ? bucket[ch] : categoryChannelValue(node, ch, companyTotal);
+  }
+
   /* === Zone B: Channel × Category Heatmap + Channel Index — both driven by
      the page-level Product Level filter in the top filterbar (#levelBtn).
      Capped to Top 20 (Heatmap, scrolls horizontally) / Top 8 (Index chart)
@@ -786,38 +845,46 @@ function renderAll(periodKey, custom){
   document.getElementById('heatmapLevelLabel').textContent = LEVEL_NAMES[currentLevel];
 
   const channelTotalsAtLevel = {};
-  groupKeys.forEach(ch=>{ channelTotalsAtLevel[ch] = levelNodesAll.reduce((sum,n)=> sum+categoryChannelValue(n,ch,companyTotal), 0); });
+  groupKeys.forEach(ch=>{ channelTotalsAtLevel[ch] = levelNodesAll.reduce((sum,n)=> sum+reconciledChannelValue(n,currentLevel,ch), 0); });
 
   /* --- Transposed heatmap: Channel = rows, Category/Sub-Category/Type/Series
      node = columns (sorted by sales, highest first). Lets deeper levels (Type
      up to 24 nodes, Series up to 48) scroll horizontally instead of forcing
      every node into a fixed-height vertical table. --- */
-  const maxMix = Math.max(...heatmapNodes.flatMap(n=>groupKeys.map(ch=>n.channelMix[ch])));
+  // Cell % (row-normalized within each node) now reads off the reconciled
+  // value / node's own total, instead of the raw fixed channelMix ratio, so
+  // the displayed % always matches the displayed ฿ in the same cell.
+  const nodeChTotal = {};
+  heatmapNodes.forEach(n=>{ nodeChTotal[n.name] = groupKeys.reduce((sum,ch)=> sum+reconciledChannelValue(n,currentLevel,ch), 0); });
+  const maxShare = Math.max(...heatmapNodes.flatMap(n=>groupKeys.map(ch=> nodeChTotal[n.name] ? reconciledChannelValue(n,currentLevel,ch)/nodeChTotal[n.name] : 0)));
   const rgbBrand = hexToRgb(resolveColor('var(--brand)'));
   let heatHtml = '<thead><tr><th>Channel</th>' + heatmapNodes.map(n=>'<th>'+n.name+(n.parent?'<span class="sub-label" style="display:block;">'+n.parent+'</span>':'')+'</th>').join('') + '</tr></thead><tbody>';
   groupKeys.forEach(ch=>{
     heatHtml += '<tr><td>'+ch+'</td>' + heatmapNodes.map(n=>{
-      const val = categoryChannelValue(n,ch,companyTotal);
-      const sharePct = n.channelMix[ch]*100;
-      const intensity = n.channelMix[ch]/maxMix;
+      const val = reconciledChannelValue(n,currentLevel,ch);
+      const share = nodeChTotal[n.name] ? val/nodeChTotal[n.name] : 0;
+      const intensity = maxShare ? share/maxShare : 0;
       const bg = 'rgba('+rgbBrand[0]+','+rgbBrand[1]+','+rgbBrand[2]+','+(0.12+intensity*0.55).toFixed(2)+')';
-      return '<td><div class="heatmap-cell" style="background:'+bg+';">'+fmtTHB(val)+'<span class="hm-pct">'+sharePct.toFixed(0)+'%</span></div></td>';
+      return '<td><div class="heatmap-cell" style="background:'+bg+';">'+fmtTHB(val)+'<span class="hm-pct">'+(share*100).toFixed(0)+'%</span></div></td>';
     }).join('') + '</tr>';
   });
   heatHtml += '</tbody>';
   document.getElementById('heatmapTable').innerHTML = heatHtml;
   latestData.heatmap = heatmapNodes.map(n=>{
     const row = { name: n.name };
-    groupKeys.forEach(ch=>{ row[ch+'_value'] = categoryChannelValue(n,ch,companyTotal); row[ch+'_pct'] = n.channelMix[ch]*100; });
+    groupKeys.forEach(ch=>{ row[ch+'_value'] = reconciledChannelValue(n,currentLevel,ch); row[ch+'_pct'] = nodeChTotal[n.name] ? reconciledChannelValue(n,currentLevel,ch)/nodeChTotal[n.name]*100 : 0; });
     return row;
   });
 
   /* --- Insight: call out each channel's best-selling node at the current
-     level, so the heatmap's takeaway doesn't require scanning every cell. --- */
+     level, so the heatmap's takeaway doesn't require scanning every cell.
+     bestVal/share both read off the reconciled matrix, so "X% within MT"
+     is always X% of the REAL MT total (channelTotalsAtLevel, itself now
+     reconciled above), not the uncalibrated channelMix-derived row sum. --- */
   const heatmapBestPerChannel = {};
   groupKeys.forEach(ch=>{
     let best=heatmapNodes[0], bestVal=-1;
-    heatmapNodes.forEach(n=>{ const v=categoryChannelValue(n,ch,companyTotal); if(v>bestVal){bestVal=v;best=n;} });
+    heatmapNodes.forEach(n=>{ const v=reconciledChannelValue(n,currentLevel,ch); if(v>bestVal){bestVal=v;best=n;} });
     heatmapBestPerChannel[ch] = { node:best, value:bestVal, share: channelTotalsAtLevel[ch]? bestVal/channelTotalsAtLevel[ch]*100 : 0 };
   });
   document.getElementById('heatmapCallout').innerHTML = groupKeys.map(ch=>{
@@ -825,19 +892,22 @@ function renderAll(periodKey, custom){
     return '<b>'+ch+'</b> top '+LEVEL_NAMES[currentLevel].toLowerCase()+': '+b.node.name+' <span class="pos">('+b.share.toFixed(0)+'% within '+ch+')</span>';
   }).join(' · ');
 
-  /* === Category Growth by Channel (new 2026-08-06) — surface which
-     Category×Channel combos are actually growing/declining, a dimension
-     none of Sales by Category, Growth Ranking, or Return/Cancellation Rate
-     cover (all company-wide, no channel split). Per-cell growth blends each
-     node's own stated growthYoY
-     (CATEGORY_TREE — real per-category variation) with each channel's own
-     REAL aggregate YoY growth for the selected period (groupActual[ch], the
-     same time series Revenue Trend/companyActual already use — real
-     per-channel variation, since this mock model's own channelDefs already
-     give Ecom genuinely faster compounding than MT/TT). Averaging the two
-     gives genuine variation across BOTH dimensions without fabricating any
-     new random per-cell data — reusing exactly the ฿ figures already in the
-     system, per spec. === */
+  /* === Category Growth by Channel — surface which Category×Channel combos
+     are actually growing/declining, a dimension none of Sales by Category,
+     Growth Ranking, or Return/Cancellation Rate cover (all company-wide, no
+     channel split). Each cell starts from the channel's own REAL aggregate
+     YoY growth (channelGrowthYoY[ch], from groupActual[ch] — the same time
+     series Revenue Trend/companyActual already use), then is re-centered per
+     node so its channelMix-weighted average across MT/TT/Ecom reconciles
+     EXACTLY to that node's own stated growthYoY (the same number Growth
+     Ranking displays). Data-integrity bug fix: the previous version was a
+     flat average — (node.growthYoY + channelGrowthYoY[ch]) / 2 — which had
+     no such guarantee, so a declining category (negative growthYoY) could
+     still show 3 all-positive channel cells if every channel's real growth
+     happened to be strongly positive that period (mathematically impossible
+     for a true weighted decomposition, since a weighted average of positive
+     numbers can never be negative). Re-centering makes that impossible by
+     construction while still varying genuinely by channel. === */
   const priorPeriodAvailable = (s-12) >= 0;
   const channelGrowthYoY = {};
   groupKeys.forEach(ch=>{
@@ -846,7 +916,10 @@ function renderAll(periodKey, custom){
       : 0;
   });
   function cellGrowthYoY(node, ch){
-    return priorPeriodAvailable ? (node.growthYoY + channelGrowthYoY[ch]) / 2 : node.growthYoY;
+    if(!priorPeriodAvailable) return node.growthYoY;
+    let weightedAvg = 0;
+    groupKeys.forEach(c=>{ weightedAvg += node.channelMix[c]*channelGrowthYoY[c]; });
+    return node.growthYoY + (channelGrowthYoY[ch] - weightedAvg);
   }
 
   /* --- Category Growth by Channel: same node set/layout as the Heatmap
@@ -1155,24 +1228,23 @@ function renderAll(periodKey, custom){
   if(currentChannelFilter !== 'All'){
     productNodes = productNodes.map(n => Object.assign({}, n, { pct: n.pct * n.channelMix[currentChannelFilter] }));
   }
-  /* Per-channel Net Sales columns (2026-08-06) — always broken out across
-     all 3 channels regardless of the page's Channel filter, same "always
-     show every channel side-by-side" reasoning as the Heatmap. Computed from
-     productNodesRaw (the UNscaled node) rather than the possibly
-     Channel-filter-rescaled `n`, since categoryChannelValue already applies
-     channelMix itself — running it on an already-rescaled pct would double
-     count the channel scaling and make MT+TT+Ecom silently stop summing to
-     the Net Sales total. Category/Sub-Category columns were dropped to make
-     room (per feedback) — still available via CSV Download. Product/Series
-     split into 2 columns (Product = Type, Series = the item itself) per
-     feedback, replacing the old single "Product name + Type caption" cell. */
+  /* Per-channel Net Sales columns — always broken out across all 3 channels
+     regardless of the page's Channel filter, same "always show every channel
+     side-by-side" reasoning as the Heatmap. Computed from productNodesRaw
+     (the UNscaled node, always at Series depth 3) rather than the possibly
+     Channel-filter-rescaled `n`, since reconciledChannelValue already applies
+     the channel split itself — running it on an already-rescaled pct would
+     double count the channel scaling and make MT+TT+Ecom silently stop
+     summing to the Net Sales total. Category/Sub-Category columns were
+     dropped to make room — still available via CSV Download. Product/Series
+     is split into 2 columns (Product = Type, Series = the item itself). */
   const productSorted = [...productNodes].sort((a,b)=>b.pct-a.pct);
   const topProductsShownCount = topProductsExpanded ? productSorted.length : Math.min(10, productSorted.length);
   const topProducts = productSorted.slice(0, topProductsShownCount).map(n=>{
     const netSales = n.pct/100 * companyTotal;
     const rawNode = productNodesRaw.find(r=>r.name===n.name) || n;
     const channelNetSales = {};
-    groupKeys.forEach(ch=>{ channelNetSales[ch] = categoryChannelValue(rawNode, ch, companyTotal); });
+    groupKeys.forEach(ch=>{ channelNetSales[ch] = reconciledChannelValue(rawNode, 3, ch); });
     return { name:n.name, type:n.parent, subCategory:n.subCategory, rootCategory:n.rootCategory, netSales, channelNetSales, qty: netSales / SERIES_UNIT_PRICE[n.name] };
   });
   document.getElementById('topProductsTable').innerHTML =

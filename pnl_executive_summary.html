@@ -18,8 +18,10 @@
         <div id="navMenuMount"></div>
         <nav class="tabs header-topbar-tabs">
           <a class="tab active tab-link" href="pnl_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="pnl_quarterly_trend.html">Quarterly Trend</a>
           <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
           <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+          <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
         </nav>
       </div>
       <div class="user-area">
@@ -76,7 +78,7 @@
 
   <!-- ===== EXECUTIVE SUMMARY ===== -->
   <div class="section-label">Executive Summary</div>
-  <div class="kpi-grid" style="grid-template-columns:repeat(7,1fr);">
+  <div class="kpi-grid" style="grid-template-columns:repeat(8,1fr);">
     <div class="card">
       <div class="card-head">
         <span class="card-title">Gross Profit</span>
@@ -117,6 +119,7 @@
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiNPYoy">–</span></div>
       </div>
       <div id="kpiNPSpark"></div>
+      <div class="kpi-caption" id="kpiNPAdjustedCaption" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--hairline);">–</div>
     </div>
 
     <div class="card">
@@ -131,6 +134,21 @@
         <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiNMYoy">–</span></div>
       </div>
       <div id="kpiNMSpark"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">EBITDA</span>
+        <span class="badge-soon" title="D&amp;A เป็นตัวเลขประมาณการ (3% ของ Net Sales) เพื่อ Scaffold โครง EBITDA ไว้ก่อน รอ Finance ยืนยันตัวเลขจริง">ประมาณการ</span>
+        <button class="info-icon" data-info-title="EBITDA" data-info-text="Net Profit + D&A (Depreciation &amp; Amortization) — D&A เป็นตัวเลขประมาณการ 3% ของ Net Sales เพราะ P&L ปัจจุบันไม่มีบรรทัด D&A แยก รอ Finance ยืนยันตัวเลขจริงก่อนใช้งานจริง">i</button>
+      </div>
+      <div><span class="kpi-value" id="kpiEBITDAValue">–</span><span class="kpi-unit">THB</span></div>
+      <div class="kpi-caption" id="kpiEBITDACaption">Year to Date</div>
+      <div class="kpi-delta-row">
+        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiEBITDAMom">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiEBITDAYoy">–</span></div>
+      </div>
+      <div id="kpiEBITDASpark"></div>
     </div>
 
     <div class="card">
@@ -171,6 +189,18 @@
       </div>
       <div id="kpiOpexSpark"></div>
     </div>
+  </div>
+
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Budget vs Actual</span>
+      <button class="info-icon" data-info-title="Budget vs Actual" data-info-text="เทียบตัวเลขจริงกับ Budget ต่อบรรทัด — Budget Net Sales/Net Profit อ้างอิงจาก Target เดียวกับที่ใช้ทั้งหน้า (Sales Target × 22% Net Margin), Budget Gross Margin % เป็นสมมติฐานใหม่ (48%) รอ Finance ยืนยันตัวเลข Budget จริง — RAG: เขียว = ทำได้ถึง/เกิน Budget, เหลือง = ต่ำกว่า Budget ไม่เกิน 2%, แดง = ต่ำกว่า Budget เกิน 2%">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="budgetActualDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle" id="budgetActualSubtitle">Year to Date vs Budget · company-wide — budget figures are mock, pending Finance</div>
+    <table id="budgetActualTable"></table>
   </div>
 
   <div class="chart-grid">
@@ -241,14 +271,32 @@
   <div class="card table-card single-label-col" style="margin-bottom:14px;">
     <div class="card-head">
       <span class="card-title">Income Statement</span>
-      <button class="info-icon" data-info-title="Income Statement" data-info-text="ตัวเลขบรรทัดเดียวกับ P&L Waterfall ด้านบนทุกประการ (Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → Net Profit) แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Bridge — คอลัมน์ 'This Period' ตอบสนอง Period Filter เดียวกับ Waterfall เสมอ (ตัวเลขต้องตรงกันเป๊ะทุกแถว), 'Last Year' คือช่วงเวลาเดียวกันย้อนไป 12 เดือน — Net Sales อ้างอิงจาก Sales Overview โดยตรง ไม่มีการสร้างยอดขายใหม่ที่นี่">i</button>
+      <button class="info-icon" data-info-title="Income Statement" data-info-text="ตัวเลขบรรทัดเดียวกับ P&L Waterfall ด้านบนทุกประการ (Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → Net Profit) แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Bridge — 'Year to Date' เทียบกับช่วงเดียวกันปีก่อน, 'Quarterly' เทียบไตรมาสก่อนหน้ากับไตรมาสล่าสุด — Net Sales อ้างอิงจาก Sales Overview โดยตรง ไม่มีการสร้างยอดขายใหม่ที่นี่ — D&A/EBITDA เป็นตัวเลขประมาณการ รอ Finance ยืนยัน">i</button>
       <div class="toolbar" style="margin-left:auto;">
         <button class="tool-btn" id="incomeStmtDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="incomeStmtExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
     <div class="chart-subtitle" id="incomeStmtSubtitle">Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data</div>
+    <div class="filter-item" style="margin:2px 0 12px;">
+      <span class="filter-label">View By</span>
+      <div class="timeframe-toggle" id="incomeStmtViewToggle">
+        <div class="timeframe-thumb" id="incomeStmtViewThumb"></div>
+        <button class="timeframe-opt selected" data-key="ytd">Year to Date</button>
+        <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+      </div>
+    </div>
     <table id="incomeStmtTable"></table>
+    <div class="kpi-caption" id="incomeStmtEbitdaCaveat" style="margin-top:8px;">D&amp;A/EBITDA rows are an estimate (3% of Net Sales) to scaffold the metric ahead of Finance confirming real depreciation figures.</div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Key Factors Affecting Performance</span>
+      <button class="info-icon" data-info-title="Key Factors Affecting Performance" data-info-text="Auto-generate จาก Threshold Rule เช็คทุก Metric ที่กำหนดไว้ (Gross/Net Margin QoQ/YoY, Cost-to-Sales ratio QoQ ต่อบรรทัด, ส่วนต่าง Growth ระหว่าง Channel) — ถ้าเกิน Threshold จะขึ้นเป็น Bullet อัตโนมัติ กลุ่มที่แสดงขึ้นกับ View By ของ Income Statement ด้านบน">i</button>
+    </div>
+    <div class="chart-subtitle" id="keyFactorsSubtitle">–</div>
+    <ul class="key-factors-list" id="keyFactorsList" style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.8;color:var(--ink-2);"></ul>
   </div>
 
   <div class="chart-grid">
@@ -448,6 +496,56 @@ for(let i=0;i<MONTHS_TOTAL;i++){
 const targetNetProfit = companyTarget.map(v => v * PNL_TARGET_NET_MARGIN);
 const targetNetProfitByChannel = {}; groupKeys.forEach(g => { targetNetProfitByChannel[g] = groupTarget[g].map(v => v * PNL_TARGET_NET_MARGIN); });
 
+/* ---------- EBITDA scaffold (pending Finance confirmation) ----------
+   Charmiss's P&L has no D&A line item today, so EBITDA doesn't exist
+   naturally. D&A is modeled as a fixed % of Net Sales (DA_RATE_OF_SALES) —
+   an illustrative placeholder only, NOT a real depreciation schedule — so
+   EBITDA = Net Profit + D&A can be scaffolded consistently everywhere this
+   page (and pnl_quarterly_trend.html, which reuses this exact same rate)
+   references it. Every UI element showing EBITDA/D&A must carry an
+   "estimated, pending Finance" caveat — see the .badge-soon-styled badge on
+   the KPI card and the note under the Income Statement table. */
+const DA_RATE_OF_SALES = 0.030;
+pnlCompany.da = pnlCompany.netSales.map(v => v * DA_RATE_OF_SALES);
+pnlCompany.ebitda = pnlCompany.netProfit.map((v,i) => v + pnlCompany.da[i]);
+
+/* ---------- Normalized Earnings (Reported vs Adjusted) scaffold ----------
+   One-time add-back categories per WARRIX-style normalized earnings
+   reconciliation. No real one-time-item list exists from Finance yet, so
+   these are mock monthly series (own dedicated PRNG, isolated from the
+   page's main `rand` sequence so nothing else on the page shifts) —
+   Impairment and Litigation are mostly zero (rare/lumpy by nature),
+   Obsolete Inventory and ECL are small recurring amounts (routine for a
+   cosmetics business with real inventory/AR risk). Must be replaced with
+   Finance's actual one-time-item list before production use. */
+const addbackRand = mulberry32(20260632);
+function genAddbackSeries(baseRatio, zeroProb){
+  const arr = [];
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    arr.push(addbackRand() < zeroProb ? 0 : pnlCompany.netSales[i] * baseRatio * (0.5 + addbackRand()));
+  }
+  return arr;
+}
+const addbackSeries = {
+  'Obsolete Inventory Provision': genAddbackSeries(0.012, 0.15),
+  'Impairment Loss on Assets':    genAddbackSeries(0.006, 0.55),
+  'Expected Credit Loss (ECL)':   genAddbackSeries(0.008, 0.15),
+  'Provision for Litigation':     genAddbackSeries(0.004, 0.70)
+};
+const addbackKeys = Object.keys(addbackSeries);
+
+/* ---------- Budget (for Budget vs Actual + RAG) ----------
+   Reuses the SAME Sales Target (companyTarget) and Net Margin target
+   (PNL_TARGET_NET_MARGIN) already used everywhere else on this page,
+   rather than inventing an unrelated budget number — Budget Net Sales =
+   companyTarget, Budget Net Profit = targetNetProfit (both pre-existing).
+   Only PNL_TARGET_GROSS_MARGIN is new, an illustrative Gross Margin budget
+   assumption (~blended actual margin) needed because no gross-margin
+   budget existed before. Mock — replace with Finance's real budget book
+   before production use. */
+const PNL_TARGET_GROSS_MARGIN = 0.48;
+const budgetGrossProfit = companyTarget.map(v => v * PNL_TARGET_GROSS_MARGIN);
+
 /* Blended (company-wide) margin by category — used by "Margin by Category". */
 function categoryNetSales(channel, catName, s, e){
   const shares = categorySharesByChannel[channel];
@@ -611,6 +709,51 @@ function bucketRatio(numArr, denArr, groups){
 function bucketSample(arr, groups){ return groups.map(g=> arr[g[g.length-1]]); }
 function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
 
+/* ---------- Income Statement "View By" toggle (local to that one card —
+   independent of the page-level Period/View-By filters above, per spec:
+   Year to Date mode compares This Period vs Last Year same range (same as
+   before); Quarterly mode compares Prior Quarter vs Current Quarter
+   (anchored on TODAY, not the page Period filter) with QoQ%/YoY% columns.
+   Key Factors below reads this same toggle to decide which bullet set
+   (YoY-based vs QoQ-based) to show. ---------- */
+let incomeStmtViewMode = 'ytd';
+function positionIncomeStmtViewThumb(){
+  const toggle = document.getElementById('incomeStmtViewToggle');
+  const thumb = document.getElementById('incomeStmtViewThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('incomeStmtViewToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('#incomeStmtViewToggle .timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionIncomeStmtViewThumb();
+  incomeStmtViewMode = btn.dataset.key;
+  renderAll(currentPeriodKey, currentCustom);
+});
+positionIncomeStmtViewThumb();
+
+/* ---------- Key Factors threshold rules (shared with pnl_quarterly_trend.html) ---------- */
+const KEY_FACTOR_THRESHOLDS = {
+  gross_margin_pp_qoq: 2.0, gross_margin_pp_yoy: 3.0,
+  net_margin_pp_qoq: 2.0, net_margin_pp_yoy: 3.0,
+  cost_ratio_pp_qoq: 1.0,
+  revenue_growth_divergence_pp: 5.0
+};
+/** Builds "{metric} {เพิ่มขึ้น/ลดลง} {value}pp {QoQ/YoY} — เกิน threshold ที่ตั้งไว้ ({threshold}pp)"
+    bullets, only for metrics whose |delta| exceeds its threshold. */
+function buildKeyFactorBullets(checks){
+  const bullets = [];
+  checks.forEach(c=>{
+    if(Math.abs(c.delta) <= c.threshold) return;
+    const dir = c.delta>0 ? 'เพิ่มขึ้น' : 'ลดลง';
+    bullets.push('<li><b>'+c.name+'</b> '+dir+' '+Math.abs(c.delta).toFixed(1)+'pp '+c.basis+' — เกิน threshold ที่ตั้งไว้ ('+c.threshold.toFixed(1)+'pp)</li>');
+  });
+  return bullets;
+}
+
 /* ---------- Render ---------- */
 let latestData = {};
 const invDelta = v => v<=0 ? 'pos' : 'neg';
@@ -667,6 +810,26 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiNMYoy').innerHTML = '<span class="'+deltaClass(nmYoyPP)+'">'+fmtSignedPP(nmYoyPP)+'</span>';
   { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(nmAt(i)); document.getElementById('kpiNMSpark').innerHTML = sparklineSVG('kpiNMSpark', spark, brand, v=>fmtPct(v,0)); }
 
+  /* === KPI: EBITDA (estimated — see DA_RATE_OF_SALES note above) === */
+  const ebitdaSum = sumRange(pnlCompany.ebitda, s, e);
+  const ebitdaMom = pctChange(pnlCompany.ebitda[e], pnlCompany.ebitda[e-1]);
+  const ebitdaYoy = pctChange(pnlCompany.ebitda[e], pnlCompany.ebitda[e-12]);
+  document.getElementById('kpiEBITDAValue').textContent = fmtTHB(ebitdaSum);
+  document.getElementById('kpiEBITDACaption').textContent = label;
+  document.getElementById('kpiEBITDAMom').innerHTML = '<span class="'+deltaClass(ebitdaMom)+'">'+fmtSignedPct(ebitdaMom)+'</span>';
+  document.getElementById('kpiEBITDAYoy').innerHTML = '<span class="'+deltaClass(ebitdaYoy)+'">'+fmtSignedPct(ebitdaYoy)+'</span>';
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(pnlCompany.ebitda[i]); document.getElementById('kpiEBITDASpark').innerHTML = sparklineSVG('kpiEBITDASpark', spark, brand, fmtTHB); }
+
+  /* === Reported vs Adjusted Net Profit mini-section (Net Profit card's
+     bottom caption) — Adjusted = Reported + sum of the 4 one-time add-back
+     categories over the period. Links to the Normalized Earnings bridge on
+     the new Quarterly Trend page for the full breakdown. === */
+  const addbackTotal = addbackKeys.reduce((sum,k)=> sum + sumRange(addbackSeries[k], s, e), 0);
+  const adjustedNetProfit = netProfitSum + addbackTotal;
+  document.getElementById('kpiNPAdjustedCaption').innerHTML =
+    'Adjusted: <b>'+fmtTHB(adjustedNetProfit)+'</b> <span class="pos">(+'+fmtTHB(addbackTotal)+' one-time items)</span> · <a href="pnl_quarterly_trend.html#normalized-earnings">See detail →</a>';
+  latestData.normalizedEarnings = { reported: netProfitSum, adjusted: adjustedNetProfit, addbackTotal, addbacks: addbackKeys.map(k=>({item:k, value: sumRange(addbackSeries[k], s, e)})) };
+
   /* === KPI: Profit Target Attainment % === */
   const attainAt = i => targetNetProfit[i] ? pnlCompany.netProfit[i]/targetNetProfit[i]*100 : 0;
   const attainMomPP = attainAt(e)-attainAt(e-1), attainYoyPP = attainAt(e)-attainAt(e-12);
@@ -698,6 +861,48 @@ function renderAll(periodKey, custom){
   document.getElementById('kpiOpexMom').innerHTML = '<span class="'+invDelta(opexMomPP)+'">'+fmtSignedPP(opexMomPP)+'</span>';
   document.getElementById('kpiOpexYoy').innerHTML = '<span class="'+invDelta(opexYoyPP)+'">'+fmtSignedPP(opexYoyPP)+'</span>';
   { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(opexAt(i)); document.getElementById('kpiOpexSpark').innerHTML = sparklineSVG('kpiOpexSpark', spark, brand, v=>fmtPct(v,0)); }
+
+  /* === Table: Budget vs Actual + RAG === Budget Net Sales/Net Profit reuse
+     the exact same companyTarget/targetNetProfit already computed above
+     (not a second, unrelated budget figure); Budget Gross Profit uses the
+     new PNL_TARGET_GROSS_MARGIN assumption. RAG: green if actual hits/beats
+     budget, amber if short by ≤2%, red if short by >2% — same rule for both
+     ฿ metrics (% variance) and % metrics (pp variance, reusing the same ±2
+     threshold since both are already expressed as "points"). */
+  const budgetNetSalesSum = sumRange(companyTarget, s, e);
+  const budgetGrossProfitSum = sumRange(budgetGrossProfit, s, e);
+  const budgetNetProfitSum = targetNPSum;
+  const budgetGMPct = budgetNetSalesSum ? budgetGrossProfitSum/budgetNetSalesSum*100 : 0;
+  const budgetNMPct = PNL_TARGET_NET_MARGIN*100;
+  function ragFor(actual, budget){
+    if(!budget) return 'green';
+    const varPct = (actual-budget)/Math.abs(budget)*100;
+    return varPct>=0 ? 'green' : (varPct>=-2 ? 'amber' : 'red');
+  }
+  const ragColor = { green:'var(--good-text)', amber:'var(--warning)', red:'var(--critical)' };
+  const budgetRows = [
+    { metric:'Net Sales', actual:netSalesSum, budget:budgetNetSalesSum, isPct:false },
+    { metric:'Gross Profit', actual:grossProfitSum, budget:budgetGrossProfitSum, isPct:false },
+    { metric:'Gross Margin %', actual:grossMarginPct, budget:budgetGMPct, isPct:true },
+    { metric:'Net Profit', actual:netProfitSum, budget:budgetNetProfitSum, isPct:false },
+    { metric:'Net Margin %', actual:netMarginPct, budget:budgetNMPct, isPct:true }
+  ].map(r=>{
+    const varVal = r.actual - r.budget;
+    const varPctOrPp = r.isPct ? varVal : (r.budget ? varVal/Math.abs(r.budget)*100 : 0);
+    return { ...r, varVal, varPctOrPp, rag: ragFor(r.actual, r.budget) };
+  });
+  document.getElementById('budgetActualSubtitle').textContent = label + ' vs Budget · company-wide — budget figures are mock, pending Finance';
+  document.getElementById('budgetActualTable').innerHTML =
+    '<thead><tr><th>Metric</th><th>Actual</th><th>Budget</th><th>Variance</th><th>Status</th></tr></thead><tbody>'
+    + budgetRows.map(r=>{
+        const fmt = v => r.isPct ? fmtPct(v,1) : fmtTHB(v);
+        const varLabel = (r.isPct ? fmtSignedPP(r.varVal) : fmtSignedPct(r.varPctOrPp,1));
+        return '<tr><td>'+r.metric+'</td><td class="tnum">'+fmt(r.actual)+'</td><td class="tnum">'+fmt(r.budget)+'</td>'
+          + '<td class="tnum"><span class="'+deltaClass(r.varVal)+'">'+varLabel+'</span></td>'
+          + '<td><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+ragColor[r.rag]+';"></span></td></tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.budgetActual = budgetRows;
 
   /* === Chart: Profit Trend === */
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
@@ -770,46 +975,136 @@ function renderAll(periodKey, custom){
   buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:260 });
   latestData.waterfall = waterfallSteps;
 
-  /* === Table: Income Statement (new 2026-08-06) — same 8 line items, same
-     order, as the P&L Waterfall directly above. Deliberately reuses the
-     exact same sums just computed for waterfallSteps (netSalesSum,
-     cogsSum, grossProfitSum, tradeSpendSum, logisticsSum, marketingSum,
-     sgaSum, netProfitSum) rather than recomputing them independently — this
-     is the only way to *guarantee* the two components never drift apart
-     (the whole point of putting them side by side: same data, two views). */
-  const lyStart = s-12, lyEnd = e-12;
-  const lyNetSales = sumRange(pnlCompany.netSales, lyStart, lyEnd);
-  const lyGrossProfit = sumRange(pnlCompany.grossProfit, lyStart, lyEnd);
-  const lyCogs = lyNetSales - lyGrossProfit;
-  const lyTradeSpend = sumRange(pnlCompany.tradeSpend, lyStart, lyEnd);
-  const lyLogistics = sumRange(pnlCompany.logistics, lyStart, lyEnd);
-  const lyMarketing = sumRange(pnlCompany.marketing, lyStart, lyEnd);
-  const lySga = sumRange(pnlCompany.sga, lyStart, lyEnd);
-  const lyNetProfit = sumRange(pnlCompany.netProfit, lyStart, lyEnd);
+  /* === Table: Income Statement — same 8 P&L line items as the Waterfall
+     above (deliberately reuses the exact same sums just computed for
+     waterfallSteps so the two components never drift apart), plus 2
+     scaffolded D&A/EBITDA rows. Two View By modes (local toggle, independent
+     of the page-level Period filter): "Year to Date" compares This Period
+     vs same range Last Year (unchanged from before); "Quarterly" compares
+     Prior Quarter vs Current Quarter (anchored on TODAY) with QoQ%/YoY%.
+     Both modes add a "% of Net Sales" (common-size) column. === */
   const diffPct = (thisV, lastV) => lastV ? (thisV-lastV)/Math.abs(lastV)*100 : null;
-  const incomeStmtRows = [
-    { label:'Net Sales', thisPeriod:netSalesSum, lastYear:lyNetSales, series:pnlCompany.netSales, bold:true },
-    { label:'– COGS', thisPeriod:-cogsSum, lastYear:-lyCogs, series:pnlCompany.cogs.map(v=>-v) },
-    { label:'= Gross Profit', thisPeriod:grossProfitSum, lastYear:lyGrossProfit, series:pnlCompany.grossProfit, bold:true },
-    { label:'– Trade Spend', thisPeriod:-tradeSpendSum, lastYear:-lyTradeSpend, series:pnlCompany.tradeSpend.map(v=>-v) },
-    { label:'– Logistics', thisPeriod:-logisticsSum, lastYear:-lyLogistics, series:pnlCompany.logistics.map(v=>-v) },
-    { label:'– Marketing/Ads', thisPeriod:-marketingSum, lastYear:-lyMarketing, series:pnlCompany.marketing.map(v=>-v) },
-    { label:'– SG&A', thisPeriod:-sgaSum, lastYear:-lySga, series:pnlCompany.sga.map(v=>-v) },
-    { label:'= Net Profit', thisPeriod:netProfitSum, lastYear:lyNetProfit, series:pnlCompany.netProfit, bold:true }
+  const incomeStmtLineDefs = [
+    { label:'Net Sales', series: pnlCompany.netSales, bold:true },
+    { label:'– COGS', series: pnlCompany.cogs.map(v=>-v) },
+    { label:'= Gross Profit', series: pnlCompany.grossProfit, bold:true },
+    { label:'– Trade Spend', series: pnlCompany.tradeSpend.map(v=>-v) },
+    { label:'– Logistics', series: pnlCompany.logistics.map(v=>-v) },
+    { label:'– Marketing/Ads', series: pnlCompany.marketing.map(v=>-v) },
+    { label:'– SG&A', series: pnlCompany.sga.map(v=>-v) },
+    { label:'= Net Profit', series: pnlCompany.netProfit, bold:true },
+    { label:'+ D&A (add-back)', series: pnlCompany.da, isEstimate:true },
+    { label:'= EBITDA', series: pnlCompany.ebitda, bold:true, isEstimate:true }
   ];
-  document.getElementById('incomeStmtSubtitle').innerHTML = label + ' vs same range last year · Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data';
+  const [curQS, curQE] = getPeriodRange('thisQuarter', null);
+  const [priorQS, priorQE] = getPeriodRange('lastQuarter', null);
+  const yoyQS = curQS-12, yoyQE = curQE-12;
+  function quarterYearLabel(startIdx){
+    const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
+    return 'Q'+q+"'"+String(yr).slice(2);
+  }
+  let incomeStmtRows, incomeStmtHeaders, incomeStmtMode = incomeStmtViewMode;
+  if(incomeStmtViewMode==='quarterly'){
+    const curBase = sumRange(pnlCompany.netSales, curQS, curQE);
+    const quarterStarts = [curQS-12, curQS-9, curQS-6, curQS-3, curQS];
+    incomeStmtRows = incomeStmtLineDefs.map(def=>{
+      const priorV = sumRange(def.series, priorQS, priorQE);
+      const curV = sumRange(def.series, curQS, curQE);
+      const yoyV = sumRange(def.series, yoyQS, yoyQE);
+      const sparkVals = quarterStarts.map(qs=> sumRange(def.series, qs, qs+2));
+      return { label:def.label, bold:def.bold, isEstimate:def.isEstimate, colA:priorV, colB:curV,
+        qoq: priorV ? (curV-priorV)/Math.abs(priorV)*100 : null, yoy: yoyV ? (curV-yoyV)/Math.abs(yoyV)*100 : null,
+        pctOfSales: curBase ? curV/curBase*100 : 0, sparkVals };
+    });
+    incomeStmtHeaders = ['Line Item', 'Prior Quarter ('+quarterYearLabel(priorQS)+')', 'Current Quarter ('+quarterYearLabel(curQS)+')', '% of Net Sales', 'QoQ %', 'YoY % (vs '+quarterYearLabel(yoyQS)+')', 'Quarterly Trend'];
+  } else {
+    const curBase = netSalesSum;
+    incomeStmtRows = incomeStmtLineDefs.map(def=>{
+      const thisV = sumRange(def.series, s, e);
+      const lastV = sumRange(def.series, s-12, e-12);
+      const sparkVals = []; for(let i=Math.max(0,e-11); i<=e; i++) sparkVals.push(def.series[i]);
+      return { label:def.label, bold:def.bold, isEstimate:def.isEstimate, colA:thisV, colB:lastV,
+        qoq: diffPct(thisV, lastV), yoy:null, pctOfSales: curBase ? thisV/curBase*100 : 0, sparkVals };
+    });
+    incomeStmtHeaders = ['Line Item', label, '% of Net Sales', 'Last Year', 'Diff %', 'Monthly Trend'];
+  }
+  document.getElementById('incomeStmtSubtitle').innerHTML = (incomeStmtMode==='quarterly' ? 'Prior Quarter vs Current Quarter' : label+' vs same range last year') + ' · Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data';
   document.getElementById('incomeStmtTable').innerHTML =
-    '<thead><tr><th>Line Item</th><th>' + label + '</th><th>Last Year</th><th>Diff %</th><th>Monthly Trend</th></tr></thead><tbody>'
-    + incomeStmtRows.map(r=>{
-        const d = diffPct(r.thisPeriod, r.lastYear);
-        const sparkVals = []; for(let i=Math.max(0,e-11); i<=e; i++) sparkVals.push(r.series[i]);
+    '<thead><tr>' + incomeStmtHeaders.map(h=>'<th>'+h+'</th>').join('') + '</tr></thead><tbody>'
+    + incomeStmtRows.map((r,i)=>{
         const rowClass = r.bold ? ' class="income-stmt-total"' : '';
-        return '<tr'+rowClass+'><td>'+r.label+'</td><td class="tnum">'+fmtTHB(r.thisPeriod)+'</td><td class="tnum">'+fmtTHB(r.lastYear)+'</td>'
-          + '<td class="tnum">'+(d!==null?'<span class="'+deltaClass(d)+'">'+fmtSignedPct(d,1)+'</span>':'–')+'</td>'
-          + '<td>'+sparklineSVG('incomeStmtSpark'+incomeStmtRows.indexOf(r), sparkVals, cssVar('--ink-3')||'#898781', fmtTHB)+'</td></tr>';
+        const estNote = r.isEstimate ? ' <span class="badge-soon" style="margin-left:4px;">ประมาณการ</span>' : '';
+        const sparkHtml = sparklineSVG('incomeStmtSpark'+i, r.sparkVals, cssVar('--ink-3')||'#898781', fmtTHB);
+        let cells = '<td>'+r.label+estNote+'</td><td class="tnum">'+fmtTHB(r.colA)+'</td>';
+        if(incomeStmtMode==='quarterly'){
+          cells += '<td class="tnum">'+fmtTHB(r.colB)+'</td>'
+            + '<td class="tnum">'+fmtPct(r.pctOfSales,1)+'</td>'
+            + '<td class="tnum">'+(r.qoq!==null?'<span class="'+deltaClass(r.qoq)+'">'+fmtSignedPct(r.qoq,1)+'</span>':'–')+'</td>'
+            + '<td class="tnum">'+(r.yoy!==null?'<span class="'+deltaClass(r.yoy)+'">'+fmtSignedPct(r.yoy,1)+'</span>':'–')+'</td>'
+            + '<td>'+sparkHtml+'</td>';
+        } else {
+          cells += '<td class="tnum">'+fmtPct(r.pctOfSales,1)+'</td><td class="tnum">'+fmtTHB(r.colB)+'</td>'
+            + '<td class="tnum">'+(r.qoq!==null?'<span class="'+deltaClass(r.qoq)+'">'+fmtSignedPct(r.qoq,1)+'</span>':'–')+'</td>'
+            + '<td>'+sparkHtml+'</td>';
+        }
+        return '<tr'+rowClass+'>'+cells+'</tr>';
       }).join('')
     + '</tbody>';
-  latestData.incomeStmt = incomeStmtRows.map(r=>({ label:r.label, thisPeriod:r.thisPeriod, lastYear:r.lastYear, diffPct: diffPct(r.thisPeriod, r.lastYear) }));
+  document.getElementById('incomeStmtEbitdaCaveat').style.display = 'block';
+  latestData.incomeStmt = { mode:incomeStmtMode, headers:incomeStmtHeaders, rows: incomeStmtRows.map(r=>({ label:r.label, colA:r.colA, colB:r.colB, qoq:r.qoq, yoy:r.yoy, pctOfSales:r.pctOfSales })) };
+
+  /* === Key Factors Affecting Performance (auto-generated from threshold
+     rules) === Bullet set shown depends on the Income Statement's View By
+     toggle: "Year to Date" mode shows YoY-based factors (matching that
+     table's This Period vs Last Year comparison); "Quarterly" mode shows
+     QoQ-based factors (matching Prior Q vs Current Q). Cost-line ratio
+     factors and the cross-channel revenue-growth-divergence factor only
+     make sense QoQ (a single quarter's cost mix / a quarter's channel
+     momentum), so they only appear in Quarterly mode. */
+  let keyFactorChecks = [];
+  if(incomeStmtMode==='quarterly'){
+    const priorQNetSales = sumRange(pnlCompany.netSales, priorQS, priorQE), curQNetSales = sumRange(pnlCompany.netSales, curQS, curQE);
+    const priorQGM = priorQNetSales ? sumRange(pnlCompany.grossProfit,priorQS,priorQE)/priorQNetSales*100 : 0;
+    const curQGM = curQNetSales ? sumRange(pnlCompany.grossProfit,curQS,curQE)/curQNetSales*100 : 0;
+    const priorQNM = priorQNetSales ? sumRange(pnlCompany.netProfit,priorQS,priorQE)/priorQNetSales*100 : 0;
+    const curQNM = curQNetSales ? sumRange(pnlCompany.netProfit,curQS,curQE)/curQNetSales*100 : 0;
+    keyFactorChecks.push({ name:'Gross Margin', delta: curQGM-priorQGM, threshold:KEY_FACTOR_THRESHOLDS.gross_margin_pp_qoq, basis:'QoQ' });
+    keyFactorChecks.push({ name:'Net Margin', delta: curQNM-priorQNM, threshold:KEY_FACTOR_THRESHOLDS.net_margin_pp_qoq, basis:'QoQ' });
+    [['tradeSpend','Trade Spend-to-Sales'],['logistics','Logistics-to-Sales'],['marketing','Marketing/Ads-to-Sales'],['sga','SG&A-to-Sales']].forEach(([key,name])=>{
+      const priorPct = priorQNetSales ? sumRange(pnlCompany[key],priorQS,priorQE)/priorQNetSales*100 : 0;
+      const curPct = curQNetSales ? sumRange(pnlCompany[key],curQS,curQE)/curQNetSales*100 : 0;
+      keyFactorChecks.push({ name, delta: curPct-priorPct, threshold:KEY_FACTOR_THRESHOLDS.cost_ratio_pp_qoq, basis:'QoQ' });
+    });
+    const chGrowthQoQ = groupKeys.map(g=>{
+      const prev = sumRange(pnlByChannel[g].netSales, priorQS, priorQE), cur = sumRange(pnlByChannel[g].netSales, curQS, curQE);
+      return { channel:g, growth: prev ? (cur-prev)/prev*100 : 0 };
+    }).sort((a,b)=>b.growth-a.growth);
+    const spreadQoQ = chGrowthQoQ[0].growth - chGrowthQoQ[chGrowthQoQ.length-1].growth;
+    if(spreadQoQ > KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp){
+      keyFactorChecks.push({ name:'Revenue growth divergence ('+chGrowthQoQ[0].channel+' vs '+chGrowthQoQ[chGrowthQoQ.length-1].channel+')', delta: spreadQoQ, threshold:KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp, basis:'QoQ growth spread' });
+    }
+    document.getElementById('keyFactorsSubtitle').textContent = 'This quarter’s factors · '+quarterYearLabel(priorQS)+' → '+quarterYearLabel(curQS);
+  } else {
+    const lyNetSalesYTD = sumRange(pnlCompany.netSales, s-12, e-12);
+    const lyGMYTD = lyNetSalesYTD ? sumRange(pnlCompany.grossProfit,s-12,e-12)/lyNetSalesYTD*100 : 0;
+    const lyNMYTD = lyNetSalesYTD ? sumRange(pnlCompany.netProfit,s-12,e-12)/lyNetSalesYTD*100 : 0;
+    keyFactorChecks.push({ name:'Gross Margin', delta: grossMarginPct-lyGMYTD, threshold:KEY_FACTOR_THRESHOLDS.gross_margin_pp_yoy, basis:'YoY' });
+    keyFactorChecks.push({ name:'Net Margin', delta: netMarginPct-lyNMYTD, threshold:KEY_FACTOR_THRESHOLDS.net_margin_pp_yoy, basis:'YoY' });
+    const chGrowthYoY = groupKeys.map(g=>{
+      const prev = sumRange(pnlByChannel[g].netSales, s-12, e-12), cur = sumRange(pnlByChannel[g].netSales, s, e);
+      return { channel:g, growth: prev ? (cur-prev)/prev*100 : 0 };
+    }).sort((a,b)=>b.growth-a.growth);
+    const spreadYoY = chGrowthYoY[0].growth - chGrowthYoY[chGrowthYoY.length-1].growth;
+    if(spreadYoY > KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp){
+      keyFactorChecks.push({ name:'Revenue growth divergence ('+chGrowthYoY[0].channel+' vs '+chGrowthYoY[chGrowthYoY.length-1].channel+')', delta: spreadYoY, threshold:KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp, basis:'YoY growth spread' });
+    }
+    document.getElementById('keyFactorsSubtitle').textContent = 'YTD factors · '+label+' vs same range last year';
+  }
+  const keyFactorBullets = buildKeyFactorBullets(keyFactorChecks);
+  document.getElementById('keyFactorsList').innerHTML = keyFactorBullets.length
+    ? keyFactorBullets.join('')
+    : '<li>ไม่มีการเปลี่ยนแปลงที่มีนัยสำคัญเกิน threshold ใน'+(incomeStmtMode==='quarterly'?'ไตรมาสนี้':'ช่วง YTD นี้')+'</li>';
+  latestData.keyFactors = keyFactorChecks;
 
   /* === Chart: Margin by Channel === */
   const chLabels = groupKeys;
@@ -888,11 +1183,23 @@ document.getElementById('waterfallTableBtn').addEventListener('click', ()=>{
 });
 
 document.getElementById('incomeStmtDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Line Item','This Period','Last Year','Diff %']];
-  latestData.incomeStmt.forEach(r=> rows.push([r.label, Math.round(r.thisPeriod), Math.round(r.lastYear), r.diffPct!==null?r.diffPct.toFixed(1):'']));
+  const d = latestData.incomeStmt;
+  const rows = [d.headers];
+  d.rows.forEach(r=>{
+    const row = d.mode==='quarterly'
+      ? [r.label, Math.round(r.colA), Math.round(r.colB), r.pctOfSales.toFixed(1), r.qoq!==null?r.qoq.toFixed(1):'', r.yoy!==null?r.yoy.toFixed(1):'']
+      : [r.label, Math.round(r.colA), r.pctOfSales.toFixed(1), Math.round(r.colB), r.qoq!==null?r.qoq.toFixed(1):''];
+    rows.push(row);
+  });
   downloadCSV(rows, 'pnl_income_statement.csv');
 });
 document.getElementById('incomeStmtExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('budgetActualDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Metric','Actual','Budget','Variance','Status']];
+  latestData.budgetActual.forEach(r=> rows.push([r.metric, r.isPct?r.actual.toFixed(1):Math.round(r.actual), r.isPct?r.budget.toFixed(1):Math.round(r.budget), r.varPctOrPp.toFixed(1), r.rag]));
+  downloadCSV(rows, 'pnl_budget_vs_actual.csv');
+});
 
 document.getElementById('mByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mByChannelChart', 'pnl_margin_by_channel.svg'));
 document.getElementById('mByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));

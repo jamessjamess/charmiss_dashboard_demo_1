@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — P&amp;L Overview · Balance Sheet</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="pnl_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="pnl_quarterly_trend.html">Quarterly Trend</a>
+          <a class="tab tab-link" href="pnl_breakdown.html">Breakdown</a>
+          <a class="tab tab-link" href="pnl_cost_structure.html">Cost Structure</a>
+          <a class="tab active tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
+        </nav>
+      </div>
+      <div class="user-area">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="avatar">NV</div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+  <div class="header-utility-row" id="headerUtilityRow">
+    <nav class="section-nav">
+      <a href="#sec-key-ratio">Key Financial Ratio</a>
+      <a href="#sec-balance-sheet">Balance Sheet</a>
+      <a href="#sec-leverage">Financial Leverage</a>
+    </nav>
+    <div class="nav-filter-divider"></div>
+    <div class="filter-scope">Company-wide · Balance Sheet items are new to this dashboard (no prior module owns this data) · 100% mock, for design/demo purposes</div>
+  </div>
+  </div>
+
+  <!-- ===== KEY FINANCIAL RATIO ===== -->
+  <div class="section-label" id="sec-key-ratio">Key Financial Ratio</div>
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Key Financial Ratio (5Q)</span>
+      <button class="info-icon" data-info-title="Key Financial Ratio" data-info-text="Current Ratio = Total Current Assets ÷ Total Current Liabilities · Inventory/AR/AP Turnover (days) = 90 ÷ (COGS or Net Sales ÷ Balance) โดยประมาณ · Cash Conversion Cycle = Inventory Days + AR Days − AP Days — ทั้งหมดเป็น Mock Data 100% เพื่อ Design/Demo">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="ratioDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
+    <table id="ratioTable"></table>
+    <div class="callout-text" id="ratioCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <!-- ===== BALANCE SHEET ===== -->
+  <div class="section-label" id="sec-balance-sheet">Balance Sheet</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Asset Breakdown</span>
+          <button class="info-icon" data-info-title="Asset Breakdown" data-info-text="Total Assets แยกตามหมวด เทียบ Q1'26 vs Q2'26 (ไตรมาสก่อนหน้า) — Mock Data 100%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="assetDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Q1'26 vs Q2'26 · THB</div>
+      <div class="chart-legend" id="assetLegend"></div>
+      <div class="canvas-wrap" id="assetCanvasWrap" style="height:300px;"><div id="assetChart" style="width:100%;height:100%;"></div></div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Liabilities &amp; Equity Breakdown</span>
+          <button class="info-icon" data-info-title="Liabilities & Equity Breakdown" data-info-text="Total Liabilities + Equity แยกตามหมวด เทียบ Q1'26 vs Q2'26 — ผลรวมเท่ากับ Total Assets เสมอ (Accounting Identity) — Mock Data 100%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="liabDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Q1'26 vs Q2'26 · THB</div>
+      <div class="chart-legend" id="liabLegend"></div>
+      <div class="canvas-wrap" id="liabCanvasWrap" style="height:300px;"><div id="liabChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+  <div class="callout-text" id="bsCallout" style="margin:-6px 0 14px;">–</div>
+
+  <!-- ===== FINANCIAL LEVERAGE ===== -->
+  <div class="section-label" id="sec-leverage">Financial Leverage</div>
+  <div class="card" style="margin-bottom:6px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">D/E &amp; IBD/E Trend (5Q)</span>
+        <button class="info-icon" data-info-title="D/E & IBD/E Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity — Charmiss ไม่มีเงินกู้ยืมที่มีภาระดอกเบี้ย ณ ปัจจุบัน จึง IBD/E = 0.00x ตลอด แทนการเดาตัวเลขหนี้ใหม่ — Mock Data 100%">i</button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>D/E</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>IBD/E</span>
+    </div>
+    <div class="canvas-wrap" id="leverageCanvasWrap"><div id="leverageChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="leverageCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้ทั้งหมดเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo — ยังไม่มี Data Source Balance Sheet ระดับบริษัทจริงเชื่อมต่อกับ Dashboard นี้ ณ ปัจจุบัน ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง</div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   This page is a fully new, self-contained mock data domain — Balance Sheet
+   items have no prior module in this dashboard, so unlike every other P&L
+   file there is no existing ฿ figure to reconcile against. The only
+   consistency rule that applies is the accounting identity itself: Total
+   Assets must equal Total Liabilities + Equity in every period, by
+   construction (Equity is solved as a plug, not generated independently).
+   Uses its own dedicated PRNG (seed 20260633), isolated from every other
+   P&L file's `rand`/`addbackRand` sequences.
+   ============================================================================ */
+const bsRand = mulberry32(20260633);
+function resolveColor(cssColorOrVar){
+  const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
+  return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+function quarterYearLabel(startIdx){
+  const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
+  return 'Q'+q+"'"+String(yr).slice(2);
+}
+const TODAY = 29;
+const curQuarterStart = Math.floor(TODAY/3)*3;
+const quarterStarts = [curQuarterStart-12, curQuarterStart-9, curQuarterStart-6, curQuarterStart-3, curQuarterStart];
+const quarterLabels = quarterStarts.map(quarterYearLabel);
+
+/* --- Key Financial Ratio (5Q): Current Ratio and D/E are smooth trends with
+   small seeded jitter; Inventory/AR/AP Turnover (days) trend the direction
+   noted in the spec (Inventory & AR days shortening, AP days lengthening —
+   i.e. collecting faster, paying slower, both cash-flow-positive); Cash
+   Conversion Cycle is DERIVED from those three (CCC = Inventory Days + AR
+   Days − AP Days), not an independent random series, so it's a real
+   formula relationship, not just another mock line. --- */
+function trendSeries(startVal, endVal, jitterPct){
+  const vals = [];
+  for(let i=0;i<5;i++){
+    const t = i/4;
+    const base = startVal + (endVal-startVal)*t;
+    vals.push(base * (1 + (bsRand()-0.5)*jitterPct));
+  }
+  return vals;
+}
+const currentRatioQ = trendSeries(2.70, 2.59, 0.015);
+const invDaysQ = trendSeries(201, 187, 0.03);
+const arDaysQ = trendSeries(68, 61, 0.03);
+const apDaysQ = trendSeries(70, 78, 0.03);
+const cccDaysQ = invDaysQ.map((v,i)=> v + arDaysQ[i] - apDaysQ[i]);
+const deRatioQ = [0.58, 0.56, 0.54, 0.53, 0.55].map(v => v * (1 + (bsRand()-0.5)*0.01));
+const ibdeRatioQ = [0,0,0,0,0];
+
+/* --- Balance Sheet snapshot (Q1'26 vs Q2'26) — Equity is solved as a plug
+   (TotalAssets − AP − Lease − OtherLiab) so Total Assets always equals
+   Total Liabilities + Equity exactly, by construction. --- */
+const ASSET_Q1 = { 'Cash & cash equivalents':40e6, 'Trade & other receivables':54e6, 'Inventories':88e6, 'Prepaid expenses':11e6, 'Property & Equipment':54e6, 'Right-of-use assets':37e6, 'Intangible assets':15e6, 'Others':11e6 };
+const ASSET_GROWTH = { 'Cash & cash equivalents':0.125, 'Trade & other receivables':0.074, 'Inventories':0.045, 'Prepaid expenses':0.09, 'Property & Equipment':0.018, 'Right-of-use assets':0.027, 'Intangible assets':0.0, 'Others':-0.09 };
+const ASSET_CATEGORIES = Object.keys(ASSET_Q1);
+const assetQ1 = ASSET_CATEGORIES.map(k=>ASSET_Q1[k]);
+const assetQ2 = ASSET_CATEGORIES.map(k=>ASSET_Q1[k]*(1+ASSET_GROWTH[k]));
+const totalAssetsQ1 = assetQ1.reduce((a,b)=>a+b,0), totalAssetsQ2 = assetQ2.reduce((a,b)=>a+b,0);
+
+const LIAB_Q1 = { 'Trade & other payables':58e6, 'Lease liabilities':34e6, 'Other liabilities':16e6 };
+const LIAB_GROWTH = { 'Trade & other payables':0.069, 'Lease liabilities':0.029, 'Other liabilities':0.125 };
+const LIAB_CATEGORIES = Object.keys(LIAB_Q1);
+const liabQ1 = LIAB_CATEGORIES.map(k=>LIAB_Q1[k]);
+const liabQ2 = LIAB_CATEGORIES.map(k=>LIAB_Q1[k]*(1+LIAB_GROWTH[k]));
+const equityQ1 = totalAssetsQ1 - liabQ1.reduce((a,b)=>a+b,0);
+const equityQ2 = totalAssetsQ2 - liabQ2.reduce((a,b)=>a+b,0);
+const liabEquityCategories = [...LIAB_CATEGORIES, 'Equity'];
+const liabEquityQ1 = [...liabQ1, equityQ1];
+const liabEquityQ2 = [...liabQ2, equityQ2];
+
+/* ---------- Nav menu / popovers / theme ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('pnl-balance', 'P&L Overview · Balance Sheet'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+initThemeToggle(()=> renderAll());
+initSectionScrollSpy();
+
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+
+const RAG_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--brand)','var(--ink-3)'];
+let latestData = {};
+
+function renderAll(){
+  /* === Key Financial Ratio table === */
+  const ratioRows = [
+    { label:'Current Ratio (Times)', vals: currentRatioQ, fmt: v=>v.toFixed(2)+'x' },
+    { label:'Inventory Turnover (days)', vals: invDaysQ, fmt: v=>Math.round(v)+' days' },
+    { label:'AR Turnover (days)', vals: arDaysQ, fmt: v=>Math.round(v)+' days' },
+    { label:'AP Turnover (days)', vals: apDaysQ, fmt: v=>Math.round(v)+' days' },
+    { label:'Cash Conversion Cycle (days)', vals: cccDaysQ, fmt: v=>Math.round(v)+' days', bold:true }
+  ];
+  document.getElementById('ratioTable').innerHTML =
+    '<thead><tr><th>Ratio</th>' + quarterLabels.map(q=>'<th>'+q+'</th>').join('') + '</tr></thead><tbody>'
+    + ratioRows.map(r=>{
+        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+        return '<tr'+rowClass+'><td>'+r.label+'</td>' + r.vals.map(v=>'<td class="tnum">'+r.fmt(v)+'</td>').join('') + '</tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.ratio = ratioRows;
+  const cccStart = cccDaysQ[0], cccEnd = cccDaysQ[4];
+  document.getElementById('ratioCallout').innerHTML =
+    'Cash Conversion Cycle '+(cccEnd<cccStart?'shortened':'lengthened')+' from <b>'+Math.round(cccStart)+'</b> to <b>'+Math.round(cccEnd)+' days</b> across the 5 quarters — AP days stretched ('+Math.round(apDaysQ[0])+'→'+Math.round(apDaysQ[4])+' days) helping offset slower Inventory Turnover in some quarters';
+
+  /* === Asset Breakdown === */
+  const assetSeries = ASSET_CATEGORIES.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values:[assetQ1[i], assetQ2[i]] }));
+  buildStackedBarSVG('assetChart', { labels:["Q1'26","Q2'26"], series: assetSeries, valueFormatter: fmtTHB });
+  document.getElementById('assetLegend').innerHTML = assetSeries.map(s=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>').join('');
+
+  /* === Liabilities & Equity Breakdown === */
+  const liabSeries = liabEquityCategories.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values:[liabEquityQ1[i], liabEquityQ2[i]] }));
+  buildStackedBarSVG('liabChart', { labels:["Q1'26","Q2'26"], series: liabSeries, valueFormatter: fmtTHB });
+  document.getElementById('liabLegend').innerHTML = liabSeries.map(s=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>').join('');
+
+  const assetGrowthPct = (totalAssetsQ2-totalAssetsQ1)/totalAssetsQ1*100;
+  document.getElementById('bsCallout').innerHTML =
+    'Total Assets grew <b>'+fmtSignedPct(assetGrowthPct,1)+'</b> QoQ (Q1\'26 '+fmtTHB(totalAssetsQ1)+' → Q2\'26 '+fmtTHB(totalAssetsQ2)+'), driven mostly by Cash and Inventories increasing alongside higher Net Sales — Total Assets ties to Total Liabilities + Equity in both quarters ('+fmtTHB(totalAssetsQ1)+' = '+fmtTHB(liabEquityQ1.reduce((a,b)=>a+b,0))+', '+fmtTHB(totalAssetsQ2)+' = '+fmtTHB(liabEquityQ2.reduce((a,b)=>a+b,0))+')';
+
+  /* === Financial Leverage trend === */
+  buildLineChartSVG('leverageChart', {
+    labels: quarterLabels, yFormatter: v=>v.toFixed(2)+'x',
+    series: [
+      { data: deRatioQ, color: cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' },
+      { data: ibdeRatioQ, color: cssVar('--ink-3')||'#898781', width:1.8, dash:'4,3', showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' }
+    ]
+  });
+  document.getElementById('leverageCallout').innerHTML =
+    'D/E '+(deRatioQ[4]>=deRatioQ[3]?'ticked up':'eased')+' to <b>'+deRatioQ[4].toFixed(2)+'x</b> in '+quarterLabels[4]+' from Trade Payables and Lease Liabilities growing with store expansion · no interest-bearing debt (IBD/E = 0.00x throughout)';
+}
+
+/* --- Toolbar --- */
+document.getElementById('ratioDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Ratio', ...quarterLabels]];
+  latestData.ratio.forEach(r=> rows.push([r.label, ...r.vals.map(v=>v.toFixed(2))]));
+  downloadCSV(rows, 'pnl_key_financial_ratio.csv');
+});
+document.getElementById('assetDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('assetChart', 'pnl_balance_sheet_assets.svg'));
+document.getElementById('liabDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('liabChart', 'pnl_balance_sheet_liabilities_equity.svg'));
+
+/* ---------- Init ---------- */
+renderAll();
+</script>
+</body>
+</html>
