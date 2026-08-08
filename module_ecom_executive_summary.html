@@ -37,11 +37,6 @@
     </header>
 
     <div class="header-utility-row" id="headerUtilityRow">
-      <nav class="section-nav">
-        <a href="#sec-exec-summary">Executive Summary</a>
-        <a href="#sec-trends-mix">Trends &amp; Mix</a>
-      </nav>
-      <div class="nav-filter-divider"></div>
       <div class="filter-bar-group">
         <div class="filter-left">
           <span class="filter-label">Period</span>
@@ -75,74 +70,74 @@
             <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
           </div>
         </div>
-        <div class="filter-scope">Company-wide, all platforms</div>
       </div>
     </div>
   </div>
 
-  <!-- ===== EXECUTIVE SUMMARY ===== -->
-  <div class="section-label" id="sec-exec-summary">Executive Summary</div>
-  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Net Sales (Ecom)</span>
-        <button class="info-icon" data-info-title="Net Sales (Ecom)" data-info-text="ยอดขายสุทธิของ Ecom Channel (Lazada + Shopee + TikTok + Line Shop รวมกัน) ในช่วงเวลาที่เลือก">i</button>
+  <!-- ===== ROW 1: Sales by Platform · Target Attainment & Full Year Outlook · Return/Cancellation Rate Trend ===== -->
+  <div class="chart-grid" style="grid-template-columns:repeat(3,1fr);">
+    <div class="card" style="min-width:0;">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Platform</span>
+          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก — center = ยอดขายรวม Ecom ทั้งหมด">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="platformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="platformDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="platformExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
-      <div><span class="kpi-value" id="kpiNetSalesValue">–</span><span class="kpi-unit">THB</span></div>
-      <div class="kpi-caption" id="kpiNetSalesCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiNetSalesMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiNetSalesYoy">–</span></div>
+      <div class="donut-layout" id="platformLayout">
+        <div class="donut-canvas-wrap">
+          <div id="platformChart" style="width:100%;height:100%;"></div>
+          <div class="donut-center">
+            <div class="donut-center-value" id="platformCenterValue">–</div>
+            <div class="donut-center-label">Total</div>
+          </div>
+        </div>
+        <div class="legend-list" id="platformLegend"></div>
       </div>
-      <div id="kpiNetSalesSpark"></div>
+      <div class="callout-text" id="platformCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="platformTableWrap"></div>
     </div>
 
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Target Attainment %</span>
-        <button class="info-icon" data-info-title="Target Attainment %" data-info-text="(ยอดขายจริง ÷ เป้าหมายยอดขาย) × 100 ของ Ecom ในช่วงเวลาที่เลือก">i</button>
+    <div class="card" style="min-width:0;display:flex;flex-direction:column;">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Target Attainment &amp; Full Year Outlook</span>
+          <button class="info-icon" data-info-title="Target Attainment &amp; Full Year Outlook" data-info-text="เส้นทึบ = Attainment % รายเดือนจริงของ Ecom (ยอดขายจริง ÷ เป้าหมายยอดขาย × 100) ถึงเดือนล่าสุด — เส้นประสีเดียวกัน = ต่อยอดแบบ Run-rate อย่างง่าย (ยอดขาย YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว × 12 ÷ เป้าหมายทั้งปี) ไปจนถึงปลายปี ยังไม่ปรับ Seasonality — เส้นประดำ 100% คือเป้าหมาย — Gap ทั้งสองด้านล่างคำนวณจาก Calendar YTD ของ Ecom เสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="attainOutlookTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="attainOutlookDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="attainOutlookExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
-      <div><span class="kpi-value" id="kpiAttainValue">–</span></div>
-      <div class="kpi-caption" id="kpiAttainCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAttainMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAttainYoy">–</span></div>
-      </div>
-      <div id="kpiAttainSpark"></div>
+      <div class="canvas-wrap" id="attainOutlookCanvasWrap" style="height:160px;margin-top:4px;"><div id="attainOutlookChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="attainOutlookGapCaption" style="margin-top:auto;margin-bottom:0;padding-top:10px;">–</div>
+      <div class="data-table-wrap" id="attainOutlookTableWrap"></div>
     </div>
 
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">Return/Cancellation Rate</span>
-        <button class="info-icon" data-info-title="Return/Cancellation Rate" data-info-text="มูลค่าออเดอร์ที่ถูกคืน/ยกเลิก ÷ ยอดขายสุทธิ ในช่วงเวลาที่เลือก — ยิ่งต่ำยิ่งดี (Ecom ไม่มี AR% เพราะลูกค้าจ่ายผ่าน Platform โดยตรง)">i</button>
+    <div class="card" style="min-width:0;display:flex;flex-direction:column;">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Return/Cancellation Rate Trend</span>
+          <button class="info-icon" data-info-title="Return/Cancellation Rate Trend" data-info-text="เส้นทึบ = Return/Cancellation Rate รายเดือนของ Ecom ทั้ง Channel (มูลค่าออเดอร์ที่ถูกคืน/ยกเลิก ÷ ยอดขายสุทธิ) ถึงเดือนล่าสุด — ตัวเลขปลายเส้น = % และมูลค่า ฿ คู่กัน ไม่แยกเป็นราย Platform ดูราย Platform ได้ที่ Insight ด้านล่างหรือปุ่มดูเป็นตาราง (Ecom ไม่มี AR% เพราะลูกค้าจ่ายผ่าน Platform โดยตรง)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="retTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="retTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="retTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
       </div>
-      <div><span class="kpi-value" id="kpiRetValue">–</span></div>
-      <div class="kpi-caption" id="kpiRetCaption">Year to Date</div>
-      <div class="kpi-caption" id="kpiRetAmountCaption" style="margin-top:-6px;">–</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiRetMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiRetYoy">–</span></div>
-      </div>
-      <div id="kpiRetSpark"></div>
+      <div class="canvas-wrap" id="retTrendCanvasWrap" style="height:160px;margin-top:4px;"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="retTrendCallout" style="margin-top:auto;margin-bottom:0;padding-top:10px;">–</div>
+      <div class="data-table-wrap" id="retTrendTableWrap"></div>
     </div>
-
-    <div class="card">
-      <div class="card-head">
-        <span class="card-title">AOV</span>
-        <button class="info-icon" data-info-title="Average Order Value (AOV)" data-info-text="ยอดขายเฉลี่ยต่อออเดอร์ (Ecom Channel) เฉลี่ยตลอดช่วงเวลาที่เลือก — ยิ่งสูงยิ่งดี">i</button>
-      </div>
-      <div><span class="kpi-value" id="kpiAovValue">–</span></div>
-      <div class="kpi-caption" id="kpiAovCaption">Year to Date</div>
-      <div class="kpi-delta-row">
-        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiAovMom">–</span></div>
-        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiAovYoy">–</span></div>
-      </div>
-      <div id="kpiAovSpark"></div>
-    </div>
-
   </div>
 
-  <div class="section-label" id="sec-trends-mix">Trends &amp; Mix</div>
+  <!-- ===== ROW 2: Revenue Trend + Monthly YoY Growth % ===== -->
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -156,14 +151,13 @@
           <button class="tool-btn" id="revExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This Year vs Last Year vs Target, by month</div>
-      <div class="chart-headline" id="revenueHeadline">–</div>
       <div class="chart-legend">
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year (2025)</span>
         <span class="chart-legend-item"><span class="chart-legend-dash"></span>Target (2026)</span>
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>This Year (2026)</span>
       </div>
-      <div class="canvas-wrap" id="revCanvasWrap"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
+      <div class="canvas-wrap" id="revCanvasWrap" style="height:220px;"><div id="revenueChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="revenueCallout" style="margin-top:10px;">–</div>
       <div class="data-table-wrap" id="revTableWrap"></div>
     </div>
 
@@ -179,99 +173,37 @@
           <button class="tool-btn" id="growthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Same month, year over year</div>
       <div class="chart-headline" id="growthHeadline">–</div>
-      <div class="canvas-wrap" id="growthCanvasWrap"><div id="growthChart" style="width:100%;height:100%;"></div></div>
+      <div class="chart-legend">
+        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>YoY Growth %</span>
+      </div>
+      <div class="canvas-wrap" id="growthCanvasWrap" style="height:220px;"><div id="growthChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="growthTableWrap"></div>
     </div>
   </div>
 
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Sales by Platform</span>
-          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="platformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="platformDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="platformExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">This period, Ecom channel</div>
-      <div class="donut-layout" id="platformLayout">
-        <div class="donut-canvas-wrap">
-          <div id="platformChart" style="width:100%;height:100%;"></div>
-          <div class="donut-center">
-            <div class="donut-center-value" id="platformCenterValue">–</div>
-            <div class="donut-center-label">Total</div>
-          </div>
-        </div>
-        <div class="legend-list" id="platformLegend"></div>
-      </div>
-      <div class="data-table-wrap" id="platformTableWrap"></div>
-    </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Sales by Category</span>
-          <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตามหมวดหมู่สินค้า ในช่วงเวลาที่เลือก — Company-wide Ecom เสมอ ไม่ผูกกับ Platform รายใดรายหนึ่ง สลับ Product Level ได้ (Category/Sub-Category/Type/Series) เหมือน MT/TT Overview">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="ecomCatTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="ecomCatDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="ecomCatExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">Category · Ecom channel</div>
-      <div class="toggle-group" id="ecomCatLevelToggle" style="margin-bottom:10px;">
-        <button class="toggle-btn active" data-level="0">Category</button>
-        <button class="toggle-btn" data-level="1">Sub-Category</button>
-        <button class="toggle-btn" data-level="2">Type</button>
-        <button class="toggle-btn" data-level="3">Series</button>
-      </div>
-      <div class="cat-bars" id="ecomCatBars"></div>
-      <div class="kpi-caption" id="ecomCatMoreCaption" style="margin-top:6px;"></div>
-      <div class="data-table-wrap" id="ecomCatTableWrap"></div>
-    </div>
-  </div>
-
-  <div class="card" style="margin-bottom:14px;">
+  <!-- ===== ROW 3: Platform Growth & Target Gap ===== -->
+  <div class="card chgap-card">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Net Sales: Last Year vs This Year vs Target</span>
-        <button class="info-icon" data-info-title="Net Sales: Last Year vs This Year vs Target" data-info-text="ยอดขายสุทธิของช่วงเวลาที่เลือกด้านบน (Period Filter) แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) — 3 แท่งต่อ Platform: Last Year (Net Sales), This Year (Net Sales + Growth YoY), Target (Attainment % + ส่วนต่างจาก Target) — ยอดรวม Ecom ทั้งหมดดูได้จาก KPI Card ด้านบนแทน (ไม่ใส่ในกราฟนี้เพื่อไม่ให้ Scale ถูกดึงสูงเกินไป) — ใช้ Time Series จริงต่อ Platform เหมือน Platform Growth Contribution ด้านล่าง กดดูเป็นตารางเพื่อดูตัวเลขละเอียดทุก Metric ในที่เดียว">i</button>
+        <span class="chart-title">Platform Growth &amp; Target Gap</span>
+        <button class="info-icon" data-info-title="Platform Growth &amp; Target Gap" data-info-text="ต่อแถว มี 2 แท่ง diverging คู่กัน ตัวเลขอยู่ท้ายแท่งแต่ละอัน: แท่งแรก = YoY Growth % เริ่มจาก 0 (เขียว=โต, แดง=ถดถอย) ใต้ % คือ Actual Sales growth ฿ แท่งที่สอง = Target Attainment % เริ่มจาก 100% (เขียวยื่นขวา=เกินเป้า, แดงยื่นซ้าย=ต่ำกว่าเป้า) ใต้ % คือ Gap to Target ฿ เส้นประในแต่ละแท่งคือค่าของแถว Total (Ecom) ใช้เทียบว่า Platform นั้นสูง/ต่ำกว่าภาพรวม Ecom ทั้งหมดแค่ไหน แถว Total (Ecom) ล่างสุดคือสรุปทั้ง Channel — ใช้ยอดขายจริงรายเดือนต่อ Platform (ไม่ใช่ค่าประมาณ)">i</button>
       </div>
       <div class="toolbar">
-        <button class="tool-btn" id="periodCompareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="periodCompareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="periodCompareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        <button class="tool-btn" id="pgTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="pgExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle" id="periodCompareSubtitle">Year to Date · This Year vs Target vs same range last year · by Platform</div>
-    <div class="chart-legend" id="periodCompareLegend"></div>
-    <div class="canvas-wrap" id="periodCompareCanvasWrap" style="height:320px;"><div id="periodCompareChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="periodCompareTableWrap"></div>
-  </div>
-
-  <div class="card">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Platform Growth Contribution</span>
-        <button class="info-icon" data-info-title="Platform Growth Contribution" data-info-text="Waterfall: ยอดขายปีก่อน → ผลต่างยอดขาย (ปีนี้−ปีก่อน) ของแต่ละ Platform ทีละแท่ง (เขียว=บวก, แดง=ลบ) → ยอดขายรวมปีนี้ ตามช่วงเวลาที่เลือก — ใช้ยอดขายจริงรายเดือนของแต่ละ Platform เทียบปีก่อนตรงๆ (ไม่ใช่ค่าประมาณ) บอกว่า Platform ไหน Contribute ต่อการเติบโตรวมเท่าไหร่ในหน่วย ฿ จริง คนละมุมกับ Donut ที่เห็นแค่สัดส่วน ณ ปัจจุบัน">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="platformCwfTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="platformCwfDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="platformCwfExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
+    <div class="chgap-legend">
+      <span class="chgap-legend-item"><span class="chgap-swatch pos"></span>growing / over target</span>
+      <span class="chgap-legend-item"><span class="chgap-swatch neg"></span>declining / under target</span>
+      <span class="chgap-legend-item"><span class="chgap-refline-swatch"></span>Total (Ecom)</span>
     </div>
-    <div class="chart-subtitle">Last Year → contribution by platform → This Year</div>
-    <div class="canvas-wrap" id="platformCwfCanvasWrap" style="height:260px;"><div id="platformCwfChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="platformCwfCallout">–</div>
-    <div class="data-table-wrap" id="platformCwfTableWrap"></div>
+    <div class="chgap-col-labels"><span style="grid-column:2/4">YoY Growth</span><span style="grid-column:4/6">Target Attainment %</span></div>
+    <div class="chgap-axis"><div class="chgap-axis-track" style="grid-column:2"><span class="chgap-axis-tick" style="left:26%">0%</span></div><div class="chgap-axis-track" style="grid-column:4"><span class="chgap-axis-tick edge-left" style="left:0%">0%</span><span class="chgap-axis-tick" id="pgAttainTargetTick" style="left:100%">100%</span></div></div>
+    <div class="chgap-rows" id="pgRows"></div>
+    <div class="callout-text" id="pgAction">–</div>
+    <div class="data-table-wrap" id="pgTableWrap"></div>
   </div>
 
 </div>
@@ -395,119 +327,10 @@ const ecomPlatformStats = {
   TikTok: { aovIndex: 0.75, cancelFactor: 1.20 },
   LineShop: { aovIndex: 1.05, cancelFactor: 0.85 }
 };
-
-/* Category shares within Ecom — independently modeled mock shares (the
-   Product Analysis file that Sales Overview cross-checks MT's category split
-   against isn't part of this build), skewed toward Color Cosmetics/Skin Care
-   which typically over-index in online beauty retail vs. MT/TT. */
-const ecomCategoryShares = [
-  {name:'Color Cosmetics', pct:26.4}, {name:'Skin Care', pct:24.8}, {name:'Personal Care', pct:15.2},
-  {name:'Hair Care', pct:14.0}, {name:'Fragrance', pct:11.6}, {name:'Accessories', pct:8.0}
-];
-
-/* Fix (2026-08-06): "Product level" drill-down added to Sales by Category,
-   same treatment MT already has — CATEGORY_TREE is a byte-for-byte copy of
-   the same const in module_mt_executive_summary.html/sales_overview_product_
-   analysis.html (structure only: Sub-Category/Type/Series nesting is the
-   same universal Category Hierarchy from spec §4.2, so it's identical for
-   every channel — that file's own top-level pct/growthYoY/returnRate/
-   channelMix fields are copied too for fidelity but unused here). The
-   Category level (depth 0) keeps using ecomCategoryShares' existing % above
-   unchanged; deeper levels are computed from this tree's *internal*
-   proportions (sub.pct/type.pct/series.pct, each relative to its own
-   parent) applied on top of that — same pattern as MT's enumerateMTCatLevel. */
-const CATEGORY_TREE = {
-  'Skin Care': { pct:28.7, growthYoY:12.4, returnRate:3.4, channelMix:{MT:.35,TT:.40,Ecom:.25}, subs:{
-    'Facial Care': { pct:60, types:{
-      'Cleanser': { pct:55, series:{'Foam Cleanser':60,'Micellar Water':40} },
-      'Moisturizer': { pct:45, series:{'Day Cream':55,'Night Cream':45} }
-    }},
-    'Body Care': { pct:40, types:{
-      'Lotion': { pct:60, series:{'Body Lotion':65,'Hand Cream':35} },
-      'Sunscreen': { pct:40, series:{'SPF30':50,'SPF50':50} }
-    }}
-  }},
-  'Color Cosmetics': { pct:19.5, growthYoY:8.1, returnRate:5.6, channelMix:{MT:.25,TT:.30,Ecom:.45}, subs:{
-    'Face Makeup': { pct:55, types:{
-      'Foundation': { pct:60, series:{'Liquid Foundation':70,'Cushion':30} },
-      'Powder': { pct:40, series:{'Loose Powder':50,'Pressed Powder':50} }
-    }},
-    'Eye & Lip': { pct:45, types:{
-      'Lipstick': { pct:55, series:{'Matte':60,'Glossy':40} },
-      'Eyeliner': { pct:45, series:{'Pencil':50,'Liquid':50} }
-    }}
-  }},
-  'Hair Care': { pct:17.6, growthYoY:2.3, returnRate:2.8, channelMix:{MT:.30,TT:.55,Ecom:.15}, subs:{
-    'Cleansing': { pct:65, types:{
-      'Shampoo': { pct:60, series:{'Anti-Dandruff':55,'Everyday':45} },
-      'Conditioner': { pct:40, series:{'Deep Repair':50,'Daily':50} }
-    }},
-    'Styling': { pct:35, types:{
-      'Serum': { pct:55, series:{'Anti-Frizz':60,'Heat Protect':40} },
-      'Spray': { pct:45, series:{'Hold Spray':50,'Shine Spray':50} }
-    }}
-  }},
-  'Personal Care': { pct:16.3, growthYoY:-1.5, returnRate:4.2, channelMix:{MT:.45,TT:.40,Ecom:.15}, subs:{
-    'Oral Care': { pct:55, types:{
-      'Toothpaste': { pct:60, series:{'Whitening':55,'Sensitive':45} },
-      'Mouthwash': { pct:40, series:{'Fresh Mint':50,'Alcohol-Free':50} }
-    }},
-    'Bath': { pct:45, types:{
-      'Soap': { pct:50, series:{'Bar Soap':55,'Liquid Soap':45} },
-      'Shower Gel': { pct:50, series:{'Moisturizing':55,'Refreshing':45} }
-    }}
-  }},
-  'Fragrance': { pct:9.8, growthYoY:22.6, returnRate:6.5, channelMix:{MT:.20,TT:.20,Ecom:.60}, subs:{
-    'Personal Fragrance': { pct:70, types:{
-      'Eau de Toilette': { pct:60, series:{'Floral':55,'Woody':45} },
-      'Body Mist': { pct:40, series:{'Citrus':50,'Fruity':50} }
-    }},
-    'Home Fragrance': { pct:30, types:{
-      'Diffuser': { pct:60, series:{'Reed Diffuser':55,'Electric Diffuser':45} },
-      'Spray': { pct:40, series:{'Room Spray':50,'Linen Spray':50} }
-    }}
-  }},
-  'Accessories': { pct:8.1, growthYoY:-4.2, returnRate:7.8, channelMix:{MT:.25,TT:.25,Ecom:.50}, subs:{
-    'Application Tools': { pct:55, types:{
-      'Brush': { pct:60, series:{'Foundation Brush':55,'Powder Brush':45} },
-      'Sponge': { pct:40, series:{'Beauty Sponge':60,'Puff':40} }
-    }},
-    'Storage': { pct:45, types:{
-      'Pouch': { pct:55, series:{'Travel Pouch':55,'Everyday Pouch':45} },
-      'Organizer': { pct:45, series:{'Drawer Organizer':50,'Vanity Tray':50} }
-    }}
-  }}
-};
-const LEVEL_NAMES = ['Category','Sub-Category','Type','Series'];
-const LEVEL_NAMES_PLURAL = ['Categories','Sub-Categories','Types','Series'];
-let currentEcomCatLevel = 0;
-
-/** Ecom-scoped version of MT's enumerateMTCatLevel(): depth 0 uses
-    ecomCategoryShares' own % directly (unchanged); depth 1-3 multiply that %
-    down through CATEGORY_TREE's nested sub/type/series proportions (relative
-    shares, not absolute), so results still sum to ~100% within Ecom at
-    every level. */
-function enumerateEcomCatLevel(depth){
-  const results = [];
-  ecomCategoryShares.forEach(cat=>{
-    if(depth===0){ results.push({name:cat.name, pct:cat.pct, parent:null, rootCategory:cat.name}); return; }
-    const tree = CATEGORY_TREE[cat.name];
-    if(!tree){ return; }
-    Object.entries(tree.subs).forEach(([subName,sub])=>{
-      const subPct = cat.pct * sub.pct/100;
-      if(depth===1){ results.push({name:subName, pct:subPct, parent:cat.name, rootCategory:cat.name}); return; }
-      Object.entries(sub.types).forEach(([typeName,type])=>{
-        const typePct = subPct * type.pct/100;
-        if(depth===2){ results.push({name:typeName, pct:typePct, parent:subName, rootCategory:cat.name}); return; }
-        Object.entries(type.series).forEach(([seriesName,seriesPct])=>{
-          const seriesAbsPct = typePct * seriesPct/100;
-          if(depth===3){ results.push({name:seriesName, pct:seriesAbsPct, parent:typeName, rootCategory:cat.name}); }
-        });
-      });
-    });
-  });
-  return results.sort((a,b)=>b.pct-a.pct);
-}
+/* Same threshold constant as module_ecom_breakdown.html's CANCEL_CEILING_PCT
+   (Return/Cancellation Rate by Platform) — kept numerically tied so both
+   tabs agree on what counts as "high" for Ecom. */
+const CANCEL_CEILING_PCT = 8;
 
 function getPeriodRange(key, custom){
   switch(key){
@@ -565,7 +388,6 @@ initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
   btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
   window.addEventListener('resize', updateScrollPadding);
 })();
-initSectionScrollSpy();
 
 /* ---------- Custom range selects ---------- */
 const customFromSel = document.getElementById('customFrom');
@@ -647,109 +469,215 @@ function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
 /* ---------- Render ---------- */
 let latestData = {};
 
-/* Renders the Sales by Category card at whatever currentEcomCatLevel is
-   selected — split out from renderAll() so the level toggle can re-render
-   just this one card, same pattern as MT's renderMtCategory(). Reads
-   latestData.totalActual (set by renderAll() before this is first called). */
-function renderEcomCategory(){
-  const totalActual = latestData.totalActual || 0;
-  const allItems = enumerateEcomCatLevel(currentEcomCatLevel);
-  const items = allItems.slice(0,10);
-  const maxCatShare = Math.max(...items.map(c=>c.pct)) || 1;
-  document.getElementById('ecomCatBars').innerHTML = items.map(c=>{
-    const val = totalActual*c.pct/100;
-    const widthPct = (c.pct/maxCatShare*100).toFixed(1);
-    const subLabel = c.parent ? '<span class="sub-label">'+c.parent+'</span>' : '';
-    return '<div class="cat-row"><span class="cat-label">'+c.name+subLabel+'</span>'
-      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct.toFixed(1)+'%</span></div></div></div>';
-  }).join('');
-  latestData.ecomCat = items.map(c=>({name:c.name, value: totalActual*c.pct/100, pct:c.pct}));
-  document.getElementById('ecomCatMoreCaption').textContent = allItems.length>10
-    ? 'Top 10 of '+allItems.length+' '+LEVEL_NAMES_PLURAL[currentEcomCatLevel].toLowerCase()+' shown'
-    : '';
-}
-
 function renderAll(periodKey, custom){
   const [s,e] = getPeriodRange(periodKey, custom);
   const label = periodLabelText(periodKey, custom);
   const brand = cssVar('--brand') || '#8E1E4D';
+  const good = cssVar('--good')||'#0ca30c', critical = cssVar('--critical')||'#d03b3b';
 
   const totalActual = sumRange(groupActual.Ecom, s, e);
   const totalTarget = sumRange(groupTarget.Ecom, s, e);
-  const attainPct = totalTarget ? (totalActual/totalTarget*100) : 0;
-  const momGrowth = pctChange(groupActual.Ecom[e], groupActual.Ecom[e-1]);
-  const yoyGrowth = pctChange(groupActual.Ecom[e], groupActual.Ecom[e-12]);
-  const attainAt = i => groupTarget.Ecom[i] ? (groupActual.Ecom[i]/groupTarget.Ecom[i]*100) : 0;
-  const attainMomPP = attainAt(e) - attainAt(e-1);
-  const attainYoyPP = attainAt(e) - attainAt(e-12);
-  latestData.totalActual = totalActual;
 
-  /* === KPI: Net Sales (Ecom) === */
-  document.getElementById('kpiNetSalesValue').textContent = fmtTHB(totalActual);
-  document.getElementById('kpiNetSalesCaption').textContent = label;
-  document.getElementById('kpiNetSalesMom').innerHTML = '<span class="'+deltaClass(momGrowth)+'">'+fmtSignedPct(momGrowth)+'</span>';
-  document.getElementById('kpiNetSalesYoy').innerHTML = '<span class="'+deltaClass(yoyGrowth)+'">'+fmtSignedPct(yoyGrowth)+'</span>';
-  const salesSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) salesSpark.push(groupActual.Ecom[i]);
-  document.getElementById('kpiNetSalesSpark').innerHTML = sparklineSVG('kpiNetSalesSpark', salesSpark, brand, fmtTHB);
+  const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
+  const curYearLabels = curYearIdx.map(i=>monthLabels[i]);
 
-  /* === KPI: Target Attainment % === */
-  document.getElementById('kpiAttainValue').textContent = fmtPct(attainPct,0);
-  document.getElementById('kpiAttainCaption').textContent = label;
-  document.getElementById('kpiAttainMom').innerHTML = '<span class="'+deltaClass(attainMomPP)+'">'+fmtSignedPP(attainMomPP)+'</span>';
-  document.getElementById('kpiAttainYoy').innerHTML = '<span class="'+deltaClass(attainYoyPP)+'">'+fmtSignedPP(attainYoyPP)+'</span>';
-  const attainSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) attainSpark.push(attainAt(i));
-  document.getElementById('kpiAttainSpark').innerHTML = sparklineSVG('kpiAttainSpark', attainSpark, brand, v=>fmtPct(v,0));
+  /* === Chart: Target Attainment & Full Year Outlook ===
+     Ported from module_mt_executive_summary.html's card of the same name
+     (itself ported from sales_overview.html) — solid "Actual" line through
+     the latest closed month, then a dashed "Projected" segment that starts
+     at that same point and tapers to a single full-year run-rate number at
+     Dec. Calendar YTD always (Jan 2026 through TODAY) — not scoped to the
+     Period filter above, same as the source pattern. */
+  const ytdStart = 24, ytdEnd = TODAY;
+  const ecomYtdActual = sumRange(groupActual.Ecom, ytdStart, ytdEnd);
+  const ecomYtdTarget = sumRange(groupTarget.Ecom, ytdStart, ytdEnd);
+  const ecomYtdAttainPct = ecomYtdTarget ? (ecomYtdActual/ecomYtdTarget*100) : 0;
+  const ecomGapValue = ecomYtdActual - ecomYtdTarget;
+  const ecomGapClass = ecomGapValue>=0 ? 'pos' : 'neg';
 
-  /* === KPI: Return/Cancellation Rate === */
-  const retAt = i => ecomCancelRate[i]*100;
+  const monthsElapsed = ytdEnd - ytdStart + 1;
+  const ecomRunRateAnnual = (ecomYtdActual / monthsElapsed) * 12;
+  const ecomFullYearTarget = sumRange(groupTarget.Ecom, ytdStart, 35);
+  const ecomProjectedAttainPct = ecomFullYearTarget ? (ecomRunRateAnnual / ecomFullYearTarget * 100) : 0;
+  const ecomFullYearGapValue = ecomRunRateAnnual - ecomFullYearTarget;
+  const ecomFullYearGapClass = ecomFullYearGapValue>=0 ? 'pos' : 'neg';
+
+  document.getElementById('attainOutlookGapCaption').innerHTML =
+    '<b>'+fmtPct(ecomYtdAttainPct,0)+'</b> YTD → <b style="color:var(--brand);">'+fmtPct(ecomProjectedAttainPct,0)+'</b> Projected Full Year'
+    + ' · Gap to Target (YTD): <span class="'+ecomGapClass+'">'+(ecomGapValue>=0?'+':'−')+fmtTHB(Math.abs(ecomGapValue))+'</span>'
+    + ' · Projected Gap (Full Year): <span class="'+ecomFullYearGapClass+'">'+(ecomFullYearGapValue>=0?'+':'−')+fmtTHB(Math.abs(ecomFullYearGapValue))+'</span>';
+
+  const attainActualSeries = curYearIdx.map(i => {
+    if(i>TODAY) return null;
+    const t = groupTarget.Ecom[i];
+    return t ? groupActual.Ecom[i]/t*100 : 0;
+  });
+  const closedMonthCount = attainActualSeries.filter(v=>v!==null).length;
+  const attainProjectedSeries = TODAY>=35 ? curYearIdx.map(()=>null)
+    : curYearIdx.map((i,gi) => gi===closedMonthCount-1 ? attainActualSeries[gi] : (gi===curYearIdx.length-1 ? ecomProjectedAttainPct : null));
+  const attainTargetLine = curYearIdx.map(()=>100);
+  const attainValsForDomain = [...attainActualSeries.filter(v=>v!==null), ecomProjectedAttainPct];
+  buildLineChartSVG('attainOutlookChart', {
+    labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%',
+    domainMin: Math.min(80, Math.floor(Math.min(...attainValsForDomain)/5)*5),
+    domainMax: Math.max(120, Math.ceil(Math.max(...attainValsForDomain)/5)*5),
+    series:[
+      {data:attainTargetLine, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
+      {data:attainProjectedSeries, color:brand, width:2, dash:'5,4', connectGaps:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,0)},
+      {data:attainActualSeries, color:brand, width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,0)}
+    ]
+  });
+  latestData.attainOutlook = { labels: curYearLabels, actual: attainActualSeries, projected: attainProjectedSeries, target: attainTargetLine };
+
+  /* === Chart: Return/Cancellation Rate Trend ===
+     Single Ecom-wide line (not split per Platform) — full Jan-Dec frame like
+     Revenue Trend/Target Attainment above, solid line stops at the latest
+     closed month. Per-platform detail (Highest: ...) moves into the insight
+     callout below instead of a separate chart — platformCancelAvg() derives
+     each platform's period-average rate from the shared ecomCancelRate
+     series times its cancelFactor (same model module_ecom_breakdown.html's
+     own Return/Cancellation Rate by Platform chart uses). */
   const ecomCancelValueFull = groupActual.Ecom.map((v,i)=>v*ecomCancelRate[i]);
+  const retTrendAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.Ecom[i]*ecomCancelRate[i] : null);
+  const retTrendRateSeries = curYearIdx.map((i,gi) => retTrendAmountSeries[gi]===null ? null : ecomCancelRate[i]*100);
+  buildLineChartSVG('retTrendChart', {
+    labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
+    series:[{data:retTrendRateSeries, color:brand, width:2.2, showLastLabel:true, lastLabelFormatter:(v,i)=>fmtPct(v,1)+' ('+fmtTHB(retTrendAmountSeries[i])+')'}]
+  });
+  latestData.retTrend = { labels: curYearLabels, rate: retTrendRateSeries, amount: retTrendAmountSeries };
+
   const retAmount = sumRange(ecomCancelValueFull,s,e);
   const retPeriod = totalActual ? (retAmount/totalActual*100) : 0;
-  const retMomPP = retAt(e)-retAt(e-1), retYoyPP = retAt(e)-retAt(e-12);
-  const invDelta = v => v<=0 ? 'pos' : 'neg';
-  document.getElementById('kpiRetValue').textContent = fmtPct(retPeriod,1);
-  document.getElementById('kpiRetCaption').textContent = label;
-  document.getElementById('kpiRetAmountCaption').textContent = 'Amount: '+fmtTHB(retAmount)+' · '+label;
-  document.getElementById('kpiRetMom').innerHTML = '<span class="'+invDelta(retMomPP)+'">'+fmtSignedPP(retMomPP)+'</span>';
-  document.getElementById('kpiRetYoy').innerHTML = '<span class="'+invDelta(retYoyPP)+'">'+fmtSignedPP(retYoyPP)+'</span>';
-  const retSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) retSpark.push(retAt(i));
-  document.getElementById('kpiRetSpark').innerHTML = sparklineSVG('kpiRetSpark', retSpark, brand, v=>fmtPct(v,1));
-
-  /* === KPI: AOV === */
-  const aovAt = i => ecomAOVSeries[i];
-  let aovSum=0, aovN=0; for(let i=s;i<=e;i++){ aovSum+=aovAt(i); aovN++; }
-  const aovPeriodAvg = aovN ? aovSum/aovN : 0;
-  const aovMomPct = pctChange(aovAt(e), aovAt(e-1)), aovYoyPct = pctChange(aovAt(e), aovAt(e-12));
-  document.getElementById('kpiAovValue').textContent = fmtTHB(aovPeriodAvg);
-  document.getElementById('kpiAovCaption').textContent = label;
-  document.getElementById('kpiAovMom').innerHTML = '<span class="'+deltaClass(aovMomPct)+'">'+fmtSignedPct(aovMomPct)+'</span>';
-  document.getElementById('kpiAovYoy').innerHTML = '<span class="'+deltaClass(aovYoyPct)+'">'+fmtSignedPct(aovYoyPct)+'</span>';
-  const aovSpark = []; for(let i=Math.max(0,e-11); i<=e; i++) aovSpark.push(aovAt(i));
-  document.getElementById('kpiAovSpark').innerHTML = sparklineSVG('kpiAovSpark', aovSpark, brand, fmtTHB);
+  function platformCancelAvg(key){
+    let sum=0, n=0; for(let i=s;i<=e;i++){ sum += ecomCancelRate[i]*100*ecomPlatformStats[key].cancelFactor; n++; }
+    return n ? sum/n : 0;
+  }
+  const platformCancelRates = ecomChannels.map(c=>({label:c.label, rate: platformCancelAvg(c.key)}));
+  const highestCancel = platformCancelRates.reduce((best,cur)=> cur.rate>best.rate ? cur : best, platformCancelRates[0]);
+  document.getElementById('retTrendCallout').innerHTML = 'This period avg — <b>Ecom</b>: '+fmtPct(retPeriod,1)+' ('+fmtTHB(retAmount)+') · Highest: <b>'+highestCancel.label+'</b> ('+fmtPct(highestCancel.rate,1)+')'
+    + (retPeriod>=CANCEL_CEILING_PCT ? ' · at/above the '+CANCEL_CEILING_PCT.toFixed(1)+'% threshold' : ' · within the '+CANCEL_CEILING_PCT.toFixed(1)+'% threshold');
 
   /* === Chart: Revenue Trend === */
-  const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
-  const curYearGroups = bucketMonths(curYearIdx, currentTimeFrame);
-  const curYearLabels = currentTimeFrame==='quarterly' ? curYearGroups.map(quarterLabel) : curYearIdx.map(i=>monthLabels[i]);
-  const revenueLastYear = curYearGroups.map(g => g.reduce((s,i)=>s+groupActual.Ecom[i-12],0));
-  const revenueTarget = bucketSum(groupTarget.Ecom, curYearGroups);
-  const revenueThisYear = curYearGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual.Ecom[i],0) : null);
-  document.getElementById('revenueHeadline').textContent = fmtTHB(totalActual) + ' THB · ' + label + ', Ecom channel';
+  // View By (Monthly/Quarterly): revGroups re-buckets the SAME curYearIdx
+  // span; only this chart's own labels/series switch to quarters —
+  // curYearIdx/curYearLabels stay untouched for Monthly YoY Growth %, which
+  // isn't in the View By toggle's scope (same rule as MT/TT Overview).
+  const revGroups = bucketMonths(curYearIdx, currentTimeFrame);
+  const revLabels = currentTimeFrame==='quarterly' ? revGroups.map(quarterLabel) : curYearLabels;
+  const revenueLastYear = revGroups.map(g => g.reduce((s,i)=>s+groupActual.Ecom[i-12],0));
+  const revenueTarget = bucketSum(groupTarget.Ecom, revGroups);
+  const revenueThisYear = revGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual.Ecom[i],0) : null);
   buildLineChartSVG('revenueChart', {
-    labels: curYearLabels, yFormatter: fmtTHB,
+    labels: revLabels, yFormatter: fmtTHB,
     series:[
       {data:revenueLastYear, color:cssVar('--baseline')||'#c3c2b7', width:1.6},
       {data:revenueTarget, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
       {data:revenueThisYear, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:fmtTHB}
     ]
   });
-  latestData.revenue = { labels: curYearLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
+  latestData.revenue = { labels: revLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
+
+  /* === Callout: Revenue Trend insight — one line comparing the latest
+     closed point's actual vs Target and vs Last Year. */
+  let revLastIdx = revenueThisYear.length - 1;
+  while(revLastIdx >= 0 && revenueThisYear[revLastIdx] == null) revLastIdx--;
+  if(revLastIdx >= 0){
+    const rActual = revenueThisYear[revLastIdx], rTarget = revenueTarget[revLastIdx], rLastYear = revenueLastYear[revLastIdx];
+    const vsTargetPct = rTarget ? (rActual/rTarget-1)*100 : 0;
+    const vsLastYearPct = rLastYear ? (rActual/rLastYear-1)*100 : 0;
+    document.getElementById('revenueCallout').innerHTML =
+      revLabels[revLastIdx]+': <b>'+fmtTHB(rActual)+'</b> vs Target <span class="'+deltaClass(vsTargetPct)+'">('+(vsTargetPct>=0?'+':'')+vsTargetPct.toFixed(0)+'%)</span>'
+      + ' · vs Last Year <span class="'+deltaClass(vsLastYearPct)+'">('+(vsLastYearPct>=0?'+':'')+vsLastYearPct.toFixed(0)+'%)</span>';
+  }
 
   /* === Chart: Monthly YoY Growth % === */
+  const yoyGrowth = pctChange(groupActual.Ecom[e], groupActual.Ecom[e-12]);
   const growthSeries = curYearIdx.map(i => i<=TODAY ? pctChange(groupActual.Ecom[i], groupActual.Ecom[i-12]) : null);
   document.getElementById('growthHeadline').innerHTML = fmtSignedPct(yoyGrowth) + '<span class="kpi-unit"> vs ' + monthLabels[TODAY-12] + ' · latest closed month</span>';
   buildLineChartSVG('growthChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:growthSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)}] });
   latestData.growth = { labels: curYearLabels, values: growthSeries };
+
+  /* === Platform Growth & Target Gap ===
+     Ported from MT's "Key Account Growth & Target Gap" widget (same
+     chgap-* CSS/markup) — but with a genuine advantage over MT's version:
+     ecomChannels already carries full monthly actual/target series per
+     platform (unlike MT's keyAccounts, which only has a static growthYoY
+     estimate), so every number here — growth ฿, target ฿ gap — is a real
+     period sum, not back-derived from a static %. Total (Ecom) row and its
+     reference lines are period-scoped (totalActual/totalTarget, s..e) so
+     the whole widget agrees with the donut/legend above, unlike the
+     Calendar-YTD-only Target Attainment & Full Year Outlook card. */
+  const pgGroups = ecomChannels.map(c=>c.label);
+  const pgLastYear = ecomChannels.map(c=> s-12>=0 ? sumRange(c.actual, s-12, e-12) : null);
+  const pgThisYear = ecomChannels.map(c=> sumRange(c.actual, s, e));
+  const pgTarget = ecomChannels.map(c=> sumRange(c.target, s, e));
+  const pgGrowth = pgThisYear.map((v,i)=> pgLastYear[i] ? pctChange(v, pgLastYear[i]) : null);
+  const pgGrowthAmt = pgThisYear.map((v,i)=> pgLastYear[i]!=null ? v-pgLastYear[i] : null);
+  const pgAttainPct = pgThisYear.map((v,i)=> pgTarget[i] ? (v/pgTarget[i]*100) : 0);
+  const pgDiff = pgThisYear.map((v,i)=> v - pgTarget[i]);
+
+  const ecomTotalAttainPct = totalTarget ? (totalActual/totalTarget*100) : 0;
+  const ecomTotalGapValue = totalActual - totalTarget;
+  const ecomPrevTotal = (s-12>=0) ? sumRange(groupActual.Ecom, s-12, e-12) : null;
+  const ecomTotalGrowth = ecomPrevTotal ? pctChange(totalActual, ecomPrevTotal) : null;
+  const ecomTotalGrowthAmt = ecomPrevTotal!=null ? totalActual-ecomPrevTotal : null;
+
+  const pgAllGrowth = pgGrowth.concat([ecomTotalGrowth]);
+  const pgMaxAbsGrowth = Math.max(...pgAllGrowth.filter(v=>v!==null).map(v=>Math.abs(v))) || 1;
+  const pgAllAttainPct = pgAttainPct.concat([ecomTotalAttainPct]);
+  const pgAttainDomainMax = Math.max(110, Math.ceil(Math.max(...pgAllAttainPct)/10)*10 + 10);
+  const pgAttainZeroPos = 100/pgAttainDomainMax*100;
+  document.getElementById('pgAttainTargetTick').style.left = pgAttainZeroPos.toFixed(1)+'%';
+  function pgPos(v, maxAbs){ return v>=0 ? 26 + (Math.abs(v)/maxAbs)*74 : 26 - (Math.abs(v)/maxAbs)*26; }
+  function pgBarStyle(v, maxAbs){
+    const over = v>=0;
+    const frac = Math.abs(v)/maxAbs;
+    return over ? 'left:26%;width:'+(frac*74).toFixed(1)+'%;' : 'right:74%;width:'+(frac*26).toFixed(1)+'%;';
+  }
+  function pgBarStyle0(v, domainMax){ return 'left:0%;width:'+(Math.max(0,v)/domainMax*100).toFixed(1)+'%;'; }
+  function pgTrack(fillClass, barStyle, refPos, zeroPos){
+    return '<div class="chgap-bar-track"><div class="chgap-bar-zero" style="left:'+zeroPos+'%"></div>'
+      + (refPos!=null ? '<div class="chgap-ref-line" style="left:'+refPos.toFixed(1)+'%"></div>' : '')
+      + '<div class="chgap-bar-fill '+fillClass+'" style="'+barStyle+'"></div></div>';
+  }
+  function pgRowHTML(name, dotColor, growth, growthAmt, attainVal, diffTHB, isTotal){
+    const grew = growth!==null && growth>0;
+    const over = attainVal>=100;
+    return '<div class="chgap-row'+(isTotal?' total':'')+'">'
+      + '<div class="chgap-name">'+(dotColor?'<span class="chgap-dot" style="background:'+dotColor+'"></span>':'')+name+'</div>'
+      + pgTrack(grew?'pos':'neg', pgBarStyle(growth||0, pgMaxAbsGrowth), isTotal?null:pgPos(ecomTotalGrowth||0, pgMaxAbsGrowth), 26)
+      + '<div class="chgap-value-wrap"><div class="chgap-badge '+(grew?'pos':'neg')+'">'+(grew?'▲':'▼')+' '+(growth!==null?fmtSignedPct(growth):'–')+'</div>'
+      + (growthAmt!=null ? '<div class="chgap-value-sub '+(growthAmt>=0?'pos':'neg')+'">'+(growthAmt>=0?'+':'−')+fmtTHB(Math.abs(growthAmt))+'</div>' : '')+'</div>'
+      + pgTrack(over?'pos':'neg', pgBarStyle0(attainVal, pgAttainDomainMax), isTotal?null:(ecomTotalAttainPct/pgAttainDomainMax*100), pgAttainZeroPos)
+      + '<div class="chgap-value-wrap"><div class="chgap-value '+(over?'pos':'neg')+'">'+fmtPct(attainVal,1)+'</div>'
+      + '<div class="chgap-value-sub '+(over?'pos':'neg')+'">'+(over?'+':'−')+fmtTHB(Math.abs(diffTHB))+'</div></div>'
+      + '</div>';
+  }
+  document.getElementById('pgRows').innerHTML =
+    ecomChannels.map((c,i)=> pgRowHTML(c.label, c.color, pgGrowth[i], pgGrowthAmt[i], pgAttainPct[i], pgDiff[i], false)).join('')
+    + pgRowHTML('Total (Ecom)', null, ecomTotalGrowth, ecomTotalGrowthAmt, ecomTotalAttainPct, ecomTotalGapValue, true);
+
+  let pgFastestI=0, pgSlowestI=0, pgHighestI=0, pgLowestI=0;
+  ecomChannels.forEach((c,i)=>{
+    if(pgGrowth[i]>pgGrowth[pgFastestI]) pgFastestI=i;
+    if(pgGrowth[i]<pgGrowth[pgSlowestI]) pgSlowestI=i;
+    if(pgAttainPct[i]>pgAttainPct[pgHighestI]) pgHighestI=i;
+    if(pgAttainPct[i]<pgAttainPct[pgLowestI]) pgLowestI=i;
+  });
+  const pgGrowthPart = pgGroups[pgFastestI]+' grows fastest YoY ('+fmtSignedPct(pgGrowth[pgFastestI])+') while '+pgGroups[pgSlowestI]+' lags ('+fmtSignedPct(pgGrowth[pgSlowestI])+')';
+  const pgAllAboveTarget = pgAttainPct.every(v=>v>=100);
+  const pgAllBelowTarget = pgAttainPct.every(v=>v<100);
+  const pgAttainPart = pgAllAboveTarget ? 'All platforms above 100% attainment'
+    : pgAllBelowTarget ? 'All platforms below 100% attainment'
+    : pgGroups[pgHighestI]+' leads attainment ('+fmtPct(pgAttainPct[pgHighestI],1)+') while '+pgGroups[pgLowestI]+' trails ('+fmtPct(pgAttainPct[pgLowestI],1)+')';
+  document.getElementById('pgAction').innerHTML = pgGrowthPart + ' · ' + pgAttainPart;
+  latestData.platformGap = {
+    labels: pgGroups.concat(['Total (Ecom)']),
+    growth: pgGrowth.concat([ecomTotalGrowth]),
+    growthAmt: pgGrowthAmt.concat([ecomTotalGrowthAmt]),
+    attain: pgAttainPct.concat([ecomTotalAttainPct]),
+    diff: pgDiff.concat([ecomTotalGapValue])
+  };
 
   /* === Chart: Sales by Platform (donut) === */
   const platformTotals = {}; ecomChannels.forEach(c=>{ platformTotals[c.key] = sumRange(c.actual, s, e); });
@@ -763,89 +691,18 @@ function renderAll(periodKey, custom){
   }).join('');
   latestData.platforms = ecomChannels.map(c=>({name:c.label, value: platformTotals[c.key], pct: totalActual ? (platformTotals[c.key]/totalActual*100) : 0}));
 
-  /* === Chart: Net Sales: Last Year vs This Year vs Target (new 2026-08-06)
-     — same concept/formula/label logic as Sales Overview's own "Net Sales:
-     Last Year vs This Year vs Target" (sales_overview.html), just scoped to
-     Ecom's own Platforms (ecomChannels) instead of company Channels
-     (MT/TT/Ecom). Each platform already carries a real monthly .actual[]/
-     .target[] series (same one Platform Growth Contribution below uses), so
-     "Last Year" here is a real prior-year sum, not an estimate. */
-  const good = cssVar('--good')||'#0ca30c', critical = cssVar('--critical')||'#d03b3b', warning = cssVar('--warning')||'#fab219', neutralInk = cssVar('--ink-2')||'#52514e';
-  const pcGroups = ecomChannels.map(c=>c.label);
-  const pcLastYear = ecomChannels.map(c=> s-12>=0 ? sumRange(c.actual, s-12, e-12) : 0);
-  const pcThisYear = ecomChannels.map(c=> sumRange(c.actual, s, e));
-  const pcTarget = ecomChannels.map(c=> sumRange(c.target, s, e));
-  const pcGrowth = pcThisYear.map((v,i)=> pcLastYear[i] ? pctChange(v, pcLastYear[i]) : null);
-  const pcAttain = pcThisYear.map((v,i)=> pcTarget[i] ? (v/pcTarget[i]*100) : 0);
-  const pcDiff = pcThisYear.map((v,i)=> v - pcTarget[i]);
-  buildGroupedBarSVG('periodCompareChart', {
-    labels: pcGroups,
-    series: [
-      {name:'Last Year', color:cssVar('--baseline')||'#c3c2b7', values: pcLastYear},
-      {name:'This Year', color:brand, values: pcThisYear},
-      {name:'Target', color:neutralInk, values: pcTarget}
-    ],
-    yFormatter: fmtTHB,
-    showValueLabels: true,
-    valueLabelFormatter: (val, ser, gi, barW) => {
-      const veryNarrow = barW < 28;
-      if(ser.name==='Last Year'){
-        return veryNarrow ? [] : [{text: fmtTHB(val), color: neutralInk}];
-      }
-      if(ser.name==='This Year'){
-        const g = pcGrowth[gi];
-        const growthLine = {text: g!==null ? fmtSignedPct(g) : '–', color: g===null ? neutralInk : (g>=0?good:critical)};
-        return veryNarrow ? [growthLine] : [{text: fmtTHB(val), color: neutralInk}, growthLine];
-      }
-      if(veryNarrow) return [];
-      const att = pcAttain[gi], diff = pcDiff[gi];
-      const attColor = att>=100 ? good : (att>=90 ? warning : critical);
-      return [
-        {text: fmtPct(att,0)+(barW>=45?' attain':''), color: attColor},
-        {text: (diff>=0?'+':'')+fmtTHB(diff), color: diff>=0?good:critical}
-      ];
-    }
-  });
-  document.getElementById('periodCompareSubtitle').textContent = label + ' · This Year vs Target vs same range last year · by Platform';
-  document.getElementById('periodCompareLegend').innerHTML =
-    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+(cssVar('--baseline')||'#c3c2b7')+'"></span>Last Year</span>'
-    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>This Year</span>'
-    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+neutralInk+'"></span>Target</span>';
-  latestData.periodCompare = { labels: pcGroups, lastYear: pcLastYear, thisYear: pcThisYear, target: pcTarget, growth: pcGrowth, attain: pcAttain, diff: pcDiff };
-
-  /* === Chart: Sales by Category (ranked bar + Product Level Toggle) ===
-     Paired next to Sales by Platform so a viewer sees "where" and "what"
-     side by side, matching MT/TT's Sales by Key Account + Sales by Category
-     pairing. Fix (2026-08-06): now has the same Category/Sub-Category/Type/
-     Series toggle as MT/TT (was Category-level only) — see renderEcomCategory(). */
-  latestData.totalActual = totalActual;
-  renderEcomCategory();
-
-  /* === Chart: Platform Growth Contribution (Waterfall) — new 2026-08-06,
-     same concept as MT's Key Account Growth Contribution but with a genuine
-     advantage: ecomChannels already carries full monthly `actual` series
-     per platform (unlike MT's keyAccounts, which only has a static
-     growthYoY estimate), so Last Year per platform is the REAL prior-year
-     sum, not a back-derived approximation — Start+ΣDelta reconciles to End
-     exactly by construction regardless of period filter. */
-  const platformLastYearTotal = ecomChannels.map(c=> sumRange(c.actual, s-12, e-12));
-  const platformThisYearTotal = ecomChannels.map(c=> sumRange(c.actual, s, e));
-  const cwfLastYearSum = platformLastYearTotal.reduce((a,b)=>a+b,0);
-  const cwfThisYearSum = platformThisYearTotal.reduce((a,b)=>a+b,0);
-  const cwfDeltaList = ecomChannels.map((c,i)=>({ name:c.label, delta: platformThisYearTotal[i]-platformLastYearTotal[i] }));
-  const cwfSorted = [...cwfDeltaList].sort((a,b)=>Math.abs(b.delta)-Math.abs(a.delta));
-  const cwfSteps = [{label:'Last Year', value: cwfLastYearSum, type:'start'}]
-    .concat(cwfSorted.map(d=>({label:d.name, value:d.delta, type:'delta'})))
-    .concat([{label:'This Year', value: cwfThisYearSum, type:'end'}]);
-  buildWaterfallSVG('platformCwfChart', cwfSteps, { yFormatter: fmtTHB });
-  latestData.platformCwf = cwfSteps;
-  const cwfTotalGrowth = cwfThisYearSum - cwfLastYearSum;
-  const cwfTopContributor = cwfDeltaList.reduce((a,b)=> a.delta>=b.delta ? a : b);
-  const cwfDragger = cwfDeltaList.reduce((a,b)=> a.delta<=b.delta ? a : b);
-  document.getElementById('platformCwfCallout').innerHTML =
-    'Total growth: <span class="'+deltaClass(cwfTotalGrowth)+'">'+(cwfTotalGrowth>=0?'+':'')+fmtTHB(cwfTotalGrowth)+'</span>'
-    + ' · Top contributor: <b>'+cwfTopContributor.name+'</b> <span class="'+deltaClass(cwfTopContributor.delta)+'">('+(cwfTopContributor.delta>=0?'+':'')+fmtTHB(cwfTopContributor.delta)+')</span>'
-    + (cwfDragger.delta<0 ? ' · Dragging down: <b>'+cwfDragger.name+'</b> <span class="neg">('+fmtTHB(cwfDragger.delta)+')</span>' : '');
+  /* === Callout: Top platform + AOV (adapted from MT's Top-account callout —
+     Ecom has no MT-style "growthYoY concentration" reading with only 4
+     platforms, so this pairs the structural equivalent (top platform share)
+     with AOV, which has no natural home now that the standalone AOV KPI
+     card was cut to keep this row's 3-up parity with MT's layout). */
+  const topPlatform = latestData.platforms.reduce((best,cur)=> cur.pct>best.pct ? cur : best, latestData.platforms[0]);
+  const aovAt = i => ecomAOVSeries[i];
+  let aovSum=0, aovN=0; for(let i=s;i<=e;i++){ aovSum+=aovAt(i); aovN++; }
+  const aovPeriodAvg = aovN ? aovSum/aovN : 0;
+  const aovYoyPct = pctChange(aovAt(e), aovAt(e-12));
+  document.getElementById('platformCallout').innerHTML =
+    'Top platform: <b>'+topPlatform.name+'</b> ('+topPlatform.pct.toFixed(0)+'% of Ecom sales) · AOV: <b>'+fmtTHB(aovPeriodAvg)+'</b> <span class="'+deltaClass(aovYoyPct)+'">('+fmtSignedPct(aovYoyPct)+' YoY)</span>';
 }
 
 /* --- Toolbar --- */
@@ -891,64 +748,48 @@ document.getElementById('platformTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); layout.style.display='none';
 });
 
-document.getElementById('ecomCatDownloadBtn').addEventListener('click', ()=>{
-  const rows = [[LEVEL_NAMES[currentEcomCatLevel],'Share %','Value (THB)']];
-  latestData.ecomCat.forEach(c=> rows.push([c.name, c.pct.toFixed(1), Math.round(c.value)]));
-  downloadCSV(rows, 'ecom_sales_by_category_'+LEVEL_NAMES[currentEcomCatLevel].toLowerCase().replace(/[^a-z]+/g,'_')+'.csv');
-});
-document.getElementById('ecomCatExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('ecomCatTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('ecomCatTableWrap');
-  const bars = document.getElementById('ecomCatBars');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
-  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentEcomCatLevel]+'</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
-  latestData.ecomCat.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtTHB(c.value)+'</td><td>'+c.pct.toFixed(1)+'%</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
-});
-document.querySelectorAll('#ecomCatLevelToggle .toggle-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('#ecomCatLevelToggle .toggle-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    currentEcomCatLevel = parseInt(btn.dataset.level,10);
-    document.getElementById('ecomCatTableWrap').classList.remove('visible');
-    document.getElementById('ecomCatBars').style.display='';
-    renderEcomCategory();
-  });
-});
-
-document.getElementById('periodCompareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('periodCompareChart', 'ecom_net_sales_last_year_vs_this_year_vs_target.svg'));
-document.getElementById('periodCompareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('periodCompareTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('periodCompareTableWrap');
-  const canvasWrap = document.getElementById('periodCompareCanvasWrap');
+document.getElementById('attainOutlookDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('attainOutlookChart', 'ecom_target_attainment_full_year_outlook.svg'));
+document.getElementById('attainOutlookExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('attainOutlookTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('attainOutlookTableWrap');
+  const canvasWrap = document.getElementById('attainOutlookCanvasWrap');
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.periodCompare;
-  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Last Year</th><th>This Year</th><th>Growth YoY</th><th>Target</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
-  d.labels.forEach((g,i)=>{
-    html += '<tr><td>'+g+'</td><td>'+fmtTHB(d.lastYear[i])+'</td><td>'+fmtTHB(d.thisYear[i])+'</td>'
-      + '<td>'+(d.growth[i]!==null?fmtSignedPct(d.growth[i]):'–')+'</td>'
-      + '<td>'+fmtTHB(d.target[i])+'</td><td>'+fmtPct(d.attain[i],0)+'</td>'
-      + '<td>'+(d.diff[i]>=0?'+':'')+fmtTHB(d.diff[i])+'</td></tr>';
-  });
+  const d = latestData.attainOutlook;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Actual</th><th>Projected</th><th>Target</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+(d.actual[i]!==null?fmtPct(d.actual[i],0):'–')+'</td><td>'+(d.projected[i]!==null?fmtPct(d.projected[i],0):'–')+'</td><td>'+fmtPct(d.target[i],0)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('platformCwfDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformCwfChart','ecom_platform_growth_contribution.svg'));
-document.getElementById('platformCwfExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('platformCwfTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('platformCwfTableWrap');
-  const canvasWrap = document.getElementById('platformCwfCanvasWrap');
+document.getElementById('retTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('retTrendChart', 'ecom_return_cancellation_rate_trend.svg'));
+document.getElementById('retTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('retTrendTableWrap');
+  const canvasWrap = document.getElementById('retTrendCanvasWrap');
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.platformCwf;
-  let html = '<table class="mini-table"><thead><tr><th>Step</th><th>Value</th></tr></thead><tbody>';
-  d.forEach(s=>{ html += '<tr><td>'+s.label+'</td><td>'+(s.type==='delta'?(s.value>=0?'+':'')+fmtTHB(s.value):fmtTHB(s.value))+'</td></tr>'; });
+  const d = latestData.retTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Return/Cancellation Rate</th><th>Amount</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+(d.rate[i]!==null?fmtPct(d.rate[i],1):'–')+'</td><td>'+(d.amount[i]!==null?fmtTHB(d.amount[i]):'–')+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('pgExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('pgTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('pgTableWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); document.getElementById('pgRows').classList.remove('hidden'); return; }
+  const d = latestData.platformGap;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>YoY Growth</th><th>Growth ฿</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.labels.forEach((name,i)=>{
+    html += '<tr><td>'+name+'</td><td>'+(d.growth[i]!==null?fmtSignedPct(d.growth[i]):'–')+'</td>'
+      + '<td>'+(d.growthAmt[i]!=null?(d.growthAmt[i]>=0?'+':'−')+fmtTHB(Math.abs(d.growthAmt[i])):'–')+'</td>'
+      + '<td>'+fmtPct(d.attain[i],1)+'</td><td>'+(d.diff[i]>=0?'+':'')+fmtTHB(d.diff[i])+'</td></tr>';
+  });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); document.getElementById('pgRows').classList.add('hidden');
 });
 
 /* ---------- Init ---------- */
