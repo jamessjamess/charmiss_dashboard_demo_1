@@ -130,6 +130,21 @@ button,select{font-family:inherit;}
 .pill-nav a:hover{border-color:var(--brand);color:var(--brand);}
 .pill-nav a.active{border-color:var(--brand);color:var(--brand);background:var(--brand-wash);}
 
+/* DuPont ROE decomposition tree (Financial Analysis) — a row of boxes
+   connected by operator glyphs, reading left-to-right as one equation. The
+   nested `.sub` row (Net Margin's own breakdown) is indented with a rail so
+   it visually reads as "zooming into" the box directly above it rather than
+   a second independent equation. */
+.dupont-tree{display:flex;flex-direction:column;gap:16px;}
+.dupont-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.dupont-row.sub{margin-left:28px;padding-left:16px;border-left:2px solid var(--hairline);}
+.dupont-box{background:var(--wash);border:1px solid var(--border);border-radius:10px;padding:10px 16px;text-align:center;min-width:108px;}
+.dupont-box.result{background:var(--brand-wash);border-color:var(--brand);}
+.dupont-box-label{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.03em;margin-bottom:3px;white-space:nowrap;}
+.dupont-box-value{font-size:19px;font-weight:700;color:var(--ink-1);}
+.dupont-box.result .dupont-box-value{color:var(--brand);}
+.dupont-op{font-size:17px;color:var(--ink-3);font-weight:700;}
+
 /* Opt-in compact/sticky/collapsible header experiment (Sales Overview —
    Executive Outlook only, for now). Scoped entirely under .page-header-sticky
    so .topbar/.tabs/.section-nav/.filterbar keep their normal standalone

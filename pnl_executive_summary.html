@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Charmiss — Financial Statement · P&amp;L Summary</title>
+<title>Charmiss — Financial Statement · P&amp;L</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
 </head>
@@ -17,10 +17,11 @@
         <div class="brand-name">Charmiss</div>
         <div id="navMenuMount"></div>
         <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="pnl_financial_analysis.html">Financial Analysis</a>
           <a class="tab active tab-link" href="pnl_executive_summary.html">P&amp;L</a>
           <a class="tab tab-link" href="pnl_cash_flow.html">Cash Flow</a>
           <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
-          <a class="tab tab-link" href="pnl_financial_analysis.html">Financial Analysis</a>
+          <a class="tab tab-link" href="pnl_equity_changes.html">Equity Changes</a>
         </nav>
       </div>
       <div class="user-area">
@@ -38,14 +39,22 @@
       </div>
     </header>
 
-    <nav class="pill-nav">
-      <a class="active" href="pnl_executive_summary.html">Summary</a>
-      <a href="pnl_quarterly_trend.html">Quarterly Trend</a>
-      <a href="pnl_breakdown.html">Breakdown</a>
-      <a href="pnl_cost_structure.html">Cost Structure</a>
-    </nav>
-
     <div class="header-utility-row" id="headerUtilityRow">
+      <nav class="section-nav">
+        <a href="#sec-exec-summary">Executive Summary</a>
+        <a href="#sec-5q-table">5-Quarter P&amp;L</a>
+        <a href="#sec-trends">Trends</a>
+        <a href="#normalized-earnings">Normalized Earnings</a>
+        <a href="#sec-change-bridge">Net Profit Change Bridge</a>
+        <a href="#sec-margin-quality">Margin Quality by Channel</a>
+        <a href="#sec-category-profitability">Category Profitability</a>
+        <a href="#sec-cost-efficiency">Cost Efficiency</a>
+        <a href="#sec-cost-by-channel-partner">Cost by Channel &amp; Partner</a>
+        <a href="#sec-cost-category-detail">Cost Category Detail</a>
+        <a href="#sec-cost-efficiency-signal">Cost Efficiency Signal</a>
+      </nav>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
       <div class="filter-left">
         <span class="filter-label">Period</span>
         <button class="period-btn" id="periodBtn">
@@ -79,11 +88,13 @@
         </div>
       </div>
       <div class="filter-scope">Company-wide, all channels</div>
+
+      </div>
     </div>
   </div>
 
   <!-- ===== EXECUTIVE SUMMARY ===== -->
-  <div class="section-label">Executive Summary</div>
+  <div class="section-label" id="sec-exec-summary">Executive Summary</div>
 
   <!-- Waterfall moved to the top (compact redesign) — the ladder to
        after-tax Net Profit is the single clearest "whole page in one
@@ -296,6 +307,447 @@
       <div class="canvas-wrap" id="marginTrendCanvasWrap"><div id="marginTrendChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="marginTrendTableWrap"></div>
     </div>
+  </div>
+
+  <!-- ===== 5-QUARTER P&L TABLE ===== -->
+  <div class="section-label" id="sec-5q-table">5-Quarter P&amp;L</div>
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">5-Quarter P&amp;L Table</span>
+      <button class="info-icon" data-info-title="5-Quarter P&L Table" data-info-text="Net Sales ถึง EBITDA ราย Quarter ย้อนหลัง 5 ไตรมาส (Q2'25 → Q2'26, Rolling ทุกครั้งที่ปิดไตรมาสใหม่) พร้อม QoQ% (Q2'26 vs Q1'26) และ YoY% (Q2'26 vs Q2'25) — ตัวเลขเดียวกับ Income Statement ของ Executive Summary เป๊ะเมื่อรวม Q1'26+Q2'26 = H1'26 YTD">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="fiveQDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Company-wide · ฿ figures in full THB, % rows are margin ratios</div>
+    <table id="fiveQTable"></table>
+    <div class="kpi-caption" id="fiveQCallout" style="margin-top:10px;">–</div>
+    <div class="kpi-caption" id="fiveQEbitdaCaveat" style="margin-top:6px;">D&amp;A/EBITDA rows are an estimate (3% of Net Sales) to scaffold the metric ahead of Finance confirming real depreciation figures.</div>
+  </div>
+
+  <!-- ===== TRENDS ===== -->
+  <div class="section-label" id="sec-trends">Trends</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Net Sales Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Net Sales Trend" data-info-text="Net Sales ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="canvas-wrap" id="revTrendQCanvasWrap"><div id="revTrendQChart" style="width:100%;height:100%;"></div></div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Gross Margin % Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Gross Margin % Trend" data-info-text="Gross Margin % ต่อไตรมาส (Gross Profit ÷ Net Sales ของไตรมาสนั้น) 5 ไตรมาสย้อนหลัง">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="canvas-wrap" id="gmTrendQCanvasWrap"><div id="gmTrendQChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Net Profit Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Net Profit Trend" data-info-text="Net Profit (after tax, 20% Mock Rate) ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · after tax</div>
+      <div class="canvas-wrap" id="npTrendQCanvasWrap"><div id="npTrendQChart" style="width:100%;height:100%;"></div></div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Net Margin % Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Net Margin % Trend" data-info-text="Net Margin % (after tax, 20% Mock Rate) ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · after tax</div>
+      <div class="canvas-wrap" id="nmTrendQCanvasWrap"><div id="nmTrendQChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">EBITDA Trend (5Q)</span>
+          <span class="badge-soon" title="D&amp;A เป็นตัวเลขประมาณการ รอ Finance ยืนยัน">ประมาณการ</span>
+          <button class="info-icon" data-info-title="EBITDA Trend" data-info-text="EBITDA = Net Profit + D&A ต่อไตรมาส 5 ไตรมาสย้อนหลัง — D&A เป็นตัวเลขประมาณการ (3% ของ Net Sales) รอ Finance ยืนยันตัวเลขจริงก่อนใช้งานจริง">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · รอข้อมูล D&amp;A จริงจาก Finance</div>
+      <div class="canvas-wrap" id="ebitdaTrendQCanvasWrap"><div id="ebitdaTrendQChart" style="width:100%;height:100%;"></div></div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">EBITDA Margin % Trend (5Q)</span>
+          <span class="badge-soon" title="D&amp;A เป็นตัวเลขประมาณการ รอ Finance ยืนยัน">ประมาณการ</span>
+          <button class="info-icon" data-info-title="EBITDA Margin % Trend" data-info-text="EBITDA Margin % ต่อไตรมาส 5 ไตรมาสย้อนหลัง — รอข้อมูล D&A จริงจาก Finance">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · รอข้อมูล D&amp;A จริงจาก Finance</div>
+      <div class="canvas-wrap" id="ebitdaMTrendQCanvasWrap"><div id="ebitdaMTrendQChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+
+  <!-- ===== NORMALIZED EARNINGS ===== -->
+  <div class="section-label" id="normalized-earnings">Normalized Earnings</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Normalized Earnings Bridge (Q2'26)</span>
+          <button class="info-icon" data-info-title="Normalized Earnings Bridge" data-info-text="Reported Net Profit บวกกลับรายการ One-time ทีละรายการ (Obsolete Inventory Provision, Impairment Loss on Assets, Expected Credit Loss, Provision for Litigation) เพื่อดู Adjusted Net Profit — รายการ One-time เป็น Mock Data รอ Finance ยืนยัน List จริง">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="normEarnDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Latest closed quarter · ตัวเลข One-time Item เป็น Mock Data ตัวอย่าง รอ Finance ยืนยัน List รายการจริงก่อนใช้งานจริง</div>
+      <div class="canvas-wrap" id="normEarnCanvasWrap" style="height:260px;"><div id="normEarnChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="normEarnCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+    <div class="card table-card">
+      <div class="card-head">
+        <span class="card-title">Reported vs Adjusted (5Q)</span>
+        <button class="info-icon" data-info-title="Reported vs Adjusted (5Q)" data-info-text="Reported Net Profit เทียบ Adjusted Net Profit ทุกไตรมาสใน 5 ไตรมาสย้อนหลัง เพื่อดูว่าไตรมาสไหนมี One-time Item เยอะผิดปกติ">i</button>
+      </div>
+      <table id="normEarn5QTable"></table>
+    </div>
+  </div>
+
+  <!-- ===== NET PROFIT CHANGE BRIDGE ===== -->
+  <div class="section-label" id="sec-change-bridge">Net Profit Change Bridge</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Net Profit Change Bridge (Q1'26 → Q2'26)</span>
+        <button class="info-icon" data-info-title="Net Profit Change Bridge" data-info-text="แตกส่วนต่างของ Net Profit ระหว่าง 2 ไตรมาสล่าสุดเป็น Driver ทีละตัว (Volume, Gross Margin/Mix, Trade Spend, Logistics, Marketing/Ads, SG&A) — คนละตัวกับ P&L Waterfall ของ Executive Summary ที่เป็น Component Build ของไตรมาสเดียว ตัวนี้ตอบคำถาม 'ทำไมกำไรเปลี่ยน' ไม่ใช่ 'กำไรประกอบด้วยอะไร' — Volume effect = ΔRevenue × GM%(ไตรมาสก่อน), Margin/Mix effect = ΔGM% × Revenue(ไตรมาสล่าสุด)">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="npBridgeDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Company-wide · driver decomposition, not a component build</div>
+    <div class="canvas-wrap" id="npBridgeCanvasWrap" style="height:280px;"><div id="npBridgeChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="npBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <!-- ===== ZONE A: MARGIN QUALITY BY CHANNEL ===== -->
+  <div class="section-label" id="sec-margin-quality">Margin Quality by Channel</div>
+  <div class="filter-item" style="margin:2px 0 14px;">
+    <span class="filter-label">Channel</span>
+    <select class="level-select" id="channelFilterSelect">
+      <option value="all">All Channels</option>
+      <option value="MT">MT</option>
+      <option value="TT">TT</option>
+      <option value="Ecom">Ecom</option>
+    </select>
+    <span class="filter-label" style="margin-left:8px;">Category</span>
+    <select class="level-select" id="categoryFilterSelect">
+      <option value="all">All Categories</option>
+      <option value="skin" disabled>Skin Care (Coming soon)</option>
+      <option value="colorcos" disabled>Color Cosmetics (Coming soon)</option>
+    </select>
+    <span class="filter-scope" id="filterScopeNote" style="margin-left:10px;">Channel filter scopes Category Profitability below</span>
+  </div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Net Margin % Trend by Channel</span>
+          <button class="info-icon" data-info-title="Net Margin % Trend by Channel" data-info-text="Net Margin % รายเดือนของ MT / TT / Ecom (this year) — จุดขวาสุดคือเดือนล่าสุดที่ปิดงวด (เดือนเดียว) ไม่ใช่ค่าเฉลี่ย/ผลรวม YTD จึงอาจต่างจาก Net Margin % แบบ YTD ที่โชว์ใน Ranking (Executive Summary) และ Cost Structure by Channel (การ์ดถัดไป) ซึ่งทั้งคู่เป็นค่าเฉลี่ยทั้งช่วงเวลา">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="marginByChTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="marginByChTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="marginByChTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom · เส้นแสดงรายเดือน (ค่าล่าสุด ≠ YTD)</div>
+      <div class="chart-legend" id="marginByChTrendLegend"></div>
+      <div class="canvas-wrap" id="marginByChTrendCanvasWrap"><div id="marginByChTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="marginByChTrendTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Cost Structure by Channel</span>
+          <button class="info-icon" data-info-title="Cost Structure by Channel" data-info-text="สัดส่วน % ของ Net Sales แยกเป็น COGS / Trade Spend / Logistics / Marketing&Ads / SG&A / Tax (20% Mock Rate) / Net Profit (after tax) ต่อ Channel ในช่วงเวลาที่เลือก — รวมทุก Segment ได้ 100% พอดี">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="costStructTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="costStructDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="costStructExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period · % of each channel's own Net Sales</div>
+      <div class="chart-legend" id="costStructLegend"></div>
+      <div class="canvas-wrap" id="costStructCanvasWrap" style="height:280px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="costStructCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+      <div class="data-table-wrap" id="costStructTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== ZONE B: CATEGORY PROFITABILITY ===== -->
+  <div class="section-label" id="sec-category-profitability">Category Profitability</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:14px;">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Highest Margin Category</span>
+        <button class="info-icon" data-info-title="Highest Margin Category" data-info-text="หมวดหมู่ที่มี Net Margin % สูงสุด ภายใต้ Channel filter ที่เลือก">i</button>
+      </div>
+      <div class="kpi-sub-text" id="kpiHighestCatValue">–</div>
+      <div class="kpi-caption" id="kpiHighestCatCaption">–</div>
+    </div>
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Lowest Margin Category</span>
+        <button class="info-icon" data-info-title="Lowest Margin Category" data-info-text="หมวดหมู่ที่มี Net Margin % ต่ำสุด ภายใต้ Channel filter ที่เลือก">i</button>
+      </div>
+      <div class="kpi-sub-text" id="kpiLowestCatValue">–</div>
+      <div class="kpi-caption" id="kpiLowestCatCaption">–</div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Margin by Category</span>
+          <button class="info-icon" data-info-title="Margin by Category" data-info-text="Gross Margin % และ Net Margin % ต่อหมวดหมู่สินค้า — ตอบสนอง Channel filter ด้านบน (All = Blended ทุก Channel)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="mByCategoryTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="mByCategoryDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="mByCategoryExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle" id="mByCategorySubtitle">This period · company-wide, by category</div>
+      <div class="canvas-wrap" id="mByCategoryCanvasWrap"><div id="mByCategoryChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="mByCategoryTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Category Profit Matrix</span>
+          <button class="info-icon" data-info-title="Category Profit Matrix" data-info-text="แกนนอน (X) = Net Profit Contribution (฿), แกนตั้ง (Y) = Net Margin % เส้นประคือค่ามัธยฐาน — Premium Stars/Volume Engines/Niche Premium/Needs Review">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="profitMatrixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="profitMatrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="profitMatrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period, by category</div>
+      <div class="canvas-wrap" id="profitMatrixCanvasWrap" style="height:280px;"><div id="profitMatrixChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="profitMatrixTableWrap"></div>
+    </div>
+  </div>
+
+  <div class="card table-card" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Category Profitability Ranking</span>
+      <button class="info-icon" data-info-title="Category Profitability Ranking" data-info-text="ทั้ง 6 หมวดหมู่ เรียงตาม Net Margin % จากมากไปน้อย ภายใต้ Channel filter ที่เลือก">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="catRankDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="catRankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <table id="catRankTable"></table>
+  </div>
+
+  <!-- ===== SECTION 1: COST EFFICIENCY ===== -->
+  <div class="section-label" id="sec-cost-efficiency">Cost Efficiency</div>
+  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px;">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">OPEX Ratio %</span>
+        <button class="info-icon" data-info-title="OPEX Ratio %" data-info-text="OPEX รวม (Trade Spend + Logistics + Marketing/Ads + SG&A) ÷ Net Sales × 100 — ยิ่งต่ำยิ่งดี — ตัวเดียวกับใน Executive Summary">i</button>
+      </div>
+      <div><span class="kpi-value" id="kpiOpexValue">–</span></div>
+      <div class="kpi-caption" id="kpiOpexCaption">Year to Date</div>
+      <div class="kpi-delta-row">
+        <div class="kpi-delta"><span class="kpi-delta-label">MoM</span><span class="kpi-delta-value" id="kpiOpexMom">–</span></div>
+        <div class="kpi-delta"><span class="kpi-delta-label">YoY</span><span class="kpi-delta-value" id="kpiOpexYoy">–</span></div>
+      </div>
+      <div id="kpiOpexSpark"></div>
+    </div>
+  </div>
+
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Cost-to-Sales Ratio</span>
+      <button class="info-icon" data-info-title="Cost-to-Sales Ratio" data-info-text="แต่ละ OPEX Line หารด้วย Net Sales × 100 — YTD เทียบกับช่วงเดียวกันปีก่อน ตัวเลขอ้างอิงจากชุดเดียวกับ OPEX Ratio % ด้านบน">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="ratioTableDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="ratioTableExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle" id="ratioTableSubtitle">Year to Date vs same range last year</div>
+    <table id="ratioTable"></table>
+  </div>
+
+  <!-- ===== SECTION 2: COST BY CHANNEL & PARTNER ===== -->
+  <div class="section-label" id="sec-cost-by-channel-partner">Cost by Channel &amp; Partner</div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">OPEX Trend</span>
+        <button class="info-icon" data-info-title="OPEX Trend" data-info-text="Trade Spend / Logistics / Marketing&Ads / SG&A รายเดือน Company-wide ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน) — ย้ายมาจาก Breakdown">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="opexTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="opexTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="opexTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="opexTrendLegend"></div>
+    <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:200px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="opexTrendTableWrap"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Operating Expense Ratio Trend by Channel</span>
+        <button class="info-icon" data-info-title="Operating Expense Ratio Trend by Channel" data-info-text="OPEX รวม ÷ Net Sales × 100 รายเดือนของ MT / TT / Ecom (this year) — ยิ่งต่ำยิ่งดี ตรงข้ามกับ Net Margin % Trend by Channel บน Breakdown">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="opexRatioTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="opexRatioTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="opexRatioTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom</div>
+    <div class="chart-legend" id="opexRatioTrendLegend"></div>
+    <div class="canvas-wrap" id="opexRatioTrendCanvasWrap"><div id="opexRatioTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="opexRatioTrendTableWrap"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Marketing &amp; Ads Spend by Channel</span>
+        <button class="info-icon" data-info-title="Marketing & Ads Spend by Channel" data-info-text="Marketing/Ads Spend (฿) ต่อ Channel ในช่วงเวลาที่เลือก — ระดับ Company/Channel เท่านั้น ยังไม่ลงถึงระดับ Platform ของ Ecom (Lazada/Shopee/TikTok/Line Shop) — ย้ายมาจาก Breakdown">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="mktByChannelTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="mktByChannelDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="mktByChannelExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">This period · by channel</div>
+    <div class="canvas-wrap" id="mktByChannelCanvasWrap" style="height:160px;"><div id="mktByChannelChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="mktByChannelTableWrap"></div>
+  </div>
+
+  <div class="card" style="margin-bottom:6px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Trade Spend by Partner <span class="badge-soon">MT only</span></span>
+        <button class="info-icon" data-info-title="Trade Spend by Partner" data-info-text="ยังไม่มี Data Source ระดับ Partner สำหรับ Trade Spend (ต้องใช้ข้อมูล Negotiated Deal Terms ต่อคู่ค้า ซึ่งยังไม่เชื่อมต่อกับ Dashboard นี้) — การ์ดนี้เป็น Placeholder แสดงโครงสร้างที่ตั้งใจไว้ ไม่ใช่ตัวเลขจริงหรือประมาณการ">i</button>
+      </div>
+    </div>
+    <div class="chart-subtitle">MT channel only · placeholder — no data source at this granularity yet</div>
+    <div class="callout-text" style="margin-top:2px;">⚠️ ยังไม่มี Data Source ระดับนี้: Trade Spend ต่อ Partner ต้องอาศัยเงื่อนไข Deal ที่เจรจาต่อคู่ค้าแต่ละราย (ไม่ใช่สัดส่วนตามยอดขาย) ซึ่งยังไม่ถูกส่งเข้าระบบนี้ — แถบด้านล่างเป็นภาพร่างโครงสร้าง Chart ที่ตั้งใจไว้เท่านั้น ไม่ใช่ตัวเลขจริงหรือประมาณการ (No fake numbers).</div>
+    <div class="cat-bars" id="tradeSpendByPartnerPlaceholder" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- ===== SECTION 2b: COST CATEGORY DETAIL ===== -->
+  <div class="section-label" id="sec-cost-category-detail">Cost Category Detail</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Selling Expense Breakdown (5Q)</span>
+          <button class="info-icon" data-info-title="Selling Expense Breakdown" data-info-text="แตก Marketing/Ads เป็นหมวดย่อย (Advertising &amp; Promotion, Digital/Content Marketing, People cost, Others) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ Marketing/Ads รวมเป๊ะทุกไตรมาส (ตัวเลขเดียวกับ OPEX Trend/Cost-to-Sales Ratio ด้านบน)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="sellingExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · THB</div>
+      <div class="chart-legend" id="sellingExpLegend"></div>
+      <div class="canvas-wrap" id="sellingExpCanvasWrap" style="height:260px;"><div id="sellingExpChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="sellingExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Selling Expense-to-Sales % Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Selling Expense-to-Sales % Trend" data-info-text="Marketing/Ads (=Selling Expense รวม) หารด้วย Net Sales ต่อไตรมาส — เทียบเคียงกับ Stacked Bar ด้านซ้าย">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="canvas-wrap" id="sellingExpRatioCanvasWrap"><div id="sellingExpRatioChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Administration Expense Breakdown (5Q)</span>
+          <button class="info-icon" data-info-title="Administration Expense Breakdown" data-info-text="แตก SG&A เป็นหมวดย่อย (People cost, Rental &amp; Depreciation, Other Admin Expenses, Advisor &amp; Professional Fees, Service Cost) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ SG&A รวมเป๊ะทุกไตรมาส">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="adminExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · THB</div>
+      <div class="chart-legend" id="adminExpLegend"></div>
+      <div class="canvas-wrap" id="adminExpCanvasWrap" style="height:260px;"><div id="adminExpChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="adminExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Administration Expense-to-Sales % Trend (5Q)</span>
+          <button class="info-icon" data-info-title="Administration Expense-to-Sales % Trend" data-info-text="SG&A (=Administration Expense รวม) หารด้วย Net Sales ต่อไตรมาส — เทียบเคียงกับ Stacked Bar ด้านซ้าย">i</button>
+        </div>
+      </div>
+      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
+      <div class="canvas-wrap" id="adminExpRatioCanvasWrap"><div id="adminExpRatioChart" style="width:100%;height:100%;"></div></div>
+    </div>
+  </div>
+  <div class="kpi-caption" style="margin:-6px 0 14px;">Trade Spend และ Logistics ยังคงแสดงเป็นก้อนเดียวไม่แตกย่อย (OPEX Trend/Cost-to-Sales Ratio ด้านบน) — ทั้ง 2 ก้อนไม่มีองค์ประกอบ People/Rental/Advertising แบบเดียวกับ Selling/Admin Expense จริงในธุรกิจนี้</div>
+
+  <!-- ===== SECTION 3: COST EFFICIENCY SIGNAL ===== -->
+  <div class="section-label" id="sec-cost-efficiency-signal">Cost Efficiency Signal</div>
+  <div class="card" style="margin-bottom:6px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">For Every ฿1 of Revenue</span>
+        <button class="info-icon" data-info-title="For Every ฿1 of Revenue" data-info-text="แบ่ง Net Sales 1 บาท ออกเป็น COGS / OPEX (Trade Spend+Logistics+Marketing/Ads+SG&A รวมกัน) / Tax (20% Mock Rate) / Net Profit (after tax) ตามสัดส่วนจริงในช่วงเวลาที่เลือก">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="perBahtDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="perBahtExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">This period · company-wide</div>
+    <div class="donut-layout" id="perBahtLayout">
+      <div class="donut-canvas-wrap">
+        <div id="perBahtChart" style="width:100%;height:100%;"></div>
+        <div class="donut-center">
+          <div class="donut-center-value" id="perBahtCenterValue">฿1.00</div>
+          <div class="donut-center-label">Revenue</div>
+        </div>
+      </div>
+      <div class="legend-list" id="perBahtLegend"></div>
+    </div>
+    <div class="callout-text" id="costSignalCallout" style="margin-top:10px;">–</div>
   </div>
 
 </div>
@@ -517,10 +969,11 @@ function periodLabelText(key, custom){
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
-  try { renderNavMenu('pnl-exec', 'Financial Statement · P&L Summary'); } catch(e) { console.error('Nav menu render failed:', e); }
+  try { renderNavMenu('pnl', 'Financial Statement · P&L'); } catch(e) { console.error('Nav menu render failed:', e); }
 }
 initInfoPopovers();
-initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
+initThemeToggle(()=> renderSummary(currentPeriodKey, currentCustom));
+initSectionScrollSpy();
 
 /* ---------- Menu bar collapse (works via CSS class toggle, no layout
    assumptions — same mechanism works on mobile and desktop). Persists via
@@ -573,7 +1026,7 @@ document.querySelectorAll('.period-opt').forEach(opt=>{
     currentPeriodKey = opt.dataset.key;
     periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
     periodDropdown.classList.remove('open');
-    renderAll(currentPeriodKey, currentCustom);
+    renderSummary(currentPeriodKey, currentCustom);
   });
 });
 document.getElementById('applyCustom').addEventListener('click', ()=>{
@@ -584,7 +1037,7 @@ document.getElementById('applyCustom').addEventListener('click', ()=>{
   document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
   periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
   periodDropdown.classList.remove('open');
-  renderAll(currentPeriodKey, currentCustom);
+  renderSummary(currentPeriodKey, currentCustom);
 });
 
 /* ---------- Time Frame (Monthly/Quarterly) toggle ---------- */
@@ -603,7 +1056,7 @@ document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
   btn.classList.add('selected');
   positionTimeFrameThumb();
   currentTimeFrame = btn.dataset.key;
-  renderAll(currentPeriodKey, currentCustom);
+  renderSummary(currentPeriodKey, currentCustom);
 });
 positionTimeFrameThumb();
 function bucketMonths(idx, timeFrame){
@@ -648,7 +1101,7 @@ document.getElementById('incomeStmtViewToggle').addEventListener('click', (e)=>{
   btn.classList.add('selected');
   positionIncomeStmtViewThumb();
   incomeStmtViewMode = btn.dataset.key;
-  renderAll(currentPeriodKey, currentCustom);
+  renderSummary(currentPeriodKey, currentCustom);
 });
 positionIncomeStmtViewThumb();
 
@@ -674,7 +1127,7 @@ function buildKeyFactorBullets(checks){
 /* ---------- Render ---------- */
 let latestData = {};
 
-function renderAll(periodKey, custom){
+function renderSummary(periodKey, custom){
   const [s,e] = getPeriodRange(periodKey, custom);
   const label = periodLabelText(periodKey, custom);
   const brand = cssVar('--brand') || '#8E1E4D';
@@ -1071,7 +1524,886 @@ document.getElementById('rankPnlDownloadBtn').addEventListener('click', ()=>{
 document.getElementById('rankPnlExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 /* ---------- Init ---------- */
-renderAll(currentPeriodKey, currentCustom);
+renderSummary(currentPeriodKey, currentCustom);
+</script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — byte-for-byte copy of the other P&L files' channel
+   generator (same seed 20260630, same channelDefs order/params) so every
+   ฿ figure here reconciles exactly with Executive Summary/Breakdown/Cost
+   Structure. Do NOT edit this block without also editing the other 3 P&L
+   files' matching blocks.
+   ============================================================================ */
+/* -------------------- Part 2: P&L-only mock data (byte-for-byte copy, see pnl_executive_summary.html) -------------------- */
+/* EBITDA scaffold — same DA_RATE_OF_SALES as pnl_executive_summary.html, so EBITDA ties out exactly between pages. */
+/* Corporate Tax cascade (post-build review) — same TAX_RATE as
+   pnl_executive_summary.html. pnlCompany.netProfit is EBIT (left as-is,
+   not renamed, since every OPEX/margin formula above already depends on
+   it); Net Profit after tax is the new bottom line everywhere this page
+   used to show "Net Profit". */
+/* Normalized Earnings add-backs — same dedicated PRNG/model as pnl_executive_summary.html, so Reported/Adjusted figures tie out exactly between pages. */
+const addbackRand = mulberry32(20260632);
+function genAddbackSeries(baseRatio, zeroProb){
+  const arr = [];
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    arr.push(addbackRand() < zeroProb ? 0 : pnlCompany.netSales[i] * baseRatio * (0.5 + addbackRand()));
+  }
+  return arr;
+}
+const addbackSeries = {
+  'Obsolete Inventory Provision': genAddbackSeries(0.012, 0.15),
+  'Impairment Loss on Assets':    genAddbackSeries(0.006, 0.55),
+  'Expected Credit Loss (ECL)':   genAddbackSeries(0.008, 0.15),
+  'Provision for Litigation':     genAddbackSeries(0.004, 0.70)
+};
+const addbackKeys = Object.keys(addbackSeries);
+
+initThemeToggle(()=> renderQuarterlyTrend());
+initSectionScrollSpy();
+
+/* ---------- 5 rolling quarters ending at TODAY's quarter (Q2'26) ---------- */
+function quarterYearLabel(startIdx){
+  const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
+  return 'Q'+q+"'"+String(yr).slice(2);
+}
+const curQS = Math.floor(TODAY/3)*3; // start of the quarter containing TODAY
+const quarterStarts = [curQS-12, curQS-9, curQS-6, curQS-3, curQS];
+const quarterLabels = quarterStarts.map(quarterYearLabel);
+function qSum(series, qs){ return sumRange(series, qs, qs+2); }
+
+
+function renderQuarterlyTrend(){
+  const brand = cssVar('--brand') || '#8E1E4D';
+  const good = cssVar('--good') || '#0ca30c';
+
+  /* === 5-Quarter P&L Table === */
+  const lineDefs = [
+    { label:'Net Sales', series: pnlCompany.netSales, bold:true },
+    { label:'– COGS', series: pnlCompany.cogs.map(v=>-v) },
+    { label:'= Gross Profit', series: pnlCompany.grossProfit, bold:true },
+    { label:'Gross Margin %', isMargin:true, num: pnlCompany.grossProfit, den: pnlCompany.netSales },
+    { label:'– Trade Spend', series: pnlCompany.tradeSpend.map(v=>-v) },
+    { label:'– Logistics', series: pnlCompany.logistics.map(v=>-v) },
+    { label:'– Marketing/Ads', series: pnlCompany.marketing.map(v=>-v) },
+    { label:'– SG&A', series: pnlCompany.sga.map(v=>-v) },
+    { label:'= EBIT (Operating Profit)', series: pnlCompany.netProfit, bold:true },
+    { label:'– Tax (20%)', series: pnlCompany.tax.map(v=>-v), isEstimate:true },
+    { label:'= Net Profit (after tax)', series: pnlCompany.netProfitAfterTax, bold:true },
+    { label:'Net Margin %', isMargin:true, num: pnlCompany.netProfitAfterTax, den: pnlCompany.netSales },
+    { label:'+ D&A (add-back, memo)', series: pnlCompany.da, isEstimate:true },
+    { label:'= EBITDA (memo)', series: pnlCompany.ebitda, bold:true, isEstimate:true },
+    { label:'EBITDA Margin %', isMargin:true, num: pnlCompany.ebitda, den: pnlCompany.netSales, isEstimate:true }
+  ];
+  /* Bug fix (post-build review, P0-2): Q1'26+Q2'26 must sum EXACTLY to the
+     same rounded YTD figure Executive Summary's Waterfall/Income Statement
+     show — otherwise two independently-rounded quarters (e.g. ฿3.0M +
+     ฿3.2M) can visibly sum to ฿6.2M while the YTD widget elsewhere shows
+     ฿6.1M, even though the underlying exact numbers already tie perfectly
+     (this is a rounding-display artifact, not a data bug — see
+     reconcileRoundToTarget in shared.js). Uses the exact same formula
+     Executive Summary uses for its YTD anchors (netSalesR/grossProfitR/
+     netProfitR via roundToNearestTHB100K, then largest-remainder-reconcile
+     the 4 OPEX lines) since Q1'26+Q2'26 covers the identical 6 months as
+     that page's default "Year to Date" range — then splits each
+     already-YTD-reconciled total back across the 2 quarters so they both
+     stay close to their own true value AND sum to the anchor exactly. Only
+     Q1'26/Q2'26 need this: no other page shows a sum touching Q2'25-Q4'25. */
+  const q1s = quarterStarts[3], q2s = quarterStarts[4];
+  function reconcileQuarterPair(rawSeries, targetR){
+    const rawQ1 = qSum(rawSeries, q1s), rawQ2 = qSum(rawSeries, q2s);
+    return reconcileRoundToTarget([rawQ1/1e6, rawQ2/1e6], targetR/1e6, 1).map(v=>v*1e6);
+  }
+  const nsR_YTD = roundToNearestTHB100K(qSum(pnlCompany.netSales,q1s)+qSum(pnlCompany.netSales,q2s));
+  const gpR_YTD = roundToNearestTHB100K(qSum(pnlCompany.grossProfit,q1s)+qSum(pnlCompany.grossProfit,q2s));
+  const npR_YTD = roundToNearestTHB100K(qSum(pnlCompany.netProfit,q1s)+qSum(pnlCompany.netProfit,q2s));
+  const [tsR_YTD,lgR_YTD,mkR_YTD,sgR_YTD] = reconcileRoundToTarget(
+    [qSum(pnlCompany.tradeSpend,q1s)+qSum(pnlCompany.tradeSpend,q2s), qSum(pnlCompany.logistics,q1s)+qSum(pnlCompany.logistics,q2s), qSum(pnlCompany.marketing,q1s)+qSum(pnlCompany.marketing,q2s), qSum(pnlCompany.sga,q1s)+qSum(pnlCompany.sga,q2s)].map(v=>v/1e6),
+    (gpR_YTD-npR_YTD)/1e6, 1
+  ).map(v=>v*1e6);
+  const daR_YTD = roundToNearestTHB100K(qSum(pnlCompany.da,q1s)+qSum(pnlCompany.da,q2s));
+  const [nsQ1,nsQ2] = reconcileQuarterPair(pnlCompany.netSales, nsR_YTD);
+  const [gpQ1,gpQ2] = reconcileQuarterPair(pnlCompany.grossProfit, gpR_YTD);
+  const [tsQ1,tsQ2] = reconcileQuarterPair(pnlCompany.tradeSpend, tsR_YTD);
+  const [lgQ1,lgQ2] = reconcileQuarterPair(pnlCompany.logistics, lgR_YTD);
+  const [mkQ1,mkQ2] = reconcileQuarterPair(pnlCompany.marketing, mkR_YTD);
+  const [sgQ1,sgQ2] = reconcileQuarterPair(pnlCompany.sga, sgR_YTD);
+  const [daQ1,daQ2] = reconcileQuarterPair(pnlCompany.da, daR_YTD);
+  const cogsQ1 = nsQ1-gpQ1, cogsQ2 = nsQ2-gpQ2; // derived -- ties to Net Sales/Gross Profit automatically
+  // Net Profit is DERIVED per quarter (Gross Profit minus the 4 reconciled
+  // OPEX lines), NOT independently reconciled from its own raw series --
+  // otherwise Q1's/Q2's own "GP - OPEX = NP" identity could silently break
+  // even though the Q1+Q2 aggregate still tied to the YTD anchor. Deriving
+  // it this way guarantees BOTH the per-quarter leg (used by the Net Profit
+  // Change Bridge below) AND the Q1+Q2-sums-to-YTD tie hold simultaneously.
+  const npQ1 = gpQ1-tsQ1-lgQ1-mkQ1-sgQ1, npQ2 = gpQ2-tsQ2-lgQ2-mkQ2-sgQ2; // EBIT, per quarter
+  const ebitdaQ1 = npQ1+daQ1, ebitdaQ2 = npQ2+daQ2; // derived -- ties to EBIT/D&A automatically
+  // Tax cascade: Net Profit (after tax) is DERIVED from each quarter's own
+  // EBIT (npQ1/npQ2 above), not independently reconciled, so Tax + Net
+  // Profit after tax = EBIT holds exactly per quarter (same reasoning as
+  // deriving EBIT from Gross Profit minus OPEX above).
+  const netProfitAfterTaxQ1 = roundToNearestTHB100K(npQ1*(1-TAX_RATE)), netProfitAfterTaxQ2 = roundToNearestTHB100K(npQ2*(1-TAX_RATE));
+  const taxQ1 = npQ1-netProfitAfterTaxQ1, taxQ2 = npQ2-netProfitAfterTaxQ2;
+  const RECONCILED_Q1Q2 = {
+    'Net Sales': [nsQ1,nsQ2], '– COGS': [-cogsQ1,-cogsQ2], '= Gross Profit': [gpQ1,gpQ2],
+    '– Trade Spend': [-tsQ1,-tsQ2], '– Logistics': [-lgQ1,-lgQ2], '– Marketing/Ads': [-mkQ1,-mkQ2], '– SG&A': [-sgQ1,-sgQ2],
+    '= EBIT (Operating Profit)': [npQ1,npQ2], '– Tax (20%)': [-taxQ1,-taxQ2], '= Net Profit (after tax)': [netProfitAfterTaxQ1,netProfitAfterTaxQ2],
+    '+ D&A (add-back, memo)': [daQ1,daQ2], '= EBITDA (memo)': [ebitdaQ1,ebitdaQ2]
+  };
+  const MARGIN_RECONCILED_ND = {
+    'Gross Margin %': [[gpQ1,nsQ1],[gpQ2,nsQ2]], 'Net Margin %': [[netProfitAfterTaxQ1,nsQ1],[netProfitAfterTaxQ2,nsQ2]], 'EBITDA Margin %': [[ebitdaQ1,nsQ1],[ebitdaQ2,nsQ2]]
+  };
+  const qVals = def => {
+    const vals = quarterStarts.map(qs => def.isMargin ? (qSum(def.den,qs) ? qSum(def.num,qs)/qSum(def.den,qs)*100 : 0) : qSum(def.series, qs));
+    if(def.isMargin && MARGIN_RECONCILED_ND[def.label]){
+      const [[numQ1,denQ1],[numQ2,denQ2]] = MARGIN_RECONCILED_ND[def.label];
+      vals[3] = denQ1 ? numQ1/denQ1*100 : 0; vals[4] = denQ2 ? numQ2/denQ2*100 : 0;
+    } else if(RECONCILED_Q1Q2[def.label]){
+      [vals[3], vals[4]] = RECONCILED_Q1Q2[def.label];
+    }
+    return vals;
+  };
+  const rows = lineDefs.map(def=>{
+    const vals = qVals(def);
+    const qoq = def.isMargin ? vals[4]-vals[3] : (vals[3] ? (vals[4]-vals[3])/Math.abs(vals[3])*100 : null);
+    const yoy = def.isMargin ? vals[4]-vals[0] : (vals[0] ? (vals[4]-vals[0])/Math.abs(vals[0])*100 : null);
+    return { label:def.label, bold:def.bold, isEstimate:def.isEstimate, isMargin:def.isMargin, vals, qoq, yoy };
+  });
+  document.getElementById('fiveQTable').innerHTML =
+    '<thead><tr><th>Line Item</th>' + quarterLabels.map(q=>'<th>'+q+'</th>').join('') + '<th>QoQ %</th><th>YoY %</th></tr></thead><tbody>'
+    + rows.map(r=>{
+        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+        const estNote = r.isEstimate ? ' <span class="badge-soon" style="margin-left:4px;">ประมาณการ</span>' : '';
+        const fmt = v => r.isMargin ? fmtPct(v,1) : fmtTHB(v);
+        const deltaFmt = (v) => v===null ? '–' : '<span class="'+deltaClass(v)+'">' + (r.isMargin ? fmtSignedPP(v) : fmtSignedPct(v,1)) + '</span>';
+        return '<tr'+rowClass+'><td>'+r.label+estNote+'</td>' + r.vals.map(v=>'<td class="tnum">'+fmt(v)+'</td>').join('')
+          + '<td class="tnum">'+deltaFmt(r.qoq)+'</td><td class="tnum">'+deltaFmt(r.yoy)+'</td></tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.fiveQ = { quarterLabels, rows };
+  const nmRow = rows.find(r=>r.label==='Net Margin %');
+  document.getElementById('fiveQCallout').innerHTML =
+    'Net Margin ranged ' + fmtPct(Math.min(...nmRow.vals),1) + '–' + fmtPct(Math.max(...nmRow.vals),1) + ' across the 5 quarters · latest quarter ('+quarterLabels[4]+') Net Margin '+fmtPct(nmRow.vals[4],1);
+
+  /* === Trend charts (5Q) — paired ฿-bar + %-line cards per metric, same
+     pattern already used elsewhere in this dashboard for "amount + rate"
+     pairs, since shared.js has no dual-axis combo-chart primitive. === */
+  const netSalesQ = quarterStarts.map(qs=>qSum(pnlCompany.netSales,qs));
+  const gmQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.grossProfit,qs)/qSum(pnlCompany.netSales,qs)*100 : 0);
+  const netProfitQ = quarterStarts.map(qs=>qSum(pnlCompany.netProfitAfterTax,qs)); // after tax
+  const nmQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.netProfitAfterTax,qs)/qSum(pnlCompany.netSales,qs)*100 : 0); // after tax
+  const ebitdaQ = quarterStarts.map(qs=>qSum(pnlCompany.ebitda,qs));
+  const ebitdaMQ = quarterStarts.map(qs=> qSum(pnlCompany.netSales,qs) ? qSum(pnlCompany.ebitda,qs)/qSum(pnlCompany.netSales,qs)*100 : 0);
+
+  buildGroupedBarSVG('revTrendQChart', { labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true, series:[{name:'Net Sales', color:brand, values:netSalesQ}] });
+  buildLineChartSVG('gmTrendQChart', { labels: quarterLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:gmQ, color:good, width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}] });
+  buildGroupedBarSVG('npTrendQChart', { labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true, series:[{name:'Net Profit', color:brand, values:netProfitQ}] });
+  buildLineChartSVG('nmTrendQChart', { labels: quarterLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:nmQ, color:brand, width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}] });
+  buildGroupedBarSVG('ebitdaTrendQChart', { labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true, series:[{name:'EBITDA', color:brand, values:ebitdaQ}] });
+  buildLineChartSVG('ebitdaMTrendQChart', { labels: quarterLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:ebitdaMQ, color:good, width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}] });
+
+  /* === Normalized Earnings Bridge (latest quarter) + 5Q reported-vs-adjusted table ===
+     Reported = Net Profit AFTER TAX for the quarter (post-build review C2)
+     -- Normalized Earnings reconciles the REPORTED bottom line a reader
+     actually sees on the Income Statement, which is after-tax now. === */
+  const latestQS = quarterStarts[4];
+  const reportedNP = qSum(pnlCompany.netProfitAfterTax, latestQS);
+  const addbackVals = addbackKeys.map(k=>({ item:k, value: qSum(addbackSeries[k], latestQS) }));
+  const addbackTotal = addbackVals.reduce((s,a)=>s+a.value,0);
+  const adjustedNP = reportedNP + addbackTotal;
+  /* Bug fix (post-build review, P1-7): the 4 add-back labels are long
+     enough (e.g. "+ Expected Credit Loss (ECL)") that 6 horizontal-centered
+     bar labels collided/got clipped on a normal-width card. Abbreviate for
+     the chart's own x-axis only (the callout above and the 5Q table below
+     keep the full names) and rotate 35° via buildWaterfallSVG's existing
+     rotateLabels option (same fix already used for Product Analysis'
+     Growth Contribution Waterfall). */
+  const ADDBACK_SHORT_LABEL = { 'Obsolete Inventory Provision':'Obsolete Inv.', 'Impairment Loss on Assets':'Impairment', 'Expected Credit Loss (ECL)':'ECL', 'Provision for Litigation':'Litigation' };
+  const bridgeSteps = [
+    { label:'Reported', value: reportedNP, type:'start' },
+    ...addbackVals.map(a=>({ label:'+ '+(ADDBACK_SHORT_LABEL[a.item]||a.item), value:a.value, type:'delta' })),
+    { label:'Adjusted', value: adjustedNP, type:'end' }
+  ];
+  buildWaterfallSVG('normEarnChart', bridgeSteps, { yFormatter: fmtTHB, height:260, rotateLabels:35 });
+  const biggestAddback = [...addbackVals].sort((a,b)=>b.value-a.value)[0];
+  document.getElementById('normEarnCallout').innerHTML =
+    'Adjusted Net Profit is <b>'+fmtTHB(addbackTotal)+'</b> higher than Reported in '+quarterLabels[4]+' — mostly from <b>'+biggestAddback.item+'</b> ('+fmtTHB(biggestAddback.value)+')';
+  latestData.normEarn = { quarter:quarterLabels[4], reportedNP, addbackVals, adjustedNP };
+
+  const normEarn5Q = quarterStarts.map((qs,i)=>{
+    const rep = qSum(pnlCompany.netProfitAfterTax, qs);
+    const add = addbackKeys.reduce((s,k)=> s+qSum(addbackSeries[k],qs), 0);
+    return { quarter:quarterLabels[i], reported:rep, adjusted:rep+add, addback:add };
+  });
+  document.getElementById('normEarn5QTable').innerHTML =
+    '<thead><tr><th>Quarter</th><th>Reported</th><th>Add-backs</th><th>Adjusted</th></tr></thead><tbody>'
+    + normEarn5Q.map(r=>'<tr><td>'+r.quarter+'</td><td class="tnum">'+fmtTHB(r.reported)+'</td><td class="tnum">'+fmtTHB(r.addback)+'</td><td class="tnum">'+fmtTHB(r.adjusted)+'</td></tr>').join('')
+    + '</tbody>';
+
+  /* === Net Profit Change Bridge (Q1'26 -> Q2'26) — driver decomposition,
+     not a component build. Volume/Margin-Mix split derives algebraically
+     from ΔRevenue and ΔGross-Margin-%, so it reconciles to ΔGross Profit
+     exactly by construction; OPEX driver deltas are the literal
+     ΔTradeSpend/ΔLogistics/ΔMarketing/ΔSG&A, so the whole bridge reconciles
+     to ΔNet Profit exactly, always. Built from the SAME reconciled Q1'26/
+     Q2'26 values the 5-Quarter table above displays (nsQ1/nsQ2/gpQ1/gpQ2/
+     etc., computed above) rather than re-summing raw exact values a second
+     way, so this chart's own ฿ figures are pixel-identical to the table's. */
+  const priorNS = nsQ1, curNS = nsQ2, priorGP = gpQ1, curGP = gpQ2;
+  const priorGM = priorNS ? priorGP/priorNS : 0, curGM = curNS ? curGP/curNS : 0;
+  const volumeEffect = (curNS-priorNS) * priorGM;
+  const marginMixEffect = (curGM-priorGM) * curNS;
+  const tsEffect = -(tsQ2-tsQ1);
+  const lgEffect = -(lgQ2-lgQ1);
+  const mkEffect = -(mkQ2-mkQ1);
+  const sgEffect = -(sgQ2-sgQ1);
+  // Tax cascade (post-build review C2): bridge now starts/ends at Net
+  // Profit AFTER TAX, with a Tax effect step closing the chain right before
+  // the end bar (operating drivers unchanged). taxEffect = -(ΔTax), same
+  // sign convention as the OPEX effects -- this ties exactly by
+  // construction: (EBIT_Q1-taxQ1) + [operating effects summing to
+  // EBIT_Q2-EBIT_Q1] + (taxQ1-taxQ2) = EBIT_Q2-taxQ2 = Net Profit Q2 after tax.
+  const priorNP = netProfitAfterTaxQ1, curNP = netProfitAfterTaxQ2;
+  const taxEffect = -(taxQ2-taxQ1);
+  const bridgeStart = { label:'Net Profit '+quarterLabels[3], value: priorNP, type:'start' };
+  const bridgeEnd = { label:'Net Profit '+quarterLabels[4], value: curNP, type:'end' };
+  const npBridgeSteps = [
+    bridgeStart,
+    { label:'Volume', value: volumeEffect, type:'delta' },
+    { label:'Gross Margin/Mix', value: marginMixEffect, type:'delta' },
+    { label:'Trade Spend', value: tsEffect, type:'delta' },
+    { label:'Logistics', value: lgEffect, type:'delta' },
+    { label:'Marketing/Ads', value: mkEffect, type:'delta' },
+    { label:'SG&A', value: sgEffect, type:'delta' },
+    { label:'Tax effect', value: taxEffect, type:'delta' },
+    bridgeEnd
+  ];
+  buildWaterfallSVG('npBridgeChart', npBridgeSteps, { yFormatter: fmtTHB, height:280, rotateLabels:35 });
+  const netProfitChange = curNP - priorNP;
+  const opexEffectsTotal = marginMixEffect+tsEffect+lgEffect+mkEffect+sgEffect+taxEffect;
+  document.getElementById('npBridgeCallout').innerHTML =
+    'Net Profit (after tax) <b>'+(netProfitChange>=0?'increased':'decreased')+' '+fmtTHB(Math.abs(netProfitChange))+'</b> QoQ — '
+    + (volumeEffect>=0?'volume growth contributed +':'volume decline cost ')+fmtTHB(Math.abs(volumeEffect))
+    + ', ' + (opexEffectsTotal>=0?'partly offset further by +':'offset by ') + fmtTHB(Math.abs(opexEffectsTotal)) + ' of combined margin/cost/tax effects';
+  latestData.npBridge = npBridgeSteps;
+}
+
+/* --- Toolbar --- */
+document.getElementById('fiveQDownloadBtn').addEventListener('click', ()=>{
+  const d = latestData.fiveQ;
+  const rows = [['Line Item', ...d.quarterLabels, 'QoQ %', 'YoY %']];
+  d.rows.forEach(r=> rows.push([r.label, ...r.vals.map(v=> r.isMargin? v.toFixed(1) : Math.round(v)), r.qoq!==null?r.qoq.toFixed(1):'', r.yoy!==null?r.yoy.toFixed(1):'']));
+  downloadCSV(rows, 'pnl_5quarter_table.csv');
+});
+document.getElementById('normEarnDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('normEarnChart', 'pnl_normalized_earnings_bridge.svg'));
+document.getElementById('npBridgeDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('npBridgeChart', 'pnl_net_profit_change_bridge.svg'));
+
+/* ---------- Init ---------- */
+renderQuarterlyTrend();
+</script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — identical to pnl_executive_summary.html's shared block
+   (same seed, same order). Keep the two in sync.
+   ============================================================================ */
+/* -------------------- Part 2: P&L-only mock data (kept in sync with pnl_executive_summary.html) -------------------- */
+const CAT_COLOR_INDEX = {};
+ /* Corporate Tax cascade (post-build review) — same TAX_RATE/formula as the
+   other 3 P&L files. pnlByChannel[g].netProfit is EBIT (left as-is, not
+   renamed, since Cost Structure by Channel and every margin formula below
+   already depends on it); .netProfitAfterTax is the new bottom line. */
+/* channelFilter: 'all' blends MT+TT+Ecom, otherwise a single channel key. Used
+   by every Zone B chart/table so they all respond consistently to the Channel
+   filter dropdown. */
+function categoryMarginsFor(catName, channelFilter, s, e){
+  const channels = channelFilter==='all' ? groupKeys : [channelFilter];
+  let netSalesSum=0, grossProfitSum=0, ebitSum=0;
+  channels.forEach(channel=>{
+    const net = categoryNetSales(channel, catName, s, e);
+    const gp = net * effectiveMarginPct(channel, catName)/100;
+    const opex = net * categoryOpexRateTotal(channel);
+    netSalesSum += net; grossProfitSum += gp; ebitSum += (gp - opex);
+  });
+  const netProfitAfterTax = ebitSum * (1-TAX_RATE); // Tax cascade: Net Profit = EBIT after tax
+  return { netSales:netSalesSum, grossMarginPct: netSalesSum?grossProfitSum/netSalesSum*100:0, netMarginPct: netSalesSum?netProfitAfterTax/netSalesSum*100:0, netProfit: netProfitAfterTax };
+}
+function resolveColor(cssColorOrVar){
+  const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
+  return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+
+
+initThemeToggle(()=> renderBreakdown());
+
+/* ---------- Custom range selects ---------- */
+
+/* ---------- Period dropdown ---------- */
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderBreakdown();
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderBreakdown();
+});
+document.getElementById('categoryFilterSelect').disabled = true; // only "All Categories" wired so far, matches every other Breakdown page
+document.getElementById('channelFilterSelect').addEventListener('change', renderBreakdown);
+
+/* ---------- Time Frame (Monthly/Quarterly) toggle ---------- */
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderBreakdown();
+});
+positionTimeFrameThumb();
+
+/* ---------- Render ---------- */
+
+function renderBreakdown(){
+  const [s,e] = getPeriodRange(currentPeriodKey, currentCustom);
+  const brand = cssVar('--brand') || '#8E1E4D';
+  const good = cssVar('--good') || '#0ca30c';
+  const baseline = cssVar('--baseline') || '#c3c2b7';
+  const channelFilter = document.getElementById('channelFilterSelect').value;
+
+  // Bug fix (post-build review, P1-9): trimmed to the latest CLOSED month
+  // only (was Jan-Dec with everything past TODAY masked null, leaving the
+  // chart's right half empty since this line has no forward-looking
+  // Target/forecast series to fill that space).
+  const curYearIdx = []; for(let i=24;i<=TODAY;i++) curYearIdx.push(i);
+  const curYearGroups = bucketMonths(curYearIdx, currentTimeFrame);
+  const curYearLabels = currentTimeFrame==='quarterly' ? curYearGroups.map(quarterLabel) : curYearIdx.map(i=>monthLabels[i]);
+
+  /* === ZONE A1: Net Margin % Trend by Channel === */
+  document.getElementById('marginByChTrendLegend').innerHTML = groupKeys.map(g =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColor[g]+'"></span>'+g+'</span>'
+  ).join('');
+  // Net Margin % is a ratio of two summable ฿ series (Net Profit over Net
+  // Sales) — a quarter's margin is sum(profit)÷sum(netSales) within it, NOT
+  // an average of the months' own %, same "ratio of sums" rule used
+  // elsewhere in this system.
+  const nmTrendSeries = groupKeys.map(g => ({
+    data: curYearGroups.map(grp => {
+      const np = grp.reduce((s,i)=>s+pnlByChannel[g].netProfitAfterTax[i],0), ns = grp.reduce((s,i)=>s+pnlByChannel[g].netSales[i],0);
+      return ns ? np/ns*100 : 0;
+    }),
+    color: groupColor[g], width:2.2, showLastLabel:true, lastLabelFormatter: v=>fmtPct(v,1)
+  }));
+  buildLineChartSVG('marginByChTrendChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series: nmTrendSeries });
+  latestData.marginByChTrend = { labels: curYearLabels, channels: groupKeys, series: nmTrendSeries.map(s=>s.data) };
+
+  /* === ZONE A2: Cost Structure by Channel (stacked 100%) === */
+  const costLines = [
+    { key:'cogs', name:'COGS', color: baseline },
+    { key:'tradeSpend', name:'Trade Spend', color: resolveColor('var(--cat-1)') },
+    { key:'logistics', name:'Logistics', color: resolveColor('var(--cat-2)') },
+    { key:'marketing', name:'Marketing/Ads', color: resolveColor('var(--cat-3)') },
+    { key:'sga', name:'SG&A', color: resolveColor('var(--cat-4)') },
+    { key:'tax', name:'Tax (20%)', color: resolveColor('var(--cat-5)') },
+    { key:'netProfitAfterTax', name:'Net Profit (after tax)', color: good }
+  ];
+  document.getElementById('costStructLegend').innerHTML = costLines.map(cl =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+cl.color+'"></span>'+cl.name+'</span>'
+  ).join('');
+  buildStacked100BarSVG('costStructChart', {
+    labels: groupKeys, height:280,
+    series: costLines.map(cl => ({ name:cl.name, color:cl.color, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })),
+    valueFormatter: fmtTHB,
+    /* 1-decimal so the Net Profit segment's % is directly comparable to
+       Executive Summary's Ranking table Net Margin % (both same formula,
+       same underlying value -- 0-decimal rounding here previously made
+       25.66% look like "26%" next to Ranking's "25.7%", reading as a data
+       mismatch when it was only a display-precision difference). */
+    pctDecimals: 1
+  });
+  latestData.costStruct = { channels: groupKeys, lines: costLines.map(cl => ({ name:cl.name, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })) };
+
+  /* Insight: each channel's own cost structure is a fixed %-of-sales rate
+     (OPEX_RATES), so the "top differentiating cost driver" per channel is
+     stable regardless of period. Excludes COGS (passive, not a spend
+     decision) and Net Profit (the result, not a driver) from the
+     comparison, then reports the 2 channel/driver combos with the highest
+     %-of-sales, drawn from different channels so the callout doesn't repeat
+     the same channel twice. */
+  const costDriverKeys = ['tradeSpend','logistics','marketing','sga'];
+  const driverCombos = [];
+  groupKeys.forEach(g=>{
+    const netSalesSum = sumRange(pnlByChannel[g].netSales, s, e);
+    costDriverKeys.forEach(key=>{
+      const line = costLines.find(cl=>cl.key===key);
+      const pct = netSalesSum ? sumRange(pnlByChannel[g][key], s, e)/netSalesSum*100 : 0;
+      driverCombos.push({ channel:g, name:line.name, pct });
+    });
+  });
+  driverCombos.sort((a,b)=>b.pct-a.pct);
+  const topCombo = driverCombos[0];
+  const secondCombo = driverCombos.find(c=>c.channel!==topCombo.channel);
+  document.getElementById('costStructCallout').innerHTML =
+    '<b>'+topCombo.channel+'</b> has the highest '+topCombo.name+' <span class="pos">('+topCombo.pct.toFixed(0)+'% of Net Sales)</span>'
+    + (secondCombo ? ' · <b>'+secondCombo.channel+'</b> has the highest '+secondCombo.name+' <span class="pos">('+secondCombo.pct.toFixed(0)+'% of Net Sales)</span>' : '');
+
+  /* === ZONE B: Category margins under current Channel filter === */
+  const catMargins = CATEGORY_NAMES.map(cat => ({ name:cat, ...categoryMarginsFor(cat, channelFilter, s, e) }));
+  const sortedByNetMargin = [...catMargins].sort((a,b)=>b.netMarginPct-a.netMarginPct);
+  const highest = sortedByNetMargin[0], lowest = sortedByNetMargin[sortedByNetMargin.length-1];
+  document.getElementById('kpiHighestCatValue').textContent = highest.name;
+  document.getElementById('kpiHighestCatCaption').textContent = fmtPct(highest.netMarginPct,1) + ' Net Margin · ' + (channelFilter==='all'?'all channels':channelFilter);
+  document.getElementById('kpiLowestCatValue').textContent = lowest.name;
+  document.getElementById('kpiLowestCatCaption').textContent = fmtPct(lowest.netMarginPct,1) + ' Net Margin · ' + (channelFilter==='all'?'all channels':channelFilter);
+
+  document.getElementById('mByCategorySubtitle').textContent = 'This period · ' + (channelFilter==='all'?'company-wide (all channels)':channelFilter+' only') + ', by category';
+  buildGroupedBarSVG('mByCategoryChart', {
+    labels: CATEGORY_NAMES, yFormatter: v=>v.toFixed(0)+'%', referenceValue:0, showValueLabels:true,
+    series:[ {name:'Gross Margin %', color:brand, values:catMargins.map(c=>c.grossMarginPct)}, {name:'Net Margin %', color:good, values:catMargins.map(c=>c.netMarginPct)} ]
+  });
+  latestData.mByCategory = catMargins;
+
+  /* === ZONE B2: Category Profit Matrix === */
+  const matrixPoints = catMargins.map(c => ({
+    x: c.netProfit, y: c.netMarginPct, label: c.name, color: resolveColor('var(--cat-'+CAT_COLOR_INDEX[c.name]+')')
+  }));
+  buildScatterSVG('profitMatrixChart', matrixPoints, {
+    xFormatter: fmtTHB, yFormatter: v=>v.toFixed(0)+'%',
+    xAxisTitle: 'Net Profit Contribution (฿)', yAxisTitle: 'Net Margin (%)',
+    quadrantLabels: { topRight:'Premium Stars', topLeft:'Niche Premium', bottomRight:'Volume Engines', bottomLeft:'Needs Review' }
+  });
+  latestData.matrix = matrixPoints;
+
+  /* === ZONE B3: Category Profitability Ranking table === */
+  document.getElementById('catRankTable').innerHTML =
+    '<thead><tr><th>#</th><th>Category</th><th>Net Sales</th><th>Gross Margin %</th><th>Net Margin %</th><th>Net Profit</th></tr></thead><tbody>'
+    + sortedByNetMargin.map((c,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+c.name+'</td><td class="tnum">'+fmtTHB(c.netSales)+'</td><td class="tnum">'+fmtPct(c.grossMarginPct,1)+'</td><td class="tnum">'+fmtPct(c.netMarginPct,1)+'</td><td class="tnum">'+fmtTHB(c.netProfit)+'</td></tr>').join('')
+    + '</tbody>';
+  latestData.catRank = sortedByNetMargin;
+
+}
+
+/* --- Toolbar --- */
+document.getElementById('marginByChTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('marginByChTrendChart', 'pnl_net_margin_trend_by_channel.svg'));
+document.getElementById('marginByChTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('marginByChTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('marginByChTrendTableWrap');
+  const canvasWrap = document.getElementById('marginByChTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.marginByChTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.channels.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+(s[i]!==null?fmtPct(s[i],1):'–')+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('costStructDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('costStructChart', 'pnl_cost_structure_by_channel.svg'));
+document.getElementById('costStructExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('costStructTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('costStructTableWrap');
+  const canvasWrap = document.getElementById('costStructCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.costStruct;
+  let html = '<table class="mini-table"><thead><tr><th>Line</th>' + d.channels.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  d.lines.forEach(l=>{ html += '<tr><td>'+l.name+'</td>' + l.values.map(v=>'<td>'+fmtTHB(v)+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('mByCategoryDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Category','Net Sales','Gross Margin %','Net Margin %','Net Profit']];
+  latestData.mByCategory.forEach(c=> rows.push([c.name, Math.round(c.netSales), c.grossMarginPct.toFixed(1), c.netMarginPct.toFixed(1), Math.round(c.netProfit)]));
+  downloadCSV(rows, 'pnl_margin_by_category.csv');
+});
+document.getElementById('mByCategoryExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mByCategoryTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('mByCategoryTableWrap');
+  const canvasWrap = document.getElementById('mByCategoryCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.mByCategory;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Gross Margin %</th><th>Net Margin %</th></tr></thead><tbody>';
+  d.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtPct(c.grossMarginPct,1)+'</td><td>'+fmtPct(c.netMarginPct,1)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('profitMatrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('profitMatrixChart', 'pnl_category_profit_matrix.svg'));
+document.getElementById('profitMatrixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('profitMatrixTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('profitMatrixTableWrap');
+  const canvasWrap = document.getElementById('profitMatrixCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.matrix;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Net Profit</th><th>Net Margin %</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.x)+'</td><td>'+p.y.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('catRankDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['#','Category','Net Sales','Gross Margin %','Net Margin %','Net Profit']];
+  latestData.catRank.forEach((c,i)=> rows.push([i+1, c.name, Math.round(c.netSales), c.grossMarginPct.toFixed(1), c.netMarginPct.toFixed(1), Math.round(c.netProfit)]));
+  downloadCSV(rows, 'pnl_category_profitability_ranking.csv');
+});
+document.getElementById('catRankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+/* ---------- Init ---------- */
+renderBreakdown();
+</script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — identical to pnl_executive_summary.html / pnl_breakdown.html's
+   shared block (same seed, same order). Keep all three in sync.
+   ============================================================================ */
+/* -------------------- Part 2: P&L-only mock data (kept in sync with pnl_executive_summary.html / pnl_breakdown.html) -------------------- */
+
+ /* Company-wide (MT+TT+Ecom) monthly series — same aggregation as pnl_executive_summary.html's
+   pnlCompany, rebuilt here rather than imported since each P&L file is standalone. */
+/* Corporate Tax cascade (post-build review) — same TAX_RATE/formula as the
+   other 3 P&L files. pnlCompany.netProfit is EBIT (left as-is); this file's
+   "For Every ฿1 of Revenue" donut is the only widget here below EBIT, so
+   Tax only needs to exist at the company-wide level. */
+
+
+initThemeToggle(()=> renderCostStructure(currentPeriodKey, currentCustom));
+
+/* ---------- Custom range selects ---------- */
+
+/* ---------- Period dropdown ---------- */
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderCostStructure(currentPeriodKey, currentCustom);
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderCostStructure(currentPeriodKey, currentCustom);
+});
+
+/* ---------- Time Frame (Monthly/Quarterly) toggle ---------- */
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderCostStructure(currentPeriodKey, currentCustom);
+});
+positionTimeFrameThumb();
+
+const invDelta = v => v<=0 ? 'pos' : 'neg';
+/* Ratio-to-sales shifts are small (well under 1pp most periods) — fmtSignedPP's
+   whole-number rounding would flatten every row to "+0pp", so this table uses
+   1-decimal precision instead. */
+const fmtSignedPPDecimal = v => (v>=0?'+':'') + v.toFixed(1) + 'pp';
+
+/* Static placeholder — Trade Spend by Partner (MT only). No data source exists
+   at partner granularity (would need negotiated deal terms per partner, not
+   revenue share), so this renders empty tracks + explicit caveat text instead
+   of any number, per the "no fake numbers" instruction. */
+(function renderTradeSpendByPartnerPlaceholder(){
+  const rows = ['Partner 1','Partner 2','Partner 3','Partner 4','Partner 5'];
+  document.getElementById('tradeSpendByPartnerPlaceholder').innerHTML = rows.map(name =>
+    '<div class="cat-row"><div style="width:90px;font-size:11.5px;color:var(--ink-3);">'+name+'</div>'
+    + '<div class="cat-track"></div>'
+    + '<div style="width:40px;font-size:11px;color:var(--ink-3);text-align:right;">n/a</div></div>'
+  ).join('');
+})();
+
+/* ---------- Cost Category Detail: fixed-ratio decomposition of Marketing/Ads
+   and SG&A into named sub-categories. Splits sum to exactly 1.0 so each
+   quarter's sub-category values sum to EXACTLY that quarter's existing
+   Marketing/Ads or SG&A total (no drift possible) — Trade Spend and
+   Logistics are deliberately NOT split (per spec: they're rebates/freight,
+   not People/Rental/Advertising cost pools). Data grain is fixed rolling 5
+   quarters (independent of the page's Period filter, like OPEX Trend). ---------- */
+const SELLING_EXPENSE_SPLIT = { 'Advertising & Promotion':0.60, 'Digital/Content Marketing':0.25, 'People cost':0.10, 'Others':0.05 };
+const ADMIN_EXPENSE_SPLIT = { 'People cost':0.45, 'Rental & Depreciation':0.20, 'Other Admin Expenses':0.15, 'Advisor & Professional Fees':0.10, 'Service Cost':0.10 };
+const COST_DETAIL_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)'];
+const cdQuarterStart = Math.floor(TODAY/3)*3;
+const cdQuarterStarts = [cdQuarterStart-12, cdQuarterStart-9, cdQuarterStart-6, cdQuarterStart-3, cdQuarterStart];
+const cdQuarterLabels = cdQuarterStarts.map(quarterYearLabel);
+function renderCostCategoryDetail(){
+  function renderSplit(totalSeries, split, chartId, ratioChartId, legendId, calloutId, calloutNoun){
+    const names = Object.keys(split);
+    const totalsByQ = cdQuarterStarts.map(qs => sumRange(totalSeries, qs, qs+2));
+    /* Bug fix (post-build review, P0-5): the split ratios sum to exactly
+       1.0 so the sub-category EXACT values already summed to the exact
+       parent total -- but buildStackedBarSVG's valueFormatter (fmtTHB)
+       rounds each segment's in-bar label independently, and summing N>2
+       independently-rounded labels visually overshoots the (also
+       independently-rounded) parent total shown elsewhere more often than
+       not, worst-case at small quarters like Q4'25. Reconcile each
+       quarter's segment values (largest-remainder) to sum EXACTLY to that
+       quarter's OWN rounded total, so the displayed segments never exceed
+       (or fall short of) the parent line. */
+    const totalsByQRounded = totalsByQ.map(t => roundToNearestTHB100K(t));
+    const rawValuesByName = names.map(name => totalsByQ.map(t => t*split[name]));
+    const reconciledValuesByName = names.map(()=>[]);
+    for(let qi=0; qi<totalsByQ.length; qi++){
+      const columnRaw = rawValuesByName.map(vals => vals[qi]/1e6);
+      const reconciled = reconcileRoundToTarget(columnRaw, totalsByQRounded[qi]/1e6, 1).map(v=>v*1e6);
+      reconciled.forEach((v,ni)=> reconciledValuesByName[ni].push(v));
+    }
+    const series = names.map((name,i) => ({ name, color: resolveColor(COST_DETAIL_COLORS[i % COST_DETAIL_COLORS.length]),
+      values: reconciledValuesByName[i] }));
+    buildStackedBarSVG(chartId, { labels: cdQuarterLabels, series, valueFormatter: fmtTHB });
+    document.getElementById(legendId).innerHTML = series.map(s=>
+      '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>'
+    ).join('');
+    const netSalesByQ = cdQuarterStarts.map(qs => sumRange(pnlCompany.netSales, qs, qs+2));
+    const ratioSeries = totalsByQ.map((t,i)=> netSalesByQ[i] ? t/netSalesByQ[i]*100 : 0);
+    buildLineChartSVG(ratioChartId, { labels: cdQuarterLabels, yFormatter: v=>v.toFixed(1)+'%', series:[{data:ratioSeries, color:cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}] });
+    const latestShare = names.map((name,i)=>({ name, value: series[i].values[4], pct: totalsByQ[4] ? series[i].values[4]/totalsByQ[4]*100 : 0 })).sort((a,b)=>b.value-a.value);
+    document.getElementById(calloutId).innerHTML = '<b>'+latestShare[0].name+'</b> คิดเป็นสัดส่วนใหญ่สุดของ '+calloutNoun+' ('+latestShare[0].pct.toFixed(0)+'%) ต่อเนื่องทุกไตรมาส';
+  }
+  renderSplit(pnlCompany.marketing, SELLING_EXPENSE_SPLIT, 'sellingExpChart', 'sellingExpRatioChart', 'sellingExpLegend', 'sellingExpCallout', 'Selling Expense');
+  renderSplit(pnlCompany.sga, ADMIN_EXPENSE_SPLIT, 'adminExpChart', 'adminExpRatioChart', 'adminExpLegend', 'adminExpCallout', 'Admin Expense');
+}
+
+/* ---------- Render ---------- */
+
+function renderCostStructure(periodKey, custom){
+  const [s,e] = getPeriodRange(periodKey, custom);
+  const label = periodLabelText(periodKey, custom);
+  const brand = cssVar('--brand') || '#8E1E4D';
+  const good = cssVar('--good') || '#0ca30c';
+  const baseline = cssVar('--baseline') || '#c3c2b7';
+
+  const netSalesSum = sumRange(pnlCompany.netSales, s, e);
+  const cogsSum = sumRange(pnlCompany.cogs, s, e);
+  const tradeSpendSum = sumRange(pnlCompany.tradeSpend, s, e);
+  const logisticsSum = sumRange(pnlCompany.logistics, s, e);
+  const marketingSum = sumRange(pnlCompany.marketing, s, e);
+  const sgaSum = sumRange(pnlCompany.sga, s, e);
+  const opexSum = tradeSpendSum + logisticsSum + marketingSum + sgaSum;
+  const netProfitSum = sumRange(pnlCompany.netProfit, s, e);
+  const opexRatioPct = netSalesSum ? opexSum/netSalesSum*100 : 0;
+
+  const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
+  // View By (Monthly/Quarterly): curYearGroups buckets curYearIdx into
+  // quarters when Quarterly is active (monthly is a no-op passthrough), and
+  // curYearLabels switches to "Q1".."Q4" accordingly.
+  const curYearGroups = bucketMonths(curYearIdx, currentTimeFrame);
+  const curYearLabels = currentTimeFrame==='quarterly' ? curYearGroups.map(quarterLabel) : curYearIdx.map(i=>monthLabels[i]);
+
+  /* === SECTION 1: OPEX Ratio % KPI (mirrors Executive Summary) === */
+  const opexAt = i => pnlCompany.netSales[i] ? (pnlCompany.tradeSpend[i]+pnlCompany.logistics[i]+pnlCompany.marketing[i]+pnlCompany.sga[i])/pnlCompany.netSales[i]*100 : 0;
+  const opexMomPP = opexAt(e)-opexAt(e-1), opexYoyPP = opexAt(e)-opexAt(e-12);
+  document.getElementById('kpiOpexValue').textContent = fmtPct(opexRatioPct,1);
+  document.getElementById('kpiOpexCaption').textContent = label;
+  document.getElementById('kpiOpexMom').innerHTML = '<span class="'+invDelta(opexMomPP)+'">'+fmtSignedPP(opexMomPP)+'</span>';
+  document.getElementById('kpiOpexYoy').innerHTML = '<span class="'+invDelta(opexYoyPP)+'">'+fmtSignedPP(opexYoyPP)+'</span>';
+  { const spark=[]; for(let i=Math.max(0,e-11); i<=e; i++) spark.push(opexAt(i)); document.getElementById('kpiOpexSpark').innerHTML = sparklineSVG('kpiOpexSpark', spark, brand, v=>fmtPct(v,0)); }
+
+  /* === SECTION 1: Cost-to-Sales Ratio table (YTD vs Last Year, same s/e range as everywhere else on this page) === */
+  const lyStart = s-12, lyEnd = e-12;
+  const lyNetSales = sumRange(pnlCompany.netSales, lyStart, lyEnd);
+  const lyTradeSpend = sumRange(pnlCompany.tradeSpend, lyStart, lyEnd);
+  const lyLogistics = sumRange(pnlCompany.logistics, lyStart, lyEnd);
+  const lyMarketing = sumRange(pnlCompany.marketing, lyStart, lyEnd);
+  const lySga = sumRange(pnlCompany.sga, lyStart, lyEnd);
+  const ratioOf = (v, base) => base ? v/base*100 : 0;
+  const diffPP = (thisV, lastV) => thisV - lastV;
+  const ratioRows = [
+    { label:'Trade Spend-to-Sales %', thisPeriod: ratioOf(tradeSpendSum, netSalesSum), lastYear: ratioOf(lyTradeSpend, lyNetSales) },
+    { label:'Logistics-to-Sales %', thisPeriod: ratioOf(logisticsSum, netSalesSum), lastYear: ratioOf(lyLogistics, lyNetSales) },
+    { label:'Marketing-to-Sales %', thisPeriod: ratioOf(marketingSum, netSalesSum), lastYear: ratioOf(lyMarketing, lyNetSales) },
+    { label:'SG&A-to-Sales %', thisPeriod: ratioOf(sgaSum, netSalesSum), lastYear: ratioOf(lySga, lyNetSales) }
+  ];
+  document.getElementById('ratioTableSubtitle').textContent = label + ' vs same range last year';
+  document.getElementById('ratioTable').innerHTML =
+    '<thead><tr><th>Ratio</th><th>' + label + '</th><th>Last Year</th><th>Diff</th></tr></thead><tbody>'
+    + ratioRows.map(r=>{
+        const d = diffPP(r.thisPeriod, r.lastYear);
+        return '<tr><td>'+r.label+'</td><td class="tnum">'+fmtPct(r.thisPeriod,1)+'</td><td class="tnum">'+fmtPct(r.lastYear,1)+'</td><td class="tnum"><span class="'+invDelta(d)+'">'+fmtSignedPPDecimal(d)+'</span></td></tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.ratioTable = ratioRows.map(r=>({ label:r.label, thisPeriod:r.thisPeriod, lastYear:r.lastYear, diffPP: diffPP(r.thisPeriod, r.lastYear) }));
+
+  /* === SECTION 2: OPEX Trend (trailing 18 months, company-wide, ignores Period filter) === */
+  const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
+  // View By: shareGroups buckets the trailing-18-month shareIdx into quarters
+  // when Quarterly is active (monthly is a no-op passthrough) — independent
+  // of the Period filter, same as shareIdx itself already was.
+  const shareGroups = bucketMonths(shareIdx, currentTimeFrame);
+  const shareLabels = currentTimeFrame==='quarterly' ? shareGroups.map(quarterLabel) : shareIdx.map(i=>monthLabels[i]);
+  const opexLines = [
+    { name:'Trade Spend', color: resolveColor('var(--cat-1)'), key:'tradeSpend' },
+    { name:'Logistics', color: resolveColor('var(--cat-2)'), key:'logistics' },
+    { name:'Marketing/Ads', color: resolveColor('var(--cat-3)'), key:'marketing' },
+    { name:'SG&A', color: resolveColor('var(--cat-4)'), key:'sga' }
+  ];
+  // ฿-amount series (all months already closed within this trailing window):
+  // sum-of-months per group, no masking needed.
+  const opexSeries = opexLines.map(l => ({
+    name:l.name, color:l.color,
+    values: shareGroups.map(grp => grp.reduce((sum,i)=> sum + groupKeys.reduce((s,g)=> s + pnlByChannel[g][l.key][i], 0), 0))
+  }));
+  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:200 });
+  document.getElementById('opexTrendLegend').innerHTML = opexLines.map(l =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+l.color+'"></span>'+l.name+'</span>'
+  ).join('');
+  latestData.opexTrend = { labels: shareLabels, series: opexSeries };
+
+  /* === SECTION 2: Operating Expense Ratio Trend by Channel (NEW, % lower-is-better) === */
+  document.getElementById('opexRatioTrendLegend').innerHTML = groupKeys.map(g =>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+groupColor[g]+'"></span>'+g+'</span>'
+  ).join('');
+  // OPEX Ratio % is a ratio of two summable ฿ series (total OPEX over Net
+  // Sales) — a quarter's ratio is sum(OPEX)÷sum(netSales) within it, NOT an
+  // average of the months' own %, same "ratio of sums" rule used for Net
+  // Margin % Trend by Channel on the Breakdown page. Masked to null until
+  // every month in the group has closed, mirroring the old per-month
+  // `i<=TODAY` mask.
+  const opexRatioSeries = groupKeys.map(g => ({
+    data: curYearGroups.map(grp => {
+      if(!grp.every(i=>i<=TODAY)) return null;
+      const opex = grp.reduce((s,i)=>s+pnlByChannel[g].tradeSpend[i]+pnlByChannel[g].logistics[i]+pnlByChannel[g].marketing[i]+pnlByChannel[g].sga[i],0);
+      const ns = grp.reduce((s,i)=>s+pnlByChannel[g].netSales[i],0);
+      return ns ? opex/ns*100 : 0;
+    }),
+    color: groupColor[g], width:2.2, showLastLabel:true, lastLabelFormatter: v=>fmtPct(v,1)
+  }));
+  buildLineChartSVG('opexRatioTrendChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series: opexRatioSeries });
+  latestData.opexRatioTrend = { labels: curYearLabels, channels: groupKeys, series: opexRatioSeries.map(s=>s.data) };
+
+  /* === SECTION 2: Marketing & Ads Spend by Channel === */
+  const mktItems = groupKeys.map(g => ({ label:g, value: sumRange(pnlByChannel[g].marketing,s,e), color: groupColor[g] }));
+  buildHBarCompareSVG('mktByChannelChart', mktItems, { referenceValue:0, formatValue: fmtTHB, labelW:60, rowHeight:44 });
+  latestData.mktByChannel = mktItems;
+
+  /* === SECTION 3: For Every ฿1 of Revenue (donut) === Tax cascade
+     (post-build review C4): netProfitSum here is EBIT (pre-tax) -- split
+     it into Tax (20% mock rate) + Net Profit (after tax) so the donut
+     reads the same bottom line as every other page, still summing to
+     exactly ฿1.00 of revenue. */
+  const ebitForDonut = Math.max(0,netProfitSum);
+  const taxForDonut = ebitForDonut * TAX_RATE;
+  const netProfitAfterTaxForDonut = ebitForDonut - taxForDonut;
+  const perBahtSegs = [
+    { name:'COGS', value: cogsSum, color: baseline },
+    { name:'OPEX', value: opexSum, color: resolveColor('var(--cat-1)') },
+    { name:'Tax (20%)', value: taxForDonut, color: resolveColor('var(--cat-5)') },
+    { name:'Net Profit', value: netProfitAfterTaxForDonut, color: good }
+  ];
+  buildDonutSVG('perBahtChart', perBahtSegs, 140, {showLabels:true});
+  document.getElementById('perBahtLegend').innerHTML = perBahtSegs.map(seg =>
+    '<div class="legend-row"><span class="legend-dot" style="background:'+seg.color+'"></span>'
+    + '<span class="legend-name">'+seg.name+'</span>'
+    + '<span class="legend-value">฿'+(netSalesSum?(seg.value/netSalesSum).toFixed(2):'0.00')+' · '+(netSalesSum?(seg.value/netSalesSum*100).toFixed(1):'0.0')+'%</span></div>'
+  ).join('');
+  latestData.perBaht = perBahtSegs;
+
+  /* === SECTION 3: Cost Efficiency Signal callout — which cost category grows faster than revenue === */
+  const salesYoY = lyNetSales ? (netSalesSum-lyNetSales)/lyNetSales*100 : 0;
+  const costCategories = [
+    { name:'COGS', thisV:cogsSum, lastV: sumRange(pnlCompany.cogs, lyStart, lyEnd) },
+    { name:'Trade Spend', thisV:tradeSpendSum, lastV:lyTradeSpend },
+    { name:'Logistics', thisV:logisticsSum, lastV:lyLogistics },
+    { name:'Marketing/Ads', thisV:marketingSum, lastV:lyMarketing },
+    { name:'SG&A', thisV:sgaSum, lastV:lySga }
+  ].map(c => ({ ...c, yoy: c.lastV ? (c.thisV-c.lastV)/c.lastV*100 : 0 }));
+  const outpacing = costCategories.filter(c => c.yoy > salesYoY).sort((a,b)=>(b.yoy-salesYoY)-(a.yoy-salesYoY));
+  if(outpacing.length){
+    const w = outpacing[0];
+    document.getElementById('costSignalCallout').innerHTML = '⚠️ <b>'+w.name+'</b> โต '+fmtSignedPct(w.yoy)+' YoY เร็วกว่า Net Sales ('+fmtSignedPct(salesYoY)+' YoY) — เสี่ยงกัดกร่อน Margin ถ้าแนวโน้มนี้ต่อเนื่อง'
+      + (outpacing.length>1 ? ' (อีก '+(outpacing.length-1)+' รายการที่โตเร็วกว่ายอดขายเช่นกัน: '+outpacing.slice(1).map(c=>c.name).join(', ')+')' : '');
+  } else {
+    document.getElementById('costSignalCallout').innerHTML = '✓ ไม่มี Cost Line ใดโตเร็วกว่า Net Sales ('+fmtSignedPct(salesYoY)+' YoY) ในช่วงเวลานี้ — Cost Structure ยังควบคุมได้ดี';
+  }
+
+  renderCostCategoryDetail();
+}
+
+/* --- Toolbar --- */
+document.getElementById('ratioTableDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Ratio','This Period','Last Year','Diff (pp)']];
+  latestData.ratioTable.forEach(r=> rows.push([r.label, r.thisPeriod.toFixed(1), r.lastYear.toFixed(1), r.diffPP.toFixed(1)]));
+  downloadCSV(rows, 'pnl_cost_to_sales_ratio.csv');
+});
+document.getElementById('ratioTableExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('opexTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('opexTrendChart', 'pnl_opex_trend.svg'));
+document.getElementById('opexTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('opexTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('opexTrendTableWrap');
+  const canvasWrap = document.getElementById('opexTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.opexTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('opexRatioTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('opexRatioTrendChart', 'pnl_opex_ratio_trend_by_channel.svg'));
+document.getElementById('opexRatioTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('opexRatioTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('opexRatioTrendTableWrap');
+  const canvasWrap = document.getElementById('opexRatioTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.opexRatioTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.channels.map(c=>'<th>'+c+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+(s[i]!==null?fmtPct(s[i],1):'–')+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('mktByChannelDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('mktByChannelChart', 'pnl_marketing_ads_spend_by_channel.svg'));
+document.getElementById('mktByChannelExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('mktByChannelTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('mktByChannelTableWrap');
+  const canvasWrap = document.getElementById('mktByChannelCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.mktByChannel;
+  let html = '<table class="mini-table"><thead><tr><th>Channel</th><th>Marketing/Ads Spend</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.value)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('perBahtDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('perBahtChart', 'pnl_for_every_1_baht_revenue.svg'));
+document.getElementById('perBahtExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('sellingExpDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('sellingExpChart', 'pnl_selling_expense_breakdown.svg'));
+document.getElementById('adminExpDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('adminExpChart', 'pnl_admin_expense_breakdown.svg'));
+
+/* ---------- Init ---------- */
+renderCostStructure(currentPeriodKey, currentCustom);
 </script>
 </body>
 </html>
