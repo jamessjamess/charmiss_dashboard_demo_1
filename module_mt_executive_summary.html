@@ -76,7 +76,7 @@
   </div>
 
   <!-- ===== ROW 1: Sales by Key Account · Target Attainment & Full Year Outlook · Return Rate (CN) ===== -->
-  <div class="chart-grid" style="grid-template-columns:repeat(3,1fr);">
+  <div class="chart-grid chart-grid-3">
     <div class="card" style="min-width:0;">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
@@ -481,6 +481,13 @@ function renderAll(periodKey, custom){
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
   const curYearLabels = curYearIdx.map(i=>monthLabels[i]);
 
+  /* View By (Monthly/Quarterly): shared bucketing for every full-year trend
+     chart on this page (Target Attainment, Return Rate Trend, Revenue Trend,
+     Monthly YoY Growth %) so switching the toggle re-buckets all of them
+     consistently — previously only Revenue Trend respected it. */
+  const viewGroups = bucketMonths(curYearIdx, currentTimeFrame);
+  const viewLabels = currentTimeFrame==='quarterly' ? viewGroups.map(quarterLabel) : curYearLabels;
+
   /* === Chart: Target Attainment & Full Year Outlook ===
      Ported from sales_overview.html's merged card of the same name (see that
      file's comment for the full rationale) — solid "Actual" line through the
@@ -507,18 +514,18 @@ function renderAll(periodKey, custom){
     + ' · Gap to Target (YTD): <span class="'+mtGapClass+'">'+(mtGapValue>=0?'+':'−')+fmtTHB(Math.abs(mtGapValue))+'</span>'
     + ' · Projected Gap (Full Year): <span class="'+mtFullYearGapClass+'">'+(mtFullYearGapValue>=0?'+':'−')+fmtTHB(Math.abs(mtFullYearGapValue))+'</span>';
 
-  const attainActualSeries = curYearIdx.map(i => {
-    if(i>TODAY) return null;
-    const t = groupTarget.MT[i];
-    return t ? groupActual.MT[i]/t*100 : 0;
+  const attainActualSeries = viewGroups.map(g => {
+    if(!g.every(i=>i<=TODAY)) return null;
+    const a = g.reduce((s,i)=>s+groupActual.MT[i],0), t = g.reduce((s,i)=>s+groupTarget.MT[i],0);
+    return t ? a/t*100 : 0;
   });
-  const closedMonthCount = attainActualSeries.filter(v=>v!==null).length;
-  const attainProjectedSeries = TODAY>=35 ? curYearIdx.map(()=>null)
-    : curYearIdx.map((i,gi) => gi===closedMonthCount-1 ? attainActualSeries[gi] : (gi===curYearIdx.length-1 ? mtProjectedAttainPct : null));
-  const attainTargetLine = curYearIdx.map(()=>100);
+  const closedGroupCount = attainActualSeries.filter(v=>v!==null).length;
+  const attainProjectedSeries = TODAY>=35 ? viewGroups.map(()=>null)
+    : viewGroups.map((g,gi) => gi===closedGroupCount-1 ? attainActualSeries[gi] : (gi===viewGroups.length-1 ? mtProjectedAttainPct : null));
+  const attainTargetLine = viewGroups.map(()=>100);
   const attainValsForDomain = [...attainActualSeries.filter(v=>v!==null), mtProjectedAttainPct];
   buildLineChartSVG('attainOutlookChart', {
-    labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%',
+    labels: viewLabels, yFormatter: v=>v.toFixed(0)+'%',
     domainMin: Math.min(80, Math.floor(Math.min(...attainValsForDomain)/5)*5),
     domainMax: Math.max(120, Math.ceil(Math.max(...attainValsForDomain)/5)*5),
     series:[
@@ -527,7 +534,7 @@ function renderAll(periodKey, custom){
       {data:attainActualSeries, color:brand, width:2.4, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,0)}
     ]
   });
-  latestData.attainOutlook = { labels: curYearLabels, actual: attainActualSeries, projected: attainProjectedSeries, target: attainTargetLine };
+  latestData.attainOutlook = { labels: viewLabels, actual: attainActualSeries, projected: attainProjectedSeries, target: attainTargetLine };
 
   /* === Chart: Return Rate (CN) Trend ===
      Single MT-wide line (not split per Key Account, per feedback) — full
@@ -535,13 +542,14 @@ function renderAll(periodKey, custom){
      stops at the latest closed month. Per-account detail (Highest: ...)
      moves into the insight callout below instead of a separate chart. */
   const mtCNValueFull = groupActual.MT.map((v,i)=>v*mtCNRate[i]);
-  const retTrendAmountSeries = curYearIdx.map(i => i<=TODAY ? groupActual.MT[i]*mtCNRate[i] : null);
-  const retTrendRateSeries = curYearIdx.map((i,gi) => retTrendAmountSeries[gi]===null ? null : mtCNRate[i]*100);
+  const retTrendAmountSeries = viewGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual.MT[i]*mtCNRate[i],0) : null);
+  const retTrendActualSum = viewGroups.map(g => g.reduce((s,i)=>s+groupActual.MT[i],0));
+  const retTrendRateSeries = retTrendAmountSeries.map((amt,gi) => amt===null ? null : (retTrendActualSum[gi] ? amt/retTrendActualSum[gi]*100 : 0));
   buildLineChartSVG('retTrendChart', {
-    labels: curYearLabels, yFormatter: v=>v.toFixed(1)+'%',
+    labels: viewLabels, yFormatter: v=>v.toFixed(1)+'%',
     series:[{data:retTrendRateSeries, color:brand, width:2.2, showLastLabel:true, lastLabelFormatter:(v,i)=>fmtPct(v,1)+' ('+fmtTHB(retTrendAmountSeries[i])+')'}]
   });
-  latestData.retTrend = { labels: curYearLabels, rate: retTrendRateSeries, amount: retTrendAmountSeries };
+  latestData.retTrend = { labels: viewLabels, rate: retTrendRateSeries, amount: retTrendAmountSeries };
 
   const retAmount = sumRange(mtCNValueFull,s,e);
   const retPeriod = totalActual ? (retAmount/totalActual*100) : 0;
@@ -550,24 +558,18 @@ function renderAll(periodKey, custom){
     + (retPeriod>=RETURN_RATE_CEILING_PCT ? ' · at/above the '+RETURN_RATE_CEILING_PCT.toFixed(1)+'% threshold' : ' · within the '+RETURN_RATE_CEILING_PCT.toFixed(1)+'% threshold');
 
   /* === Chart: Revenue Trend === */
-  // View By (Monthly/Quarterly, 2026-08-06): revGroups re-buckets the SAME
-  // curYearIdx span; only this chart's own labels/series switch to quarters
-  // — curYearIdx/curYearLabels stay untouched below for Monthly YoY Growth %,
-  // which isn't in the View By toggle's scope.
-  const revGroups = bucketMonths(curYearIdx, currentTimeFrame);
-  const revLabels = currentTimeFrame==='quarterly' ? revGroups.map(quarterLabel) : curYearLabels;
-  const revenueLastYear = revGroups.map(g => g.reduce((s,i)=>s+groupActual.MT[i-12],0));
-  const revenueTarget = bucketSum(groupTarget.MT, revGroups);
-  const revenueThisYear = revGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual.MT[i],0) : null);
+  const revenueLastYear = viewGroups.map(g => g.reduce((s,i)=>s+groupActual.MT[i-12],0));
+  const revenueTarget = bucketSum(groupTarget.MT, viewGroups);
+  const revenueThisYear = viewGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual.MT[i],0) : null);
   buildLineChartSVG('revenueChart', {
-    labels: revLabels, yFormatter: fmtTHB,
+    labels: viewLabels, yFormatter: fmtTHB,
     series:[
       {data:revenueLastYear, color:cssVar('--baseline')||'#c3c2b7', width:1.6},
       {data:revenueTarget, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
       {data:revenueThisYear, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:fmtTHB}
     ]
   });
-  latestData.revenue = { labels: revLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
+  latestData.revenue = { labels: viewLabels, lastYear: revenueLastYear, target: revenueTarget, thisYear: revenueThisYear };
 
   /* === Callout: Revenue Trend insight (replaces the cut subtitle + big
      headline, both redundant with the legend/total already shown elsewhere)
@@ -580,16 +582,29 @@ function renderAll(periodKey, custom){
     const vsTargetPct = rTarget ? (rActual/rTarget-1)*100 : 0;
     const vsLastYearPct = rLastYear ? (rActual/rLastYear-1)*100 : 0;
     document.getElementById('revenueCallout').innerHTML =
-      revLabels[revLastIdx]+': <b>'+fmtTHB(rActual)+'</b> vs Target <span class="'+deltaClass(vsTargetPct)+'">('+(vsTargetPct>=0?'+':'')+vsTargetPct.toFixed(0)+'%)</span>'
+      viewLabels[revLastIdx]+': <b>'+fmtTHB(rActual)+'</b> vs Target <span class="'+deltaClass(vsTargetPct)+'">('+(vsTargetPct>=0?'+':'')+vsTargetPct.toFixed(0)+'%)</span>'
       + ' · vs Last Year <span class="'+deltaClass(vsLastYearPct)+'">('+(vsLastYearPct>=0?'+':'')+vsLastYearPct.toFixed(0)+'%)</span>';
   }
 
-  /* === Chart: Monthly YoY Growth % === */
-  const yoyGrowth = pctChange(groupActual.MT[e], groupActual.MT[e-12]);
-  const growthSeries = curYearIdx.map(i => i<=TODAY ? pctChange(groupActual.MT[i], groupActual.MT[i-12]) : null);
-  document.getElementById('growthHeadline').innerHTML = fmtSignedPct(yoyGrowth) + '<span class="kpi-unit"> vs ' + monthLabels[TODAY-12] + ' · latest closed month</span>';
-  buildLineChartSVG('growthChart', { labels: curYearLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:growthSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)}] });
-  latestData.growth = { labels: curYearLabels, values: growthSeries };
+  /* === Chart: Monthly YoY Growth % ===
+     Ratio-of-sums per bucket (this year's group sum vs same group last
+     year), same rule as Target Attainment/Return Rate Trend above — not an
+     average of each month's own %, so a quarter's growth reconciles exactly
+     with Revenue Trend's This Year/Last Year bars for that same quarter. */
+  const growthThisYearSum = viewGroups.map(g => g.every(i=>i<=TODAY) ? g.reduce((s,i)=>s+groupActual.MT[i],0) : null);
+  const growthLastYearSum = viewGroups.map(g => g.reduce((s,i)=>s+groupActual.MT[i-12],0));
+  const growthSeries = growthThisYearSum.map((v,gi) => v===null ? null : (growthLastYearSum[gi] ? pctChange(v, growthLastYearSum[gi]) : null));
+  let growthLastIdx = growthSeries.length - 1;
+  while(growthLastIdx >= 0 && growthSeries[growthLastIdx] == null) growthLastIdx--;
+  if(growthLastIdx >= 0){
+    const lastMonthIdx = viewGroups[growthLastIdx][viewGroups[growthLastIdx].length-1];
+    const priorLabel = currentTimeFrame==='quarterly'
+      ? quarterLabel(viewGroups[growthLastIdx]) + ' ' + String(2024 + Math.floor((lastMonthIdx-12)/12)).slice(2)
+      : monthLabels[lastMonthIdx-12];
+    document.getElementById('growthHeadline').innerHTML = fmtSignedPct(growthSeries[growthLastIdx]) + '<span class="kpi-unit"> vs ' + priorLabel + ' · latest closed ' + (currentTimeFrame==='quarterly'?'quarter':'month') + '</span>';
+  }
+  buildLineChartSVG('growthChart', { labels: viewLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:growthSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)}] });
+  latestData.growth = { labels: viewLabels, values: growthSeries };
 
   /* === Key Account Growth & Target Gap ===
      Ported from sales_overview.html's "Channel Growth & Target Gap" widget
@@ -646,9 +661,11 @@ function renderAll(periodKey, custom){
     const over = attainVal>=100;
     return '<div class="chgap-row'+(isTotal?' total':'')+'">'
       + '<div class="chgap-name">'+(dotColor?'<span class="chgap-dot" style="background:'+dotColor+'"></span>':'')+name+'</div>'
+      + '<div class="chgap-mobile-label">YoY Growth</div>'
       + kgTrack(grew?'pos':'neg', kgBarStyle(growth||0, kgMaxAbsGrowth), isTotal?null:kgPos(mtTotalGrowth||0, kgMaxAbsGrowth), 26)
       + '<div class="chgap-value-wrap"><div class="chgap-badge '+(grew?'pos':'neg')+'">'+(grew?'▲':'▼')+' '+(growth!==null?fmtSignedPct(growth):'–')+'</div>'
       + (growthAmt!=null ? '<div class="chgap-value-sub '+(growthAmt>=0?'pos':'neg')+'">'+(growthAmt>=0?'+':'−')+fmtTHB(Math.abs(growthAmt))+'</div>' : '')+'</div>'
+      + '<div class="chgap-mobile-label">Target Attainment %</div>'
       + kgTrack(over?'pos':'neg', kgBarStyle0(attainVal, kgAttainDomainMax), isTotal?null:(mtTotalAttainPct/kgAttainDomainMax*100), kgAttainZeroPos)
       + '<div class="chgap-value-wrap"><div class="chgap-value '+(over?'pos':'neg')+'">'+fmtPct(attainVal,1)+'</div>'
       + '<div class="chgap-value-sub '+(over?'pos':'neg')+'">'+(over?'+':'−')+fmtTHB(Math.abs(diffTHB))+'</div></div>'

@@ -491,12 +491,21 @@ button,select{font-family:inherit;}
 .chgap-value-sub{font-size:10.5px;font-weight:500;white-space:nowrap;}
 .chgap-value-sub.pos{color:var(--good-text);}
 .chgap-value-sub.neg{color:var(--critical);}
+/* Per-row mobile labels ("YoY Growth"/"Target Attainment %") — the shared
+   .chgap-col-labels header row (which normally names these two bars) is
+   hidden below the 768px breakpoint since it's laid out for the desktop
+   5-column grid, so without this each row on mobile becomes two unlabeled
+   stacked bars with no way to tell which metric is which. Hidden on desktop
+   (display:none elements are skipped entirely by CSS Grid's auto-placement,
+   so this doesn't consume a column in the normal 5-column row there). */
+.chgap-mobile-label{display:none;}
 @media (max-width:768px){
   .chgap-col-labels,.chgap-axis{display:none;}
   .chgap-row{grid-template-columns:1fr;gap:6px;text-align:left;}
   .chgap-row.total{padding-top:9px;}
   .chgap-value{text-align:left;}
   .chgap-value-wrap{align-items:flex-start;}
+  .chgap-mobile-label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);margin-top:4px;}
 }
 
 .section-label-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;}

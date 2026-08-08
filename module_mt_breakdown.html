@@ -103,7 +103,6 @@
         <button class="tool-btn" id="targetExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Monthly · Jan – Jun 2026 · company-wide MT (not scoped to filters above)</div>
     <div class="chart-headline" id="targetHeadline">–</div>
     <div class="chart-legend">
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:linear-gradient(90deg, var(--good-text) 50%, var(--critical) 50%);border-radius:3px;width:14px;height:10px;"></span>Actual (green = hit target, red = below)</span>
@@ -114,40 +113,20 @@
     <div class="data-table-wrap" id="targetTableWrap"></div>
   </div>
 
-  <div class="chart-grid" style="margin-bottom:14px;">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Return Rate (CN)</span>
-          <button class="info-icon" data-info-title="Return Rate (CN)" data-info-text="มูลค่า Credit Note ÷ ยอดขายสุทธิ รายเดือน ของ MT ทั้ง Channel — เส้นประ = Threshold 4%">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="retTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="retTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="retTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">High Return Rate Partner</span>
+        <button class="info-icon" data-info-title="High Return Rate Partner" data-info-text="Return Rate (CN) ของทุก Key Account เรียงจากสูงไปต่ำ (Company-wide MT เสมอ ไม่ scope ตาม Filter ด้านบน) — เส้นประแนวตั้งคือ Threshold 4.0% แท่งสีแดงคือคู่ค้าที่แตะหรือเกิน Threshold แท่งสีเขียวคือยังต่ำกว่า">i</button>
       </div>
-      <div class="chart-subtitle">Jan – Jun 2026 · company-wide MT</div>
-      <div class="canvas-wrap" id="retTrendCanvasWrap"><div id="retTrendChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="retTrendTableWrap"></div>
-    </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">High Return Rate Partner</span>
-          <button class="info-icon" data-info-title="High Return Rate Partner" data-info-text="Return Rate (CN) ของทุก Key Account เรียงจากสูงไปต่ำ (Company-wide MT เสมอ ไม่ scope ตาม Filter ด้านบน) — เส้นประแนวตั้งคือ Threshold 4.0% (เดียวกับเส้นประในกราฟ Return Rate (CN) ทางซ้าย) แท่งสีแดงคือคู่ค้าที่แตะหรือเกิน Threshold แท่งสีเขียวคือยังต่ำกว่า">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="highReturnTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="highReturnDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="highReturnExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="highReturnTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="highReturnDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="highReturnExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
-      <div class="chart-subtitle">All 9 Key Accounts, ranked · dashed line = 4.0% threshold · company-wide MT</div>
-      <div class="cat-bars" id="highReturnBars"></div>
-      <div class="data-table-wrap" id="highReturnTableWrap"></div>
     </div>
+    <div class="cat-bars" id="highReturnBars"></div>
+    <div class="data-table-wrap" id="highReturnTableWrap"></div>
   </div>
 
   <!-- ===== ZONE B: PARTNER PERFORMANCE ===== -->
@@ -164,7 +143,6 @@
         <button class="tool-btn" id="partnerTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Jan 2024 – Jun 2026, monthly · company-wide MT · labeled lines = Top 5 by latest month's sales</div>
     <div class="canvas-wrap" id="partnerTrendCanvasWrap" style="height:280px;"><div id="partnerTrendChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="partnerTrendTableWrap"></div>
   </div>
@@ -182,7 +160,6 @@
           <button class="tool-btn" id="partnerBulletExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">All Key Accounts · sorted by net sales (same order as the chart to the right)</div>
       <div class="canvas-wrap" id="partnerBulletCanvasWrap" style="height:306px;"><div id="partnerBulletChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="partnerBulletCallout" style="margin-top:10px;">–</div>
       <div id="partnerBulletSeeMore"></div>
@@ -201,7 +178,6 @@
           <button class="tool-btn" id="partnerGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">All Key Accounts · sorted by net sales (same order as the chart to the left)</div>
       <div class="canvas-wrap" id="partnerGrowthCanvasWrap" style="height:306px;"><div id="partnerGrowthChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="partnerGrowthCallout" style="margin-top:10px;">–</div>
       <div id="partnerGrowthSeeMore"></div>
@@ -222,7 +198,6 @@
           <button class="tool-btn" id="partnerSalesExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Partner · MT channel</div>
       <div class="cat-bars" id="partnerSalesBars"></div>
       <div class="data-table-wrap" id="partnerSalesTableWrap"></div>
     </div>
@@ -239,7 +214,6 @@
           <button class="tool-btn" id="partnerMatrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">MT channel, Year to Date vs same period last year</div>
       <div class="canvas-wrap" id="partnerMatrixCanvasWrap" style="height:280px;"><div id="partnerMatrixChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="partnerMatrixTableWrap"></div>
     </div>
@@ -278,7 +252,6 @@
           <button class="tool-btn" id="catExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Category · MT channel</div>
       <div class="toggle-group" id="catLevelToggle" style="margin-bottom:10px;">
         <button class="toggle-btn active" data-level="0">Category</button>
         <button class="toggle-btn" data-level="1">Sub-Category</button>
@@ -302,7 +275,6 @@
           <button class="tool-btn" id="matrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">MT channel, Year to Date vs same period last year</div>
       <div class="canvas-wrap" id="matrixCanvasWrap" style="height:280px;"><div id="matrixChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="matrixTableWrap"></div>
     </div>
@@ -335,7 +307,6 @@
         <button class="tool-btn" id="crossTabExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Top 8 <span id="crossTabLevelLabel">Categories</span> by company-wide MT sales · % share within each partner's own mix</div>
     <div class="heatmap-scroll" style="overflow-x:auto;">
       <table class="heatmap-table heatmap-table-transposed" id="crossTabTable"></table>
     </div>
@@ -779,7 +750,8 @@ function renderCategoryAndCrossTab(){
      even at Series level (48 nodes total) — same Top-8 convention as
      Pareto/Concentration charts elsewhere in the system. */
   const topNodes = allNodes.slice(0,8);
-  document.getElementById('crossTabLevelLabel').textContent = LEVEL_NAMES_PLURAL[currentCatLevel];
+  const crossTabLevelLabelEl = document.getElementById('crossTabLevelLabel');
+  if(crossTabLevelLabelEl) crossTabLevelLabelEl.textContent = LEVEL_NAMES_PLURAL[currentCatLevel];
   const rgbBrand = hexToRgb(resolveColor('var(--brand)'));
   const partnerRows = partners.map(p=>{
     const partnerNodes = enumeratePartnerCatLevel(p.id, currentCatLevel);
@@ -893,29 +865,6 @@ function renderAll(){
     yFormatter: fmtTHB, mom: targetActualMom, yoy: targetActualYoy
   });
   latestData.target = { labels: closedLabels, actual: targetActualValues, target: targetActualTargets, mom: targetActualMom, yoy: targetActualYoy };
-
-  /* === ZONE A: Return Rate (CN) trend, MT-wide ===
-     Fix (2026-08-05): briefly split into one line per Key Account (Top 5 +
-     Other) per an earlier request — reverted back to a single MT-wide line
-     per follow-up feedback.
-     Fix (2026-08-06, feedback): was plotted against the full-year curYearIdx
-     (Jan–Dec) with future months as null — technically not misleading (a
-     line chart just breaks at the null point) but left the whole right half
-     of the chart canvas empty, which read as "not filling the frame."
-     Switched to closedIdx (Jan through TODAY only, same set the Target vs
-     Actual bar chart above already uses) so the line now spans the full
-     width of its own container — still responsive since buildLineChartSVG
-     scales the plotted x-range to whatever labels array it's given. */
-  const retSeries = closedIdx.map(i => mtCNRate[i]*100);
-  const thresholdSeries = closedIdx.map(()=>RETURN_RATE_CEILING_PCT);
-  buildLineChartSVG('retTrendChart', {
-    labels: closedLabels, yFormatter: v=>v.toFixed(1)+'%',
-    series:[
-      {data:thresholdSeries, color:cssVar('--ink-1')||'#0b0b0b', width:1.4, dash:'4,3'},
-      {data:retSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtPct(v,1)}
-    ]
-  });
-  latestData.retTrend = { labels: closedLabels, values: retSeries };
 
   /* === ZONE A: High Return Rate Partner — company-wide MT (all 9 Key
      Accounts, not scoped to KAM/My-accounts-only), paired with Return Rate
@@ -1081,20 +1030,6 @@ document.getElementById('targetTableBtn').addEventListener('click', ()=>{
     html += '<tr><td>'+lb+'</td><td>'+fmtTHB(d.actual[i])+'</td><td>'+fmtTHB(d.target[i])+'</td><td>'+(d.target[i]?Math.round(d.actual[i]/d.target[i]*100):0)+'%</td>'
       + '<td>'+(d.mom[i]!=null?fmtSignedPct(d.mom[i],1):'–')+'</td><td>'+(d.yoy[i]!=null?fmtSignedPct(d.yoy[i],1):'–')+'</td></tr>';
   });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('retTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('retTrendChart', 'mt_return_rate_trend.svg'));
-document.getElementById('retTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('retTrendTableWrap');
-  const canvasWrap = document.getElementById('retTrendCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.retTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th><th>Return Rate (CN)</th></tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+(d.values[i]!==null?fmtPct(d.values[i],1):'–')+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — Financial Statement · Cash Flow</title>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="pnl_financial_analysis.html">Financial Analysis</a>
+          <a class="tab tab-link" href="pnl_executive_summary.html">P&amp;L</a>
+          <a class="tab active tab-link" href="pnl_cash_flow.html">Cash Flow</a>
+          <a class="tab tab-link" href="pnl_balance_sheet.html">Balance Sheet</a>
+          <a class="tab tab-link" href="pnl_equity_changes.html">Equity Changes</a>
+        </nav>
+      </div>
+      <div class="user-area">
+        <div class="user-meta">
+          <div class="user-name">Nattapong V.</div>
+          <div class="user-role">VP of Sales</div>
+        </div>
+        <div class="avatar">NV</div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+  <div class="header-utility-row" id="headerUtilityRow">
+    <nav class="section-nav">
+      <a href="#sec-cash-flow-statement">Cash Flow Statement</a>
+      <a href="#sec-fcf-trend">Free Cash Flow &amp; Cash Trend</a>
+    </nav>
+    <div class="nav-filter-divider"></div>
+    <div class="filter-scope">Company-wide · Indirect method, Q2'26 · Cash Flow has no prior module in this dashboard (new statement) · 100% mock, for design/demo purposes</div>
+  </div>
+  </div>
+
+  <!-- ===== CASH FLOW STATEMENT ===== -->
+  <div class="section-label" id="sec-cash-flow-statement">Cash Flow Statement</div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Cash Flow Waterfall</span>
+        <button class="info-icon" data-info-title="Cash Flow Waterfall" data-info-text="Beginning Cash → CFO → CFI → CFF → Ending Cash, Q2'26 (Indirect Method) — เขียว = เงินเข้า, แดง = เงินออก — Ending Cash ต้องเท่ากับ Cash &amp; Cash Equivalents ใน Balance Sheet Q2'26 เป๊ะ — Mock Data 100%">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="cfWaterfallDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="cfWaterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Q2'26 · company-wide · THB</div>
+    <div class="canvas-wrap" id="cfWaterfallCanvasWrap" style="height:280px;"><div id="cfWaterfallChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="cfWaterfallCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+    <div class="card-head">
+      <span class="card-title">Cash Flow Statement (Indirect Method)</span>
+      <button class="info-icon" data-info-title="Cash Flow Statement" data-info-text="วิธีทางอ้อม (Indirect Method): เริ่มจาก Net Profit (after tax) แล้วปรับกลับด้วยรายการที่ไม่ใช่เงินสด (D&amp;A) และการเปลี่ยนแปลงเงินทุนหมุนเวียน (Working Capital) — ทุกบรรทัด Working Capital ต้องเท่ากับผลต่างรายการที่เกี่ยวข้องใน Balance Sheet Q1'26→Q2'26 เป๊ะ — Mock Data 100%">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="cfStatementDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Q2'26 · THB</div>
+    <table id="cfStatementTable"></table>
+    <div class="kpi-caption" style="margin-top:8px;">Working Capital changes tie exactly to Balance Sheet Q1'26→Q2'26 deltas (Trade Receivables, Inventories, Trade Payables, Other liabilities) — see Balance Sheet page.</div>
+  </div>
+
+  <!-- ===== FREE CASH FLOW & CASH TREND ===== -->
+  <div class="section-label" id="sec-fcf-trend">Free Cash Flow &amp; Cash Trend</div>
+  <div class="card" style="margin-bottom:6px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">CFO &amp; Free Cash Flow (5Q)</span>
+        <button class="info-icon" data-info-title="CFO & Free Cash Flow" data-info-text="Free Cash Flow = CFO − CapEx (การซื้อ PP&amp;E) — FCF Margin % = FCF ÷ Net Sales ของไตรมาสนั้น — Net Sales อ้างอิงจากชุดข้อมูลเดียวกับหน้า P&amp;L (Quarterly Trend) — Mock Data 100%">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="fcfTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="fcfDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="fcfExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>CFO</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Free Cash Flow</span>
+    </div>
+    <div class="canvas-wrap" id="fcfCanvasWrap"><div id="fcfChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="fcfTableWrap"></div>
+    <div class="callout-text" id="fcfCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+  </div>
+
+  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้ทั้งหมดเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo — ยังไม่มี Data Source Cash Flow ระดับบริษัทจริงเชื่อมต่อกับ Dashboard นี้ ณ ปัจจุบัน ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง</div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   Cash Flow (Indirect Method) — a fully new, self-contained mock data domain
+   (like Balance Sheet, no prior module owns this data). Q2'26 figures are
+   hand-set mock values that already tie exactly to the live Balance Sheet
+   Q1'26->Q2'26 deltas and the live P&L Quarterly Trend Net Profit (after
+   tax) figure -- see the reconciliation comment below each block. The other
+   4 trailing quarters (Q2'25-Q1'26) are illustrative smooth mock trends
+   ending exactly at the Q2'26 anchor. Uses its own dedicated PRNG (seed
+   20260635), isolated from every other P&L file's `rand` sequence.
+   ============================================================================ */
+const cfRand = mulberry32(20260635);
+function quarterYearLabel(startIdx){
+  const q = (Math.floor(startIdx/3)%4)+1, yr = 2024+Math.floor(startIdx/12);
+  return 'Q'+q+"'"+String(yr).slice(2);
+}
+const TODAY = 29;
+const curQuarterStart = Math.floor(TODAY/3)*3;
+const quarterStarts = [curQuarterStart-12, curQuarterStart-9, curQuarterStart-6, curQuarterStart-3, curQuarterStart];
+const quarterLabels = quarterStarts.map(quarterYearLabel);
+
+/* --- Q2'26 Cash Flow Statement (indirect), ฿ raw. Reconciliation (must be
+   exact): CFO - CFI - CFF(outflow) = net change; Beginning + net change =
+   Ending = Balance Sheet Cash Q2'26 (45M); each Working Capital line = the
+   matching Balance Sheet Q1'26->Q2'26 delta (AR 54->58 = -4, Inventory
+   88->92 = -4, AP 58->62 = +4); dividends 11.2 -> Equity 202 + 19.1 - 11.2 =
+   209.9 = Balance Sheet Equity Q2'26. --- */
+const CF_Q2 = {
+  operating: [
+    { item:"Net Profit (after tax)", value: 19.1e6 },
+    { item:"+ D&A (add-back, ประมาณการ)", value: 2.6e6, isEstimate:true },
+    { item:"− เพิ่มขึ้นใน Trade Receivables", value: -4.0e6 },
+    { item:"− เพิ่มขึ้นใน Inventories", value: -4.0e6 },
+    { item:"± Prepaid & Other current assets", value: 0.0 },
+    { item:"+ เพิ่มขึ้นใน Trade Payables", value: 4.0e6 },
+    { item:"+ เพิ่มขึ้นใน Other liabilities", value: 2.0e6 }
+  ],
+  investing: [ { item:"− ซื้อ PP&E / สินทรัพย์ (CapEx)", value: -3.6e6 } ],
+  financing: [
+    { item:"− เงินปันผลจ่าย", value: -11.2e6 },
+    { item:"± Lease liability (สุทธิ) / อื่นๆ", value: 0.1e6 }
+  ],
+  beginningCash: 40e6
+};
+const cfoQ2 = CF_Q2.operating.reduce((s,r)=>s+r.value,0);
+const cfiQ2 = CF_Q2.investing.reduce((s,r)=>s+r.value,0);
+const cffQ2 = CF_Q2.financing.reduce((s,r)=>s+r.value,0);
+const netChangeQ2 = cfoQ2 + cfiQ2 + cffQ2;
+const endingCashQ2 = CF_Q2.beginningCash + netChangeQ2;
+const capexQ2 = -CF_Q2.investing.find(r=>r.item.includes('CapEx')).value;
+const fcfQ2 = cfoQ2 - capexQ2;
+// Net Sales Q2'26 pulled from the live P&L Quarterly Trend figure (same
+// shared company-wide series) so FCF Margin % ties to the real Net Sales
+// number, not an independently-guessed one. This file has no prior P&L
+// data of its own (same "new statement, no existing module" status as
+// Balance Sheet), so the 4 trailing quarters below are plausible mock
+// growth leading into that real anchor rather than pulled from that series.
+const netSalesQ2 = 84539114;
+const fcfMarginQ2 = netSalesQ2 ? fcfQ2/netSalesQ2*100 : 0;
+
+/* --- Trailing 4 quarters (Q2'25-Q1'26): illustrative smooth mock trend
+   with the same Q4'25 dip the rest of the dashboard's 5Q data shows (e.g.
+   EBIT/Net margin both dip that quarter), ending exactly at the Q2'26
+   anchors above. --- */
+// CFO trailing quarters are set as ~72-73% of that quarter's real EBITDA
+// (Financial Analysis's Cash Generation group shows this same CFO/EBITDA %
+// -- keeping the ratio smooth here, instead of picking CFO figures
+// independently, avoids an erratic-looking ratio there).
+const ebitdaTrailing = [23870561, 23709114, 26153790, 25319751]; // real EBITDA Q2'25-Q1'26 (same figures as P&L Quarterly Trend)
+const cfoTrailing = [0.72, 0.73, 0.71, 0.73].map((r,i)=> ebitdaTrailing[i]*r);
+const capexTrailing = [2.8e6, 3.0e6, 3.1e6, 3.3e6];
+const netSalesTrailing = [75634743, 75789637, 89098922, 81075377]; // real Net Sales Q2'25-Q1'26 (same figures as P&L Quarterly Trend's 5Q table)
+const cfoQ = [...cfoTrailing, cfoQ2];
+const capexQ = [...capexTrailing, capexQ2];
+const fcfQ = cfoQ.map((v,i)=>v-capexQ[i]);
+const netSalesQAll = [...netSalesTrailing, netSalesQ2];
+const fcfMarginQ = fcfQ.map((v,i)=> netSalesQAll[i] ? v/netSalesQAll[i]*100 : 0);
+
+/* ---------- Nav menu / popovers / theme ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('fs-cashflow', 'Financial Statement · Cash Flow'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+initThemeToggle(()=> renderAll());
+initSectionScrollSpy();
+
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+
+let latestData = {};
+
+function renderAll(){
+  /* === Cash Flow Waterfall === */
+  const waterfallSteps = [
+    { label:'Beginning Cash', value: CF_Q2.beginningCash, type:'start' },
+    { label:'CFO', value: cfoQ2, type:'delta' },
+    { label:'CFI', value: cfiQ2, type:'delta' },
+    { label:'CFF', value: cffQ2, type:'delta' },
+    { label:'Ending Cash', value: endingCashQ2, type:'end' }
+  ];
+  buildWaterfallSVG('cfWaterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:280 });
+  document.getElementById('cfWaterfallCallout').innerHTML =
+    'CFO '+fmtTHB(cfoQ2)+' + CFI '+fmtTHB(cfiQ2)+' + CFF '+fmtTHB(cffQ2)+' = สุทธิเพิ่มขึ้น <b>'+fmtTHB(netChangeQ2)+'</b> · Beginning '+fmtTHB(CF_Q2.beginningCash)+' + '+fmtTHB(netChangeQ2)+' = Ending <b>'+fmtTHB(endingCashQ2)+'</b> = Cash &amp; Cash Equivalents ใน Balance Sheet Q2\'26 เป๊ะ';
+  latestData.waterfall = waterfallSteps;
+
+  /* === Cash Flow Statement table === */
+  const rows = [];
+  CF_Q2.operating.forEach(r=> rows.push({...r, group:'Operating'}));
+  rows.push({ item:'Net Cash from Operating Activities (CFO)', value: cfoQ2, bold:true, group:'sub' });
+  CF_Q2.investing.forEach(r=> rows.push({...r, group:'Investing'}));
+  rows.push({ item:'Net Cash from Investing Activities (CFI)', value: cfiQ2, bold:true, group:'sub' });
+  CF_Q2.financing.forEach(r=> rows.push({...r, group:'Financing'}));
+  rows.push({ item:'Net Cash from Financing Activities (CFF)', value: cffQ2, bold:true, group:'sub' });
+  rows.push({ item:'Net Change in Cash', value: netChangeQ2, bold:true, group:'sub' });
+  rows.push({ item:'Beginning Cash', value: CF_Q2.beginningCash, group:'sub' });
+  rows.push({ item:'Ending Cash', value: endingCashQ2, bold:true, group:'sub' });
+  document.getElementById('cfStatementTable').innerHTML =
+    '<thead><tr><th>Line Item</th><th>Q2\'26</th></tr></thead><tbody>'
+    + rows.map(r=>{
+        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+        const estNote = r.isEstimate ? ' <span class="badge-soon" style="margin-left:4px;">ประมาณการ</span>' : '';
+        return '<tr'+rowClass+'><td>'+r.item+estNote+'</td><td class="tnum">'+(r.value>=0&&!r.bold&&r.group!=='sub'?'+':'')+fmtTHB(r.value)+'</td></tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.cfStatement = rows;
+
+  /* === CFO & Free Cash Flow (5Q) === */
+  buildGroupedBarSVG('fcfChart', {
+    labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true,
+    series: [ {name:'CFO', color: cssVar('--brand')||'#8E1E4D', values: cfoQ}, {name:'Free Cash Flow', color: cssVar('--good')||'#0ca30c', values: fcfQ} ]
+  });
+  latestData.fcf = quarterLabels.map((q,i)=>({ quarter:q, cfo:cfoQ[i], fcf:fcfQ[i], margin:fcfMarginQ[i] }));
+  document.getElementById('fcfCallout').innerHTML =
+    'Free Cash Flow เป็นบวกทุกไตรมาส (FCF Margin '+fmtPct(fcfMarginQ[0],1)+' → '+fmtPct(fcfMarginQ[4],1)+') — เพียงพอต่อ CapEx และเงินปันผลโดยไม่ต้องพึ่งเงินกู้ · '+quarterLabels[4]+': CFO '+fmtTHB(cfoQ[4])+' ('+fmtPct(cfoQ[4]/netSalesQAll[4]*100,1)+' ของ Net Sales) − CapEx '+fmtTHB(capexQ[4])+' = FCF '+fmtTHB(fcfQ[4]);
+}
+
+/* --- Toolbar --- */
+document.getElementById('cfWaterfallDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('cfWaterfallChart', 'cashflow_waterfall.svg'));
+document.getElementById('cfWaterfallExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('cfStatementDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Line Item', "Q2'26"]];
+  latestData.cfStatement.forEach(r=> rows.push([r.item, Math.round(r.value)]));
+  downloadCSV(rows, 'cashflow_statement.csv');
+});
+
+document.getElementById('fcfDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('fcfChart', 'cashflow_fcf_trend.svg'));
+document.getElementById('fcfExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('fcfTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('fcfTableWrap');
+  const canvasWrap = document.getElementById('fcfCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.fcf;
+  let html = '<table class="mini-table"><thead><tr><th>Quarter</th><th>CFO</th><th>Free Cash Flow</th><th>FCF Margin %</th></tr></thead><tbody>';
+  d.forEach(r=>{ html += '<tr><td>'+r.quarter+'</td><td>'+fmtTHB(r.cfo)+'</td><td>'+fmtTHB(r.fcf)+'</td><td>'+fmtPct(r.margin,1)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Init ---------- */
+renderAll();
+</script>
+</body>
+</html>
