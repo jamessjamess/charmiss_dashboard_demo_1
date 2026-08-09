@@ -37,6 +37,11 @@
     </header>
 
     <div class="header-utility-row" id="headerUtilityRow">
+      <nav class="section-nav">
+        <a href="#sec-glance">Performance Overview</a>
+        <a href="#sec-comparison">Channel Comparison</a>
+      </nav>
+      <div class="nav-filter-divider"></div>
       <div class="filter-bar-group">
         <div class="filter-left">
           <span class="filter-label">Period</span>
@@ -74,8 +79,11 @@
     </div>
   </div>
 
+  <!-- ===== SECTION 1: PERFORMANCE OVERVIEW ===== -->
+  <div class="section-label">Performance Overview</div>
+
   <!-- ===== ROW 1: Sales by Platform · Target Attainment & Full Year Outlook · Return/Cancellation Rate Trend ===== -->
-  <div class="chart-grid chart-grid-3">
+  <div class="chart-grid chart-grid-3" id="sec-glance">
     <div class="card" style="min-width:0;">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
@@ -182,28 +190,61 @@
     </div>
   </div>
 
-  <!-- ===== ROW 3: Platform Growth & Target Gap ===== -->
-  <div class="card chgap-card">
+  <!-- ===== SECTION 2: CHANNEL COMPARISON ===== -->
+  <div class="section-label" style="margin-top:24px;">Channel Comparison</div>
+
+  <!-- ===== ROW 3: Monthly Sales by Platform ===== -->
+  <div class="card" style="margin-bottom:14px;" id="sec-comparison">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Platform Growth &amp; Target Gap</span>
-        <button class="info-icon" data-info-title="Platform Growth &amp; Target Gap" data-info-text="ต่อแถว มี 2 แท่ง diverging คู่กัน ตัวเลขอยู่ท้ายแท่งแต่ละอัน: แท่งแรก = YoY Growth % เริ่มจาก 0 (เขียว=โต, แดง=ถดถอย) ใต้ % คือ Actual Sales growth ฿ แท่งที่สอง = Target Attainment % เริ่มจาก 100% (เขียวยื่นขวา=เกินเป้า, แดงยื่นซ้าย=ต่ำกว่าเป้า) ใต้ % คือ Gap to Target ฿ เส้นประในแต่ละแท่งคือค่าของแถว Total (Ecom) ใช้เทียบว่า Platform นั้นสูง/ต่ำกว่าภาพรวม Ecom ทั้งหมดแค่ไหน แถว Total (Ecom) ล่างสุดคือสรุปทั้ง Channel — ใช้ยอดขายจริงรายเดือนต่อ Platform (ไม่ใช่ค่าประมาณ)">i</button>
+        <span class="chart-title">Monthly Sales by Platform</span>
+        <button class="info-icon" data-info-title="Monthly Sales by Platform" data-info-text="ยอดขายรายเดือนของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) ย้อนหลังเต็ม 3 ปี — Time Series จริงต่อ Platform (ไม่ใช่สัดส่วนคงที่ของยอดรวม Ecom) จึงเห็น Trend ที่แตกต่างกันจริงต่อ Platform">i</button>
       </div>
       <div class="toolbar">
-        <button class="tool-btn" id="pgTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="pgExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        <button class="tool-btn" id="platformTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="platformTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="platformTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chgap-legend">
-      <span class="chgap-legend-item"><span class="chgap-swatch pos"></span>growing / over target</span>
-      <span class="chgap-legend-item"><span class="chgap-swatch neg"></span>declining / under target</span>
-      <span class="chgap-legend-item"><span class="chgap-refline-swatch"></span>Total (Ecom)</span>
+    <div class="canvas-wrap" id="platformTrendCanvasWrap" style="height:260px;"><div id="platformTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="platformTrendTableWrap"></div>
+  </div>
+
+  <!-- ===== ROW 4: Target vs Actual per Platform + YoY Growth by Platform ===== -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Target vs Actual per Platform</span>
+          <button class="info-icon" data-info-title="Target vs Actual per Platform" data-info-text="Target Attainment % ของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) เส้นอ้างอิงที่ 100%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="pgAttainTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="pgAttainDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="pgAttainExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="pgAttainCanvasWrap" style="height:220px;"><div id="pgAttainChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="pgAttainCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="pgAttainTableWrap"></div>
     </div>
-    <div class="chgap-col-labels"><span style="grid-column:2/4">YoY Growth</span><span style="grid-column:4/6">Target Attainment %</span></div>
-    <div class="chgap-axis"><div class="chgap-axis-track" style="grid-column:2"><span class="chgap-axis-tick" style="left:26%">0%</span></div><div class="chgap-axis-track" style="grid-column:4"><span class="chgap-axis-tick edge-left" style="left:0%">0%</span><span class="chgap-axis-tick" id="pgAttainTargetTick" style="left:100%">100%</span></div></div>
-    <div class="chgap-rows" id="pgRows"></div>
-    <div class="callout-text" id="pgAction">–</div>
-    <div class="data-table-wrap" id="pgTableWrap"></div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">YoY Growth by Platform</span>
+          <button class="info-icon" data-info-title="YoY Growth by Platform" data-info-text="%Growth ยอดขายเทียบปีก่อน ต่อ Platform — เรียงลำดับเดียวกับ Target vs Actual per Platform ทางซ้าย เส้นอ้างอิงที่ 0%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="pgGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="pgGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="pgGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="pgGrowthCanvasWrap" style="height:220px;"><div id="pgGrowthChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="pgGrowthCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="pgGrowthTableWrap"></div>
+    </div>
   </div>
 
 </div>
@@ -388,6 +429,11 @@ initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
   btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
   window.addEventListener('resize', updateScrollPadding);
 })();
+
+/* ---------- Single View scroll-spy: highlights whichever section-nav pill
+   matches the section currently scrolled under the sticky header (same
+   mechanism as sales_overview.html). ---------- */
+initSectionScrollSpy();
 
 /* ---------- Custom range selects ---------- */
 const customFromSel = document.getElementById('customFrom');
@@ -613,16 +659,37 @@ function renderAll(periodKey, custom){
   buildLineChartSVG('growthChart', { labels: viewLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:growthSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)}] });
   latestData.growth = { labels: viewLabels, values: growthSeries };
 
-  /* === Platform Growth & Target Gap ===
-     Ported from MT's "Key Account Growth & Target Gap" widget (same
-     chgap-* CSS/markup) — but with a genuine advantage over MT's version:
-     ecomChannels already carries full monthly actual/target series per
-     platform (unlike MT's keyAccounts, which only has a static growthYoY
-     estimate), so every number here — growth ฿, target ฿ gap — is a real
-     period sum, not back-derived from a static %. Total (Ecom) row and its
-     reference lines are period-scoped (totalActual/totalTarget, s..e) so
-     the whole widget agrees with the donut/legend above, unlike the
-     Calendar-YTD-only Target Attainment & Full Year Outlook card. */
+  /* === Monthly Sales by Platform ===
+     Moved here from module_ecom_breakdown.html (2026-08-09, feedback) —
+     real per-platform time series (each platform in ecomChannels has its
+     own independently-generated .actual[] from genSeries, not a fixed %
+     split of the Ecom total), so unlike MT's 9-partner version this needs
+     no Top-5 dimming — only 4 lines, all shown at full opacity with end
+     labels. Always full 3-year history, not scoped to the period filter —
+     but DOES respect the View By toggle (fix 2026-08-09: used to stay
+     monthly no matter what, unlike every other trend chart on this page),
+     summing 3 months into each quarter with the same bucketMonths/
+     bucketSum helpers used everywhere else. */
+  const platformTrendAllIdx = []; for(let i=0;i<MONTHS_TOTAL;i++) platformTrendAllIdx.push(i);
+  const platformTrendGroups = bucketMonths(platformTrendAllIdx, currentTimeFrame);
+  const platformTrendLabels = currentTimeFrame==='quarterly'
+    ? platformTrendGroups.map(g => quarterLabel(g)+' '+String(2024+Math.floor(g[0]/12)).slice(2))
+    : monthLabels;
+  const platformTrendSeries = ecomChannels.map(c=>({
+    data: bucketSum(c.actual, platformTrendGroups), color: c.color, width:2.2, showLastLabel:true, lastLabelFormatter: v => c.label+' '+fmtTHB(v)
+  }));
+  buildLineChartSVG('platformTrendChart', { labels: platformTrendLabels, yFormatter: v=>fmtTHB(v), series: platformTrendSeries });
+  latestData.platformTrend = { labels: platformTrendLabels, platforms: ecomChannels.map((c,i)=>({name:c.label, values:platformTrendSeries[i].data})) };
+
+  /* === Target vs Actual per Platform + YoY Growth by Platform ===
+     Replaces the old combined "Platform Growth & Target Gap" diverging
+     dual-bar widget (chgap-* markup) — two bars per row didn't collapse
+     well on mobile even after adding .chgap-mobile-label, so this now
+     mirrors module_ecom_breakdown.html's simpler two-single-bar-chart
+     pattern (same buildHBarCompareSVG helper), which gets the existing
+     .chart-grid 2-up→1-up responsive collapse for free. Same underlying
+     figures as before — ecomChannels' real monthly actual/target series,
+     not a back-derived estimate — only the layout changed. */
   const pgGroups = ecomChannels.map(c=>c.label);
   const pgLastYear = ecomChannels.map(c=> s-12>=0 ? sumRange(c.actual, s-12, e-12) : null);
   const pgThisYear = ecomChannels.map(c=> sumRange(c.actual, s, e));
@@ -631,71 +698,27 @@ function renderAll(periodKey, custom){
   const pgGrowthAmt = pgThisYear.map((v,i)=> pgLastYear[i]!=null ? v-pgLastYear[i] : null);
   const pgAttainPct = pgThisYear.map((v,i)=> pgTarget[i] ? (v/pgTarget[i]*100) : 0);
   const pgDiff = pgThisYear.map((v,i)=> v - pgTarget[i]);
+  const pgList = ecomChannels.map((c,i)=>({ name:c.label, attain:pgAttainPct[i], diff:pgDiff[i], growthYoY:pgGrowth[i], growthAmt:pgGrowthAmt[i] }));
 
-  const ecomTotalAttainPct = totalTarget ? (totalActual/totalTarget*100) : 0;
-  const ecomTotalGapValue = totalActual - totalTarget;
-  const ecomPrevTotal = (s-12>=0) ? sumRange(groupActual.Ecom, s-12, e-12) : null;
-  const ecomTotalGrowth = ecomPrevTotal ? pctChange(totalActual, ecomPrevTotal) : null;
-  const ecomTotalGrowthAmt = ecomPrevTotal!=null ? totalActual-ecomPrevTotal : null;
+  buildHBarCompareSVG('pgAttainChart', pgList.map(p=>({
+    label: p.name, value: p.attain, color: p.attain>=100 ? good : critical,
+    subLabel: (p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff)), subLabelColor: p.diff>=0 ? good : critical
+  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:90, rowHeight:44 });
+  latestData.pgAttain = pgList;
+  const pgBelowTarget = pgList.filter(p=>p.attain<100);
+  document.getElementById('pgAttainCallout').innerHTML = pgBelowTarget.length
+    ? pgBelowTarget.length+' of '+pgList.length+' platforms below target · Furthest below: <b>'+pgBelowTarget.reduce((a,b)=>a.attain<b.attain?a:b).name+'</b> ('+fmtPct(pgBelowTarget.reduce((a,b)=>a.attain<b.attain?a:b).attain,0)+')'
+    : 'All '+pgList.length+' platforms at or above target';
 
-  const pgAllGrowth = pgGrowth.concat([ecomTotalGrowth]);
-  const pgMaxAbsGrowth = Math.max(...pgAllGrowth.filter(v=>v!==null).map(v=>Math.abs(v))) || 1;
-  const pgAllAttainPct = pgAttainPct.concat([ecomTotalAttainPct]);
-  const pgAttainDomainMax = Math.max(110, Math.ceil(Math.max(...pgAllAttainPct)/10)*10 + 10);
-  const pgAttainZeroPos = 100/pgAttainDomainMax*100;
-  document.getElementById('pgAttainTargetTick').style.left = pgAttainZeroPos.toFixed(1)+'%';
-  function pgPos(v, maxAbs){ return v>=0 ? 26 + (Math.abs(v)/maxAbs)*74 : 26 - (Math.abs(v)/maxAbs)*26; }
-  function pgBarStyle(v, maxAbs){
-    const over = v>=0;
-    const frac = Math.abs(v)/maxAbs;
-    return over ? 'left:26%;width:'+(frac*74).toFixed(1)+'%;' : 'right:74%;width:'+(frac*26).toFixed(1)+'%;';
-  }
-  function pgBarStyle0(v, domainMax){ return 'left:0%;width:'+(Math.max(0,v)/domainMax*100).toFixed(1)+'%;'; }
-  function pgTrack(fillClass, barStyle, refPos, zeroPos){
-    return '<div class="chgap-bar-track"><div class="chgap-bar-zero" style="left:'+zeroPos+'%"></div>'
-      + (refPos!=null ? '<div class="chgap-ref-line" style="left:'+refPos.toFixed(1)+'%"></div>' : '')
-      + '<div class="chgap-bar-fill '+fillClass+'" style="'+barStyle+'"></div></div>';
-  }
-  function pgRowHTML(name, dotColor, growth, growthAmt, attainVal, diffTHB, isTotal){
-    const grew = growth!==null && growth>0;
-    const over = attainVal>=100;
-    return '<div class="chgap-row'+(isTotal?' total':'')+'">'
-      + '<div class="chgap-name">'+(dotColor?'<span class="chgap-dot" style="background:'+dotColor+'"></span>':'')+name+'</div>'
-      + '<div class="chgap-mobile-label">YoY Growth</div>'
-      + pgTrack(grew?'pos':'neg', pgBarStyle(growth||0, pgMaxAbsGrowth), isTotal?null:pgPos(ecomTotalGrowth||0, pgMaxAbsGrowth), 26)
-      + '<div class="chgap-value-wrap"><div class="chgap-badge '+(grew?'pos':'neg')+'">'+(grew?'▲':'▼')+' '+(growth!==null?fmtSignedPct(growth):'–')+'</div>'
-      + (growthAmt!=null ? '<div class="chgap-value-sub '+(growthAmt>=0?'pos':'neg')+'">'+(growthAmt>=0?'+':'−')+fmtTHB(Math.abs(growthAmt))+'</div>' : '')+'</div>'
-      + '<div class="chgap-mobile-label">Target Attainment %</div>'
-      + pgTrack(over?'pos':'neg', pgBarStyle0(attainVal, pgAttainDomainMax), isTotal?null:(ecomTotalAttainPct/pgAttainDomainMax*100), pgAttainZeroPos)
-      + '<div class="chgap-value-wrap"><div class="chgap-value '+(over?'pos':'neg')+'">'+fmtPct(attainVal,1)+'</div>'
-      + '<div class="chgap-value-sub '+(over?'pos':'neg')+'">'+(over?'+':'−')+fmtTHB(Math.abs(diffTHB))+'</div></div>'
-      + '</div>';
-  }
-  document.getElementById('pgRows').innerHTML =
-    ecomChannels.map((c,i)=> pgRowHTML(c.label, c.color, pgGrowth[i], pgGrowthAmt[i], pgAttainPct[i], pgDiff[i], false)).join('')
-    + pgRowHTML('Total (Ecom)', null, ecomTotalGrowth, ecomTotalGrowthAmt, ecomTotalAttainPct, ecomTotalGapValue, true);
-
-  let pgFastestI=0, pgSlowestI=0, pgHighestI=0, pgLowestI=0;
-  ecomChannels.forEach((c,i)=>{
-    if(pgGrowth[i]>pgGrowth[pgFastestI]) pgFastestI=i;
-    if(pgGrowth[i]<pgGrowth[pgSlowestI]) pgSlowestI=i;
-    if(pgAttainPct[i]>pgAttainPct[pgHighestI]) pgHighestI=i;
-    if(pgAttainPct[i]<pgAttainPct[pgLowestI]) pgLowestI=i;
-  });
-  const pgGrowthPart = pgGroups[pgFastestI]+' grows fastest YoY ('+fmtSignedPct(pgGrowth[pgFastestI])+') while '+pgGroups[pgSlowestI]+' lags ('+fmtSignedPct(pgGrowth[pgSlowestI])+')';
-  const pgAllAboveTarget = pgAttainPct.every(v=>v>=100);
-  const pgAllBelowTarget = pgAttainPct.every(v=>v<100);
-  const pgAttainPart = pgAllAboveTarget ? 'All platforms above 100% attainment'
-    : pgAllBelowTarget ? 'All platforms below 100% attainment'
-    : pgGroups[pgHighestI]+' leads attainment ('+fmtPct(pgAttainPct[pgHighestI],1)+') while '+pgGroups[pgLowestI]+' trails ('+fmtPct(pgAttainPct[pgLowestI],1)+')';
-  document.getElementById('pgAction').innerHTML = pgGrowthPart + ' · ' + pgAttainPart;
-  latestData.platformGap = {
-    labels: pgGroups.concat(['Total (Ecom)']),
-    growth: pgGrowth.concat([ecomTotalGrowth]),
-    growthAmt: pgGrowthAmt.concat([ecomTotalGrowthAmt]),
-    attain: pgAttainPct.concat([ecomTotalAttainPct]),
-    diff: pgDiff.concat([ecomTotalGapValue])
-  };
+  buildHBarCompareSVG('pgGrowthChart', pgList.map(p=>({
+    label: p.name, value: p.growthYoY!==null?p.growthYoY:0, color: (p.growthYoY||0)>=0 ? good : critical,
+    subLabel: p.growthAmt!=null ? (p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt)) : '–', subLabelColor: (p.growthAmt||0)>=0 ? good : critical
+  })), { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:90, rowHeight:44 });
+  latestData.pgGrowth = pgList;
+  const pgShrinking = pgList.filter(p=>p.growthYoY!==null && p.growthYoY<0);
+  document.getElementById('pgGrowthCallout').innerHTML = pgShrinking.length
+    ? pgShrinking.length+' of '+pgList.length+' platform'+(pgShrinking.length===1?'':'s')+' shrinking YoY · Steepest decline: <b>'+pgShrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).name+'</b> ('+fmtSignedPct(pgShrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).growthYoY,1)+')'
+    : 'All '+pgList.length+' platforms growing YoY';
 
   /* === Chart: Sales by Platform (donut) === */
   const platformTotals = {}; ecomChannels.forEach(c=>{ platformTotals[c.key] = sumRange(c.actual, s, e); });
@@ -794,20 +817,46 @@ document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('pgExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('pgTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('pgTableWrap');
+document.getElementById('platformTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformTrendChart', 'ecom_monthly_sales_by_platform.svg'));
+document.getElementById('platformTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('platformTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('platformTrendTableWrap');
+  const canvasWrap = document.getElementById('platformTrendCanvasWrap');
   const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); document.getElementById('pgRows').classList.remove('hidden'); return; }
-  const d = latestData.platformGap;
-  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>YoY Growth</th><th>Growth ฿</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
-  d.labels.forEach((name,i)=>{
-    html += '<tr><td>'+name+'</td><td>'+(d.growth[i]!==null?fmtSignedPct(d.growth[i]):'–')+'</td>'
-      + '<td>'+(d.growthAmt[i]!=null?(d.growthAmt[i]>=0?'+':'−')+fmtTHB(Math.abs(d.growthAmt[i])):'–')+'</td>'
-      + '<td>'+fmtPct(d.attain[i],1)+'</td><td>'+(d.diff[i]>=0?'+':'')+fmtTHB(d.diff[i])+'</td></tr>';
-  });
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.platformTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.platforms.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.platforms.map(p=>'<td>'+fmtTHB(p.values[i])+'</td>').join('') + '</tr>'; });
   html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); document.getElementById('pgRows').classList.add('hidden');
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('pgAttainDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('pgAttainChart', 'ecom_target_vs_actual_per_platform.svg'));
+document.getElementById('pgAttainExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('pgAttainTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('pgAttainTableWrap');
+  const canvasWrap = document.getElementById('pgAttainCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.pgAttain;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+fmtPct(p.attain,1)+'</td><td>'+(p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('pgGrowthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('pgGrowthChart', 'ecom_yoy_growth_by_platform.svg'));
+document.getElementById('pgGrowthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('pgGrowthTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('pgGrowthTableWrap');
+  const canvasWrap = document.getElementById('pgGrowthCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.pgGrowth;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Growth YoY</th><th>Growth ฿</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+(p.growthYoY!==null?fmtSignedPct(p.growthYoY,1):'–')+'</td><td>'+(p.growthAmt!=null?(p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt)):'–')+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 /* ---------- Init ---------- */

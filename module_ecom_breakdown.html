@@ -151,59 +151,6 @@
 
   <!-- ===== ZONE B: PLATFORM PERFORMANCE ===== -->
   <div class="section-label" id="sec-platform-performance">Platform Performance</div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Monthly Sales by Platform</span>
-        <button class="info-icon" data-info-title="Monthly Sales by Platform" data-info-text="ยอดขายรายเดือนของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) ย้อนหลังเต็ม 3 ปี — Time Series จริงต่อ Platform (ไม่ใช่สัดส่วนคงที่ของยอดรวม Ecom) จึงเห็น Trend ที่แตกต่างกันจริงต่อ Platform">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="platformTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="platformTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="platformTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-subtitle">Jan 2024 – Jun 2026, monthly · all 4 platforms</div>
-    <div class="canvas-wrap" id="platformTrendCanvasWrap" style="height:260px;"><div id="platformTrendChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="platformTrendTableWrap"></div>
-  </div>
-
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Target vs Actual per Platform</span>
-          <button class="info-icon" data-info-title="Target vs Actual per Platform" data-info-text="Target Attainment % ของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก — เขียว = ถึงเป้า, แดง = ต่ำกว่าเป้า เส้นอ้างอิงที่ 100% เรียงตามยอดขาย (Order เดียวกับกราฟ YoY Growth by Platform ทางขวา)">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="platformBulletTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="platformBulletDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="platformBulletExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">All 4 platforms · sorted by net sales (same order as the chart to the right)</div>
-      <div class="canvas-wrap" id="platformBulletCanvasWrap" style="height:220px;"><div id="platformBulletChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="platformBulletTableWrap"></div>
-    </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">YoY Growth by Platform</span>
-          <button class="info-icon" data-info-title="YoY Growth by Platform" data-info-text="%Growth เทียบช่วงเวลาเดียวกันปีก่อน ต่อ Platform — คำนวณจาก Time Series ยอดขายจริงของแต่ละ Platform (ไม่ใช่ตัวเลข Narrative คงที่) เขียว = โต, แดง = หด เรียงตามยอดขาย (Order เดียวกับกราฟ Target vs Actual per Platform ทางซ้าย)">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="platformYoyTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="platformYoyDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="platformYoyExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-subtitle">This period vs same period last year · sorted by net sales (same order as the chart to the left)</div>
-      <div class="canvas-wrap" id="platformYoyCanvasWrap" style="height:220px;"><div id="platformYoyChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="platformYoyTableWrap"></div>
-    </div>
-  </div>
-
   <div class="chart-grid">
     <div class="card card-vcenter-fill">
       <div class="chart-card-head">
@@ -856,17 +803,6 @@ function renderAll(){
   }).join('');
   latestData.cancelByPlatform = cancelByPlatform;
 
-  /* === ZONE B: Monthly Sales by Platform — real per-platform time series
-     (each platform in ecomChannels has its own independently-generated
-     .actual[] from genSeries, not a fixed % split of the Ecom total), so
-     unlike MT's 9-partner version this needs no Top-5 dimming — only 4
-     lines, all shown at full opacity with end labels. === */
-  const platformTrendSeries = ecomChannels.map(c=>({
-    data: c.actual, color: c.color, width:2.2, showLastLabel:true, lastLabelFormatter: v => c.label+' '+fmtTHB(v)
-  }));
-  buildLineChartSVG('platformTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: platformTrendSeries });
-  latestData.platformTrend = { labels: monthLabels, platforms: ecomChannels.map(c=>({name:c.label, values:c.actual})) };
-
   /* === ZONE B: shared per-platform ordering — every "by Platform" chart
      below (Target vs Actual per Platform, YoY Growth, Sales by Platform,
      Platform Portfolio Matrix) sorts by this period's net sales descending,
@@ -877,22 +813,12 @@ function renderAll(){
     net: sumRange(c.actual, s, e), target: sumRange(c.target, s, e)
   })).sort((a,b)=>b.net-a.net);
 
-  /* === ZONE B: Target vs Actual per Platform (moved down 2026-08-06,
-     feedback — now paired with YoY Growth by Platform, mirroring MT's
-     Target vs Actual per Partner / YoY Growth by Partner pairing). === */
-  const platformAttain = platformsRanked.map(p=>({
-    label:p.label, value: p.target ? (p.net/p.target*100) : 0, net:p.net
-  }));
-  buildHBarCompareSVG('platformBulletChart', platformAttain.map(p=>({
-    label:p.label, value:p.value, color: p.value>=100 ? good : critical
-  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:90, rowHeight:44 });
-  latestData.platformBullet = platformAttain;
-
-  /* === ZONE B: YoY Growth by Platform — real period-over-period growth from
-     each platform's own .actual[] (guards s-12 going negative for an early
-     custom range by clamping to index 0, an approximation but avoids
-     reading undefined array slots). Same order as Target vs Actual per
-     Platform above. === */
+  /* === ZONE B: per-platform YoY growth — real period-over-period growth
+     from each platform's own .actual[] (guards s-12 going negative for an
+     early custom range by clamping to index 0, an approximation but avoids
+     reading undefined array slots). Feeds the Platform Portfolio Matrix
+     below (its own Target vs Actual/YoY Growth bar charts were cut
+     2026-08-09, now shown on Executive Summary instead). === */
   const yoyBaseIdx = Math.max(0, s-12);
   const platformYoy = platformsRanked.map(p=>{
     const c = ecomChannels.find(cc=>cc.key===p.key);
@@ -900,8 +826,6 @@ function renderAll(){
     const yoy = lastYearPeriod ? ((p.net-lastYearPeriod)/lastYearPeriod*100) : 0;
     return { label:p.label, value:yoy, color: yoy>=0 ? good : critical };
   });
-  buildHBarCompareSVG('platformYoyChart', platformYoy, { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:90, rowHeight:44 });
-  latestData.platformYoy = platformYoy;
 
   /* === ZONE B: Sales by Platform (new 2026-08-06, feedback) — ranked bar,
      % share of Ecom period sales per platform, mirrors MT Breakdown's
@@ -1102,20 +1026,6 @@ document.getElementById('targetTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('platformBulletDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformBulletChart', 'ecom_target_vs_actual_per_platform.svg'));
-document.getElementById('platformBulletExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('platformBulletTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('platformBulletTableWrap');
-  const canvasWrap = document.getElementById('platformBulletCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.platformBullet;
-  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Target Attainment</th></tr></thead><tbody>';
-  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtPct(p.value,0)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
 document.getElementById('retTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('retTrendChart', 'ecom_return_cancellation_rate_trend.svg'));
 document.getElementById('retTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('retTrendTableBtn').addEventListener('click', ()=>{
@@ -1146,34 +1056,6 @@ document.getElementById('cancelByPlatformTableBtn').addEventListener('click', ()
   d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtPct(p.value,1)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
-});
-
-document.getElementById('platformTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformTrendChart', 'ecom_monthly_sales_by_platform.svg'));
-document.getElementById('platformTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('platformTrendTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('platformTrendTableWrap');
-  const canvasWrap = document.getElementById('platformTrendCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.platformTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.platforms.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.platforms.map(p=>'<td>'+fmtTHB(p.values[i])+'</td>').join('') + '</tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('platformYoyDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformYoyChart', 'ecom_yoy_growth_by_platform.svg'));
-document.getElementById('platformYoyExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('platformYoyTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('platformYoyTableWrap');
-  const canvasWrap = document.getElementById('platformYoyCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.platformYoy;
-  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>YoY Growth</th></tr></thead><tbody>';
-  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtSignedPct(p.value,1)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 document.getElementById('platformShareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformShareChart','ecom_platform_share_over_time.svg'));

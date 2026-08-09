@@ -111,7 +111,6 @@
         <button class="tool-btn" id="waterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Net Sales to after-tax Net Profit bridge, this period · company-wide · Tax = 20% mock rate, pending Finance</div>
     <div class="canvas-wrap" id="waterfallCanvasWrap" style="height:280px;"><div id="waterfallChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="waterfallEbitdaNote" style="margin-top:10px;margin-bottom:0;">–</div>
     <div class="data-table-wrap" id="waterfallTableWrap"></div>
@@ -220,7 +219,6 @@
         <button class="tool-btn" id="incomeStmtExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle" id="incomeStmtSubtitle">Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data</div>
     <div class="filter-item" style="margin:2px 0 12px;">
       <span class="filter-label">View By</span>
       <div class="timeframe-toggle" id="incomeStmtViewToggle">
@@ -238,7 +236,6 @@
       <span class="card-title">Key Factors Affecting Performance</span>
       <button class="info-icon" data-info-title="Key Factors Affecting Performance" data-info-text="Auto-generate จาก Threshold Rule เช็คทุก Metric ที่กำหนดไว้ (Gross/Net Margin QoQ/YoY, Cost-to-Sales ratio QoQ ต่อบรรทัด, ส่วนต่าง Growth ระหว่าง Channel) — ถ้าเกิน Threshold จะขึ้นเป็น Bullet อัตโนมัติ กลุ่มที่แสดงขึ้นกับ View By ของ Income Statement ด้านบน">i</button>
     </div>
-    <div class="chart-subtitle" id="keyFactorsSubtitle">–</div>
     <ul class="key-factors-list" id="keyFactorsList" style="margin:0;padding-left:18px;font-size:13.5px;line-height:1.8;color:var(--ink-2);"></ul>
   </div>
 
@@ -274,7 +271,6 @@
           <button class="tool-btn" id="profitTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Gross Profit vs EBIT vs Target vs Last Year, by month (this year)</div>
       <div class="chart-headline" id="profitTrendHeadline">–</div>
       <div class="chart-legend">
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--baseline)"></span>Last Year EBIT</span>
@@ -298,7 +294,6 @@
           <button class="tool-btn" id="marginTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Gross Margin % vs Net Margin % (after tax), by month (this year)</div>
       <div class="chart-headline" id="marginTrendHeadline">–</div>
       <div class="chart-legend">
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Gross Margin %</span>
@@ -319,7 +314,6 @@
         <button class="tool-btn" id="fiveQDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Company-wide · ฿ figures in full THB, % rows are margin ratios</div>
     <table id="fiveQTable"></table>
     <div class="kpi-caption" id="fiveQCallout" style="margin-top:10px;">–</div>
     <div class="kpi-caption" id="fiveQEbitdaCaveat" style="margin-top:6px;">D&amp;A/EBITDA rows are an estimate (3% of Net Sales) to scaffold the metric ahead of Finance confirming real depreciation figures.</div>
@@ -335,7 +329,6 @@
           <button class="info-icon" data-info-title="Net Sales Trend" data-info-text="Net Sales ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
       <div class="canvas-wrap" id="revTrendQCanvasWrap"><div id="revTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
     <div class="card">
@@ -345,7 +338,6 @@
           <button class="info-icon" data-info-title="Gross Margin % Trend" data-info-text="Gross Margin % ต่อไตรมาส (Gross Profit ÷ Net Sales ของไตรมาสนั้น) 5 ไตรมาสย้อนหลัง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
       <div class="canvas-wrap" id="gmTrendQCanvasWrap"><div id="gmTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
   </div>
@@ -358,7 +350,6 @@
           <button class="info-icon" data-info-title="Net Profit Trend" data-info-text="Net Profit (after tax, 20% Mock Rate) ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · after tax</div>
       <div class="canvas-wrap" id="npTrendQCanvasWrap"><div id="npTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
     <div class="card">
@@ -368,7 +359,6 @@
           <button class="info-icon" data-info-title="Net Margin % Trend" data-info-text="Net Margin % (after tax, 20% Mock Rate) ต่อไตรมาส 5 ไตรมาสย้อนหลัง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · after tax</div>
       <div class="canvas-wrap" id="nmTrendQCanvasWrap"><div id="nmTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
   </div>
@@ -382,7 +372,6 @@
           <button class="info-icon" data-info-title="EBITDA Trend" data-info-text="EBITDA = Net Profit + D&A ต่อไตรมาส 5 ไตรมาสย้อนหลัง — D&A เป็นตัวเลขประมาณการ (3% ของ Net Sales) รอ Finance ยืนยันตัวเลขจริงก่อนใช้งานจริง">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · รอข้อมูล D&amp;A จริงจาก Finance</div>
       <div class="canvas-wrap" id="ebitdaTrendQCanvasWrap"><div id="ebitdaTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
     <div class="card">
@@ -393,7 +382,6 @@
           <button class="info-icon" data-info-title="EBITDA Margin % Trend" data-info-text="EBITDA Margin % ต่อไตรมาส 5 ไตรมาสย้อนหลัง — รอข้อมูล D&A จริงจาก Finance">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · รอข้อมูล D&amp;A จริงจาก Finance</div>
       <div class="canvas-wrap" id="ebitdaMTrendQCanvasWrap"><div id="ebitdaMTrendQChart" style="width:100%;height:100%;"></div></div>
     </div>
   </div>
@@ -411,7 +399,6 @@
           <button class="tool-btn" id="normEarnDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Latest closed quarter · ตัวเลข One-time Item เป็น Mock Data ตัวอย่าง รอ Finance ยืนยัน List รายการจริงก่อนใช้งานจริง</div>
       <div class="canvas-wrap" id="normEarnCanvasWrap" style="height:260px;"><div id="normEarnChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="normEarnCallout" style="margin-top:10px;margin-bottom:0;">–</div>
     </div>
@@ -436,7 +423,6 @@
         <button class="tool-btn" id="npBridgeDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Company-wide · driver decomposition, not a component build</div>
     <div class="canvas-wrap" id="npBridgeCanvasWrap" style="height:280px;"><div id="npBridgeChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="npBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
@@ -472,7 +458,6 @@
           <button class="tool-btn" id="marginByChTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom · เส้นแสดงรายเดือน (ค่าล่าสุด ≠ YTD)</div>
       <div class="chart-legend" id="marginByChTrendLegend"></div>
       <div class="canvas-wrap" id="marginByChTrendCanvasWrap"><div id="marginByChTrendChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="marginByChTrendTableWrap"></div>
@@ -490,7 +475,6 @@
           <button class="tool-btn" id="costStructExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This period · % of each channel's own Net Sales</div>
       <div class="chart-legend" id="costStructLegend"></div>
       <div class="canvas-wrap" id="costStructCanvasWrap" style="height:280px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="costStructCallout" style="margin-top:10px;margin-bottom:0;">–</div>
@@ -532,7 +516,6 @@
           <button class="tool-btn" id="mByCategoryExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle" id="mByCategorySubtitle">This period · company-wide, by category</div>
       <div class="canvas-wrap" id="mByCategoryCanvasWrap"><div id="mByCategoryChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="mByCategoryTableWrap"></div>
     </div>
@@ -549,7 +532,6 @@
           <button class="tool-btn" id="profitMatrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">This period, by category</div>
       <div class="canvas-wrap" id="profitMatrixCanvasWrap" style="height:280px;"><div id="profitMatrixChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="profitMatrixTableWrap"></div>
     </div>
@@ -594,7 +576,6 @@
         <button class="tool-btn" id="ratioTableExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle" id="ratioTableSubtitle">Year to Date vs same range last year</div>
     <table id="ratioTable"></table>
   </div>
 
@@ -629,7 +610,6 @@
         <button class="tool-btn" id="opexRatioTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Jan – Jun 2026 · MT vs TT vs Ecom</div>
     <div class="chart-legend" id="opexRatioTrendLegend"></div>
     <div class="canvas-wrap" id="opexRatioTrendCanvasWrap"><div id="opexRatioTrendChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="opexRatioTrendTableWrap"></div>
@@ -647,7 +627,6 @@
         <button class="tool-btn" id="mktByChannelExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">This period · by channel</div>
     <div class="canvas-wrap" id="mktByChannelCanvasWrap" style="height:160px;"><div id="mktByChannelChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="mktByChannelTableWrap"></div>
   </div>
@@ -659,7 +638,6 @@
         <button class="info-icon" data-info-title="Trade Spend by Partner" data-info-text="ยังไม่มี Data Source ระดับ Partner สำหรับ Trade Spend (ต้องใช้ข้อมูล Negotiated Deal Terms ต่อคู่ค้า ซึ่งยังไม่เชื่อมต่อกับ Dashboard นี้) — การ์ดนี้เป็น Placeholder แสดงโครงสร้างที่ตั้งใจไว้ ไม่ใช่ตัวเลขจริงหรือประมาณการ">i</button>
       </div>
     </div>
-    <div class="chart-subtitle">MT channel only · placeholder — no data source at this granularity yet</div>
     <div class="callout-text" style="margin-top:2px;">⚠️ ยังไม่มี Data Source ระดับนี้: Trade Spend ต่อ Partner ต้องอาศัยเงื่อนไข Deal ที่เจรจาต่อคู่ค้าแต่ละราย (ไม่ใช่สัดส่วนตามยอดขาย) ซึ่งยังไม่ถูกส่งเข้าระบบนี้ — แถบด้านล่างเป็นภาพร่างโครงสร้าง Chart ที่ตั้งใจไว้เท่านั้น ไม่ใช่ตัวเลขจริงหรือประมาณการ (No fake numbers).</div>
     <div class="cat-bars" id="tradeSpendByPartnerPlaceholder" style="margin-top:10px;"></div>
   </div>
@@ -677,7 +655,6 @@
           <button class="tool-btn" id="sellingExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · THB</div>
       <div class="chart-legend" id="sellingExpLegend"></div>
       <div class="canvas-wrap" id="sellingExpCanvasWrap" style="height:260px;"><div id="sellingExpChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="sellingExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
@@ -689,7 +666,6 @@
           <button class="info-icon" data-info-title="Selling Expense-to-Sales % Trend" data-info-text="Marketing/Ads (=Selling Expense รวม) หารด้วย Net Sales ต่อไตรมาส — เทียบเคียงกับ Stacked Bar ด้านซ้าย">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
       <div class="canvas-wrap" id="sellingExpRatioCanvasWrap"><div id="sellingExpRatioChart" style="width:100%;height:100%;"></div></div>
     </div>
   </div>
@@ -705,7 +681,6 @@
           <button class="tool-btn" id="adminExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · THB</div>
       <div class="chart-legend" id="adminExpLegend"></div>
       <div class="canvas-wrap" id="adminExpCanvasWrap" style="height:260px;"><div id="adminExpChart" style="width:100%;height:100%;"></div></div>
       <div class="callout-text" id="adminExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
@@ -717,7 +692,6 @@
           <button class="info-icon" data-info-title="Administration Expense-to-Sales % Trend" data-info-text="SG&A (=Administration Expense รวม) หารด้วย Net Sales ต่อไตรมาส — เทียบเคียงกับ Stacked Bar ด้านซ้าย">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26</div>
       <div class="canvas-wrap" id="adminExpRatioCanvasWrap"><div id="adminExpRatioChart" style="width:100%;height:100%;"></div></div>
     </div>
   </div>
@@ -736,7 +710,6 @@
         <button class="tool-btn" id="perBahtExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">This period · company-wide</div>
     <div class="donut-layout" id="perBahtLayout">
       <div class="donut-canvas-wrap">
         <div id="perBahtChart" style="width:100%;height:100%;"></div>
@@ -1362,7 +1335,6 @@ function renderSummary(periodKey, custom){
     });
     incomeStmtHeaders = ['Line Item', label, '% of Net Sales', 'Last Year', 'Diff %', 'Monthly Trend'];
   }
-  document.getElementById('incomeStmtSubtitle').innerHTML = (incomeStmtMode==='quarterly' ? 'Prior Quarter vs Current Quarter' : label+' vs same range last year') + ' · Same figures as the P&amp;L Waterfall above · Net Sales figures come from <a href="sales_overview.html">Sales Overview</a> — this table adds no new revenue data';
   document.getElementById('incomeStmtTable').innerHTML =
     '<thead><tr>' + incomeStmtHeaders.map(h=>'<th>'+h+'</th>').join('') + '</tr></thead><tbody>'
     + incomeStmtRows.map((r,i)=>{
@@ -1417,7 +1389,6 @@ function renderSummary(periodKey, custom){
     if(spreadQoQ > KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp){
       keyFactorChecks.push({ name:'Revenue growth divergence ('+chGrowthQoQ[0].channel+' vs '+chGrowthQoQ[chGrowthQoQ.length-1].channel+')', delta: spreadQoQ, threshold:KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp, basis:'QoQ growth spread' });
     }
-    document.getElementById('keyFactorsSubtitle').textContent = 'This quarter’s factors · '+quarterYearLabel(priorQS)+' → '+quarterYearLabel(curQS);
   } else {
     const lyNetSalesYTD = sumRange(pnlCompany.netSales, s-12, e-12);
     const lyGMYTD = lyNetSalesYTD ? sumRange(pnlCompany.grossProfit,s-12,e-12)/lyNetSalesYTD*100 : 0;
@@ -1432,7 +1403,6 @@ function renderSummary(periodKey, custom){
     if(spreadYoY > KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp){
       keyFactorChecks.push({ name:'Revenue growth divergence ('+chGrowthYoY[0].channel+' vs '+chGrowthYoY[chGrowthYoY.length-1].channel+')', delta: spreadYoY, threshold:KEY_FACTOR_THRESHOLDS.revenue_growth_divergence_pp, basis:'YoY growth spread' });
     }
-    document.getElementById('keyFactorsSubtitle').textContent = 'YTD factors · '+label+' vs same range last year';
   }
   const keyFactorBullets = buildKeyFactorBullets(keyFactorChecks);
   document.getElementById('keyFactorsList').innerHTML = keyFactorBullets.length
@@ -1968,7 +1938,6 @@ function renderBreakdown(){
   document.getElementById('kpiLowestCatValue').textContent = lowest.name;
   document.getElementById('kpiLowestCatCaption').textContent = fmtPct(lowest.netMarginPct,1) + ' Net Margin · ' + (channelFilter==='all'?'all channels':channelFilter);
 
-  document.getElementById('mByCategorySubtitle').textContent = 'This period · ' + (channelFilter==='all'?'company-wide (all channels)':channelFilter+' only') + ', by category';
   buildGroupedBarSVG('mByCategoryChart', {
     labels: CATEGORY_NAMES, yFormatter: v=>v.toFixed(0)+'%', referenceValue:0, showValueLabels:true,
     series:[ {name:'Gross Margin %', color:brand, values:catMargins.map(c=>c.grossMarginPct)}, {name:'Net Margin %', color:good, values:catMargins.map(c=>c.netMarginPct)} ]
@@ -2241,7 +2210,6 @@ function renderCostStructure(periodKey, custom){
     { label:'Marketing-to-Sales %', thisPeriod: ratioOf(marketingSum, netSalesSum), lastYear: ratioOf(lyMarketing, lyNetSales) },
     { label:'SG&A-to-Sales %', thisPeriod: ratioOf(sgaSum, netSalesSum), lastYear: ratioOf(lySga, lyNetSales) }
   ];
-  document.getElementById('ratioTableSubtitle').textContent = label + ' vs same range last year';
   document.getElementById('ratioTable').innerHTML =
     '<thead><tr><th>Ratio</th><th>' + label + '</th><th>Last Year</th><th>Diff</th></tr></thead><tbody>'
     + ratioRows.map(r=>{

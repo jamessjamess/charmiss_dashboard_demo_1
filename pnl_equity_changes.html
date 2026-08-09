@@ -45,8 +45,6 @@
       <a href="#sec-equity-trend">Equity &amp; Retained Earnings Trend</a>
       <a href="#sec-dividend">Dividend &amp; Payout</a>
     </nav>
-    <div class="nav-filter-divider"></div>
-    <div class="filter-scope">Company-wide · Q1'26 → Q2'26 movement · capstone statement — closing ties to Balance Sheet, Net Profit ties to P&amp;L, Dividends tie to Cash Flow · 100% mock, for design/demo purposes</div>
   </div>
   </div>
 
@@ -64,7 +62,6 @@
         <button class="tool-btn" id="eqWaterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Q1'26 → Q2'26 · company-wide · THB</div>
     <div class="canvas-wrap" id="eqWaterfallCanvasWrap" style="height:260px;"><div id="eqWaterfallChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="eqWaterfallCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
@@ -77,7 +74,6 @@
         <button class="tool-btn" id="eqStatementDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Q1'26 → Q2'26 · THB</div>
     <table id="eqStatementTable"></table>
     <div class="kpi-caption" style="margin-top:8px;">ไม่มี Other Comprehensive Income (OCI) หรือการเพิ่มทุนในงวดนี้ — ไม่จัดทำ Statement of Changes in Equity แบบแยก OCI เพราะยังไม่มีรายการจริงที่ต้องรายงาน</div>
   </div>
@@ -96,7 +92,6 @@
         <button class="tool-btn" id="eqTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
     <div class="chart-legend">
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>Total Equity</span>
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Retained Earnings</span>
@@ -114,12 +109,10 @@
         <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'26 ตรงกับบรรทัด Financing ในหน้า Cash Flow (฿11.2M) เป๊ะ — Mock Data 100%">i</button>
       </div>
     </div>
-    <div class="chart-subtitle">Quarterly, Q3'25 – Q2'26 · 100% mock data</div>
     <div class="canvas-wrap" id="dividendCanvasWrap"><div id="dividendChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="dividendCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
 
-  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้เป็น Capstone Statement ที่ผูกกับทั้ง 3 งบ (P&amp;L / Cash Flow / Balance Sheet) — ตัวเลขทั้งหมดยังเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง</div>
 
 </div>
 

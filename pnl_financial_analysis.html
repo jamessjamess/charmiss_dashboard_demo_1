@@ -47,8 +47,6 @@
       <a href="#sec-ccc-bridge">Cash Conversion Cycle</a>
       <a href="#sec-inventory-provision">Inventory Provision</a>
     </nav>
-    <div class="nav-filter-divider"></div>
-    <div class="filter-scope">Company-wide · reads across P&amp;L, Cash Flow and Balance Sheet — no new figures generated here, every ratio ties to those pages · 100% mock, for design/demo purposes</div>
   </div>
   </div>
 
@@ -62,7 +60,6 @@
         <button class="tool-btn" id="ratioSummaryDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
       </div>
     </div>
-    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
     <table id="ratioSummaryTable"></table>
   </div>
 
@@ -75,7 +72,6 @@
         <button class="info-icon" data-info-title="DuPont ROE Decomposition" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage = (Net Profit ÷ Revenue) × (Revenue ÷ Average Total Assets) × (Average Total Assets ÷ Average Total Equity) — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — Profit Margin กางต่อเป็น Operating Margin × Tax Burden × Interest Burden เป็น Layer เสริม (Interest Burden = EBIT ÷ EBT = 1.00x เพราะ Charmiss ไม่มีภาระดอกเบี้ย) — ฐาน TTM (4 ไตรมาสล่าสุดรวมกัน) คำนวณจากชุดข้อมูลเดียวกับ 5-Quarter P&amp;L + Balance Sheet/Statement of Equity ด้านบน ไม่สร้างเลขใหม่ — Mock Data 100%">i</button>
       </div>
     </div>
-    <div class="chart-subtitle">TTM ending Q2'26 · company-wide · Average balances</div>
     <div class="dupont-tree">
       <div class="dupont-row">
         <div class="dupont-box result"><div class="dupont-box-label">ROE</div><div class="dupont-box-value" id="dpROE">–</div></div>
@@ -109,7 +105,6 @@
         <button class="info-icon" data-info-title="D/E & IBD/E Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity — Charmiss ไม่มีเงินกู้ยืมที่มีภาระดอกเบี้ย ณ ปัจจุบัน จึง IBD/E = 0.00x ตลอด แทนการเดาตัวเลขหนี้ใหม่ — Mock Data 100% (ย้ายมาจากหน้า Balance Sheet — ตัวเลขเดิมทุกจุด)">i</button>
       </div>
     </div>
-    <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · 100% mock data</div>
     <div class="chart-legend">
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>D/E</span>
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>IBD/E</span>
@@ -127,7 +122,6 @@
         <button class="info-icon" data-info-title="Cash Conversion Cycle Bridge" data-info-text="CCC = Inventory Days + AR Days − AP Days — AP Days ที่ยืดออก (แถบลบ) ช่วยลด CCC โดยรวม แม้ Inventory Days ยังสูง — ตัวเลขเดียวกับ Key Ratios Summary ด้านบน (Q2'26) — Mock Data 100%">i</button>
       </div>
     </div>
-    <div class="chart-subtitle">Q2'26 · company-wide · days</div>
     <div class="canvas-wrap" id="cccBridgeCanvasWrap" style="height:260px;"><div id="cccBridgeChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="cccBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
@@ -142,7 +136,6 @@
           <button class="info-icon" data-info-title="Inventory Provision Balance" data-info-text="เครื่องสำอางมีความเสี่ยงสินค้าหมดอายุ — Provision for Obsolescence กันไว้เป็น % ของ Inventory คงเหลือ (ประมาณการ) — Inventory Q1'26/Q2'26 ตรงกับหน้า Balance Sheet เป๊ะ (88/92 ล้านบาท) — Mock Data 100%">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Quarterly, Q2'25 – Q2'26 · Provision as % of Inventory</div>
       <div class="chart-legend">
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>Inventory</span>
         <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--critical)"></span>Provision Balance</span>
@@ -157,13 +150,11 @@
           <button class="info-icon" data-info-title="Inventory Aging" data-info-text="สัดส่วน Inventory คงเหลือ Q2'26 (฿92M) แบ่งตามระยะเวลาที่เหลือก่อนหมดอายุ — กลุ่ม '&lt;3 เดือน' คือกลุ่มเสี่ยงสูงสุดที่จะต้องตัดสต๊อกหรือลดราคาเร่งขาย — Mock Data 100%">i</button>
         </div>
       </div>
-      <div class="chart-subtitle">Q2'26 · ฿92M total inventory</div>
       <div class="canvas-wrap" id="agingCanvasWrap"><div id="agingChart" style="width:100%;height:100%;"></div></div>
       <div class="chart-legend" id="agingLegend"></div>
     </div>
   </div>
 
-  <div class="kpi-caption" style="margin-top:14px;">หมายเหตุ: หน้านี้เป็นชั้นวิเคราะห์ (ไม่ใช่ตัวงบ) ที่รวม Ratio ข้ามงบ P&amp;L / Cash Flow / Balance Sheet — ตัวเลขทั้งหมดยังเป็น Mock Data 100% สำหรับวัตถุประสงค์ Design/Demo ต้องแทนที่ด้วยข้อมูลจริงจาก Finance ก่อนใช้งานจริง</div>
 
 </div>
 

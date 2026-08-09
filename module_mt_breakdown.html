@@ -131,60 +131,6 @@
 
   <!-- ===== ZONE B: PARTNER PERFORMANCE ===== -->
   <div class="section-label" id="sec-partner-performance">Partner Performance</div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Monthly Sales by Partner</span>
-        <button class="info-icon" data-info-title="Monthly Sales by Partner" data-info-text="ยอดขายรายเดือนของแต่ละคู่ค้า (Key Account) ย้อนหลังเต็ม 3 ปี — Company-wide MT เสมอ (ไม่ scope ตาม Filter ด้านบน, แสดง Time Series เพื่อดู Trend) — เน้น Label ปลายเส้นเฉพาะ Top 5 คู่ค้าตามยอดขายล่าสุดเพื่อให้อ่านง่าย ส่วนอีก 4 รายยังวาดอยู่แต่จางสีลง ดูตัวเลขทุกคู่ค้าแบบเต็มได้ผ่านปุ่ม 'ดูเป็นตาราง'">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="partnerTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="partnerTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="partnerTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="canvas-wrap" id="partnerTrendCanvasWrap" style="height:280px;"><div id="partnerTrendChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="partnerTrendTableWrap"></div>
-  </div>
-
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Target vs Actual per Partner</span>
-          <button class="info-icon" data-info-title="Target vs Actual per Partner" data-info-text="Target Attainment % รายคู่ค้า (Key Account) เรียงตามยอดขาย — Company-wide MT เสมอ เส้นอ้างอิงที่ 100% แสดง Top 10 คู่ค้าตามยอดขาย พร้อมลิงก์ 'See all' เมื่อมีมากกว่า 10 ราย">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="partnerBulletTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="partnerBulletDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="partnerBulletExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="canvas-wrap" id="partnerBulletCanvasWrap" style="height:306px;"><div id="partnerBulletChart" style="width:100%;height:100%;"></div></div>
-      <div class="callout-text" id="partnerBulletCallout" style="margin-top:10px;">–</div>
-      <div id="partnerBulletSeeMore"></div>
-      <div class="data-table-wrap" id="partnerBulletTableWrap"></div>
-    </div>
-
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">YoY Growth by Partner</span>
-          <button class="info-icon" data-info-title="YoY Growth by Partner" data-info-text="%Growth ยอดขายเทียบปีก่อน รายคู่ค้า (Key Account) — เรียงลำดับเดียวกับ Target vs Actual per Partner ทางซ้าย (ตามยอดขาย) เพื่อดูคู่กันว่าคู่ค้าที่ถึงเป้า/ไม่ถึงเป้า กำลังโตหรือหดตัวด้วยหรือไม่ เส้นอ้างอิงที่ 0% — แสดง Top 10 คู่ค้าตามยอดขาย พร้อมลิงก์ 'See all' เมื่อมีมากกว่า 10 ราย">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="partnerGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="partnerGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="partnerGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="canvas-wrap" id="partnerGrowthCanvasWrap" style="height:306px;"><div id="partnerGrowthChart" style="width:100%;height:100%;"></div></div>
-      <div class="callout-text" id="partnerGrowthCallout" style="margin-top:10px;">–</div>
-      <div id="partnerGrowthSeeMore"></div>
-      <div class="data-table-wrap" id="partnerGrowthTableWrap"></div>
-    </div>
-  </div>
-
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -431,10 +377,9 @@ const partners = [
 const RETURN_RATE_CEILING_PCT = 4.0;
 /* Fix (2026-08-06): byte-for-byte copy of module_mt_executive_summary.html's
    keyAccountColors (same order as `partners` above) so a given Key Account
-   is drawn in the same color on both tabs — used by the new Monthly Sales
-   by Partner trend chart below. */
+   is drawn in the same color on both tabs — used by Partner Portfolio
+   Matrix below. */
 const keyAccountColors = ['#4C6FA5','#6E9B6E','#8C6FB0','#C97B63','#C4A22E','#75798C','#B23368','#3B7A7A','#A87C3F'];
-function partnerColor(id){ const i = partners.findIndex(p=>p.id===id); return i>=0 ? keyAccountColors[i] : '#999'; }
 
 const mtCategoryShares = [
   {name:'Skin Care', pct:31.9, growth:9.2}, {name:'Personal Care', pct:23.2, growth:13.6}, {name:'Hair Care', pct:16.8, growth:4.1},
@@ -811,28 +756,10 @@ function renderCategoryAndCrossTab(){
   document.getElementById('shareCallout').innerHTML = (allNodes.length>6 ? 'Top 6 of '+allNodes.length+' '+LEVEL_NAMES_PLURAL[currentCatLevel].toLowerCase()+' · ' : '') + 'Mix shift, '+shareLabels[0]+'→'+shareLabels[shareLabels.length-1]+' — ' + shareCalloutParts.join(' · ');
 }
 
-/* "See all N →" affordance for a capped SVG bar list — reveals the full list
-   by simply invoking the card's own existing table + fullscreen toolbar
-   buttons (no second, parallel expand mechanism to maintain), same idea as
-   TT Overview's own see-more pattern (tt-shared.js renderCategoryTopView).
-   Only rendered when the underlying list actually overflows the cap —
-   harmless no-op today since MT only has 9 partners, ready for 11+. */
-function renderPartnerSeeMore(containerId, overflow, totalCount, tableWrapId, tableBtnId, expandBtnId){
-  const el = document.getElementById(containerId);
-  if(!overflow){ el.innerHTML = ''; return; }
-  el.innerHTML = '<div style="margin-top:8px;text-align:center;"><button type="button" id="'+containerId+'Btn" style="background:none;border:none;color:var(--brand);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">See all '+totalCount+' →</button></div>';
-  document.getElementById(containerId+'Btn').addEventListener('click', ()=>{
-    if(!document.getElementById(tableWrapId).classList.contains('visible')) document.getElementById(tableBtnId).click();
-    document.getElementById(expandBtnId).click();
-  });
-}
-
 function renderAll(){
   const [s,e] = getPeriodRange(currentPeriodKey, currentCustom);
   const label = periodLabelText(currentPeriodKey, currentCustom);
   const brand = cssVar('--brand') || '#8E1E4D';
-  const good = cssVar('--good') || '#0ca30c';
-  const critical = cssVar('--critical') || '#d03b3b';
   const mtTotalPeriod = sumRange(groupActual.MT, s, e);
 
   const curYearIdx = []; for(let i=24;i<=35;i++) curYearIdx.push(i);
@@ -888,21 +815,6 @@ function renderAll(){
   }).join('');
   latestData.highReturn = partnersRanked.map(p=>({id:p.id, cnRate:p.cnRate}));
 
-  /* === ZONE B: Monthly Sales by Partner — moved to top of section 2026-08-06
-     (was after Target vs Actual/YoY Growth). Company-wide MT always (KAM/
-     My-accounts-only filter removed same day). Dims + drops the end-label on
-     the bottom 4 partners by current-period share so the chart reads as
-     "here are the 5 that matter, the rest are still drawn if you look" —
-     see the card's info-icon for the exact rule. */
-  const partnerTrendTop5Ids = new Set([...partners].sort((a,b)=>b.groupPct-a.groupPct).slice(0,5).map(p=>p.id));
-  const partnerTrendSeries = partners.map(p=>{
-    const data = groupActual.MT.map(v => v*p.groupPct/100);
-    const isTop = partnerTrendTop5Ids.has(p.id);
-    return { data, color: partnerColor(p.id), width: isTop?2.2:1.3, opacity: isTop?1:0.35, showLastLabel:isTop, lastLabelFormatter: v => p.id+' '+fmtTHB(v) };
-  });
-  buildLineChartSVG('partnerTrendChart', { labels: monthLabels, yFormatter: v=>fmtTHB(v), series: partnerTrendSeries });
-  latestData.partnerTrend = { labels: monthLabels, partners: partners.map(p=>({name:p.id, values: groupActual.MT.map(v=>v*p.groupPct/100)})) };
-
   /* === ZONE B: partner-level aggregation for the selected period ===
      Fix (2026-08-06): dropped the KAM/My-accounts-only filter — always all
      9 named Key Accounts now, matching every other zone on this page. */
@@ -910,36 +822,6 @@ function renderAll(){
     const net = mtTotalPeriod * p.groupPct/100;
     return { ...p, net, target: net / (p.attainFactor/100) };
   }).sort((a,b)=>b.net-a.net);
-
-  /* Target vs Actual per Partner + YoY Growth by Partner — capped to Top 10
-     by net sales with a "See all N →" link when there are more (2026-08-06,
-     future-proofing for >10 partners; currently always fits, no overflow). */
-  const PARTNER_CAP = 10;
-  const partnerOverflow = sortedByNet.length > PARTNER_CAP;
-  const partnerShown = partnerOverflow ? sortedByNet.slice(0,PARTNER_CAP) : sortedByNet;
-
-  buildHBarCompareSVG('partnerBulletChart', partnerShown.map(p=>({
-    label: p.id, value: p.attainFactor, color: p.attainFactor>=100 ? good : critical
-  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:80, rowHeight:30 });
-  latestData.partnerBullet = sortedByNet;
-  const belowTarget = sortedByNet.filter(p=>p.attainFactor<100);
-  document.getElementById('partnerBulletCallout').innerHTML = belowTarget.length
-    ? belowTarget.length+' of '+sortedByNet.length+' accounts below target · Furthest below: <b>'+belowTarget.reduce((a,b)=>a.attainFactor<b.attainFactor?a:b).id+'</b> ('+fmtPct(belowTarget.reduce((a,b)=>a.attainFactor<b.attainFactor?a:b).attainFactor,0)+')'
-    : 'All '+sortedByNet.length+' accounts at or above target';
-  renderPartnerSeeMore('partnerBulletSeeMore', partnerOverflow, sortedByNet.length, 'partnerBulletTableWrap', 'partnerBulletTableBtn', 'partnerBulletExpandBtn');
-
-  /* === ZONE B: YoY Growth by Partner — same sort order (by net sales) as
-     Target vs Actual per Partner to its left, so the two charts read as one
-     paired view: is this account hitting target, and is it growing? === */
-  buildHBarCompareSVG('partnerGrowthChart', partnerShown.map(p=>({
-    label: p.id, value: p.growthYoY, color: p.growthYoY>=0 ? good : critical
-  })), { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:80, rowHeight:30 });
-  latestData.partnerGrowth = sortedByNet;
-  const shrinking = sortedByNet.filter(p=>p.growthYoY<0);
-  document.getElementById('partnerGrowthCallout').innerHTML = shrinking.length
-    ? shrinking.length+' of '+sortedByNet.length+' account'+(shrinking.length===1?'':'s')+' shrinking YoY · Steepest decline: <b>'+shrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).id+'</b> ('+fmtSignedPct(shrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).growthYoY,1)+')'
-    : 'All '+sortedByNet.length+' accounts growing YoY';
-  renderPartnerSeeMore('partnerGrowthSeeMore', partnerOverflow, sortedByNet.length, 'partnerGrowthTableWrap', 'partnerGrowthTableBtn', 'partnerGrowthExpandBtn');
 
   /* === ZONE B: Sales by Partner (ranked bar) + Partner Portfolio Matrix ===
      New 2026-08-06 — same visual pattern as Product Coverage's Sales by
@@ -1049,48 +931,6 @@ document.getElementById('highReturnTableBtn').addEventListener('click', ()=>{
   latestData.highReturn.forEach(p=>{ html += '<tr><td>'+p.id+'</td><td>'+fmtPct(p.cnRate,1)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
-});
-
-document.getElementById('partnerBulletDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerBulletChart', 'mt_target_vs_actual_per_partner.svg'));
-document.getElementById('partnerBulletExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('partnerBulletTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('partnerBulletTableWrap');
-  const canvasWrap = document.getElementById('partnerBulletCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.partnerBullet;
-  let html = '<table class="mini-table"><thead><tr><th>Partner</th><th>Group</th><th>Net Sales</th><th>Attainment</th></tr></thead><tbody>';
-  d.forEach(p=>{ html += '<tr><td>'+p.id+'</td><td>'+p.group+'</td><td>'+fmtTHB(p.net)+'</td><td>'+fmtPct(p.attainFactor,0)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('partnerGrowthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerGrowthChart', 'mt_yoy_growth_by_partner.svg'));
-document.getElementById('partnerGrowthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('partnerGrowthTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('partnerGrowthTableWrap');
-  const canvasWrap = document.getElementById('partnerGrowthCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.partnerGrowth;
-  let html = '<table class="mini-table"><thead><tr><th>Partner</th><th>Net Sales</th><th>Growth YoY</th></tr></thead><tbody>';
-  d.forEach(p=>{ html += '<tr><td>'+p.id+'</td><td>'+fmtTHB(p.net)+'</td><td>'+fmtSignedPct(p.growthYoY,1)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('partnerTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerTrendChart', 'mt_monthly_sales_by_partner.svg'));
-document.getElementById('partnerTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('partnerTrendTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('partnerTrendTableWrap');
-  const canvasWrap = document.getElementById('partnerTrendCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.partnerTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.partners.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.partners.map(p=>'<td>'+fmtTHB(p.values[i])+'</td>').join('') + '</tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 document.getElementById('partnerSalesDownloadBtn').addEventListener('click', ()=>{

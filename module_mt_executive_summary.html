@@ -182,28 +182,58 @@
     </div>
   </div>
 
-  <!-- ===== ROW 3: Key Account Growth & Target Gap ===== -->
-  <div class="card chgap-card">
+  <!-- ===== ROW 3: Monthly Sales by Partner ===== -->
+  <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Key Account Growth &amp; Target Gap</span>
-        <button class="info-icon" data-info-title="Key Account Growth &amp; Target Gap" data-info-text="ต่อแถว มี 2 แท่ง diverging คู่กัน ตัวเลขอยู่ท้ายแท่งแต่ละอัน: แท่งแรก = YoY Growth % เริ่มจาก 0 (เขียว=โต, แดง=ถดถอย) ใต้ % คือ Actual Sales growth ฿ แท่งที่สอง = Target Attainment % เริ่มจาก 100% (เขียวยื่นขวา=เกินเป้า, แดงยื่นซ้าย=ต่ำกว่าเป้า) ใต้ % คือ Gap to Target ฿ เส้นประในแต่ละแท่งคือค่าของแถว Total (MT) ใช้เทียบว่าคู่ค้ารายนั้นสูง/ต่ำกว่าภาพรวม MT ทั้งหมดแค่ไหน แถว Total (MT) ล่างสุดคือสรุปทั้ง Channel">i</button>
+        <span class="chart-title">Monthly Sales by Partner</span>
+        <button class="info-icon" data-info-title="Monthly Sales by Partner" data-info-text="ยอดขายรายเดือนของแต่ละคู่ค้า (Key Account) ย้อนหลังเต็ม 3 ปี — Company-wide MT เสมอ (ไม่ scope ตาม Filter ด้านบน, แสดง Time Series เพื่อดู Trend) — เน้น Label ปลายเส้นเฉพาะ Top 5 คู่ค้าตามยอดขายล่าสุดเพื่อให้อ่านง่าย ส่วนอีก 4 รายยังวาดอยู่แต่จางสีลง ดูตัวเลขทุกคู่ค้าแบบเต็มได้ผ่านปุ่ม 'ดูเป็นตาราง'">i</button>
       </div>
       <div class="toolbar">
-        <button class="tool-btn" id="kgTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="kgExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        <button class="tool-btn" id="partnerTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="partnerTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="partnerTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="chgap-legend">
-      <span class="chgap-legend-item"><span class="chgap-swatch pos"></span>growing / over target</span>
-      <span class="chgap-legend-item"><span class="chgap-swatch neg"></span>declining / under target</span>
-      <span class="chgap-legend-item"><span class="chgap-refline-swatch"></span>Total (MT)</span>
+    <div class="canvas-wrap" id="partnerTrendCanvasWrap" style="height:280px;"><div id="partnerTrendChart" style="width:100%;height:100%;"></div></div>
+    <div class="data-table-wrap" id="partnerTrendTableWrap"></div>
+  </div>
+
+  <!-- ===== ROW 4: Target vs Actual per Partner + YoY Growth by Partner ===== -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Target vs Actual per Partner</span>
+          <button class="info-icon" data-info-title="Target vs Actual per Partner" data-info-text="Target Attainment % รายคู่ค้า (Key Account) เรียงตามยอดขาย เส้นอ้างอิงที่ 100%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="kgAttainTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="kgAttainDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="kgAttainExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="kgAttainCanvasWrap" style="height:306px;"><div id="kgAttainChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="kgAttainCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="kgAttainTableWrap"></div>
     </div>
-    <div class="chgap-col-labels"><span style="grid-column:2/4">YoY Growth</span><span style="grid-column:4/6">Target Attainment %</span></div>
-    <div class="chgap-axis"><div class="chgap-axis-track" style="grid-column:2"><span class="chgap-axis-tick" style="left:26%">0%</span></div><div class="chgap-axis-track" style="grid-column:4"><span class="chgap-axis-tick edge-left" style="left:0%">0%</span><span class="chgap-axis-tick" id="kgAttainTargetTick" style="left:100%">100%</span></div></div>
-    <div class="chgap-rows" id="kgRows"></div>
-    <div class="callout-text" id="kgAction">–</div>
-    <div class="data-table-wrap" id="kgTableWrap"></div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">YoY Growth by Partner</span>
+          <button class="info-icon" data-info-title="YoY Growth by Partner" data-info-text="%Growth ยอดขายเทียบปีก่อน รายคู่ค้า (Key Account) — เรียงลำดับเดียวกับ Target vs Actual per Partner ทางซ้าย (ตามยอดขาย) เส้นอ้างอิงที่ 0%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="kgGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="kgGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="kgGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="kgGrowthCanvasWrap" style="height:306px;"><div id="kgGrowthChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="kgGrowthCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="kgGrowthTableWrap"></div>
+    </div>
   </div>
 
 </div>
@@ -606,96 +636,69 @@ function renderAll(periodKey, custom){
   buildLineChartSVG('growthChart', { labels: viewLabels, yFormatter: v=>v.toFixed(0)+'%', series:[{data:growthSeries, color:brand, width:2.4, fill:true, showLastLabel:true, lastLabelFormatter:v=>fmtSignedPct(v)}] });
   latestData.growth = { labels: viewLabels, values: growthSeries };
 
-  /* === Key Account Growth & Target Gap ===
-     Ported from sales_overview.html's "Channel Growth & Target Gap" widget
-     (same chgap-* CSS/markup), swapping Channel rows for the 9 Key Accounts
-     — a channel-comparison table doesn't apply to a single-channel (MT-only)
-     page, but an account-comparison one does. growthYoY/attain are the
-     existing static per-account figures (keyAccounts/keyAccountStats); the
-     ฿ deltas are derived the same way the (now-cut) Growth Contribution
-     waterfall used to (thisYear/(1+growthYoY/100) for last year's ฿, and
-     net/(attain/100) for the implied target ฿) — same source numbers, no
-     new mock data. Total (MT) row and its reference lines are period-scoped
-     (totalActual/totalTarget, s..e) so the whole widget agrees with the
-     donut/legend above, unlike the Calendar-YTD-only Target Attainment &
-     Full Year Outlook card. */
-  const kgGrowth = keyAccounts.map(a=>a.growthYoY);
-  const kgGrowthAmt = keyAccounts.map(a=>{
-    const thisYearVal = totalActual*a.pct/100;
-    const lastYearVal = thisYearVal/(1+a.growthYoY/100);
-    return thisYearVal - lastYearVal;
+  /* === Monthly Sales by Partner ===
+     Moved here from module_mt_breakdown.html (2026-08-09, feedback), same
+     as Ecom's Monthly Sales by Platform move — each partner's monthly
+     series is its fixed % share (keyAccounts[i].pct) of groupActual.MT,
+     same formula Breakdown used. Dims + drops the end-label on the bottom
+     4 partners by share so the chart reads as "here are the 5 that
+     matter, the rest are still drawn if you look". Always full 3-year
+     history, not scoped to the period filter — but DOES respect the View
+     By toggle (fix 2026-08-09: used to stay monthly no matter what,
+     unlike every other trend chart on this page), summing 3 months into
+     each quarter with the same bucketMonths/bucketSum helpers used
+     everywhere else. */
+  const partnerTrendAllIdx = []; for(let i=0;i<MONTHS_TOTAL;i++) partnerTrendAllIdx.push(i);
+  const partnerTrendGroups = bucketMonths(partnerTrendAllIdx, currentTimeFrame);
+  const partnerTrendLabels = currentTimeFrame==='quarterly'
+    ? partnerTrendGroups.map(g => quarterLabel(g)+' '+String(2024+Math.floor(g[0]/12)).slice(2))
+    : monthLabels;
+  const partnerTrendTop5Names = new Set([...keyAccounts].sort((a,b)=>b.pct-a.pct).slice(0,5).map(a=>a.name));
+  const partnerTrendSeries = keyAccounts.map((a,i)=>{
+    const data = bucketSum(groupActual.MT.map(v => v*a.pct/100), partnerTrendGroups);
+    const isTop = partnerTrendTop5Names.has(a.name);
+    return { data, color: keyAccountColors[i], width: isTop?2.2:1.3, opacity: isTop?1:0.35, showLastLabel:isTop, lastLabelFormatter: v => a.name+' '+fmtTHB(v) };
   });
-  const kgAttainPct = keyAccountStats.map(st=>st.attain);
-  const kgDiff = keyAccounts.map((a,i)=>{
+  buildLineChartSVG('partnerTrendChart', { labels: partnerTrendLabels, yFormatter: v=>fmtTHB(v), series: partnerTrendSeries });
+  latestData.partnerTrend = { labels: partnerTrendLabels, partners: keyAccounts.map((a,i)=>({name:a.name, values: partnerTrendSeries[i].data})) };
+
+  /* === Target vs Actual per Partner + YoY Growth by Partner ===
+     Replaces the old combined "Key Account Growth & Target Gap" diverging
+     dual-bar widget (chgap-* markup) — two bars per row didn't collapse well
+     on mobile even after adding .chgap-mobile-label, so this now mirrors
+     module_mt_breakdown.html's simpler two-single-bar-chart pattern (same
+     buildHBarCompareSVG helper + Partner Performance phrasing), which gets
+     the existing .chart-grid 2-up→1-up responsive collapse for free. Same 9
+     Key Accounts, same growthYoY/attain figures and ฿ deltas as before,
+     already sorted by net sales share (keyAccounts' natural order). */
+  const good = cssVar('--good') || '#0ca30c';
+  const critical = cssVar('--critical') || '#d03b3b';
+  const kgList = keyAccounts.map((a,i)=>{
     const net = totalActual*a.pct/100;
     const target = net/(keyAccountStats[i].attain/100);
-    return net - target;
+    const lastYearVal = net/(1+a.growthYoY/100);
+    return { name:a.name, attain:keyAccountStats[i].attain, diff: net-target, growthYoY:a.growthYoY, growthAmt: net-lastYearVal };
   });
 
-  const mtTotalAttainPct = totalTarget ? (totalActual/totalTarget*100) : 0;
-  const mtTotalGapValue = totalActual - totalTarget;
-  const mtPrevTotal = (s-12>=0) ? sumRange(groupActual.MT, s-12, e-12) : null;
-  const mtTotalGrowth = mtPrevTotal ? pctChange(totalActual, mtPrevTotal) : null;
-  const mtTotalGrowthAmt = mtPrevTotal!=null ? totalActual-mtPrevTotal : null;
+  buildHBarCompareSVG('kgAttainChart', kgList.map(p=>({
+    label: p.name, value: p.attain, color: p.attain>=100 ? good : critical,
+    subLabel: (p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff)), subLabelColor: p.diff>=0 ? good : critical
+  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:80, rowHeight:30 });
+  latestData.kgAttain = kgList;
+  const kgBelowTarget = kgList.filter(p=>p.attain<100);
+  document.getElementById('kgAttainCallout').innerHTML = kgBelowTarget.length
+    ? kgBelowTarget.length+' of '+kgList.length+' accounts below target · Furthest below: <b>'+kgBelowTarget.reduce((a,b)=>a.attain<b.attain?a:b).name+'</b> ('+fmtPct(kgBelowTarget.reduce((a,b)=>a.attain<b.attain?a:b).attain,0)+')'
+    : 'All '+kgList.length+' accounts at or above target';
 
-  const kgAllGrowth = kgGrowth.concat([mtTotalGrowth]);
-  const kgMaxAbsGrowth = Math.max(...kgAllGrowth.filter(v=>v!==null).map(v=>Math.abs(v))) || 1;
-  const kgAllAttainPct = kgAttainPct.concat([mtTotalAttainPct]);
-  const kgAttainDomainMax = Math.max(110, Math.ceil(Math.max(...kgAllAttainPct)/10)*10 + 10);
-  const kgAttainZeroPos = 100/kgAttainDomainMax*100;
-  document.getElementById('kgAttainTargetTick').style.left = kgAttainZeroPos.toFixed(1)+'%';
-  function kgPos(v, maxAbs){ return v>=0 ? 26 + (Math.abs(v)/maxAbs)*74 : 26 - (Math.abs(v)/maxAbs)*26; }
-  function kgBarStyle(v, maxAbs){
-    const over = v>=0;
-    const frac = Math.abs(v)/maxAbs;
-    return over ? 'left:26%;width:'+(frac*74).toFixed(1)+'%;' : 'right:74%;width:'+(frac*26).toFixed(1)+'%;';
-  }
-  function kgBarStyle0(v, domainMax){ return 'left:0%;width:'+(Math.max(0,v)/domainMax*100).toFixed(1)+'%;'; }
-  function kgTrack(fillClass, barStyle, refPos, zeroPos){
-    return '<div class="chgap-bar-track"><div class="chgap-bar-zero" style="left:'+zeroPos+'%"></div>'
-      + (refPos!=null ? '<div class="chgap-ref-line" style="left:'+refPos.toFixed(1)+'%"></div>' : '')
-      + '<div class="chgap-bar-fill '+fillClass+'" style="'+barStyle+'"></div></div>';
-  }
-  function kgRowHTML(name, dotColor, growth, growthAmt, attainVal, diffTHB, isTotal){
-    const grew = growth!==null && growth>0;
-    const over = attainVal>=100;
-    return '<div class="chgap-row'+(isTotal?' total':'')+'">'
-      + '<div class="chgap-name">'+(dotColor?'<span class="chgap-dot" style="background:'+dotColor+'"></span>':'')+name+'</div>'
-      + '<div class="chgap-mobile-label">YoY Growth</div>'
-      + kgTrack(grew?'pos':'neg', kgBarStyle(growth||0, kgMaxAbsGrowth), isTotal?null:kgPos(mtTotalGrowth||0, kgMaxAbsGrowth), 26)
-      + '<div class="chgap-value-wrap"><div class="chgap-badge '+(grew?'pos':'neg')+'">'+(grew?'▲':'▼')+' '+(growth!==null?fmtSignedPct(growth):'–')+'</div>'
-      + (growthAmt!=null ? '<div class="chgap-value-sub '+(growthAmt>=0?'pos':'neg')+'">'+(growthAmt>=0?'+':'−')+fmtTHB(Math.abs(growthAmt))+'</div>' : '')+'</div>'
-      + '<div class="chgap-mobile-label">Target Attainment %</div>'
-      + kgTrack(over?'pos':'neg', kgBarStyle0(attainVal, kgAttainDomainMax), isTotal?null:(mtTotalAttainPct/kgAttainDomainMax*100), kgAttainZeroPos)
-      + '<div class="chgap-value-wrap"><div class="chgap-value '+(over?'pos':'neg')+'">'+fmtPct(attainVal,1)+'</div>'
-      + '<div class="chgap-value-sub '+(over?'pos':'neg')+'">'+(over?'+':'−')+fmtTHB(Math.abs(diffTHB))+'</div></div>'
-      + '</div>';
-  }
-  document.getElementById('kgRows').innerHTML =
-    keyAccounts.map((a,i)=> kgRowHTML(a.name, keyAccountColors[i], kgGrowth[i], kgGrowthAmt[i], kgAttainPct[i], kgDiff[i], false)).join('')
-    + kgRowHTML('Total (MT)', null, mtTotalGrowth, mtTotalGrowthAmt, mtTotalAttainPct, mtTotalGapValue, true);
-
-  let kgFastestI=0, kgSlowestI=0, kgHighestI=0, kgLowestI=0;
-  keyAccounts.forEach((a,i)=>{
-    if(kgGrowth[i]>kgGrowth[kgFastestI]) kgFastestI=i;
-    if(kgGrowth[i]<kgGrowth[kgSlowestI]) kgSlowestI=i;
-    if(kgAttainPct[i]>kgAttainPct[kgHighestI]) kgHighestI=i;
-    if(kgAttainPct[i]<kgAttainPct[kgLowestI]) kgLowestI=i;
-  });
-  const kgGrowthPart = keyAccounts[kgFastestI].name+' grows fastest YoY ('+fmtSignedPct(kgGrowth[kgFastestI])+') while '+keyAccounts[kgSlowestI].name+' lags ('+fmtSignedPct(kgGrowth[kgSlowestI])+')';
-  const kgAllAboveTarget = kgAttainPct.every(v=>v>=100);
-  const kgAllBelowTarget = kgAttainPct.every(v=>v<100);
-  const kgAttainPart = kgAllAboveTarget ? 'All key accounts above 100% attainment'
-    : kgAllBelowTarget ? 'All key accounts below 100% attainment'
-    : keyAccounts[kgHighestI].name+' leads attainment ('+fmtPct(kgAttainPct[kgHighestI],1)+') while '+keyAccounts[kgLowestI].name+' trails ('+fmtPct(kgAttainPct[kgLowestI],1)+')';
-  document.getElementById('kgAction').innerHTML = kgGrowthPart + ' · ' + kgAttainPart;
-  latestData.keyAccountGap = {
-    labels: keyAccounts.map(a=>a.name).concat(['Total (MT)']),
-    growth: kgGrowth.concat([mtTotalGrowth]),
-    growthAmt: kgGrowthAmt.concat([mtTotalGrowthAmt]),
-    attain: kgAttainPct.concat([mtTotalAttainPct]),
-    diff: kgDiff.concat([mtTotalGapValue])
-  };
+  buildHBarCompareSVG('kgGrowthChart', kgList.map(p=>({
+    label: p.name, value: p.growthYoY, color: p.growthYoY>=0 ? good : critical,
+    subLabel: (p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt)), subLabelColor: p.growthAmt>=0 ? good : critical
+  })), { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:80, rowHeight:30 });
+  latestData.kgGrowth = kgList;
+  const kgShrinking = kgList.filter(p=>p.growthYoY<0);
+  document.getElementById('kgGrowthCallout').innerHTML = kgShrinking.length
+    ? kgShrinking.length+' of '+kgList.length+' account'+(kgShrinking.length===1?'':'s')+' shrinking YoY · Steepest decline: <b>'+kgShrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).name+'</b> ('+fmtSignedPct(kgShrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).growthYoY,1)+')'
+    : 'All '+kgList.length+' accounts growing YoY';
 
   /* === Chart: Sales by Key Account (donut) === */
   buildDonutSVG('accountChart', keyAccounts.map((a,i)=>({value: totalActual*a.pct/100, color: keyAccountColors[i]})), 140, {showLabels:true});
@@ -751,20 +754,46 @@ document.getElementById('growthTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('kgExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('kgTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('kgTableWrap');
+document.getElementById('partnerTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerTrendChart', 'mt_monthly_sales_by_partner.svg'));
+document.getElementById('partnerTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('partnerTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('partnerTrendTableWrap');
+  const canvasWrap = document.getElementById('partnerTrendCanvasWrap');
   const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); document.getElementById('kgRows').classList.remove('hidden'); return; }
-  const d = latestData.keyAccountGap;
-  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>YoY Growth</th><th>Growth ฿</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
-  d.labels.forEach((name,i)=>{
-    html += '<tr><td>'+name+'</td><td>'+(d.growth[i]!==null?fmtSignedPct(d.growth[i]):'–')+'</td>'
-      + '<td>'+(d.growthAmt[i]!=null?(d.growthAmt[i]>=0?'+':'−')+fmtTHB(Math.abs(d.growthAmt[i])):'–')+'</td>'
-      + '<td>'+fmtPct(d.attain[i],1)+'</td><td>'+(d.diff[i]>=0?'+':'')+fmtTHB(d.diff[i])+'</td></tr>';
-  });
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.partnerTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.partners.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.partners.map(p=>'<td>'+fmtTHB(p.values[i])+'</td>').join('') + '</tr>'; });
   html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); document.getElementById('kgRows').classList.add('hidden');
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('kgAttainDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('kgAttainChart', 'mt_target_vs_actual_per_partner.svg'));
+document.getElementById('kgAttainExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('kgAttainTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('kgAttainTableWrap');
+  const canvasWrap = document.getElementById('kgAttainCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.kgAttain;
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+fmtPct(p.attain,1)+'</td><td>'+(p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('kgGrowthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('kgGrowthChart', 'mt_yoy_growth_by_partner.svg'));
+document.getElementById('kgGrowthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('kgGrowthTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('kgGrowthTableWrap');
+  const canvasWrap = document.getElementById('kgGrowthCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.kgGrowth;
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Growth YoY</th><th>Growth ฿</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+fmtSignedPct(p.growthYoY,1)+'</td><td>'+(p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 document.getElementById('accountDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('accountChart', 'mt_sales_by_key_account.svg'));
