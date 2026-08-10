@@ -6,6 +6,87 @@
 <title>Charmiss — Financial Statement · Financial Analysis</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
+<style>
+/* Financial Scorecard (DuPont hero, compact equation band) -- scoped to this page only */
+.fhs-card{border:1.5px solid var(--brand);}
+.fhs-equation{display:flex;align-items:stretch;gap:18px;flex-wrap:wrap;margin:2px 0 9px;}
+.fhs-equation-secondary{margin-top:0;margin-bottom:2px;}
+.fhs-op{align-self:center;font-size:15px;color:var(--ink-3);font-weight:700;padding:0 1px;}
+.fhs-chip{background:var(--wash);border:1px solid var(--border);border-radius:8px;padding:6px 12px;}
+.fhs-chip[data-rag="green"]{border-color:color-mix(in srgb, var(--good) 45%, var(--border));}
+.fhs-chip[data-rag="amber"]{border-color:color-mix(in srgb, var(--warning) 55%, var(--border));}
+.fhs-chip[data-rag="red"]{border-color:color-mix(in srgb, var(--critical) 55%, var(--border));}
+.fhs-chip-apex{background:var(--brand-wash);border-color:var(--brand);padding:7px 15px;}
+.fhs-chip-row{display:flex;align-items:baseline;gap:6px;white-space:nowrap;}
+.fhs-chip-label{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.02em;font-weight:700;}
+.fhs-chip-value{font-size:16px;font-weight:700;color:var(--ink-1);}
+.fhs-chip-apex .fhs-chip-value{font-size:23px;color:var(--brand);}
+.fhs-dir{font-weight:700;font-size:12px;}
+.fhs-dir.up{color:var(--good-text);}
+.fhs-dir.down{color:var(--critical);}
+.fhs-dir.flat{color:var(--ink-3);}
+.fhs-chip-sub{font-size:10px;color:var(--ink-3);margin-top:3px;white-space:nowrap;min-height:11px;}
+.fhs-chip-icon{width:12px;height:12px;font-size:8px;margin-left:2px;}
+.fhs-rag-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:3px;vertical-align:middle;}
+.fhs-rag-dot.green{background:var(--good);}
+.fhs-rag-dot.amber{background:var(--warning);}
+.fhs-rag-dot.red{background:var(--critical);}
+.fhs-chip-companion{background:var(--card);}
+@media (max-width:900px){
+  .fhs-equation{flex-direction:column;align-items:stretch;}
+  .fhs-op{padding:1px 0;}
+}
+
+/* DuPont ROE Tree -- analyst drill-down modal opened from the Scorecard's
+   expand button. Deliberately 2-color only (green/red, no amber/magenta)
+   per spec -- this is a separate visual language from the compact
+   Scorecard's 3-state RAG, scoped entirely to this modal. */
+.dpt-overlay{position:fixed;inset:0;background:rgba(11,11,11,.6);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px;}
+.dpt-overlay.open{display:flex;}
+.dpt-modal{background:var(--card);border-radius:12px;max-width:1180px;width:100%;max-height:92vh;display:flex;flex-direction:column;box-shadow:0 24px 64px rgba(11,11,11,.35);}
+.dpt-modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 18px;border-bottom:1px solid var(--hairline);flex-shrink:0;}
+.dpt-modal-title{font-size:14.5px;font-weight:700;color:var(--ink-1);}
+.dpt-modal-controls{display:flex;align-items:center;gap:6px;}
+.dpt-zoom-btn,.dpt-close-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--wash);color:var(--ink-2);font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+.dpt-zoom-btn:hover,.dpt-close-btn:hover{border-color:var(--brand);color:var(--brand);}
+.dpt-zoom-label{font-size:11px;color:var(--ink-3);min-width:34px;text-align:center;}
+.dpt-modal-body{padding:22px;overflow:auto;flex:1;}
+.dpt-zoom-wrap{transform-origin:top center;transition:transform .12s;}
+.dpt-tree{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:960px;}
+.dpt-connector{font-size:14px;font-weight:700;color:var(--ink-3);line-height:1;}
+.dpt-branch-row{display:flex;gap:22px;align-items:flex-start;justify-content:center;}
+.dpt-branch{border:1px solid var(--border);border-radius:10px;padding:14px;background:var(--wash);display:flex;flex-direction:column;align-items:center;gap:6px;}
+.dpt-branch-title{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.03em;font-weight:700;margin-bottom:2px;}
+.dpt-sub-row{display:flex;gap:10px;align-items:flex-start;}
+.dpt-node{border:1.5px solid var(--border);border-radius:8px;padding:8px 14px;background:var(--card);text-align:center;min-width:118px;}
+.dpt-node[data-status="good"]{border-color:var(--good);}
+.dpt-node[data-status="bad"]{border-color:var(--critical);}
+.dpt-node-label{font-size:9.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.02em;font-weight:700;}
+.dpt-node-value{font-size:17px;font-weight:800;color:var(--ink-1);margin:2px 0;}
+.dpt-node-apex .dpt-node-value{font-size:27px;color:var(--brand);}
+.dpt-node-goal{font-size:10px;color:var(--ink-3);}
+.dpt-node-status{font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:3px;margin-top:2px;}
+.dpt-node-status.good{color:var(--good-text);}
+.dpt-node-status.bad{color:var(--critical);}
+.dpt-leaf-group{display:flex;gap:8px;}
+.dpt-node.dpt-node-leaf4{padding:6px 10px;min-width:100px;}
+.dpt-node.dpt-node-leaf4 .dpt-node-value{font-size:14px;}
+.dpt-leaf-toggle{font-size:9.5px;color:var(--brand);background:none;border:none;cursor:pointer;padding:3px 0 0;font-weight:700;font-family:inherit;display:block;width:100%;}
+.dpt-leaf-detail{display:none;margin-top:6px;font-size:10px;color:var(--ink-2);border-top:1px dashed var(--hairline);padding-top:6px;text-align:left;min-width:170px;}
+.dpt-leaf-detail.open{display:block;}
+.dpt-leaf-detail-row{display:flex;justify-content:space-between;gap:12px;padding:1.5px 0;}
+.dpt-leaf-detail-row.total{border-top:1px solid var(--hairline);margin-top:3px;padding-top:3px;font-weight:700;color:var(--ink-1);}
+@media (max-width:1100px){
+  .dpt-branch-row{flex-direction:column;align-items:center;}
+}
+
+/* View By: Quarterly/Annual -- the current (unfinished) year column is
+   visually flagged (faded + diagonal hatch) so it never reads as a
+   completed FY at a glance. */
+th.annual-current-col{font-style:italic;color:var(--ink-3);}
+td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--ink-3) 7%, transparent) 0 6px, transparent 6px 12px);}
+.viewby-footnote{font-size:10.5px;color:var(--ink-3);margin-top:8px;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -41,59 +122,130 @@
 
   <div class="header-utility-row" id="headerUtilityRow">
     <nav class="section-nav">
-      <a href="#sec-key-ratios">Key Ratios Summary</a>
-      <a href="#sec-dupont">DuPont ROE Decomposition</a>
+      <a href="#sec-dupont">Financial Scorecard</a>
+      <a href="#sec-fin-ratios">Ratio Analysis</a>
       <a href="#sec-leverage">Financial Leverage</a>
       <a href="#sec-ccc-bridge">Cash Conversion Cycle</a>
       <a href="#sec-inventory-provision">Inventory Provision</a>
     </nav>
-  </div>
-  </div>
-
-  <!-- ===== KEY RATIOS SUMMARY ===== -->
-  <div class="section-label" id="sec-key-ratios">Key Ratios Summary</div>
-  <div class="card table-card single-label-col" style="margin-bottom:14px;">
-    <div class="card-head">
-      <span class="card-title">Key Ratios Summary (5Q)</span>
-      <button class="info-icon" data-info-title="Key Ratios Summary" data-info-text="Profitability margins = ตัวเลขเดียวกับ P&amp;L Quarterly Trend's 5-Quarter table เป๊ะ (ไม่สร้างเลขใหม่) · Efficiency/Liquidity/Leverage = ตัวเลขเดียวกับที่เคยอยู่หน้า Balance Sheet (ย้ายมาที่นี่) · Cash Generation อ้างอิงจากหน้า Cash Flow — Current Ratio = Current Assets ÷ Current Liabilities, Quick Ratio = (Current Assets − Inventory) ÷ Current Liabilities · CCC = Inventory Days + AR Days − AP Days · D/E = Total Liabilities ÷ Equity, IBD/E = Interest-Bearing Debt ÷ Equity · CFO/EBITDA % และ FCF Margin % จากหน้า Cash Flow — ทั้งหมดเป็น Mock Data 100%">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="ratioSummaryDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+    <div class="nav-filter-divider"></div>
+    <div class="filter-bar-group">
+      <div class="filter-item">
+        <span class="filter-label" id="periodLabel">As of</span>
+        <button class="period-btn" id="periodBtn" title="ช่วงข้อมูลคงที่สำหรับ Mock นี้">
+          <span id="periodBtnLabel">Q2'26</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+      </div>
+      <div class="filter-item">
+        <span class="filter-label">View By</span>
+        <div class="timeframe-toggle" id="viewByToggle">
+          <div class="timeframe-thumb" id="viewByThumb"></div>
+          <button class="timeframe-opt selected" data-key="quarterly">Quarterly</button>
+          <button class="timeframe-opt" data-key="annual">Annual</button>
+        </div>
       </div>
     </div>
-    <table id="ratioSummaryTable"></table>
+  </div>
   </div>
 
-  <!-- ===== DUPONT ROE DECOMPOSITION ===== -->
-  <div class="section-label" id="sec-dupont">DuPont ROE Decomposition</div>
-  <div class="card table-card single-label-col" style="margin-bottom:14px;">
+  <div class="viewby-footnote" id="viewByFootnote" style="display:none;margin:-6px 0 14px;">ปีปัจจุบันเป็น YTD (flow: margin/growth) / TTM (ratio: ROE/ROA/turnover/leverage/D-E/Cash Cycle) — ยังไม่ใช่ FY เต็ม (2026 ยังไม่จบปี)</div>
+
+  <!-- ===== FINANCIAL HEALTH SCORECARD (DUPONT) ===== -->
+  <div class="section-label" id="sec-dupont">Financial Scorecard</div>
+  <div class="card table-card single-label-col fhs-card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">DuPont ROE Decomposition (TTM)</span>
-        <button class="info-icon" data-info-title="DuPont ROE Decomposition" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage = (Net Profit ÷ Revenue) × (Revenue ÷ Average Total Assets) × (Average Total Assets ÷ Average Total Equity) — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — Profit Margin กางต่อเป็น Operating Margin × Tax Burden × Interest Burden เป็น Layer เสริม (Interest Burden = EBIT ÷ EBT = 1.00x เพราะ Charmiss ไม่มีภาระดอกเบี้ย) — ฐาน TTM (4 ไตรมาสล่าสุดรวมกัน) คำนวณจากชุดข้อมูลเดียวกับ 5-Quarter P&amp;L + Balance Sheet/Statement of Equity ด้านบน ไม่สร้างเลขใหม่ — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Financial Scorecard" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — ฐาน TTM (4 ไตรมาสล่าสุดรวมกัน) คำนวณจากชุดข้อมูลเดียวกับ Financial Ratios/ตาราง DuPont Comparison ด้านล่าง ไม่สร้างเลขใหม่ — ทิศทาง (▲/▼) เทียบ Prior TTM (ending Q1'26) · สถานะ RAG และเป้า/ช่วงปกติ (Benchmark) เป็น Mock 100% รอ Finance/industry ยืนยัน">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="fhsExpandBtn" title="ดู DuPont ROE Tree แบบละเอียด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="dupont-tree">
-      <div class="dupont-row">
-        <div class="dupont-box result"><div class="dupont-box-label">ROE</div><div class="dupont-box-value" id="dpROE">–</div></div>
-        <div class="dupont-op">=</div>
-        <div class="dupont-box"><div class="dupont-box-label">Profit Margin</div><div class="dupont-box-value" id="dpNetMargin">–</div></div>
-        <div class="dupont-op">×</div>
-        <div class="dupont-box"><div class="dupont-box-label">Asset Turnover</div><div class="dupont-box-value" id="dpAssetTurnover">–</div></div>
-        <div class="dupont-op">×</div>
-        <div class="dupont-box"><div class="dupont-box-label">Financial Leverage</div><div class="dupont-box-value" id="dpEquityMultiplier">–</div></div>
+
+    <div class="fhs-equation">
+      <div class="fhs-chip fhs-chip-apex" id="fhsBoxApex">
+        <div class="fhs-chip-row">
+          <span class="fhs-chip-label">ROE (TTM)</span>
+          <span class="fhs-chip-value" id="fhsApexValue">–</span>
+          <span class="fhs-dir" id="fhsApexDir">–</span>
+        </div>
+        <div class="fhs-chip-sub" id="fhsApexSub">–</div>
       </div>
-      <div class="dupont-row sub">
-        <div class="dupont-box"><div class="dupont-box-label">Profit Margin</div><div class="dupont-box-value" id="dpNetMargin2">–</div></div>
-        <div class="dupont-op">=</div>
-        <div class="dupont-box"><div class="dupont-box-label">Operating Margin</div><div class="dupont-box-value" id="dpOperatingMargin">–</div></div>
-        <div class="dupont-op">×</div>
-        <div class="dupont-box"><div class="dupont-box-label">Tax Burden</div><div class="dupont-box-value" id="dpTaxBurden">–</div></div>
-        <div class="dupont-op">×</div>
-        <div class="dupont-box"><div class="dupont-box-label">Interest Burden</div><div class="dupont-box-value" id="dpInterestBurden">–</div></div>
+      <div class="fhs-op">=</div>
+      <div class="fhs-chip" id="fhsBoxMargin">
+        <div class="fhs-chip-row">
+          <span class="fhs-chip-label">Profit Margin</span>
+          <span class="fhs-chip-value" id="dpNetMargin">–</span>
+          <span class="fhs-dir" id="fhsMarginDir">–</span>
+          <button class="info-icon fhs-chip-icon" id="fhsMarginInfoBtn" title="รายละเอียด">i</button>
+        </div>
+        <div class="fhs-chip-sub" id="fhsMarginSub">–</div>
+      </div>
+      <div class="fhs-op">×</div>
+      <div class="fhs-chip" id="fhsBoxTurnover">
+        <div class="fhs-chip-row">
+          <span class="fhs-chip-label">Asset Turnover</span>
+          <span class="fhs-chip-value" id="dpAssetTurnover">–</span>
+          <span class="fhs-dir" id="fhsTurnoverDir">–</span>
+        </div>
+        <div class="fhs-chip-sub" id="fhsTurnoverSub">–</div>
+      </div>
+      <div class="fhs-op">×</div>
+      <div class="fhs-chip" id="fhsBoxLeverage">
+        <div class="fhs-chip-row">
+          <span class="fhs-chip-label">Financial Leverage</span>
+          <span class="fhs-chip-value" id="dpEquityMultiplier">–</span>
+          <span class="fhs-dir" id="fhsLeverageDir">–</span>
+        </div>
+        <div class="fhs-chip-sub" id="fhsLeverageSub">–</div>
       </div>
     </div>
-    <table id="dupontCompareTable" style="margin-top:16px;"></table>
-    <div class="callout-text" id="dupontCallout" style="margin-top:14px;margin-bottom:0;">–</div>
+
+    <div class="fhs-equation fhs-equation-secondary">
+      <div class="fhs-chip fhs-chip-companion" id="fhsCompanionLiquidity"></div>
+      <div class="fhs-chip fhs-chip-companion" id="fhsCompanionCCC"></div>
+    </div>
+  </div>
+
+  <!-- ===== FINANCIAL RATIOS / GROWTH RATE / CASH CYCLE (2-column layout) ===== -->
+  <div class="section-label" id="sec-fin-ratios">Ratio Analysis</div>
+  <div class="chart-grid" style="align-items:start;">
+    <div>
+      <div class="card table-card single-label-col" style="margin-bottom:0;">
+        <div class="card-head">
+          <span class="card-title" id="finRatiosTitle">Financial Ratios (5Q)</span>
+          <button class="info-icon" data-info-title="Financial Ratios" data-info-text="Profitability margins = ตัวเลขเดียวกับ P&amp;L Quarterly Trend's 5-Quarter table เป๊ะ (ไม่สร้างเลขใหม่) · Liquidity/Leverage = ตัวเลขเดียวกับที่เคยอยู่หน้า Balance Sheet (ย้ายมาที่นี่) — Current Ratio = Current Assets ÷ Current Liabilities, Quick Ratio = (Current Assets − Inventory) ÷ Current Liabilities · D/E = Total Liabilities ÷ Equity, IBD/E = Interest-Bearing Debt ÷ Equity · ROE %, ROA %, Total Asset Turnover = Annualized ต่อไตรมาส (Net Profit × 4 ÷ Average Balance ของไตรมาสนั้น — Average Balance = (ยอดต้นไตรมาส+ยอดปลายไตรมาส) ÷ 2) ใช้ Equity/Assets ชุดเดียวกับ Financial Scorecard (DuPont) ด้านบน — Mock Data 100%">i</button>
+          <div class="toolbar" style="margin-left:auto;">
+            <button class="tool-btn" id="finRatiosDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          </div>
+        </div>
+        <table id="finRatiosTable"></table>
+      </div>
+    </div>
+    <div>
+      <div class="card table-card single-label-col" style="margin-bottom:14px;">
+        <div class="card-head">
+          <span class="card-title" id="growthRateTitle">Growth Rate % (QoQ, 5Q)</span>
+          <button class="info-icon" data-info-title="Growth Rate (%)" data-info-text="% เปลี่ยนแปลงเทียบไตรมาสก่อนหน้า (QoQ) — ไฟล์นี้มีข้อมูลย้อนหลังแค่ 5 ไตรมาส (Q2'25–Q2'26) จึงไม่มี Baseline ปีก่อนสำหรับคำนวณ YoY ได้จริง (แสดง '–' ในคอลัมน์แรกเพราะไม่มีไตรมาสก่อนหน้าให้เทียบ) · Total Revenue Growth ไม่แยกแสดงเพราะ Charmiss ไม่มี Revenue อื่นนอกจาก Net Sales (ค่าเดียวกับ Sales Growth) · Total Expense = Net Sales − Net Profit (หลังภาษี) — Mock Data 100%">i</button>
+          <div class="toolbar" style="margin-left:auto;">
+            <button class="tool-btn" id="growthRateDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          </div>
+        </div>
+        <table id="growthRateTable"></table>
+      </div>
+      <div class="card table-card single-label-col" style="margin-bottom:0;">
+        <div class="card-head">
+          <span class="card-title" id="cashCycleTitle">Cash Cycle (5Q)</span>
+          <button class="info-icon" data-info-title="Cash Cycle" data-info-text="Avg. Collection/Inventory/Payment Period (Days) = ตัวเลขเดียวกับที่เคยอยู่หน้า Balance Sheet เป๊ะ (แค่เปลี่ยนชื่อให้ตรงกับหน่วยจริง — เป็น Days ไม่ใช่ Turnover) · Turnover (Times) = 365 ÷ Days (สูตรมาตรฐาน ผูกกับตัวเลข Days ด้านบนเป๊ะ ไม่สร้างสมมติฐานใหม่) · Cash Cycle (Days) = Inventory Days + AR Days − AP Days · Cash Generation (CFO/EBITDA %, FCF Margin %) อ้างอิงจากหน้า Cash Flow — Mock Data 100%">i</button>
+          <div class="toolbar" style="margin-left:auto;">
+            <button class="tool-btn" id="cashCycleDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          </div>
+        </div>
+        <table id="cashCycleTable"></table>
+      </div>
+    </div>
   </div>
 
   <!-- ===== FINANCIAL LEVERAGE ===== -->
@@ -101,7 +253,7 @@
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">D/E &amp; IBD/E Trend (5Q)</span>
+        <span class="chart-title" id="leverageTitle">D/E &amp; IBD/E Trend (5Q)</span>
         <button class="info-icon" data-info-title="D/E & IBD/E Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity — Charmiss ไม่มีเงินกู้ยืมที่มีภาระดอกเบี้ย ณ ปัจจุบัน จึง IBD/E = 0.00x ตลอด แทนการเดาตัวเลขหนี้ใหม่ — Mock Data 100% (ย้ายมาจากหน้า Balance Sheet — ตัวเลขเดิมทุกจุด)">i</button>
       </div>
     </div>
@@ -118,11 +270,11 @@
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Cash Conversion Cycle Bridge</span>
-        <button class="info-icon" data-info-title="Cash Conversion Cycle Bridge" data-info-text="CCC = Inventory Days + AR Days − AP Days — AP Days ที่ยืดออก (แถบลบ) ช่วยลด CCC โดยรวม แม้ Inventory Days ยังสูง — ตัวเลขเดียวกับ Key Ratios Summary ด้านบน (Q2'26) — Mock Data 100%">i</button>
+        <span class="chart-title">Cash Conversion Cycle Timeline</span>
+        <button class="info-icon" data-info-title="Cash Conversion Cycle Timeline" data-info-text="Operating Cycle = Inventory Days + AR Days · CCC = Operating Cycle − AP Days — แถบบนคือ Operating Cycle (Inventory ต่อด้วย Receivable) แถบล่างคือ Payable (จากจุด 0) ต่อด้วย CCC ซึ่งเริ่มตรงที่ Payable จบไปจนสุด Operating Cycle — ตัวเลขเดียวกับตาราง Cash Cycle ด้านบน (Q2'26) — Mock Data 100%">i</button>
       </div>
     </div>
-    <div class="canvas-wrap" id="cccBridgeCanvasWrap" style="height:260px;"><div id="cccBridgeChart" style="width:100%;height:100%;"></div></div>
+    <div class="canvas-wrap" id="cccBridgeCanvasWrap" style="height:150px;"><div id="cccBridgeChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="cccBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
 
@@ -132,7 +284,7 @@
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Inventory Provision Balance (5Q)</span>
+          <span class="chart-title" id="provisionTitle">Inventory Provision Balance (5Q)</span>
           <button class="info-icon" data-info-title="Inventory Provision Balance" data-info-text="เครื่องสำอางมีความเสี่ยงสินค้าหมดอายุ — Provision for Obsolescence กันไว้เป็น % ของ Inventory คงเหลือ (ประมาณการ) — Inventory Q1'26/Q2'26 ตรงกับหน้า Balance Sheet เป๊ะ (88/92 ล้านบาท) — Mock Data 100%">i</button>
         </div>
       </div>
@@ -156,6 +308,28 @@
   </div>
 
 
+</div>
+
+<div class="dpt-overlay" id="dptOverlay">
+  <div class="dpt-modal">
+    <div class="dpt-modal-head">
+      <div class="chart-title-wrap">
+        <span class="dpt-modal-title">DuPont ROE Tree — TTM (ending Q2'26)</span>
+        <button class="info-icon" data-info-title="DuPont ROE Tree" data-info-text="Ratios use average balances · Goals are mock (pending Finance) · Leaf values derived from the same P&amp;L 5Q + Balance Sheet Q1'26 mix">i</button>
+      </div>
+      <div class="dpt-modal-controls">
+        <button class="dpt-zoom-btn" id="dptZoomOutBtn" title="ซูมออก">−</button>
+        <span class="dpt-zoom-label" id="dptZoomLabel">100%</span>
+        <button class="dpt-zoom-btn" id="dptZoomInBtn" title="ซูมเข้า">+</button>
+        <button class="dpt-close-btn" id="dptCloseBtn" title="ปิด">×</button>
+      </div>
+    </div>
+    <div class="dpt-modal-body">
+      <div class="dpt-zoom-wrap" id="dptZoomWrap">
+        <div class="dpt-tree" id="dptTreeBody"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="popover" id="popover">
@@ -252,12 +426,195 @@ function ttmDupont(salesIdxStart, balOpenIdx, balCloseIdx){
   const profitMargin = operatingMargin*taxBurden*interestBurden; // = Net Profit / Sales x 100
   const assetTurnover = sales/avgAssets;
   const financialLeverage = avgAssets/avgEquity;
+  const roa = netProfit/avgAssets*100; // = Profit Margin x Asset Turnover, exact
   const roe = netProfit/avgEquity*100; // canonical, exact
   const roeFromFactors = profitMargin*assetTurnover*financialLeverage; // cross-check -- matches `roe` exactly at full precision
-  return { sales, ebit, netProfit, avgAssets, avgEquity, operatingMargin, taxBurden, interestBurden, profitMargin, assetTurnover, financialLeverage, roe, roeFromFactors };
+  return { sales, ebit, netProfit, avgAssets, avgEquity, operatingMargin, taxBurden, interestBurden, profitMargin, assetTurnover, financialLeverage, roa, roe, roeFromFactors };
 }
 const dupontCurrent = ttmDupont(1, 1, 5); // TTM Q3'25-Q2'26, balances avg(Q2'25, Q2'26)
 const dupontPrevious = ttmDupont(0, 0, 4); // TTM Q2'25-Q1'26, balances avg(Q1'25, Q1'26)
+
+/* ---------- Derived series: Financial Ratios / Growth Rate / Cash Cycle tables ---------- */
+const cogsQAll = netSalesQAll.map((v,i)=> v - grossProfitQAll[i]);
+const netProfitAfterTaxQAll = ebitQAll.map(v=> v*(1-TAX_RATE));
+const totalExpenseQAll = netSalesQAll.map((v,i)=> v - netProfitAfterTaxQAll[i]);
+
+// Per-quarter annualized ROE/ROA/Total Asset Turnover -- same average-balance
+// method as the DuPont TTM figures above, applied per-quarter instead of TTM.
+// EQUITY_BY_Q/ASSETS_BY_Q = [Q1'25, Q2'25, Q3'25, Q4'25, Q1'26, Q2'26]; our 5
+// quarters here (quarterStarts) are Q2'25..Q2'26, i.e. closing-balance index i+1.
+const roeQAll = netProfitAfterTaxQAll.map((np,i)=> np*4/((EQUITY_BY_Q[i]+EQUITY_BY_Q[i+1])/2)*100);
+const roaQAll = netProfitAfterTaxQAll.map((np,i)=> np*4/((ASSETS_BY_Q[i]+ASSETS_BY_Q[i+1])/2)*100);
+const totalAssetTurnoverQAll = netSalesQAll.map((s,i)=> s*4/((ASSETS_BY_Q[i]+ASSETS_BY_Q[i+1])/2));
+
+// QoQ growth (%) -- only 5 quarters of history exist in this file, so there is
+// no same-quarter-last-year baseline for a true YoY figure; first column is
+// always '–' since there's no prior quarter to compare Q2'25 against.
+function qoqGrowthSeries(vals){
+  return vals.map((v,i)=> i===0 ? null : (v-vals[i-1])/Math.abs(vals[i-1])*100);
+}
+const salesGrowthQ = qoqGrowthSeries(netSalesQAll);
+const cogsGrowthQ = qoqGrowthSeries(cogsQAll);
+const totalExpenseGrowthQ = qoqGrowthSeries(totalExpenseQAll);
+const netProfitGrowthQ = qoqGrowthSeries(netProfitAfterTaxQAll);
+
+// Turnover (Times) = 365 / Days -- standard identity, ties exactly to the
+// existing Days figures (arDaysQ/invDaysQ/apDaysQ) above.
+const arTurnoverTimesQ = arDaysQ.map(d=> 365/d);
+const invTurnoverTimesQ = invDaysQ.map(d=> 365/d);
+const apTurnoverTimesQ = apDaysQ.map(d=> 365/d);
+
+// Promoted out of renderAll() (was local) so the Annual model below can
+// reference the same Q4'25/Q2'26 points -- values unchanged.
+const inventoryQ = [82e6, 84e6, 87e6, 88e6, 92e6]; // Q1'26/Q2'26 tie to Balance Sheet exactly (88/92)
+const provisionBalanceQ = [5.7e6, 5.9e6, 6.1e6, 6.3e6, 6.5e6];
+
+/* ---------- Annual data model (View By: Annual) ----------
+   FY2024 = pure annual-level mock constants -- this file has no quarterly
+   breakdown for FY2024 at all, so there's nothing to sum bottom-up; the
+   figures are fabricated once here, calibrated to sit smoothly below
+   FY2025's bottom-up total (see FY2025 below) and to produce a coherent
+   ROE/margin/turnover trend across FY2024 -> FY2025 -> 2026 TTM that
+   matches the "Asset Turnover softening, margins stable" story the
+   Scorecard/Tree already tell.
+   FY2025 = bottom-up: ONE new fabricated quarter (Q1_25, needed because
+   this page's quarterly arrays start at Q2'25) + the 3 ALREADY-EXISTING
+   Q2'25/Q3'25/Q4'25 quarters (indices 0,1,2 of the arrays above) --
+   flow metrics sum across the 4 quarters, stock/ratio metrics average
+   them. Balance-sheet stock figures (avg equity/assets) need no new data
+   at all -- EQUITY_BY_Q/ASSETS_BY_Q already hold all 4 FY2025 quarter-end
+   points (indices 0-3), so FY2025's average is just their mean.
+   2026 (the current, unfinished year) is never shown as a full "FY2026":
+   flow metrics use YTD (Q1'26+Q2'26, both already exist, indices 3,4);
+   stock/ratio metrics use TTM, reusing dupontCurrent and the existing
+   Q2'26 point directly -- the exact same figures the Scorecard shows,
+   not recomputed. */
+const Q1_25 = { // fabricated once, only to complete FY2025 -- never its
+  // own displayed column (Quarterly mode keeps showing the same 5
+  // rolling quarters, Q2'25-Q2'26, completely untouched by this feature).
+  sales: 74200000, grossProfit: 35540000, ebit: 20776000, da: 2150000,
+  currentRatio: 2.74, quickRatio: 1.44, invDays: 202, arDays: 70, apDays: 69, deRatio: 0.60,
+  capex: 2600000
+};
+Q1_25.ebitda = Q1_25.ebit + Q1_25.da;
+Q1_25.cfo = Q1_25.ebitda * 0.71; // same ~0.71-0.73 CFO/EBITDA band the existing quarters use
+Q1_25.netProfit = Q1_25.ebit * (1-TAX_RATE);
+
+const FY2024 = {
+  sales: 288500000, grossProfit: 137700000, ebit: 78400000, da: 7900000,
+  currentRatio: 2.75, quickRatio: 1.47, invDays: 205, arDays: 72, apDays: 66, deRatio: 0.62, ibdeRatio: 0,
+  avgEquity: 158000000, avgAssets: 258000000,
+  cfo: 60410000, capex: 10800000,
+  inventory: 78000000, provisionBalance: 5400000
+};
+FY2024.ebitda = FY2024.ebit + FY2024.da;
+FY2024.netProfit = FY2024.ebit * (1-TAX_RATE);
+FY2024.cogs = FY2024.sales - FY2024.grossProfit;
+FY2024.totalExpense = FY2024.sales - FY2024.netProfit;
+FY2024.fcf = FY2024.cfo - FY2024.capex;
+FY2024.ccc = FY2024.invDays + FY2024.arDays - FY2024.apDays;
+FY2024.roa = FY2024.netProfit/FY2024.avgAssets*100;
+FY2024.assetTurnover = FY2024.sales/FY2024.avgAssets;
+FY2024.financialLeverage = FY2024.avgAssets/FY2024.avgEquity;
+FY2024.roe = FY2024.netProfit/FY2024.avgEquity*100;
+FY2024.profitMargin = FY2024.netProfit/FY2024.sales*100;
+FY2024.gm = FY2024.grossProfit/FY2024.sales*100;
+FY2024.ebitMargin = FY2024.ebit/FY2024.sales*100;
+FY2024.ebitdaMargin = FY2024.ebitda/FY2024.sales*100;
+FY2024.cfoOverEbitda = FY2024.cfo/FY2024.ebitda*100;
+FY2024.fcfMargin = FY2024.fcf/FY2024.sales*100;
+FY2024.arTurnover = 365/FY2024.arDays;
+FY2024.invTurnover = 365/FY2024.invDays;
+FY2024.apTurnover = 365/FY2024.apDays;
+
+const FY2025 = {
+  sales: Q1_25.sales + netSalesQAll[0] + netSalesQAll[1] + netSalesQAll[2],
+  grossProfit: Q1_25.grossProfit + grossProfitQAll[0] + grossProfitQAll[1] + grossProfitQAll[2],
+  ebit: Q1_25.ebit + ebitQAll[0] + ebitQAll[1] + ebitQAll[2],
+  da: Q1_25.da + daQAll[0] + daQAll[1] + daQAll[2],
+  currentRatio: (Q1_25.currentRatio + currentRatioQ[0] + currentRatioQ[1] + currentRatioQ[2]) / 4,
+  quickRatio: (Q1_25.quickRatio + quickRatioQ[0] + quickRatioQ[1] + quickRatioQ[2]) / 4,
+  invDays: (Q1_25.invDays + invDaysQ[0] + invDaysQ[1] + invDaysQ[2]) / 4,
+  arDays: (Q1_25.arDays + arDaysQ[0] + arDaysQ[1] + arDaysQ[2]) / 4,
+  apDays: (Q1_25.apDays + apDaysQ[0] + apDaysQ[1] + apDaysQ[2]) / 4,
+  deRatio: (Q1_25.deRatio + deRatioQ[0] + deRatioQ[1] + deRatioQ[2]) / 4,
+  ibdeRatio: 0,
+  avgEquity: (EQUITY_BY_Q[0]+EQUITY_BY_Q[1]+EQUITY_BY_Q[2]+EQUITY_BY_Q[3])/4,
+  avgAssets: (ASSETS_BY_Q[0]+ASSETS_BY_Q[1]+ASSETS_BY_Q[2]+ASSETS_BY_Q[3])/4,
+  cfo: Q1_25.cfo + cfoQAll[0] + cfoQAll[1] + cfoQAll[2],
+  capex: Q1_25.capex + capexQAll[0] + capexQAll[1] + capexQAll[2],
+  inventory: inventoryQ[2], // Q4'25 year-end, already exact in this file
+  provisionBalance: provisionBalanceQ[2]
+};
+FY2025.ebitda = FY2025.ebit + FY2025.da;
+FY2025.netProfit = FY2025.ebit * (1-TAX_RATE);
+FY2025.cogs = FY2025.sales - FY2025.grossProfit;
+FY2025.totalExpense = FY2025.sales - FY2025.netProfit;
+FY2025.fcf = FY2025.cfo - FY2025.capex;
+FY2025.ccc = FY2025.invDays + FY2025.arDays - FY2025.apDays;
+FY2025.roa = FY2025.netProfit/FY2025.avgAssets*100;
+FY2025.assetTurnover = FY2025.sales/FY2025.avgAssets;
+FY2025.financialLeverage = FY2025.avgAssets/FY2025.avgEquity;
+FY2025.roe = FY2025.netProfit/FY2025.avgEquity*100;
+FY2025.profitMargin = FY2025.netProfit/FY2025.sales*100;
+FY2025.gm = FY2025.grossProfit/FY2025.sales*100;
+FY2025.ebitMargin = FY2025.ebit/FY2025.sales*100;
+FY2025.ebitdaMargin = FY2025.ebitda/FY2025.sales*100;
+FY2025.cfoOverEbitda = FY2025.cfo/FY2025.ebitda*100;
+FY2025.fcfMargin = FY2025.fcf/FY2025.sales*100;
+FY2025.arTurnover = 365/FY2025.arDays;
+FY2025.invTurnover = 365/FY2025.invDays;
+FY2025.apTurnover = 365/FY2025.apDays;
+
+// 2025 YTD (Q1'25+Q2'25) -- YoY baseline for 2026 YTD growth rates only,
+// never its own displayed column.
+const YTD2025 = {
+  sales: Q1_25.sales + netSalesQAll[0],
+  grossProfit: Q1_25.grossProfit + grossProfitQAll[0],
+  ebit: Q1_25.ebit + ebitQAll[0]
+};
+YTD2025.netProfit = YTD2025.ebit * (1-TAX_RATE);
+YTD2025.cogs = YTD2025.sales - YTD2025.grossProfit;
+YTD2025.totalExpense = YTD2025.sales - YTD2025.netProfit;
+
+// 2026 YTD (flow metrics, Q1'26+Q2'26 -- both already exist, indices 3,4)
+const YTD2026 = {
+  sales: netSalesQAll[3]+netSalesQAll[4],
+  grossProfit: grossProfitQAll[3]+grossProfitQAll[4],
+  ebit: ebitQAll[3]+ebitQAll[4],
+  da: daQAll[3]+daQAll[4],
+  cfo: cfoQAll[3]+cfoQAll[4],
+  capex: capexQAll[3]+capexQAll[4]
+};
+YTD2026.ebitda = YTD2026.ebit+YTD2026.da;
+YTD2026.netProfit = YTD2026.ebit * (1-TAX_RATE);
+YTD2026.cogs = YTD2026.sales - YTD2026.grossProfit;
+YTD2026.totalExpense = YTD2026.sales - YTD2026.netProfit;
+YTD2026.fcf = YTD2026.cfo - YTD2026.capex;
+YTD2026.gm = YTD2026.grossProfit/YTD2026.sales*100;
+YTD2026.ebitMargin = YTD2026.ebit/YTD2026.sales*100;
+YTD2026.ebitdaMargin = YTD2026.ebitda/YTD2026.sales*100;
+YTD2026.profitMargin = YTD2026.netProfit/YTD2026.sales*100;
+YTD2026.cfoOverEbitda = YTD2026.cfo/YTD2026.ebitda*100;
+YTD2026.fcfMargin = YTD2026.fcf/YTD2026.sales*100;
+
+// 2026 TTM (stock/ratio metrics) -- reuses dupontCurrent + the latest
+// (Q2'26) point on every existing Days/Ratio array. No new numbers.
+const TTM2026 = {
+  roe: dupontCurrent.roe, roa: dupontCurrent.roa, assetTurnover: dupontCurrent.assetTurnover,
+  financialLeverage: dupontCurrent.financialLeverage,
+  currentRatio: currentRatioQ[4], quickRatio: quickRatioQ[4],
+  invDays: invDaysQ[4], arDays: arDaysQ[4], apDays: apDaysQ[4], ccc: cccDaysQ[4],
+  arTurnover: arTurnoverTimesQ[4], invTurnover: invTurnoverTimesQ[4], apTurnover: apTurnoverTimesQ[4],
+  deRatio: deRatioQ[4], ibdeRatio: ibdeRatioQ[4],
+  inventory: inventoryQ[4], provisionBalance: provisionBalanceQ[4]
+};
+
+const annualLabelsFlow = ["FY2024","FY2025","2026 YTD"];
+const annualLabelsMixed = ["FY2024","FY2025","2026 YTD/TTM"];
+const annualLabelsStock = ["FY2024","FY2025","2026 TTM"];
+
+let currentViewBy = 'quarterly';
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
@@ -296,110 +653,427 @@ function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
   return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
 }
+
+/* Cash Conversion Cycle Timeline -- 2 stacked horizontal bars on a shared day
+   scale (0..Operating Cycle). Top bar = Operating Cycle (Inventory then
+   Receivable). Bottom bar = Payable (from day 0) then CCC, which starts
+   exactly where Payable ends and runs to the end of the Operating Cycle --
+   i.e. CCC = Operating Cycle − Payable, drawn as a literal offset rather
+   than a separate waterfall. Values are the same invDaysQ/arDaysQ/apDaysQ
+   this page's Cash Cycle table and Scorecard companion tile already use. */
+function renderCCCTimeline(containerId, data){
+  const container = document.getElementById(containerId);
+  const width = (container && container.clientWidth) || 640;
+  const height = 150;
+  const inv = data.inventory, ar = data.receivable, ap = data.payable;
+  const operatingCycle = inv + ar;
+  const ccc = operatingCycle - ap;
+  const padL = 18, padR = 60, padT = 26;
+  const plotW = width - padL - padR;
+  const scale = d => padL + (d/operatingCycle)*plotW;
+  const rowH = 28, rowGap = 40;
+  const row1Y = padT, row2Y = row1Y + rowH + rowGap;
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkThree = cssVar('--ink-3')||'#898781';
+  const cInv = resolveColor('var(--cat-3)'), cAr = resolveColor('var(--cat-1)'), cAp = resolveColor('var(--cat-4)'), cCCC = resolveColor('var(--cat-5)');
+  const x0 = scale(0), xInvEnd = scale(inv), xOpEnd = scale(operatingCycle), xApEnd = scale(ap);
+  const darkOnLight = '#2b2200';
+
+  let svg = '';
+  svg += '<text x="'+padL+'" y="'+(row1Y-9)+'" font-size="9.5" font-weight="700" fill="'+inkThree+'" letter-spacing="0.3">OPERATING CYCLE</text>';
+  svg += '<text x="'+padL+'" y="'+(row2Y-9)+'" font-size="9.5" font-weight="700" fill="'+inkThree+'" letter-spacing="0.3">CASH CONVERSION CYCLE</text>';
+
+  // Row 1: Inventory -> Receivable = Operating Cycle
+  svg += '<rect x="'+x0.toFixed(1)+'" y="'+row1Y+'" width="'+(xInvEnd-x0).toFixed(1)+'" height="'+rowH+'" rx="4" fill="'+cInv+'"/>';
+  svg += '<text x="'+((x0+xInvEnd)/2).toFixed(1)+'" y="'+(row1Y+rowH/2+4)+'" font-size="11" font-weight="700" text-anchor="middle" fill="#fff">Inventory '+Math.round(inv)+'d</text>';
+  svg += '<rect x="'+xInvEnd.toFixed(1)+'" y="'+row1Y+'" width="'+(xOpEnd-xInvEnd).toFixed(1)+'" height="'+rowH+'" rx="4" fill="'+cAr+'"/>';
+  svg += '<text x="'+((xInvEnd+xOpEnd)/2).toFixed(1)+'" y="'+(row1Y+rowH/2+4)+'" font-size="11" font-weight="700" text-anchor="middle" fill="#fff">Receivable '+Math.round(ar)+'d</text>';
+  svg += '<text x="'+(xOpEnd+6).toFixed(1)+'" y="'+(row1Y+rowH/2+4)+'" font-size="10.5" fill="'+inkThree+'">= '+Math.round(operatingCycle)+'d</text>';
+
+  // Row 2: Payable (from day 0) -> CCC (starts where Payable ends, runs to Operating Cycle end)
+  svg += '<rect x="'+x0.toFixed(1)+'" y="'+row2Y+'" width="'+(xApEnd-x0).toFixed(1)+'" height="'+rowH+'" rx="4" fill="'+cAp+'"/>';
+  svg += '<text x="'+((x0+xApEnd)/2).toFixed(1)+'" y="'+(row2Y+rowH/2+4)+'" font-size="11" font-weight="700" text-anchor="middle" fill="'+darkOnLight+'">Payable '+Math.round(ap)+'d</text>';
+  svg += '<rect x="'+xApEnd.toFixed(1)+'" y="'+row2Y+'" width="'+(xOpEnd-xApEnd).toFixed(1)+'" height="'+rowH+'" rx="4" fill="'+cCCC+'"/>';
+  svg += '<text x="'+((xApEnd+xOpEnd)/2).toFixed(1)+'" y="'+(row2Y+rowH/2+4.5)+'" font-size="15" font-weight="800" text-anchor="middle" fill="'+darkOnLight+'">CCC '+Math.round(ccc)+'d</text>';
+
+  // Guide lines linking where Payable ends / Operating Cycle ends across both rows
+  svg += '<line x1="'+xApEnd.toFixed(1)+'" y1="'+(row1Y+rowH)+'" x2="'+xApEnd.toFixed(1)+'" y2="'+row2Y+'" stroke="'+hairline+'" stroke-width="1.2" stroke-dasharray="3,3"/>';
+  svg += '<line x1="'+xOpEnd.toFixed(1)+'" y1="'+(row1Y+rowH)+'" x2="'+xOpEnd.toFixed(1)+'" y2="'+row2Y+'" stroke="'+hairline+'" stroke-width="1.2" stroke-dasharray="3,3"/>';
+
+  // Axis with the 3 meaningful breakpoints (0, Payable end, Operating Cycle end)
+  const axisY = row2Y+rowH+18;
+  svg += '<line x1="'+x0.toFixed(1)+'" y1="'+axisY+'" x2="'+xOpEnd.toFixed(1)+'" y2="'+axisY+'" stroke="'+hairline+'" stroke-width="1"/>';
+  [0, ap, operatingCycle].forEach(d=>{
+    const x = scale(d);
+    svg += '<line x1="'+x.toFixed(1)+'" y1="'+(axisY-4)+'" x2="'+x.toFixed(1)+'" y2="'+(axisY+4)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    svg += '<text x="'+x.toFixed(1)+'" y="'+(axisY+16)+'" font-size="9" text-anchor="middle" fill="'+inkThree+'">Day '+Math.round(d)+'</text>';
+  });
+
+  container.innerHTML = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+}
+
+/* DuPont ROE Tree (analyst drill-down modal, opened from the Scorecard's
+   expand button) -- all ratio nodes pulled live from dupontCurrent/Previous
+   (same TTM figures as the compact Scorecard above, no new numbers). The
+   Net Profit leaf (Sales/COGS/SG&A/Tax/Interest) is exact, derived from the
+   same 5Q grossProfitQAll/ebitQAll arrays over the identical TTM window
+   dupontCurrent uses. The Total Assets leaf (Current/Non-current + AR/
+   Inventories/Cash/Other) has no per-quarter category history on this page
+   (only a single lump Total Assets balance), so it's allocated using
+   Balance Sheet's own Q1'26 category weights (Current 193M : Non-current
+   117M of 310M total) -- proportional/approximate, flagged in the modal
+   footnote, but guaranteed to sum exactly to this page's avgAssets.
+   Status color is 2-state only (green/red, no amber) per this modal's own
+   spec -- a deliberately different rule from the compact Scorecard's
+   3-state RAG, scoped entirely to this tree. */
+function buildDupontTreeHTML(){
+  const cur = dupontCurrent, prev = dupontPrevious;
+
+  function arrowHTML(current, prior){
+    const rel = Math.abs(current-prior)/Math.abs(prior);
+    if(rel < 0.005) return '';
+    return current>prior ? ' ▲' : ' ▼';
+  }
+  function node(cls, label, value, statusCfg, extraHTML){
+    let inner = '<div class="dpt-node-label">'+label+'</div><div class="dpt-node-value">'+value+'</div>';
+    let statusAttr = '';
+    if(statusCfg){
+      if(statusCfg.goal) inner += '<div class="dpt-node-goal">'+statusCfg.goal+'</div>';
+      inner += '<div class="dpt-node-status '+(statusCfg.good?'good':'bad')+'">'+(statusCfg.good?'✓':'!')+(statusCfg.suffix||'')+'</div>';
+      statusAttr = ' data-status="'+(statusCfg.good?'good':'bad')+'"';
+    }
+    if(extraHTML) inner += extraHTML;
+    return '<div class="dpt-node '+cls+'"'+statusAttr+'>'+inner+'</div>';
+  }
+
+  // Net Profit leaf -- exact, same TTM window (Q3'25..Q2'26, idxs [1,2,3,4]) as dupontCurrent
+  const grossProfitTTM = [1,2,3,4].reduce((a,i)=>a+grossProfitQAll[i],0);
+  const cogsTTM = cur.sales - grossProfitTTM;
+  const sgaTTM = grossProfitTTM - cur.ebit;
+  const taxTTM = cur.ebit * TAX_RATE;
+  const interestTTM = 0;
+
+  // Total Assets leaf -- proportional split using Balance Sheet Q1'26 weights
+  const currentAssetsAvg = cur.avgAssets * (193/310);
+  const nonCurrentAssetsAvg = cur.avgAssets - currentAssetsAvg;
+  const arLeaf = currentAssetsAvg * (54/193);
+  const invLeaf = currentAssetsAvg * (88/193);
+  const cashLeaf = currentAssetsAvg * (40/193);
+  const otherLeaf = currentAssetsAvg - arLeaf - invLeaf - cashLeaf;
+
+  const roeVariance = cur.roe - 35;
+  const netProfitToggle = '<button class="dpt-leaf-toggle" onclick="toggleDptLeaf(\'dptLeafNetProfit\')">▸ Sales − Cost</button>'
+    + '<div class="dpt-leaf-detail" id="dptLeafNetProfit">'
+      + '<div class="dpt-leaf-detail-row"><span>Sales</span><span>'+fmtTHB(cur.sales)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row"><span>− COGS</span><span>'+fmtTHB(cogsTTM)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row"><span>− SG&amp;A</span><span>'+fmtTHB(sgaTTM)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row"><span>− Tax</span><span>'+fmtTHB(taxTTM)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row"><span>− Interest</span><span>'+fmtTHB(interestTTM)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row total"><span>= Net Profit</span><span>'+fmtTHB(cur.netProfit)+'</span></div>'
+    + '</div>';
+  const assetsToggle = '<button class="dpt-leaf-toggle" onclick="toggleDptLeaf(\'dptLeafAssets\')">▸ Current + Non-current</button>'
+    + '<div class="dpt-leaf-detail" id="dptLeafAssets">'
+      + '<div class="dpt-leaf-detail-row"><span>Current Assets</span><span>'+fmtTHB(currentAssetsAvg)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row" style="padding-left:8px;"><span>· AR</span><span>'+fmtTHB(arLeaf)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row" style="padding-left:8px;"><span>· Inventories</span><span>'+fmtTHB(invLeaf)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row" style="padding-left:8px;"><span>· Cash</span><span>'+fmtTHB(cashLeaf)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row" style="padding-left:8px;"><span>· Other</span><span>'+fmtTHB(otherLeaf)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row"><span>+ Non-current Assets</span><span>'+fmtTHB(nonCurrentAssetsAvg)+'</span></div>'
+      + '<div class="dpt-leaf-detail-row total"><span>= Total Assets (avg)</span><span>'+fmtTHB(cur.avgAssets)+'</span></div>'
+    + '</div>';
+
+  return node('dpt-node-apex', 'ROE (TTM)', fmtPct(cur.roe,1),
+      { goal:'Goal 35% ('+(roeVariance>=0?'+':'')+roeVariance.toFixed(1)+'pp)', good: cur.roe>=35, suffix: arrowHTML(cur.roe,prev.roe)+' from '+fmtPct(prev.roe,1) })
+    + '<div class="dpt-connector">= ROA × Financial Leverage</div>'
+    + '<div class="dpt-branch-row">'
+      + '<div class="dpt-branch">'
+        + '<div class="dpt-branch-title">ROA = Net Profit Margin × Asset Turnover</div>'
+        + node('', 'ROA', fmtPct(cur.roa,1), { goal:'Goal 22%', good: cur.roa>=22 })
+        + '<div class="dpt-sub-row">'
+          + '<div class="dpt-branch">'
+            + node('', 'Net Profit Margin', fmtPct(cur.profitMargin,1), { goal:'Goal 20%', good: cur.profitMargin>=20 })
+            + '<div class="dpt-connector">= Net Profit ÷ Sales</div>'
+            + '<div class="dpt-leaf-group">'
+              + node('dpt-node-leaf4', 'Net Profit', fmtTHB(cur.netProfit), { good:true }, netProfitToggle)
+              + node('dpt-node-leaf4', 'Sales', fmtTHB(cur.sales), { good:true })
+            + '</div>'
+          + '</div>'
+          + '<div class="dpt-branch">'
+            + node('', 'Asset Turnover', cur.assetTurnover.toFixed(2)+'x', { goal:'Goal 1.15x', good: cur.assetTurnover>=1.15, suffix: arrowHTML(cur.assetTurnover,prev.assetTurnover)+' from '+prev.assetTurnover.toFixed(2)+'x' })
+            + '<div class="dpt-connector">= Sales ÷ Total Assets (avg)</div>'
+            + '<div class="dpt-leaf-group">'
+              + node('dpt-node-leaf4', 'Sales', fmtTHB(cur.sales), { good:true })
+              + node('dpt-node-leaf4', 'Total Assets (avg)', fmtTHB(cur.avgAssets), null)
+            + '</div>'
+          + '</div>'
+        + '</div>'
+      + '</div>'
+      + '<div class="dpt-branch">'
+        + '<div class="dpt-branch-title">Financial Leverage = Total Assets ÷ Equity</div>'
+        + node('', 'Financial Leverage', cur.financialLeverage.toFixed(2)+'x', { goal:'~1.6x', good:true, suffix:' (no debt)' })
+        + '<div class="dpt-connector">= Total Assets (avg) ÷ Equity (avg)</div>'
+        + '<div class="dpt-leaf-group">'
+          + node('dpt-node-leaf4', 'Total Assets (avg)', fmtTHB(cur.avgAssets), null, assetsToggle)
+          + node('dpt-node-leaf4', 'Equity (avg)', fmtTHB(cur.avgEquity), null)
+        + '</div>'
+      + '</div>'
+    + '</div>';
+}
+
+function toggleDptLeaf(id){
+  document.getElementById(id).classList.toggle('open');
+}
+
+let dptZoom = 1;
+function setDptZoom(z){
+  dptZoom = Math.min(1.4, Math.max(0.6, z));
+  document.getElementById('dptZoomWrap').style.transform = 'scale('+dptZoom+')';
+  document.getElementById('dptZoomLabel').textContent = Math.round(dptZoom*100)+'%';
+}
+function openDupontTreeModal(){
+  setDptZoom(1);
+  document.getElementById('dptOverlay').classList.add('open');
+}
+function closeDupontTreeModal(){
+  document.getElementById('dptOverlay').classList.remove('open');
+}
+
 let latestData = {};
 
 function renderAll(){
-  /* === Key Ratios Summary (grouped table) === */
-  const groups = [
+  const isAnnual = currentViewBy === 'annual';
+  document.getElementById('finRatiosTitle').textContent = isAnnual ? 'Financial Ratios (3Y)' : 'Financial Ratios (5Q)';
+  document.getElementById('growthRateTitle').textContent = isAnnual ? 'Growth Rate % (YoY, 3Y)' : 'Growth Rate % (QoQ, 5Q)';
+  document.getElementById('cashCycleTitle').textContent = isAnnual ? 'Cash Cycle (3Y)' : 'Cash Cycle (5Q)';
+  document.getElementById('leverageTitle').textContent = isAnnual ? 'D/E & IBD/E Trend (3Y)' : 'D/E & IBD/E Trend (5Q)';
+  document.getElementById('provisionTitle').textContent = isAnnual ? 'Inventory Provision Balance (3Y)' : 'Inventory Provision Balance (5Q)';
+  // Shared grouped-table builder for Financial Ratios/Cash Cycle -- in
+  // Annual mode the LAST column (2026 YTD/TTM, unfinished year) gets the
+  // faded/hatched .annual-current-col treatment; Quarterly mode is
+  // byte-for-byte the same output as before this feature existed.
+  function groupedTableHTML(headerLabel, labels, groups){
+    let body = '';
+    groups.forEach(g=>{
+      body += '<tr class="ratio-group-row"><td colspan="6">'+g.name+'</td></tr>';
+      body += g.rows.map(r=>{
+        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+        const tds = r.vals.map((v,i)=> '<td class="tnum'+(isAnnual && i===labels.length-1 ? ' annual-current-col' : '')+'">'+r.fmt(v)+'</td>').join('');
+        return '<tr'+rowClass+'><td>'+r.label+'</td>' + tds + '</tr>';
+      }).join('');
+    });
+    const thead = '<thead><tr><th>'+headerLabel+'</th>' + labels.map((l,i)=> '<th'+(isAnnual && i===labels.length-1 ? ' class="annual-current-col"' : '')+'>'+l+'</th>').join('') + '</tr></thead>';
+    return thead + '<tbody>' + body + '</tbody>';
+  }
+
+  /* === Financial Ratios (grouped table) === */
+  const finRatiosLabels = isAnnual ? annualLabelsMixed : quarterLabels;
+  const finRatiosGroups = isAnnual ? [
+    { name:'Liquidity', rows:[
+      { label:'Current Ratio (x)', vals:[FY2024.currentRatio, FY2025.currentRatio, TTM2026.currentRatio], fmt:v=>v.toFixed(2)+'x' },
+      { label:'Quick Ratio (x)', vals:[FY2024.quickRatio, FY2025.quickRatio, TTM2026.quickRatio], fmt:v=>v.toFixed(2)+'x' }
+    ]},
     { name:'Profitability', rows:[
-      { label:'Gross Margin %', vals:gmQAll, fmt:v=>fmtPct(v,1) },
-      { label:'EBIT Margin %', vals:ebitMQAll, fmt:v=>fmtPct(v,1) },
-      { label:'EBITDA Margin %', vals:ebitdaMQAll, fmt:v=>fmtPct(v,1) },
-      { label:'Net Margin % (after tax)', vals:nmQAll, fmt:v=>fmtPct(v,1) }
+      { label:'Gross Profit Margin (%)', vals:[FY2024.gm, FY2025.gm, YTD2026.gm], fmt:v=>fmtPct(v,1) },
+      { label:'EBIT Margin (%)', vals:[FY2024.ebitMargin, FY2025.ebitMargin, YTD2026.ebitMargin], fmt:v=>fmtPct(v,1) },
+      { label:'EBITDA Margin (%)', vals:[FY2024.ebitdaMargin, FY2025.ebitdaMargin, YTD2026.ebitdaMargin], fmt:v=>fmtPct(v,1) },
+      { label:'Net Profit Margin (%)', vals:[FY2024.profitMargin, FY2025.profitMargin, YTD2026.profitMargin], fmt:v=>fmtPct(v,1), bold:true }
     ]},
-    { name:'Efficiency', rows:[
-      { label:'Inventory Turnover (days)', vals:invDaysQ, fmt:v=>Math.round(v)+' days' },
-      { label:'AR Turnover (days)', vals:arDaysQ, fmt:v=>Math.round(v)+' days' },
-      { label:'AP Turnover (days)', vals:apDaysQ, fmt:v=>Math.round(v)+' days' },
-      { label:'Cash Conversion Cycle (days)', vals:cccDaysQ, fmt:v=>Math.round(v)+' days', bold:true }
+    { name:'Returns & Efficiency', rows:[
+      { label:'ROE % (Annualized)', vals:[FY2024.roe, FY2025.roe, TTM2026.roe], fmt:v=>fmtPct(v,1) },
+      { label:'ROA % (Annualized)', vals:[FY2024.roa, FY2025.roa, TTM2026.roa], fmt:v=>fmtPct(v,1) },
+      { label:'Total Asset Turnover (x, Annualized)', vals:[FY2024.assetTurnover, FY2025.assetTurnover, TTM2026.assetTurnover], fmt:v=>v.toFixed(2)+'x' }
     ]},
+    { name:'Leverage', rows:[
+      { label:'D/E (x)', vals:[FY2024.deRatio, FY2025.deRatio, TTM2026.deRatio], fmt:v=>v.toFixed(2)+'x' },
+      { label:'IBD/E (x)', vals:[FY2024.ibdeRatio, FY2025.ibdeRatio, TTM2026.ibdeRatio], fmt:v=>v.toFixed(2)+'x' }
+    ]}
+  ] : [
     { name:'Liquidity', rows:[
       { label:'Current Ratio (x)', vals:currentRatioQ, fmt:v=>v.toFixed(2)+'x' },
       { label:'Quick Ratio (x)', vals:quickRatioQ, fmt:v=>v.toFixed(2)+'x' }
     ]},
+    { name:'Profitability', rows:[
+      { label:'Gross Profit Margin (%)', vals:gmQAll, fmt:v=>fmtPct(v,1) },
+      { label:'EBIT Margin (%)', vals:ebitMQAll, fmt:v=>fmtPct(v,1) },
+      { label:'EBITDA Margin (%)', vals:ebitdaMQAll, fmt:v=>fmtPct(v,1) },
+      { label:'Net Profit Margin (%)', vals:nmQAll, fmt:v=>fmtPct(v,1), bold:true }
+    ]},
+    { name:'Returns & Efficiency', rows:[
+      { label:'ROE % (Annualized)', vals:roeQAll, fmt:v=>fmtPct(v,1) },
+      { label:'ROA % (Annualized)', vals:roaQAll, fmt:v=>fmtPct(v,1) },
+      { label:'Total Asset Turnover (x, Annualized)', vals:totalAssetTurnoverQAll, fmt:v=>v.toFixed(2)+'x' }
+    ]},
     { name:'Leverage', rows:[
       { label:'D/E (x)', vals:deRatioQ, fmt:v=>v.toFixed(2)+'x' },
       { label:'IBD/E (x)', vals:ibdeRatioQ, fmt:v=>v.toFixed(2)+'x' }
+    ]}
+  ];
+  document.getElementById('finRatiosTable').innerHTML = groupedTableHTML('Ratio', finRatiosLabels, finRatiosGroups);
+  latestData.finRatiosGroups = finRatiosGroups;
+  latestData.finRatiosLabels = finRatiosLabels;
+
+  /* === Growth Rate (%) (flat table) === */
+  const growthFmt = v=> v===null ? '–' : fmtPct(v,1);
+  const growthLabels = isAnnual ? annualLabelsFlow : quarterLabels;
+  // Annual mode finally has real YoY (FY2025 vs FY2024, 2026 YTD vs 2025
+  // YTD) instead of QoQ -- the "no prior-year baseline" caveat that forced
+  // QoQ in Quarterly mode doesn't apply here since full years exist.
+  const growthRateRows = isAnnual ? [
+    { label:'Sales Growth', vals:[null, pctChange(FY2025.sales,FY2024.sales), pctChange(YTD2026.sales,YTD2025.sales)], fmt:growthFmt },
+    { label:'COGs Growth', vals:[null, pctChange(FY2025.cogs,FY2024.cogs), pctChange(YTD2026.cogs,YTD2025.cogs)], fmt:growthFmt },
+    { label:'Total Expense Growth', vals:[null, pctChange(FY2025.totalExpense,FY2024.totalExpense), pctChange(YTD2026.totalExpense,YTD2025.totalExpense)], fmt:growthFmt },
+    { label:'Net Profit Growth', vals:[null, pctChange(FY2025.netProfit,FY2024.netProfit), pctChange(YTD2026.netProfit,YTD2025.netProfit)], fmt:growthFmt, bold:true }
+  ] : [
+    { label:'Sales Growth', vals:salesGrowthQ, fmt:growthFmt },
+    { label:'COGs Growth', vals:cogsGrowthQ, fmt:growthFmt },
+    { label:'Total Expense Growth', vals:totalExpenseGrowthQ, fmt:growthFmt },
+    { label:'Net Profit Growth', vals:netProfitGrowthQ, fmt:growthFmt, bold:true }
+  ];
+  document.getElementById('growthRateTable').innerHTML =
+    '<thead><tr><th>Metric</th>' + growthLabels.map((l,i)=>'<th'+(isAnnual && i===growthLabels.length-1?' class="annual-current-col"':'')+'>'+l+'</th>').join('') + '</tr></thead><tbody>'
+    + growthRateRows.map(r=>{
+        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
+        return '<tr'+rowClass+'><td>'+r.label+'</td>' + r.vals.map((v,i)=>'<td class="tnum'+(isAnnual && i===growthLabels.length-1?' annual-current-col':'')+'">'+r.fmt(v)+'</td>').join('') + '</tr>';
+      }).join('')
+    + '</tbody>';
+  latestData.growthRate = growthRateRows;
+  latestData.growthLabels = growthLabels;
+
+  /* === Cash Cycle (grouped table) === */
+  const cashCycleLabels = isAnnual ? annualLabelsMixed : quarterLabels;
+  const cashCycleGroups = isAnnual ? [
+    { name:'Turnover & Cycle', rows:[
+      { label:'A/R Turnover (Times)', vals:[FY2024.arTurnover, FY2025.arTurnover, TTM2026.arTurnover], fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Collection Period (Days)', vals:[FY2024.arDays, FY2025.arDays, TTM2026.arDays], fmt:v=>Math.round(v)+' days' },
+      { label:'Inventory Turnover (Times)', vals:[FY2024.invTurnover, FY2025.invTurnover, TTM2026.invTurnover], fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Inventory Period (Days)', vals:[FY2024.invDays, FY2025.invDays, TTM2026.invDays], fmt:v=>Math.round(v)+' days' },
+      { label:'A/P Turnover (Times)', vals:[FY2024.apTurnover, FY2025.apTurnover, TTM2026.apTurnover], fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Payment Period (Days)', vals:[FY2024.apDays, FY2025.apDays, TTM2026.apDays], fmt:v=>Math.round(v)+' days' },
+      { label:'Cash Cycle (Days)', vals:[FY2024.ccc, FY2025.ccc, TTM2026.ccc], fmt:v=>Math.round(v)+' days', bold:true }
+    ]},
+    { name:'Cash Generation', rows:[
+      { label:'CFO / EBITDA %', vals:[FY2024.cfoOverEbitda, FY2025.cfoOverEbitda, YTD2026.cfoOverEbitda], fmt:v=>fmtPct(v,1) },
+      { label:'FCF Margin %', vals:[FY2024.fcfMargin, FY2025.fcfMargin, YTD2026.fcfMargin], fmt:v=>fmtPct(v,1) }
+    ]}
+  ] : [
+    { name:'Turnover & Cycle', rows:[
+      { label:'A/R Turnover (Times)', vals:arTurnoverTimesQ, fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Collection Period (Days)', vals:arDaysQ, fmt:v=>Math.round(v)+' days' },
+      { label:'Inventory Turnover (Times)', vals:invTurnoverTimesQ, fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Inventory Period (Days)', vals:invDaysQ, fmt:v=>Math.round(v)+' days' },
+      { label:'A/P Turnover (Times)', vals:apTurnoverTimesQ, fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Payment Period (Days)', vals:apDaysQ, fmt:v=>Math.round(v)+' days' },
+      { label:'Cash Cycle (Days)', vals:cccDaysQ, fmt:v=>Math.round(v)+' days', bold:true }
     ]},
     { name:'Cash Generation', rows:[
       { label:'CFO / EBITDA %', vals:cfoOverEbitdaQ, fmt:v=>fmtPct(v,1) },
       { label:'FCF Margin %', vals:fcfMarginQ, fmt:v=>fmtPct(v,1) }
     ]}
   ];
-  let bodyHtml = '';
-  groups.forEach(g=>{
-    bodyHtml += '<tr class="ratio-group-row"><td colspan="6">'+g.name+'</td></tr>';
-    bodyHtml += g.rows.map(r=>{
-      const rowClass = r.bold ? ' class="income-stmt-total"' : '';
-      return '<tr'+rowClass+'><td>'+r.label+'</td>' + r.vals.map(v=>'<td class="tnum">'+r.fmt(v)+'</td>').join('') + '</tr>';
-    }).join('');
-  });
-  document.getElementById('ratioSummaryTable').innerHTML =
-    '<thead><tr><th>Ratio</th>' + quarterLabels.map(q=>'<th>'+q+'</th>').join('') + '</tr></thead><tbody>' + bodyHtml + '</tbody>';
-  latestData.groups = groups;
+  document.getElementById('cashCycleTable').innerHTML = groupedTableHTML('Metric', cashCycleLabels, cashCycleGroups);
+  latestData.cashCycleGroups = cashCycleGroups;
+  latestData.cashCycleLabels = cashCycleLabels;
 
-  /* === DuPont ROE Decomposition === */
-  document.getElementById('dpROE').textContent = fmtPct(dupontCurrent.roe,1);
+  /* === Financial Scorecard (DuPont ROE Decomposition, TTM) === */
   document.getElementById('dpNetMargin').textContent = fmtPct(dupontCurrent.profitMargin,1);
   document.getElementById('dpAssetTurnover').textContent = dupontCurrent.assetTurnover.toFixed(2)+'x';
   document.getElementById('dpEquityMultiplier').textContent = dupontCurrent.financialLeverage.toFixed(2)+'x';
-  document.getElementById('dpNetMargin2').textContent = fmtPct(dupontCurrent.profitMargin,1);
-  document.getElementById('dpOperatingMargin').textContent = fmtPct(dupontCurrent.operatingMargin,1);
-  document.getElementById('dpTaxBurden').textContent = dupontCurrent.taxBurden.toFixed(2)+'x';
-  document.getElementById('dpInterestBurden').textContent = dupontCurrent.interestBurden.toFixed(2)+'x';
 
-  const dupontCompareRows = [
-    { factor:'Profit Margin % (after-tax)', prior: dupontPrevious.profitMargin, current: dupontCurrent.profitMargin, fmt:v=>fmtPct(v,1) },
-    { factor:'Asset Turnover (x)', prior: dupontPrevious.assetTurnover, current: dupontCurrent.assetTurnover, fmt:v=>v.toFixed(2)+'x' },
-    { factor:'Financial Leverage (x)', prior: dupontPrevious.financialLeverage, current: dupontCurrent.financialLeverage, fmt:v=>v.toFixed(2)+'x' },
-    { factor:'= ROE (TTM)', prior: dupontPrevious.roe, current: dupontCurrent.roe, fmt:v=>fmtPct(v,1), bold:true }
-  ];
-  document.getElementById('dupontCompareTable').innerHTML =
-    '<thead><tr><th>Factor</th><th>Prior TTM (ending Q1\'26)</th><th>Current TTM (ending Q2\'26)</th></tr></thead><tbody>'
-    + dupontCompareRows.map(r=>{
-        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
-        return '<tr'+rowClass+'><td>'+r.factor+'</td><td class="tnum">'+r.fmt(r.prior)+'</td><td class="tnum">'+r.fmt(r.current)+'</td></tr>';
-      }).join('')
-    + '</tbody>';
+  // Direction vs prior TTM: rawDir is the literal value trend; the ARROW shown
+  // to the user encodes favorability (▲ = improved, ▼ = worsened), which only
+  // matches rawDir when higherIsBetter is true (flipped for CCC below).
+  function dirMeta(current, prior, higherIsBetter){
+    const rel = Math.abs(current-prior)/Math.abs(prior);
+    if(rel < 0.005) return { cls:'flat', arrow:'▬' };
+    const rawUp = current>prior;
+    const improved = higherIsBetter ? rawUp : !rawUp;
+    return { cls: improved?'up':'down', arrow: improved?'▲':'▼' };
+  }
+  // Populates one equation chip's dir arrow + a single RAG-dot/note subtext line.
+  function applyChip(boxId, dirId, subId, node){
+    document.getElementById(boxId).setAttribute('data-rag', node.rag);
+    const dir = dirMeta(node.value, node.prior, node.higherIsBetter);
+    const dirEl = document.getElementById(dirId);
+    dirEl.className = 'fhs-dir '+dir.cls;
+    dirEl.textContent = dir.arrow;
+    document.getElementById(subId).innerHTML = node.note ? '<span class="fhs-rag-dot '+node.rag+'"></span>'+node.note : '<span class="fhs-rag-dot '+node.rag+'"></span>';
+  }
 
-  document.getElementById('dupontCallout').innerHTML =
-    'ROE '+fmtPct(dupontCurrent.roe,1)+' ขับเคลื่อนด้วย Profit Margin สูง ('+fmtPct(dupontCurrent.profitMargin,1)+') ไม่ใช่การก่อหนี้ (Financial Leverage '+dupontCurrent.financialLeverage.toFixed(2)+'x, ไม่มีเงินกู้) · ลดจาก '+fmtPct(dupontPrevious.roe,1)+' เพราะ Asset Turnover อ่อนลง ('+dupontPrevious.assetTurnover.toFixed(2)+'→'+dupontCurrent.assetTurnover.toFixed(2)+'x) จาก Inventory/AR สูงขึ้น ขณะ Margin ทรงตัว';
-  latestData.dupont = { current: dupontCurrent, previous: dupontPrevious, compareRows: dupontCompareRows };
+  // Scorecard node config -- values pulled live from dupontCurrent/Previous +
+  // Cash Cycle/Liquidity series above (no new numbers); RAG/note are explicit
+  // judgment calls (illustrative, per the caveat text below the card).
+  // Benchmark numbers only show for off-track (amber/red) nodes -- green ones
+  // are implicitly "on target" via the dot, no need to restate the target.
+  const fhsApex = { value: dupontCurrent.roe, prior: dupontPrevious.roe, fmt:v=>fmtPct(v,1), rag:'green', note:'Above target (35%)', higherIsBetter:true };
+  document.getElementById('fhsApexValue').textContent = fhsApex.fmt(fhsApex.value);
+  applyChip('fhsBoxApex','fhsApexDir','fhsApexSub', fhsApex);
+
+  const fhsMargin = { value: dupontCurrent.profitMargin, prior: dupontPrevious.profitMargin, fmt:v=>fmtPct(v,1), rag:'green', note:'On target (20%)', higherIsBetter:true };
+  applyChip('fhsBoxMargin','fhsMarginDir','fhsMarginSub', fhsMargin);
+  document.getElementById('fhsMarginInfoBtn').dataset.infoTitle = 'Profit Margin Decomposition';
+  document.getElementById('fhsMarginInfoBtn').dataset.infoText =
+    'Profit Margin '+fmtPct(dupontCurrent.profitMargin,1)+' = Operating Margin '+fmtPct(dupontCurrent.operatingMargin,1)+' × Tax Burden '+dupontCurrent.taxBurden.toFixed(2)+' × Interest Burden '+dupontCurrent.interestBurden.toFixed(2)+' — Interest Burden is always 1.00x, since Charmiss carries no interest-bearing debt (zero-info)';
+
+  const fhsTurnover = { value: dupontCurrent.assetTurnover, prior: dupontPrevious.assetTurnover, fmt:v=>v.toFixed(2)+'x', rag:'amber',
+    note:'Target 1.15x · eased on higher Inventory/AR', higherIsBetter:true };
+  applyChip('fhsBoxTurnover','fhsTurnoverDir','fhsTurnoverSub', fhsTurnover);
+
+  const fhsLeverage = { value: dupontCurrent.financialLeverage, prior: dupontPrevious.financialLeverage, fmt:v=>v.toFixed(2)+'x', rag:'green',
+    note:'No interest-bearing debt', higherIsBetter:true };
+  applyChip('fhsBoxLeverage','fhsLeverageDir','fhsLeverageSub', fhsLeverage);
+
+  // Companion chips -- Liquidity (Current Ratio) closes the tile DuPont
+  // doesn't cover; Cash Conversion Cycle closes the working-capital tile.
+  // Values reuse currentRatioQ/cccDaysQ exactly (same arrays as the tables below).
+  const companionLiquidity = { value: currentRatioQ[4], fmt:v=>v.toFixed(2)+'x', rag:'green', note:'Target 1.5–2.5x' };
+  document.getElementById('fhsCompanionLiquidity').innerHTML =
+    '<div class="fhs-chip-row"><span class="fhs-chip-label">Current Ratio</span><span class="fhs-chip-value">'+companionLiquidity.fmt(companionLiquidity.value)+'</span>'
+    + '<span class="fhs-rag-dot '+companionLiquidity.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionLiquidity.note+'</span></div>';
+
+  const companionCCC = { value: cccDaysQ[4], prior: cccDaysQ[0], fmt:v=>Math.round(v)+' days', rag:'amber', higherIsBetter:false,
+    note:'Target ≤160 days' };
+  const cccDir = dirMeta(companionCCC.value, companionCCC.prior, companionCCC.higherIsBetter);
+  document.getElementById('fhsCompanionCCC').innerHTML =
+    '<div class="fhs-chip-row"><span class="fhs-chip-label">Cash Conversion Cycle</span><span class="fhs-chip-value">'+companionCCC.fmt(companionCCC.value)+'</span>'
+    + '<span class="fhs-dir '+cccDir.cls+'">'+cccDir.arrow+'</span><span class="fhs-rag-dot '+companionCCC.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionCCC.note+'</span></div>';
+
+  latestData.dupont = { current: dupontCurrent, previous: dupontPrevious };
+  document.getElementById('dptTreeBody').innerHTML = buildDupontTreeHTML();
 
   /* === Financial Leverage trend === */
+  const leverageLabels = isAnnual ? annualLabelsStock : quarterLabels;
+  const deSeries = isAnnual ? [FY2024.deRatio, FY2025.deRatio, TTM2026.deRatio] : deRatioQ;
+  const ibdeSeries = isAnnual ? [FY2024.ibdeRatio, FY2025.ibdeRatio, TTM2026.ibdeRatio] : ibdeRatioQ;
   buildLineChartSVG('leverageChart', {
-    labels: quarterLabels, yFormatter: v=>v.toFixed(2)+'x',
+    labels: leverageLabels, yFormatter: v=>v.toFixed(2)+'x',
     series: [
-      { data: deRatioQ, color: cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' },
-      { data: ibdeRatioQ, color: cssVar('--ink-3')||'#898781', width:1.8, dash:'4,3', showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' }
+      { data: deSeries, color: cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' },
+      { data: ibdeSeries, color: cssVar('--ink-3')||'#898781', width:1.8, dash:'4,3', showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' }
     ]
   });
+  const deLast = deSeries[deSeries.length-1], dePrev = deSeries[deSeries.length-2], lastLabel = leverageLabels[leverageLabels.length-1];
   document.getElementById('leverageCallout').innerHTML =
-    'D/E '+(deRatioQ[4]>=deRatioQ[3]?'ticked up':'eased')+' to <b>'+deRatioQ[4].toFixed(2)+'x</b> in '+quarterLabels[4]+' from Trade Payables and Lease Liabilities growing with store expansion · no interest-bearing debt (IBD/E = 0.00x throughout)';
+    'D/E '+(deLast>=dePrev?'ticked up':'eased')+' to <b>'+deLast.toFixed(2)+'x</b> in '+lastLabel+' from Trade Payables and Lease Liabilities growing with store expansion · no interest-bearing debt (IBD/E = 0.00x throughout)';
 
-  /* === Cash Conversion Cycle Bridge (Q2'26) === */
-  const cccSteps = [
-    { label:'Inventory Days', value: invDaysQ[4], type:'start' },
-    { label:'AR Days', value: arDaysQ[4], type:'delta' },
-    { label:'AP Days', value: -apDaysQ[4], type:'delta' },
-    { label:'CCC', value: cccDaysQ[4], type:'end' }
-  ];
-  buildWaterfallSVG('cccBridgeChart', cccSteps, { yFormatter: v=>Math.round(v)+'d', height:260 });
+  /* === Cash Conversion Cycle Timeline (Q2'26) === */
+  const cccTimelineData = { inventory: invDaysQ[4], receivable: arDaysQ[4], payable: apDaysQ[4] };
+  renderCCCTimeline('cccBridgeChart', cccTimelineData);
   document.getElementById('cccBridgeCallout').innerHTML =
     'Inventory '+invDaysQ[4]+'d + AR '+arDaysQ[4]+'d − AP '+apDaysQ[4]+'d = <b>'+cccDaysQ[4]+' days</b> — AP days stretching ('+apDaysQ[0]+'→'+apDaysQ[4]+' days across 5Q) is the main lever offsetting still-high Inventory Days';
-  latestData.cccBridge = cccSteps;
+  latestData.cccBridge = cccTimelineData;
 
-  /* === Inventory Provision Balance (5Q) === */
-  const inventoryQ = [82e6, 84e6, 87e6, 88e6, 92e6]; // Q1'26/Q2'26 tie to Balance Sheet exactly (88/92)
-  const provisionBalanceQ = [5.7e6, 5.9e6, 6.1e6, 6.3e6, 6.5e6];
-  const provisionPctQ = provisionBalanceQ.map((v,i)=> v/inventoryQ[i]*100);
+  /* === Inventory Provision Balance === */
+  const provisionLabels = isAnnual ? annualLabelsStock : quarterLabels;
+  const inventorySeries = isAnnual ? [FY2024.inventory, FY2025.inventory, TTM2026.inventory] : inventoryQ;
+  const provisionSeries = isAnnual ? [FY2024.provisionBalance, FY2025.provisionBalance, TTM2026.provisionBalance] : provisionBalanceQ;
+  const provisionPctQ = provisionSeries.map((v,i)=> v/inventorySeries[i]*100);
   buildGroupedBarSVG('provisionChart', {
-    labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:false,
-    series: [ {name:'Inventory', color: cssVar('--ink-3')||'#898781', values: inventoryQ}, {name:'Provision Balance', color: cssVar('--critical')||'#d03b3b', values: provisionBalanceQ} ]
+    labels: provisionLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:false,
+    series: [ {name:'Inventory', color: cssVar('--ink-3')||'#898781', values: inventorySeries}, {name:'Provision Balance', color: cssVar('--critical')||'#d03b3b', values: provisionSeries} ]
   });
+  const lastIdx = provisionLabels.length-1;
   document.getElementById('provisionCallout').innerHTML =
-    'Provision for Obsolescence คงที่ราว '+fmtPct(Math.min(...provisionPctQ),1)+'–'+fmtPct(Math.max(...provisionPctQ),1)+' ของ Inventory ตลอด 5 ไตรมาส — '+quarterLabels[4]+': Inventory '+fmtTHB(inventoryQ[4])+', Provision '+fmtTHB(provisionBalanceQ[4])+' ('+fmtPct(provisionPctQ[4],1)+')';
-  latestData.provision = quarterLabels.map((q,i)=>({quarter:q, inventory:inventoryQ[i], provision:provisionBalanceQ[i], pct:provisionPctQ[i]}));
+    'Provision for Obsolescence คงที่ราว '+fmtPct(Math.min(...provisionPctQ),1)+'–'+fmtPct(Math.max(...provisionPctQ),1)+' ของ Inventory ตลอด'+(isAnnual?' 3 ปี':' 5 ไตรมาส')+' — '+provisionLabels[lastIdx]+': Inventory '+fmtTHB(inventorySeries[lastIdx])+', Provision '+fmtTHB(provisionSeries[lastIdx])+' ('+fmtPct(provisionPctQ[lastIdx],1)+')';
+  latestData.provision = provisionLabels.map((q,i)=>({quarter:q, inventory:inventorySeries[i], provision:provisionSeries[i], pct:provisionPctQ[i]}));
 
   /* === Inventory Aging (Q2'26) === */
   const agingBuckets = [
@@ -414,11 +1088,57 @@ function renderAll(){
 }
 
 /* --- Toolbar --- */
-document.getElementById('ratioSummaryDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Group','Ratio', ...quarterLabels]];
-  latestData.groups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> typeof v==='number' ? v.toFixed(2) : v)])));
-  downloadCSV(rows, 'financial_analysis_key_ratios.csv');
+document.getElementById('fhsExpandBtn').addEventListener('click', openDupontTreeModal);
+document.getElementById('dptCloseBtn').addEventListener('click', closeDupontTreeModal);
+document.getElementById('dptOverlay').addEventListener('click', (e)=>{ if(e.target.id==='dptOverlay') closeDupontTreeModal(); });
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDupontTreeModal(); });
+document.getElementById('dptZoomInBtn').addEventListener('click', ()=> setDptZoom(dptZoom+0.1));
+document.getElementById('dptZoomOutBtn').addEventListener('click', ()=> setDptZoom(dptZoom-0.1));
+document.getElementById('finRatiosDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Group','Ratio', ...latestData.finRatiosLabels]];
+  latestData.finRatiosGroups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> v.toFixed(2))])));
+  downloadCSV(rows, 'financial_analysis_financial_ratios.csv');
 });
+document.getElementById('growthRateDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Metric', ...latestData.growthLabels]];
+  latestData.growthRate.forEach(r=> rows.push([r.label, ...r.vals.map(v=> v===null ? '' : v.toFixed(2))]));
+  downloadCSV(rows, 'financial_analysis_growth_rate.csv');
+});
+document.getElementById('cashCycleDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Group','Metric', ...latestData.cashCycleLabels]];
+  latestData.cashCycleGroups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> v.toFixed(2))])));
+  downloadCSV(rows, 'financial_analysis_cash_cycle.csv');
+});
+
+/* ---------- View By: Quarterly/Annual toggle ---------- */
+function positionViewByThumb(){
+  const toggle = document.getElementById('viewByToggle');
+  const thumb = document.getElementById('viewByThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+function updatePeriodControl(){
+  if(currentViewBy === 'annual'){
+    document.getElementById('periodLabel').textContent = 'Years';
+    document.getElementById('periodBtnLabel').textContent = "FY2024 → 2026";
+  } else {
+    document.getElementById('periodLabel').textContent = 'As of';
+    document.getElementById('periodBtnLabel').textContent = "Q2'26";
+  }
+  document.getElementById('viewByFootnote').style.display = currentViewBy === 'annual' ? 'block' : 'none';
+}
+document.getElementById('viewByToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('#viewByToggle .timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionViewByThumb();
+  currentViewBy = btn.dataset.key;
+  updatePeriodControl();
+  renderAll();
+});
+positionViewByThumb();
 
 /* ---------- Init ---------- */
 renderAll();
