@@ -38,6 +38,11 @@
     </header>
 
     <div class="header-utility-row" id="headerUtilityRow">
+      <nav class="section-nav">
+        <a href="#sec-glance">Performance Overview</a>
+        <a href="#sec-comparison">Partner Comparison</a>
+      </nav>
+      <div class="nav-filter-divider"></div>
       <div class="filter-bar-group">
         <div class="filter-left">
           <span class="filter-label">Period</span>
@@ -75,8 +80,11 @@
     </div>
   </div>
 
+  <!-- ===== SECTION 1: PERFORMANCE OVERVIEW ===== -->
+  <div class="section-label">Performance Overview</div>
+
   <!-- ===== ROW 1: Sales by Key Account · Target Attainment & Full Year Outlook · Return Rate (CN) ===== -->
-  <div class="chart-grid chart-grid-3">
+  <div class="chart-grid chart-grid-3" id="sec-glance">
     <div class="card" style="min-width:0;">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
@@ -182,8 +190,11 @@
     </div>
   </div>
 
+  <!-- ===== SECTION 2: PARTNER COMPARISON ===== -->
+  <div class="section-label" style="margin-top:24px;">Partner Comparison</div>
+
   <!-- ===== ROW 3: Monthly Sales by Partner ===== -->
-  <div class="card" style="margin-bottom:14px;">
+  <div class="card" style="margin-bottom:14px;" id="sec-comparison">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Monthly Sales by Partner</span>
@@ -418,6 +429,11 @@ initThemeToggle(()=> renderAll(currentPeriodKey, currentCustom));
   btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
   window.addEventListener('resize', updateScrollPadding);
 })();
+
+/* ---------- Single View scroll-spy: highlights whichever section-nav pill
+   matches the section currently scrolled under the sticky header (same
+   mechanism as sales_overview.html / module_ecom_executive_summary.html). ---------- */
+initSectionScrollSpy();
 
 /* ---------- Custom range selects ---------- */
 const customFromSel = document.getElementById('customFrom');
