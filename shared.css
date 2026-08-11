@@ -109,6 +109,18 @@ button,select{font-family:inherit;}
 
 .section-label{font-size:11px;font-weight:700;letter-spacing:.07em;color:var(--ink-3);text-transform:uppercase;margin:0 0 12px 2px;}
 .section-note{font-size:11.5px;color:var(--ink-3);margin:-6px 0 14px 2px;}
+/* Two-level heading system (2026-08-11 unification) -- .section-label above
+   is L1 (the pill/anchor's own name, shown once at the top of its content,
+   identical text to its nav link); .subsection-label is L2, used only
+   inside a pill/section that actually has more than one distinct group
+   (e.g. P&L Overview's "Income Statement" vs "Margins", or Cost's "Cost
+   Ratios"/"Expense Trend"/"Expense Breakdown") -- smaller and lighter than
+   L1 so the hierarchy reads at a glance, same two sizes on every tab.
+   Formerly a page-local class (.cost-analysis-subhead, pnl_executive_
+   summary.html only) promoted here so every Financial Statement tab shares
+   the identical L2 style. */
+.subsection-label{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase;margin:18px 0 10px 2px;}
+.subsection-label:first-child{margin-top:0;}
 
 /* Jump-to-section shortcut row */
 .section-nav{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 22px;}
@@ -413,6 +425,11 @@ button,select{font-family:inherit;}
 :root{
   --cat-1:#4C6FA5; --cat-2:#6E9B6E; --cat-3:#8C6FB0;
   --cat-4:#C97B63; --cat-5:#C4A22E; --cat-6:#75798C;
+  /* cat-2 3-shade ramp (2026-08-11) -- for charts that need to show a
+     combined "cat-2 green" band's own sub-components elsewhere (e.g. P&L's
+     Selling & Distribution) in a way that visually reads as "the same green
+     bucket, broken out" rather than 3 unrelated series colors. */
+  --cat-2-dark:#4F7350; --cat-2-light:#A8C7A8;
 }
 
 .toggle-group{display:flex;gap:4px;background:var(--wash);padding:3px;border-radius:9px;width:fit-content;}

@@ -105,25 +105,13 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 .period-btn:disabled{opacity:.5;cursor:not-allowed;}
 
 /* Scroll + scroll-spy nav (2026-08-11, replaces the 2026-08-10 hard-switch
-   pill restructure) -- all 4 sections stay on the page, stacked, scrolled
+   pill restructure) -- all 3 sections stay on the page, stacked, scrolled
    through continuously; the pill row now behaves as scroll-spy anchors
    (initSectionScrollSpy(), shared.js) instead of a visibility toggle. Each
    section keeps a bottom margin so they read as distinct blocks while
    scrolling past one into the next. */
 .pill-view{display:block;margin-bottom:28px;}
 .pill-view:last-child{margin-bottom:0;}
-.growth-insight{font-size:12.5px;line-height:1.6;color:var(--ink-2);background:var(--wash);border-radius:8px;padding:10px 14px;margin-top:10px;}
-
-/* Growth Rate small-multiples (2026-08-11) -- 1 mini chart per metric
-   instead of 1 combined grouped-bar chart, so each metric's own trend +
-   latest-period YoY/QoQ callout reads clearly without 4 series' bars and
-   labels overlapping in one plot. 2x2 on desktop, collapses to 1 column on
-   narrow viewports (mobile-first responsive per the request). */
-.growth-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
-.growth-mini-grid.hidden{display:none;}
-@media (max-width:700px){ .growth-mini-grid{grid-template-columns:1fr;} }
-.growth-mini-chart{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px 12px 4px;}
-.growth-mini-title{font-size:12.5px;font-weight:700;margin-bottom:4px;}
 </style>
 </head>
 <body>
@@ -162,7 +150,6 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     <nav class="section-nav" id="pillNav">
       <a href="#view-scorecard" data-view="scorecard" class="active">Financial Scorecard</a>
       <a href="#view-fin-ratios" data-view="fin-ratios">Financial Ratios</a>
-      <a href="#view-growth-rate" data-view="growth-rate">Growth Rate</a>
       <a href="#view-ccc" data-view="ccc">Cash Cycle</a>
     </nav>
     <div class="nav-filter-divider"></div>
@@ -191,6 +178,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 
   <!-- ===== PILL 1: FINANCIAL SCORECARD ===== -->
   <div class="pill-view" id="view-scorecard">
+  <div class="section-label">Financial Scorecard</div>
   <div class="card table-card single-label-col fhs-card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
@@ -313,31 +301,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
   </div>
   </div><!-- /view-fin-ratios -->
 
-  <!-- ===== PILL 3: GROWTH RATE ===== -->
-  <div class="pill-view" id="view-growth-rate">
-    <div class="section-label">Growth Rate</div>
-    <div class="growth-mini-grid" id="growthMiniGrid">
-      <div class="growth-mini-chart">
-        <div class="growth-mini-title" id="growthMiniTitleSales" style="color:var(--brand);">Sales Growth Rate %</div>
-        <div class="canvas-wrap" style="height:170px;"><div id="growthChartSales" style="width:100%;height:100%;"></div></div>
-      </div>
-      <div class="growth-mini-chart">
-        <div class="growth-mini-title" style="color:#898781;">COGS Growth Rate %</div>
-        <div class="canvas-wrap" style="height:170px;"><div id="growthChartCogs" style="width:100%;height:100%;"></div></div>
-      </div>
-      <div class="growth-mini-chart">
-        <div class="growth-mini-title" style="color:#4C6FA5;">Total Expense Growth Rate %</div>
-        <div class="canvas-wrap" style="height:170px;"><div id="growthChartTotalExp" style="width:100%;height:100%;"></div></div>
-      </div>
-      <div class="growth-mini-chart">
-        <div class="growth-mini-title" id="growthMiniTitleNetProfit" style="color:var(--good);">Net Profit Growth Rate %</div>
-        <div class="canvas-wrap" style="height:170px;"><div id="growthChartNetProfit" style="width:100%;height:100%;"></div></div>
-      </div>
-    </div>
-    <div class="growth-insight" id="growthInsight">–</div>
-  </div><!-- /view-growth-rate -->
-
-  <!-- ===== PILL 4: CASH CONVERSION CYCLE ===== -->
+  <!-- ===== PILL 3: CASH CONVERSION CYCLE ===== -->
   <div class="pill-view" id="view-ccc">
   <div class="section-label">Cash Cycle</div>
   <div class="chart-grid">
@@ -555,10 +519,6 @@ const totalExpenseQAll = MASTER_TOTAL_EXPENSE.slice(5,10);
 const roeQAll = MASTER_ROE.slice(5,10);
 const roaQAll = MASTER_ROA.slice(5,10);
 const totalAssetTurnoverQAll = MASTER_AT.slice(5,10);
-const salesGrowthQ = qoqGrowthSeries(netSalesQAll);
-const cogsGrowthQ = qoqGrowthSeries(cogsQAll);
-const totalExpenseGrowthQ = qoqGrowthSeries(totalExpenseQAll);
-const netProfitGrowthQ = qoqGrowthSeries(netProfitAfterTaxQAll);
 const arTurnoverTimesQ = MASTER_AR_TURNOVER.slice(5,10);
 const invTurnoverTimesQ = MASTER_INV_TURNOVER.slice(5,10);
 const apTurnoverTimesQ = MASTER_AP_TURNOVER.slice(5,10);
@@ -846,7 +806,7 @@ let currentViewBy = 'quarterly';
 // breakdown in this file's data model (see the FY2024 block below) -- there
 // is no earlier year to anchor on. Scorecard/Tree are NOT affected by this
 // (same "pinned, unaffected by View By" rule as the Quarterly/Annual toggle
-// itself) -- only Financial Ratios/Growth Rate/Cash Cycle react.
+// itself) -- only Financial Ratios/Cash Cycle react.
 let annualAnchor = 'current';
 
 /* ---------- Nav menu / popovers / theme ---------- */
@@ -1078,7 +1038,7 @@ function renderAll(){
   const isAnnual = currentViewBy === 'annual';
 
   // "As of" window -- Quarterly-mode only (Annual mode's FY2024/FY2025/
-  // TTM2026 are pinned, never shift). Financial Ratios/Growth/Cash Cycle/
+  // TTM2026 are pinned, never shift). Financial Ratios/Cash Cycle/
   // CCC Timeline/Scorecard all read from these; the Leverage trend chart
   // and Inventory Provision chart deliberately do NOT (excluded from the
   // "As of" selector's recompute list per spec, same as before).
@@ -1102,12 +1062,6 @@ function renderAll(){
   const winApTurnover = windowSlice(MASTER_AP_TURNOVER, QTD_Q3_26.apTurnover);
   const winApDays = windowSlice(MASTER_AP_DAYS, QTD_Q3_26.apDays);
   const winCcc = windowSlice(MASTER_CCC, QTD_Q3_26.ccc);
-  // Growth's QTD slot is always null -- QTD dollars vs a FULL prior
-  // quarter would read as a large fake decline, not a real comparison.
-  const winSalesGrowth = isQTD ? [...MASTER_SALES_GROWTH.slice(6,10), null] : MASTER_SALES_GROWTH.slice(anchorIdx-4,anchorIdx+1);
-  const winCogsGrowth = isQTD ? [...MASTER_COGS_GROWTH.slice(6,10), null] : MASTER_COGS_GROWTH.slice(anchorIdx-4,anchorIdx+1);
-  const winTotalExpenseGrowth = isQTD ? [...MASTER_TOTAL_EXPENSE_GROWTH.slice(6,10), null] : MASTER_TOTAL_EXPENSE_GROWTH.slice(anchorIdx-4,anchorIdx+1);
-  const winNetProfitGrowth = isQTD ? [...MASTER_NET_PROFIT_GROWTH.slice(6,10), null] : MASTER_NET_PROFIT_GROWTH.slice(anchorIdx-4,anchorIdx+1);
   // dupont-shaped adapter for an FY object -- NOT ttmDupontAt(anchor), which
   // averages only the window's OPENING/CLOSING balance points and would
   // silently disagree with FY2024/FY2025's own bottom-up avgEquity/avgAssets
@@ -1321,96 +1275,6 @@ function renderAll(){
 
   const compact2TitleRange = compact2Labels.length>2 ? compact2Labels[0]+'–'+compact2Labels[compact2Labels.length-1] : compact2Labels.join(' → ');
 
-  /* === Growth Rate pill: hero grouped-bar chart (Annual = 3 years back,
-     FY2024/FY2025/2026-current -- FY2024 has no FY2023 baseline so it's a
-     real category with no computable growth, shown as an empty "–" bar
-     rather than dropped, matching the 3-years-back convention the other
-     Annual trend charts on this page use for real data; Quarterly =
-     existing QoQ 5Q/QTD window) + English insight callout === */
-  const growthFmtChart = v => v===null ? 0 : v;
-  const growthLabelsFull = isAnnual ? (annualAnchor==='fy2025' ? ['FY2024','FY2025'] : ['FY2024','FY2025','2026 YTD']) : winLabels;
-  const gSalesFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.sales,FY2024.sales)] : [null, pctChange(FY2025.sales,FY2024.sales), pctChange(YTD2026.sales,YTD2025.sales)]) : winSalesGrowth;
-  const gCogsFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.cogs,FY2024.cogs)] : [null, pctChange(FY2025.cogs,FY2024.cogs), pctChange(YTD2026.cogs,YTD2025.cogs)]) : winCogsGrowth;
-  const gTotalExpFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.totalExpense,FY2024.totalExpense)] : [null, pctChange(FY2025.totalExpense,FY2024.totalExpense), pctChange(YTD2026.totalExpense,YTD2025.totalExpense)]) : winTotalExpenseGrowth;
-  const gNetProfitFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.netProfit,FY2024.netProfit)] : [null, pctChange(FY2025.netProfit,FY2024.netProfit), pctChange(YTD2026.netProfit,YTD2025.netProfit)]) : winNetProfitGrowth;
-  // Drop any category where every series is null -- ONLY for Quarterly's
-  // edge case (Q1'25 anchor's leading null, nobody deliberately navigates
-  // there to see an empty slot). Annual keeps its FY2024 placeholder
-  // category on purpose (see comment above) -- a bar chart has no way to
-  // draw a "no data" bar directly, so it renders as a 0-height bar with a
-  // "–" label instead of a real 0%, via the valueLabelFormatter below.
-  const validGIdx = isAnnual ? growthLabelsFull.map((_,i)=>i) : growthLabelsFull.map((_,i)=>i).filter(i=>
-    !(gSalesFull[i]===null && gCogsFull[i]===null && gTotalExpFull[i]===null && gNetProfitFull[i]===null));
-  const gLabels = validGIdx.map(i=>growthLabelsFull[i]);
-  const gCategoryIsNull = validGIdx.map(i=> gSalesFull[i]===null);
-  const gSales = validGIdx.map(i=>growthFmtChart(gSalesFull[i]));
-  const gCogs = validGIdx.map(i=>growthFmtChart(gCogsFull[i]));
-  const gTotalExp = validGIdx.map(i=>growthFmtChart(gTotalExpFull[i]));
-  const gNetProfit = validGIdx.map(i=>growthFmtChart(gNetProfitFull[i]));
-  // Latest-period QoQ + YoY comparison, computed ONCE and consumed by the
-  // per-metric mini-chart callouts below (the last bar's own 2-line YoY/QoQ
-  // label) -- this used to also feed a separate "Latest Period" table, but
-  // that table was removed (2026-08-11) as a pure duplicate of these same
-  // callout numbers already printed on each chart's last bar.
-  // Quarterly gets both QoQ and YoY; Annual gets YoY only (its bar already
-  // IS a YoY figure); QTD gets neither (no valid full-period baseline for
-  // a partial quarter, same reasoning the QoQ bar itself being null there
-  // already reflects) -- callout stays null in that case.
-  let latestCallout = null;
-  if(isAnnual){
-    const yoyBase = annualAnchor==='fy2025' ? 'FY2024' : '2025 YTD';
-    const latestLabel = annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD';
-    const yoy = annualAnchor==='fy2025'
-      ? { sales:pctChange(FY2025.sales,FY2024.sales), cogs:pctChange(FY2025.cogs,FY2024.cogs), totalExp:pctChange(FY2025.totalExpense,FY2024.totalExpense), netProfit:pctChange(FY2025.netProfit,FY2024.netProfit) }
-      : { sales:pctChange(YTD2026.sales,YTD2025.sales), cogs:pctChange(YTD2026.cogs,YTD2025.cogs), totalExp:pctChange(YTD2026.totalExpense,YTD2025.totalExpense), netProfit:pctChange(YTD2026.netProfit,YTD2025.netProfit) };
-    latestCallout = { yoy, qoq:null, yoyBase, latestLabel };
-  } else if(!isQTD){
-    const latestLabel = winLabels[winLabels.length-1], priorQLabel = winLabels[winLabels.length-2], yoyBaseLabel = MASTER_QUARTER_LABELS[anchorIdx-4];
-    const qoq = { sales:gSales[gSales.length-1], cogs:gCogs[gCogs.length-1], totalExp:gTotalExp[gTotalExp.length-1], netProfit:gNetProfit[gNetProfit.length-1] };
-    const yoy = {
-      sales: pctChange(MASTER_SALES[anchorIdx], MASTER_SALES[anchorIdx-4]),
-      cogs: pctChange(MASTER_COGS[anchorIdx], MASTER_COGS[anchorIdx-4]),
-      totalExp: pctChange(MASTER_TOTAL_EXPENSE[anchorIdx], MASTER_TOTAL_EXPENSE[anchorIdx-4]),
-      netProfit: pctChange(MASTER_NET_PROFIT[anchorIdx], MASTER_NET_PROFIT[anchorIdx-4])
-    };
-    latestCallout = { yoy, qoq, priorQLabel, yoyBaseLabel, latestLabel };
-  }
-
-  // Small-multiples (2026-08-11): 1 mini bar chart per metric instead of 1
-  // combined grouped-bar chart, sharing a FIXED y-axis domain across all 4
-  // so they're visually comparable at a glance. Every bar gets its own %
-  // label; the LAST bar additionally gets a 2-line (Quarterly) or 1-line
-  // (Annual) YoY/QoQ callout instead of the plain label, colored by sign.
-  const critColor = cssVar('--critical')||'#d03b3b';
-  const lastGIdx = gLabels.length-1;
-  function miniValueLabelFormatter(val, s, gi){
-    if(gCategoryIsNull[gi]) return '–';
-    if(gi===lastGIdx && latestCallout){
-      const key = s.key;
-      const lines = [{ text: fmtSignedPct(latestCallout.yoy[key],1)+' YoY', color: latestCallout.yoy[key]>=0?good:critColor }];
-      if(latestCallout.qoq) lines.push({ text: fmtSignedPct(latestCallout.qoq[key],1)+' QoQ', color: latestCallout.qoq[key]>=0?good:critColor });
-      return lines;
-    }
-    return fmtSignedPct(val,0);
-  }
-  function buildMiniGrowthChart(containerId, key, values, color){
-    buildGroupedBarSVG(containerId, {
-      labels: gLabels, yFormatter: v=>v.toFixed(0)+'%', referenceValue:0, showValueLabels:true,
-      domainMin:-20, domainMax:30, compactLabelWidth:20,
-      valueLabelFormatter: (val,s,gi)=>miniValueLabelFormatter(val,s,gi),
-      series: [{ name:'', key, color, values }]
-    });
-  }
-  buildMiniGrowthChart('growthChartSales', 'sales', gSales, brand);
-  buildMiniGrowthChart('growthChartCogs', 'cogs', gCogs, '#898781');
-  buildMiniGrowthChart('growthChartTotalExp', 'totalExp', gTotalExp, '#4C6FA5');
-  buildMiniGrowthChart('growthChartNetProfit', 'netProfit', gNetProfit, good);
-
-  const latestNP = gNetProfit[gNetProfit.length-1], latestSales = gSales[gSales.length-1];
-  const opLeverageWorking = latestNP > latestSales;
-  document.getElementById('growthInsight').innerHTML =
-    'Net Profit Growth (<b>'+fmtSignedPct(latestNP,1)+'</b>) '+(opLeverageWorking?'outpacing':'trailing')+' Sales Growth (<b>'+fmtSignedPct(latestSales,1)+'</b>) — '
-    + (opLeverageWorking ? 'operating leverage is working: costs are growing slower than revenue.' : 'costs are growing faster than revenue — margin pressure to watch.');
   /* === Cash Conversion Cycle pill: ONE combined multi-line chart (2026-08-11,
      replaces the old single-line "CCC Trend" chart + the separate "Turnover
      & Cycle" table -- same reasoning as the Liquidity/Leverage Trend merge
