@@ -136,6 +136,16 @@ function niceAxisTicks(rawMin, rawMax, targetTickCount){
 
 /* ---------- Custom line/area chart (no external chart library) ---------- */
 function buildLineChartSVG(containerId, opts){
+  // Defensive fix (2026-08-11): a hover tooltip shown via ensureChartTooltip
+  // is position:fixed and only hides on that marker's own mouseout -- if
+  // this chart re-renders WHILE a marker is being hovered (e.g. a View
+  // By/unit toggle click), the old marker element is gone, no mouseout ever
+  // fires on it, and the tooltip is left floating with stale content
+  // wherever it last was, potentially over a totally unrelated widget lower
+  // on the page (now that sections scroll continuously instead of hiding).
+  // Any chart rebuild clears it, since its content is about to be invalid.
+  const staleTooltip = document.getElementById('sharedChartTooltip');
+  if(staleTooltip) staleTooltip.classList.remove('show');
   const container = document.getElementById(containerId);
   // Fix (2026-07-30): text/lines looked horizontally stretched whenever a
   // card was rendered wider than the old fixed viewBox (520). The <svg> was
@@ -655,6 +665,11 @@ function buildStackedAreaSVG(containerId, opts){
    Channel" (grouped by month) and "Channel Index by Category" (grouped by
    category) ---------- */
 function buildGroupedBarSVG(containerId, opts){
+  // Defensive fix (2026-08-11): see the matching comment in
+  // buildLineChartSVG -- clears a stale position:fixed hover tooltip on
+  // every rebuild so it can never be left floating over unrelated content.
+  const staleTooltip2 = document.getElementById('sharedChartTooltip');
+  if(staleTooltip2) staleTooltip2.classList.remove('show');
   const container = document.getElementById(containerId);
   const width = opts.width || (container ? container.clientWidth : 0) || 520;
   // Fix (2026-08-03): measure real container height (same fix as

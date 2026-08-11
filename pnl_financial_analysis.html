@@ -39,6 +39,15 @@
    number. Intentionally axis-less/label-less -- the big chip value above it
    already carries the exact figure. */
 .fhs-chip-sparkline{margin-top:4px;height:22px;width:100%;min-width:70px;}
+/* CCC combined chart (2026-08-11) -- Days/Times unit toggle (compact variant
+   of the existing View By pill-toggle, sized down to sit inline in a chart's
+   own toolbar) + a clickable legend (dims + excludes a series from the chart
+   on click, scoped via .clickable-legend so it doesn't affect any other
+   legend on the page). */
+.timeframe-toggle-sm{padding:1px;margin-right:6px;}
+.timeframe-toggle-sm .timeframe-opt{padding:4px 10px;font-size:11px;}
+.clickable-legend .chart-legend-item{cursor:pointer;user-select:none;}
+.clickable-legend .chart-legend-item.dimmed{opacity:.35;}
 @media (max-width:900px){
   .fhs-equation{flex-direction:column;align-items:stretch;}
   .fhs-op{padding:1px 0;}
@@ -95,12 +104,14 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 .viewby-footnote{font-size:12.5px;line-height:1.6;color:var(--ink-3);margin-top:8px;}
 .period-btn:disabled{opacity:.5;cursor:not-allowed;}
 
-/* True pill switcher (2026-08-10 restructure) -- 4 full-screen alternatives,
-   exactly one .pill-view visible at a time via the nav click handler near
-   the bottom of the script. initSectionScrollSpy() is intentionally NOT
-   called on this page, same reasoning as the P&L page's own restructure. */
-.pill-view{display:none;}
-.pill-view.active{display:block;}
+/* Scroll + scroll-spy nav (2026-08-11, replaces the 2026-08-10 hard-switch
+   pill restructure) -- all 4 sections stay on the page, stacked, scrolled
+   through continuously; the pill row now behaves as scroll-spy anchors
+   (initSectionScrollSpy(), shared.js) instead of a visibility toggle. Each
+   section keeps a bottom margin so they read as distinct blocks while
+   scrolling past one into the next. */
+.pill-view{display:block;margin-bottom:28px;}
+.pill-view:last-child{margin-bottom:0;}
 .growth-insight{font-size:12.5px;line-height:1.6;color:var(--ink-2);background:var(--wash);border-radius:8px;padding:10px 14px;margin-top:10px;}
 
 /* Growth Rate small-multiples (2026-08-11) -- 1 mini chart per metric
@@ -111,7 +122,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 .growth-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
 .growth-mini-grid.hidden{display:none;}
 @media (max-width:700px){ .growth-mini-grid{grid-template-columns:1fr;} }
-.growth-mini-chart{border:1px solid var(--hairline);border-radius:8px;padding:10px 12px 4px;}
+.growth-mini-chart{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px 12px 4px;}
 .growth-mini-title{font-size:12.5px;font-weight:700;margin-bottom:4px;}
 </style>
 </head>
@@ -179,7 +190,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
   <div class="viewby-footnote" id="viewByFootnote" style="display:none;margin:-6px 0 14px;">ปีปัจจุบันเป็น YTD (flow: margin/growth) / TTM (ratio: ROE/ROA/turnover/leverage/D-E/Cash Cycle) — ยังไม่ใช่ FY เต็ม (2026 ยังไม่จบปี)</div>
 
   <!-- ===== PILL 1: FINANCIAL SCORECARD ===== -->
-  <div class="pill-view active" id="view-scorecard">
+  <div class="pill-view" id="view-scorecard">
   <div class="card table-card single-label-col fhs-card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
@@ -242,6 +253,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 
   <!-- ===== PILL 2: FINANCIAL RATIOS ===== -->
   <div class="pill-view" id="view-fin-ratios">
+  <div class="section-label">Financial Ratios</div>
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -314,6 +326,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 
   <!-- ===== PILL 3: GROWTH RATE ===== -->
   <div class="pill-view" id="view-growth-rate">
+    <div class="section-label">Growth Rate</div>
     <div class="growth-mini-grid" id="growthMiniGrid">
       <div class="growth-mini-chart">
         <div class="growth-mini-title" id="growthMiniTitleSales" style="color:var(--brand);">Sales Growth Rate %</div>
@@ -337,6 +350,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 
   <!-- ===== PILL 4: CASH CONVERSION CYCLE ===== -->
   <div class="pill-view" id="view-ccc">
+  <div class="section-label">Cash Cycle</div>
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -358,30 +372,25 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Cash Conversion Cycle Trend</span>
-          <button class="info-icon" data-info-title="Cash Conversion Cycle Trend" data-info-text="CCC (Days) ตามช่วงเวลาที่เลือก — Annual แสดงเฉพาะปีที่ปิดแล้ว (FY2024–FY2025) · Quarterly แสดง 5 ไตรมาสล่าสุด — ยิ่งลดยิ่งดี (เงินทุนหมุนเวียนถูกปลดปล่อยเร็วขึ้น)">i</button>
+          <span class="chart-title" id="cccCombinedTitle">Working Capital Cycle (Days)</span>
+          <button class="info-icon" data-info-title="Working Capital Cycle" data-info-text="Days view: Inventory/Collection/Payment Period (Avg. Days) + Cash Conversion Cycle = Inventory + Collection − Payment · Times view: A/R/Inventory/A/P Turnover = 365 ÷ Days (ไม่มี CCC เพราะเป็นหน่วยวันเท่านั้น) — คลิก legend เพื่อเปิด/ปิดเส้น — Annual แสดงเฉพาะปีที่ปิดแล้ว (FY2024–FY2025), เลือก 2026 (Current) เพิ่มจุด YTD (annualized) — Mock Data 100%">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="cccTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="cccTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="cccTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+          <div class="timeframe-toggle timeframe-toggle-sm" id="cccUnitToggle">
+            <div class="timeframe-thumb" id="cccUnitThumb"></div>
+            <button class="timeframe-opt selected" data-unit="days">Days</button>
+            <button class="timeframe-opt" data-unit="times">Times</button>
+          </div>
+          <button class="tool-btn" id="cccCombinedTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="cccCombinedDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="cccCombinedExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="canvas-wrap" id="cccTrendCanvasWrap"><div id="cccTrendChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="cccTrendTableWrap"></div>
-      <div class="kpi-caption" id="cccTrendFootnote" style="display:none;">CCC is annualized from YTD balances (same method as the DuPont Scorecard), not a closed-year actual.</div>
+      <div class="chart-legend clickable-legend" id="cccCombinedLegend"></div>
+      <div class="canvas-wrap" id="cccCombinedCanvasWrap"><div id="cccCombinedChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="cccCombinedTableWrap"></div>
+      <div class="kpi-caption" id="cccCombinedFootnote" style="display:none;">Days/Turnover are annualized from YTD balances (same method as the DuPont Scorecard), not a closed-year actual.</div>
     </div>
-  </div>
-
-  <div class="card table-card single-label-col" style="margin-bottom:0;">
-    <div class="card-head">
-      <span class="card-title" id="cashCycleCompactTitle">Turnover &amp; Cycle</span>
-      <button class="info-icon" data-info-title="Turnover & Cycle" data-info-text="Avg. Collection/Inventory/Payment Period (Days) · Turnover (Times) = 365 ÷ Days — เฉพาะช่วงล่าสุด + ก่อนหน้า (ดูแนวโน้มยาวที่กราฟ CCC Trend ด้านบน) — CFO/EBITDA % และ FCF Margin % ย้ายไปที่หน้า Cash Flow — Mock Data 100%">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="cashCycleDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-      </div>
-    </div>
-    <table id="cashCycleTable"></table>
   </div>
   </div><!-- /view-ccc -->
 
@@ -1065,6 +1074,8 @@ function closeDupontTreeModal(){
 }
 
 let latestData = {};
+let cccChartUnit = 'days';
+let cccHiddenSeries = new Set();
 
 function renderAll(){
   const isAnnual = currentViewBy === 'annual';
@@ -1117,13 +1128,39 @@ function renderAll(){
       roa: fy.roa, roe: fy.roe
     };
   }
+  // dupont-shaped adapter for a SINGLE quarter i (2026-08-11 fix, replaces
+  // ttmDupontAt(anchorIdx) for the Quarterly+quarter-anchor branch below) --
+  // every field reuses the SAME single-quarter MASTER_NM/MASTER_AT/MASTER_FL/
+  // MASTER_ROE/MASTER_ROA arrays the Margins/Returns Trend charts + this
+  // Scorecard's own factor-box sparklines already plot, so the headline
+  // number in a chip and that chip's own sparkline's last point (and the
+  // matching Trend chart's last point elsewhere on this same scroll) can
+  // never show two different values for one metric again -- ttmDupontAt's
+  // real-trailing-4-quarter sum was a DIFFERENT (also legitimate) basis, but
+  // disagreed with every other Q2'26 figure visible on the same screen once
+  // the page stopped hiding sections behind a pill switch.
+  function dupontFromQuarter(i){
+    return {
+      sales: MASTER_SALES[i], ebit: MASTER_EBIT[i], grossProfitTTM: MASTER_GP[i], netProfit: MASTER_NET_PROFIT[i],
+      avgAssets: (MASTER_ASSETS[i]+MASTER_ASSETS[i+1])/2, avgEquity: (MASTER_EQUITY[i]+MASTER_EQUITY[i+1])/2,
+      operatingMargin: MASTER_EBIT_M[i], taxBurden: 1-TAX_RATE, interestBurden: 1.00,
+      profitMargin: MASTER_NM[i], assetTurnover: MASTER_AT[i], financialLeverage: MASTER_FL[i],
+      roa: MASTER_ROA[i], roe: MASTER_ROE[i]
+    };
+  }
   // Scorecard/CCC/companion chips -- unified "active period" state (Part
-  // C, 2026-08-10 restructure): TTM is no longer hardcoded here. 4 branches,
-  // matching whatever the tables/charts elsewhere on the page already show
-  // for the SAME View By + As of selection, so one pill never shows two
-  // different bases for the same metric:
+  // C, 2026-08-10 restructure, revised 2026-08-11): matching whatever the
+  // tables/charts elsewhere on the page already show for the SAME View By +
+  // As of selection, so one pill never shows two different bases for the
+  // same metric:
   //  - Quarterly + This Quarter (QTD): annualized run-rate QTD figures.
-  //  - Quarterly + a quarter anchor: TTM ending that quarter (unchanged).
+  //  - Quarterly + a quarter anchor: that SINGLE quarter's own figures
+  //    (dupontFromQuarter) -- was ttmDupontAt(anchorIdx), a real trailing
+  //    TTM; changed because it no longer matches the Margins/Returns Trend
+  //    charts' or this Scorecard's own sparklines' last point now that every
+  //    section stays on the page at once (a real TTM vs a single-quarter
+  //    figure are both legitimate metrics, but showing both for "ROE" on the
+  //    same screen without labeling which is which reads as a bug).
   //  - Annual + This Year (current): annualized-YTD (dupontFromYTD2026,
   //    2026-08-11 fix) -- explicitly requested so the Scorecard reads as an
   //    in-year YTD projection, not a smoothed trailing-4-quarter TTM that
@@ -1141,10 +1178,10 @@ function renderAll(){
         operatingMargin: QTD_Q3_26.ebitMargin, taxBurden: 1-TAX_RATE, interestBurden: 1.00,
         profitMargin: QTD_Q3_26.profitMargin, assetTurnover: QTD_Q3_26.assetTurnover,
         financialLeverage: QTD_Q3_26.financialLeverage, roa: QTD_Q3_26.roa, roe: QTD_Q3_26.roe
-      } : ttmDupontAt(anchorIdx));
+      } : dupontFromQuarter(anchorIdx));
   const dupontPrevious = isAnnual
     ? (annualAnchor==='fy2025' ? dupontFromFY(FY2024) : dupontFromYTD2025)
-    : (isQTD ? dupontCurrentPinned : ttmDupontAt(anchorIdx-1));
+    : (isQTD ? dupontCurrentPinned : dupontFromQuarter(anchorIdx-1));
 
   // Active-period Days/Ratio figures for the CCC Timeline + Scorecard's
   // Current Ratio companion chip -- same 4-branch logic as dupontCurrent
@@ -1385,33 +1422,29 @@ function renderAll(){
   document.getElementById('growthInsight').innerHTML =
     'Net Profit Growth (<b>'+fmtSignedPct(latestNP,1)+'</b>) '+(opLeverageWorking?'outpacing':'trailing')+' Sales Growth (<b>'+fmtSignedPct(latestSales,1)+'</b>) — '
     + (opLeverageWorking ? 'operating leverage is working: costs are growing slower than revenue.' : 'costs are growing faster than revenue — margin pressure to watch.');
-  /* === Cash Conversion Cycle pill: trend chart (Annual, closed years =
-     FY2024→FY2025 only; Annual + "2026 (Current)" = +3rd point using
-     TTM2026.ccc, same annualized-from-YTD convention as Returns Trend since
-     CCC is a stock/day-count ratio, not a period flow; Quarterly = existing
-     window) + compact Turnover & Cycle support table (last 2 periods only) === */
+  /* === Cash Conversion Cycle pill: ONE combined multi-line chart (2026-08-11,
+     replaces the old single-line "CCC Trend" chart + the separate "Turnover
+     & Cycle" table -- same reasoning as the Liquidity/Leverage Trend merge
+     on Financial Ratios: a table and a chart repeating the exact same
+     numbers is pure duplication once the chart already carries them).
+     Days/Times are both flow ÷ average-balance ratios (same DuPont-style
+     annualizing as Returns Trend), so the "2026 YTD" point reuses
+     TTM2026's fields + trendLabelsAnnualized, not the plain YTD convention Liquidity/
+     Leverage used (those were point-in-time balance-sheet ratios with no
+     flow numerator at all). */
+  const trendInvDaysCcc = isAnnual ? (showYtdPoint ? [FY2024.invDays, FY2025.invDays, TTM2026.invDays] : [FY2024.invDays, FY2025.invDays]) : winInvDays;
+  const trendArDaysCcc = isAnnual ? (showYtdPoint ? [FY2024.arDays, FY2025.arDays, TTM2026.arDays] : [FY2024.arDays, FY2025.arDays]) : winArDays;
+  const trendApDaysCcc = isAnnual ? (showYtdPoint ? [FY2024.apDays, FY2025.apDays, TTM2026.apDays] : [FY2024.apDays, FY2025.apDays]) : winApDays;
   const trendCcc = isAnnual ? (showYtdPoint ? [FY2024.ccc, FY2025.ccc, TTM2026.ccc] : [FY2024.ccc, FY2025.ccc]) : winCcc;
-  buildLineChartSVG('cccTrendChart', {
-    labels: trendLabelsAnnualized, yFormatter: v=>Math.round(v)+'d',
-    series: splitYtdSeries(trendCcc, brand, 2.6, v=>Math.round(v)+'d', '2026 YTD (annualized)')
-  });
-  document.getElementById('cccTrendFootnote').style.display = showYtdPoint ? '' : 'none';
-  latestData.cccTrend = { labels:trendLabelsAnnualized, ccc:trendCcc };
-  const cashCycleCompactGroups = [
-    { name:'', rows:[
-      { label:'A/R Turnover (Times)', vals: compact2(FY2024.arTurnover, FY2025.arTurnover, TTM2026.arTurnover, winArTurnover), fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Collection Period (Days)', vals: compact2(FY2024.arDays, FY2025.arDays, TTM2026.arDays, winArDays), fmt:v=>Math.round(v)+' days' },
-      { label:'Inventory Turnover (Times)', vals: compact2(FY2024.invTurnover, FY2025.invTurnover, TTM2026.invTurnover, winInvTurnover), fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Inventory Period (Days)', vals: compact2(FY2024.invDays, FY2025.invDays, TTM2026.invDays, winInvDays), fmt:v=>Math.round(v)+' days' },
-      { label:'A/P Turnover (Times)', vals: compact2(FY2024.apTurnover, FY2025.apTurnover, TTM2026.apTurnover, winApTurnover), fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Payment Period (Days)', vals: compact2(FY2024.apDays, FY2025.apDays, TTM2026.apDays, winApDays), fmt:v=>Math.round(v)+' days' },
-      { label:'Cash Cycle (Days)', vals: compact2(FY2024.ccc, FY2025.ccc, activeCcc, winCcc), fmt:v=>Math.round(v)+' days', bold:true }
-    ]}
-  ];
-  document.getElementById('cashCycleCompactTitle').textContent = 'Turnover & Cycle ('+compact2TitleRange+')';
-  document.getElementById('cashCycleTable').innerHTML = groupedTableHTML('Metric', compact2Labels, cashCycleCompactGroups);
-  latestData.cashCycleGroups = cashCycleCompactGroups;
-  latestData.cashCycleLabels = compact2Labels;
+  const trendArTurnoverCcc = isAnnual ? (showYtdPoint ? [FY2024.arTurnover, FY2025.arTurnover, TTM2026.arTurnover] : [FY2024.arTurnover, FY2025.arTurnover]) : winArTurnover;
+  const trendInvTurnoverCcc = isAnnual ? (showYtdPoint ? [FY2024.invTurnover, FY2025.invTurnover, TTM2026.invTurnover] : [FY2024.invTurnover, FY2025.invTurnover]) : winInvTurnover;
+  const trendApTurnoverCcc = isAnnual ? (showYtdPoint ? [FY2024.apTurnover, FY2025.apTurnover, TTM2026.apTurnover] : [FY2024.apTurnover, FY2025.apTurnover]) : winApTurnover;
+  latestData.cccCombined = {
+    labels: trendLabelsAnnualized, showYtdPoint,
+    days: { invDays:trendInvDaysCcc, arDays:trendArDaysCcc, apDays:trendApDaysCcc, ccc:trendCcc },
+    times: { arTurnover:trendArTurnoverCcc, invTurnover:trendInvTurnoverCcc, apTurnover:trendApTurnoverCcc }
+  };
+  renderCccCombinedChart();
 
   /* === Financial Scorecard (DuPont ROE Decomposition) === */
   document.getElementById('dpNetMargin').textContent = fmtPct(dupontCurrent.profitMargin,1);
@@ -1501,12 +1534,12 @@ function renderAll(){
   // (Part C1, 2026-08-10): never hardcoded to "(TTM)" regardless of what's
   // actually selected. Annual + Last Year (FY2025) now correctly reads
   // "(FY2025)", not "(TTM)" showing a different (TTM2026) number.
-  const scorecardSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD, Annualized') : (isQTD ? 'QTD, Annualized' : 'TTM');
+  const scorecardSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD, Annualized') : (isQTD ? 'QTD, Annualized' : MASTER_QUARTER_LABELS[anchorIdx]);
   document.getElementById('scorecardTitle').textContent = 'DuPont ROE Decomposition ('+scorecardSuffix+')';
   document.getElementById('fhsApexLabel').textContent = 'ROE ('+scorecardSuffix+')';
 
   latestData.dupont = { current: dupontCurrent, previous: dupontPrevious };
-  const modalSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 TTM') : (isQTD ? "Annualized (Q3'26 QTD)" : 'TTM (ending '+MASTER_QUARTER_LABELS[anchorIdx]+')');
+  const modalSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD, Annualized') : (isQTD ? "Annualized (Q3'26 QTD)" : MASTER_QUARTER_LABELS[anchorIdx]);
   document.getElementById('dptModalTitle').textContent = 'DuPont ROE Tree — '+modalSuffix;
   document.getElementById('dptTreeBody').innerHTML = buildDupontTreeHTML(dupontCurrent, dupontPrevious, scorecardSuffix);
 
@@ -1531,12 +1564,6 @@ document.getElementById('dptOverlay').addEventListener('click', (e)=>{ if(e.targ
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDupontTreeModal(); });
 document.getElementById('dptZoomInBtn').addEventListener('click', ()=> setDptZoom(dptZoom+0.1));
 document.getElementById('dptZoomOutBtn').addEventListener('click', ()=> setDptZoom(dptZoom-0.1));
-document.getElementById('cashCycleDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Group','Metric', ...latestData.cashCycleLabels]];
-  latestData.cashCycleGroups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> v.toFixed(2))])));
-  downloadCSV(rows, 'financial_analysis_cash_cycle.csv');
-});
-
 /* --- Hero chart toolbars (2026-08-10): default view is the chart, same as
    every other chart-first card on this page (e.g. Income Statement on
    P&L) -- table/download/expand buttons give back the exact-numbers view
@@ -1597,19 +1624,98 @@ document.getElementById('leverageTrendTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('cccTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('cccTrendChart', 'financial_analysis_ccc_trend.svg'));
-document.getElementById('cccTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('cccTrendTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('cccTrendTableWrap');
-  const canvasWrap = document.getElementById('cccTrendCanvasWrap');
+document.getElementById('cccCombinedDownloadBtn').addEventListener('click', ()=>{
+  const d = latestData.cccCombined, unit = cccChartUnit;
+  const defs = unit==='days'
+    ? [['Inventory Period (DIO)', d.days.invDays], ['Collection Period (DSO)', d.days.arDays], ['Payment Period (DPO)', d.days.apDays], ['Cash Conversion Cycle (CCC)', d.days.ccc]]
+    : [['A/R Turnover', d.times.arTurnover], ['Inventory Turnover', d.times.invTurnover], ['A/P Turnover', d.times.apTurnover]];
+  const rows = [['Metric', ...d.labels]];
+  defs.forEach(([name,vals])=> rows.push([name, ...vals.map(v=>v.toFixed(2))]));
+  downloadCSV(rows, 'financial_analysis_working_capital_cycle_'+unit+'.csv');
+});
+document.getElementById('cccCombinedExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('cccCombinedTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('cccCombinedTableWrap');
+  const canvasWrap = document.getElementById('cccCombinedCanvasWrap');
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.cccTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>Cash Conversion Cycle (Days)</th></tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+Math.round(d.ccc[i])+' days</td></tr>'; });
+  const d = latestData.cccCombined, unit = cccChartUnit;
+  const defs = unit==='days'
+    ? [['Inventory Period (DIO)', d.days.invDays, v=>Math.round(v)+'d'], ['Collection Period (DSO)', d.days.arDays, v=>Math.round(v)+'d'], ['Payment Period (DPO)', d.days.apDays, v=>Math.round(v)+'d'], ['Cash Conversion Cycle (CCC)', d.days.ccc, v=>Math.round(v)+'d']]
+    : [['A/R Turnover', d.times.arTurnover, v=>v.toFixed(2)+'x'], ['Inventory Turnover', d.times.invTurnover, v=>v.toFixed(2)+'x'], ['A/P Turnover', d.times.apTurnover, v=>v.toFixed(2)+'x']];
+  let html = '<table class="mini-table"><thead><tr><th>Period</th>'+defs.map(([name])=>'<th>'+name+'</th>').join('')+'</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>'+defs.map(([,vals,fmt])=>'<td>'+fmt(vals[i])+'</td>').join('')+'</tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
+document.getElementById('cccUnitToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn) return;
+  document.querySelectorAll('#cccUnitToggle .timeframe-opt').forEach(x=>x.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionCccUnitThumb();
+  cccChartUnit = btn.dataset.unit;
+  cccHiddenSeries.clear();
+  renderCccCombinedChart();
+});
+document.getElementById('cccCombinedLegend').addEventListener('click', (e)=>{
+  const item = e.target.closest('.chart-legend-item');
+  if(!item) return;
+  const key = item.dataset.key;
+  if(cccHiddenSeries.has(key)) cccHiddenSeries.delete(key); else cccHiddenSeries.add(key);
+  renderCccCombinedChart();
+});
+function positionCccUnitThumb(){
+  const toggle = document.getElementById('cccUnitToggle');
+  const thumb = document.getElementById('cccUnitThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 1) + 'px)';
+}
+positionCccUnitThumb();
+/* Standalone (not nested in renderAll()) so the unit-toggle/legend click
+   handlers above can call it directly without recomputing anchor/View-By
+   state -- renderAll() stashes the already-computed series in
+   latestData.cccCombined once per render; this just re-plots from that
+   cache whenever the unit or the hidden-series set changes. */
+function renderCccCombinedChart(){
+  const d = latestData.cccCombined;
+  if(!d) return;
+  const brand = cssVar('--brand')||'#8E1E4D', good = cssVar('--good')||'#0ca30c';
+  const unit = cccChartUnit;
+  document.getElementById('cccCombinedTitle').textContent = unit==='days' ? 'Working Capital Cycle (Days)' : 'Turnover (Times)';
+  const seriesDefs = unit==='days'
+    ? [
+        { key:'dio', name:'Inventory Period (DIO)', color:'#4C6FA5', width:2.2, data:d.days.invDays, fmt:v=>Math.round(v)+'d' },
+        { key:'dso', name:'Collection Period (DSO)', color:good, width:2.2, data:d.days.arDays, fmt:v=>Math.round(v)+'d' },
+        { key:'dpo', name:'Payment Period (DPO)', color:'#B8860B', width:2.2, data:d.days.apDays, fmt:v=>Math.round(v)+'d' },
+        { key:'ccc', name:'Cash Conversion Cycle (CCC)', color:brand, width:3.2, data:d.days.ccc, fmt:v=>Math.round(v)+'d' }
+      ]
+    : [
+        { key:'arT', name:'A/R Turnover', color:good, width:2.2, data:d.times.arTurnover, fmt:v=>v.toFixed(2)+'x' },
+        { key:'invT', name:'Inventory Turnover', color:'#4C6FA5', width:2.2, data:d.times.invTurnover, fmt:v=>v.toFixed(2)+'x' },
+        { key:'apT', name:'A/P Turnover', color:'#B8860B', width:2.2, data:d.times.apTurnover, fmt:v=>v.toFixed(2)+'x' }
+      ];
+  document.getElementById('cccCombinedLegend').innerHTML = seriesDefs.map(s=>
+    '<span class="chart-legend-item'+(cccHiddenSeries.has(s.key)?' dimmed':'')+'" data-key="'+s.key+'"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>'
+  ).join('');
+  const activeDefs = seriesDefs.filter(s=> !cccHiddenSeries.has(s.key));
+  const lastIdx = d.labels.length-1;
+  const chartSeries = activeDefs.flatMap(s=>{
+    if(!d.showYtdPoint) return [{ data:s.data, color:s.color, width:s.width, showLastLabel:true, lastLabelFormatter:s.fmt }];
+    const solid = s.data.map((v,i)=> i<=lastIdx-1 ? v : null);
+    const dashed = s.data.map((v,i)=> i>=lastIdx-1 ? v : null);
+    return [
+      { data:solid, color:s.color, width:s.width },
+      { data:dashed, color:s.color, width:s.width, dash:'5,4', showLastLabel:true, hollowLastPoint:true, lastLabelFormatter:s.fmt }
+    ];
+  });
+  buildLineChartSVG('cccCombinedChart', {
+    labels: d.labels, yFormatter: unit==='days' ? (v=>Math.round(v)+'d') : (v=>v.toFixed(1)+'x'),
+    series: chartSeries
+  });
+  document.getElementById('cccCombinedFootnote').style.display = d.showYtdPoint ? '' : 'none';
+}
 
 document.getElementById('cccTimelineDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('cccBridgeChart', 'financial_analysis_ccc_timeline.svg'));
 document.getElementById('cccTimelineExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
@@ -1713,23 +1819,20 @@ document.addEventListener('click', (e)=>{
   if(!e.target.closest('.filter-item')) document.getElementById('periodDropdown').classList.remove('open');
 });
 
-/* ---------- Pill switcher (2026-08-10 restructure) -- 4 full-screen
-   views, exactly one .pill-view visible at a time. renderAll() runs on
-   every switch too: its buildXxxSVG calls measure clientWidth, which is 0
-   while a .pill-view is display:none, so a pill's charts would otherwise
-   render once at page load using a fallback width and never match their
-   true container size once actually viewed (same fix as the P&L page's
-   own restructure). ---------- */
+/* ---------- Pill nav (2026-08-11 restructure) -- all 4 sections stay on
+   the page at once now (no more display:none hard switch, see .pill-view
+   CSS above), so a pill click just smooth-scrolls to its section; which
+   pill link is "active" while scrolling is handled by initSectionScrollSpy()
+   (shared.js) below, not by this click handler. Every section's charts
+   already get their real clientWidth on first render since nothing is ever
+   hidden, so renderAll() no longer needs to re-run on click either (the
+   reason it used to was exactly that display:none-clientWidth-is-0 problem,
+   which no longer exists). */
 document.getElementById('pillNav').addEventListener('click', (e)=>{
   const a = e.target.closest('a[data-view]');
   if(!a) return;
   e.preventDefault();
-  document.querySelectorAll('#pillNav a').forEach(x=>x.classList.remove('active'));
-  a.classList.add('active');
-  document.querySelectorAll('.pill-view').forEach(v=>v.classList.remove('active'));
-  document.getElementById('view-'+a.dataset.view).classList.add('active');
-  window.scrollTo(0,0);
-  renderAll();
+  document.getElementById('view-'+a.dataset.view).scrollIntoView({behavior:'smooth', block:'start'});
 });
 
 positionViewByThumb();
@@ -1737,6 +1840,7 @@ updatePeriodControl();
 
 /* ---------- Init ---------- */
 renderAll();
+initSectionScrollSpy();
 </script>
 </body>
 </html>
