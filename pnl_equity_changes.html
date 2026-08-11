@@ -45,6 +45,31 @@
       <a href="#sec-equity-trend">Equity &amp; Retained Earnings Trend</a>
       <a href="#sec-dividend">Dividend &amp; Payout</a>
     </nav>
+    <div class="nav-filter-divider"></div>
+    <!-- Filter bar (2026-08-11 unification) -- same View By + As of model as
+         Financial Analysis: no Monthly, default Quarterly/Q2'26. As of
+         drives the Roll-Forward Waterfall + Statement table below (PART C
+         of the unification) -- Q2'25 is excluded (no prior Retained
+         Earnings to roll forward from, same reason Balance Sheet excludes
+         it from its own As of list). -->
+    <div class="filter-bar-group">
+      <div class="filter-item">
+        <span class="filter-label">View By</span>
+        <div class="timeframe-toggle" id="viewByToggle">
+          <div class="timeframe-thumb" id="viewByThumb"></div>
+          <button class="timeframe-opt selected" data-key="quarterly">Quarterly</button>
+          <button class="timeframe-opt" data-key="annual">Annual</button>
+        </div>
+      </div>
+      <div class="filter-item">
+        <span class="filter-label">As of</span>
+        <button class="period-btn" id="periodBtn">
+          <span id="periodBtnLabel">Q2'26</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="period-dropdown" id="periodDropdown"></div>
+      </div>
+    </div>
   </div>
   </div>
 
@@ -75,7 +100,7 @@
       </div>
     </div>
     <table id="eqStatementTable"></table>
-    <div class="kpi-caption" style="margin-top:8px;">ไม่มี Other Comprehensive Income (OCI) หรือการเพิ่มทุนในงวดนี้ — ไม่จัดทำ Statement of Changes in Equity แบบแยก OCI เพราะยังไม่มีรายการจริงที่ต้องรายงาน</div>
+    <div class="kpi-caption" style="margin-top:8px;">No Other Comprehensive Income (OCI) or capital raised this period — the OCI-segregated Statement of Changes in Equity is omitted as there is nothing to report.</div>
   </div>
 
   <!-- ===== EQUITY & RETAINED EARNINGS TREND ===== -->
@@ -108,6 +133,10 @@
         <span class="chart-title">Dividends Paid &amp; Payout Ratio (4Q)</span>
         <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'26 ตรงกับบรรทัด Financing ในหน้า Cash Flow (฿11.2M) เป๊ะ — Mock Data 100%">i</button>
       </div>
+    </div>
+    <div class="chart-legend">
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Dividends Paid</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#4C6FA5"></span>Payout Ratio % (right axis)</span>
     </div>
     <div class="canvas-wrap" id="dividendCanvasWrap"><div id="dividendChart" style="width:100%;height:100%;"></div></div>
     <div class="callout-text" id="dividendCallout" style="margin-top:10px;margin-bottom:0;">–</div>
@@ -163,6 +192,29 @@ const netProfitQAll = ebitQAll.map(v=>v*0.8);
 const dividendsQAll = [1,2,3,4].map(i => retainedEarningsQ[i-1] + netProfitQAll[i] - retainedEarningsQ[i]);
 const payoutQAll = dividendsQAll.map((v,i)=> netProfitQAll[i+1] ? v/netProfitQAll[i+1]*100 : 0);
 
+/* ---------- Filter bar (2026-08-11 unification): View By + As of ----------
+   Every quarter's Total Equity/Retained Earnings already exists (totalEquityQ/
+   retainedEarningsQ, 5 quarters) -- no backfilling needed here, unlike Cash
+   Flow/Balance Sheet. As of only offers quarters 1-4 (Q3'25-Q2'26): rolling
+   forward needs a PRIOR quarter's Retained Earnings, which Q2'25 (idx0)
+   doesn't have in this dataset. Annual is scoped to "2026 (Current)" only
+   (Q1'26+Q2'26 combined roll-forward) for the same reason Cash Flow/Balance
+   Sheet's Annual is scoped that way -- no FY2025-end snapshot exists
+   separately from a quarter-end one. */
+let pnlQuarterAnchor = 4; // default Q2'26 (idx4, the last)
+let currentViewBy = 'quarterly';
+function currentAsOfLabel(){ return currentViewBy==='annual' ? '2026 (Current)' : quarterLabels[pnlQuarterAnchor]; }
+// Returns the Waterfall/Statement's active roll-forward period -- a single
+// quarter (View By Quarterly) or 2026 YTD = Q1'26+Q2'26 combined (View By
+// Annual).
+function getActiveEquityData(){
+  if(currentViewBy==='annual'){
+    return { label:'2026 YTD', priorLabel:'FY2025', opening: totalEquityQ[2], np: netProfitQAll[3]+netProfitQAll[4], div: -(dividendsQAll[2]+dividendsQAll[3]), closing: totalEquityQ[4] };
+  }
+  const i = pnlQuarterAnchor;
+  return { label: quarterLabels[i], priorLabel: quarterLabels[i-1], opening: totalEquityQ[i-1], np: netProfitQAll[i], div: -dividendsQAll[i-1], closing: totalEquityQ[i] };
+}
+
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
   try { renderNavMenu('fs-equity', 'Financial Statement · Equity Changes'); } catch(e) { console.error('Nav menu render failed:', e); }
@@ -198,38 +250,46 @@ initSectionScrollSpy();
 let latestData = {};
 
 function renderAll(){
-  /* === Equity Roll-Forward Waterfall === */
+  const active = getActiveEquityData();
+
+  /* === Equity Roll-Forward Waterfall === AS OF-driven (PART C of the
+     filter-bar unification): follows whichever quarter/YTD is selected. */
   const waterfallSteps = [
-    { label:'Opening Equity', value: openingEquity, type:'start' },
-    { label:'+ Net Profit', value: netProfitQ2, type:'delta' },
-    { label:'− Dividends', value: dividendsQ2, type:'delta' },
-    { label:'Closing Equity', value: closingEquity, type:'end' }
+    { label:'Opening Equity', value: active.opening, type:'start' },
+    { label:'+ Net Profit', value: active.np, type:'delta' },
+    { label:'− Dividends', value: active.div, type:'delta' },
+    { label:'Closing Equity', value: active.closing, type:'end' }
   ];
   buildWaterfallSVG('eqWaterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:260 });
   document.getElementById('eqWaterfallCallout').innerHTML =
-    'Opening '+fmtTHB(openingEquity)+' + Net Profit '+fmtTHB(netProfitQ2)+' − Dividends '+fmtTHB(-dividendsQ2)+' = Closing <b>'+fmtTHB(closingEquity)+'</b> = Equity ใน Balance Sheet Q2\'26 เป๊ะ · Net Profit ตรงกับ P&amp;L (after tax) · Dividends ตรงกับ Cash Flow (Financing)';
+    active.label+': Opening '+fmtTHB(active.opening)+' + Net Profit '+fmtTHB(active.np)+' − Dividends '+fmtTHB(-active.div)+' = Closing <b>'+fmtTHB(active.closing)+'</b>'
+    + (active.label==="Q2'26" ? ' — ties exactly to Equity on Balance Sheet Q2\'26 · Net Profit ties to P&amp;L (after tax) · Dividends ties to Cash Flow (Financing)' : '');
   latestData.waterfall = waterfallSteps;
 
-  /* === Statement of Changes in Equity (by component) === */
+  /* === Statement of Changes in Equity (by component) === Share Capital/
+     Legal Reserve never move (no capital raise/reserve appropriation
+     modeled for any period); only Retained Earnings carries the AS OF
+     period's Net Profit/Dividends roll-forward. */
   const components = [
-    { label:'ทุนที่ออกและชำระแล้ว (Share Capital)', opening: SHARE_CAPITAL, np: 0, div: 0, closing: SHARE_CAPITAL },
-    { label:'สำรองตามกฎหมาย (Legal Reserve)', opening: LEGAL_RESERVE, np: 0, div: 0, closing: LEGAL_RESERVE },
-    { label:'กำไรสะสม (Retained Earnings)', opening: retainedEarningsQ[3], np: netProfitQ2, div: dividendsQ2, closing: retainedEarningsQ[4] }
+    { label:'Share Capital', opening: SHARE_CAPITAL, np: 0, div: 0, closing: SHARE_CAPITAL },
+    { label:'Legal Reserve', opening: LEGAL_RESERVE, np: 0, div: 0, closing: LEGAL_RESERVE },
+    { label:'Retained Earnings', opening: active.opening-SHARE_CAPITAL-LEGAL_RESERVE, np: active.np, div: active.div, closing: active.closing-SHARE_CAPITAL-LEGAL_RESERVE }
   ];
   const totalRow = {
-    label: 'รวม (Total)', bold:true,
-    opening: components.reduce((a,c)=>a+c.opening,0), np: netProfitQ2, div: dividendsQ2,
+    label: 'Total', bold:true,
+    opening: components.reduce((a,c)=>a+c.opening,0), np: active.np, div: active.div,
     closing: components.reduce((a,c)=>a+c.closing,0)
   };
   const rows = [...components, totalRow];
   document.getElementById('eqStatementTable').innerHTML =
-    '<thead><tr><th>Component</th><th>Opening (Q1\'26)</th><th>+ Net Profit</th><th>− Dividends</th><th>Closing (Q2\'26)</th></tr></thead><tbody>'
+    '<thead><tr><th>Component</th><th>Opening ('+active.priorLabel+')</th><th>+ Net Profit</th><th>− Dividends</th><th>Closing ('+active.label+')</th></tr></thead><tbody>'
     + rows.map(r=>{
         const rowClass = r.bold ? ' class="income-stmt-total"' : '';
         return '<tr'+rowClass+'><td>'+r.label+'</td><td class="tnum">'+fmtTHB(r.opening)+'</td><td class="tnum">'+(r.np?'+'+fmtTHB(r.np):'–')+'</td><td class="tnum">'+(r.div?fmtTHB(r.div):'–')+'</td><td class="tnum">'+fmtTHB(r.closing)+'</td></tr>';
       }).join('')
     + '</tbody>';
   latestData.statement = rows;
+  latestData.labels = { label: active.label, priorLabel: active.priorLabel };
 
   /* === Total Equity & Retained Earnings Trend (5Q) === */
   buildGroupedBarSVG('eqTrendChart', {
@@ -238,14 +298,19 @@ function renderAll(){
   });
   latestData.eqTrend = quarterLabels.map((q,i)=>({quarter:q, equity:totalEquityQ[i], retained:retainedEarningsQ[i]}));
 
-  /* === Dividend & Payout Ratio (4Q) === */
+  /* === Dividend & Payout Ratio (4Q) === PART 3B: Payout Ratio % added as a
+     real 2nd series (right-axis line) -- the card was already titled
+     "...& Payout Ratio" but only ever plotted Dividends Paid, so
+     buildGroupedBarSVG (bar-only) swapped for buildComboBarLineSVG
+     (bar+line, shared.js) to actually carry it. */
   const divLabels = quarterLabels.slice(1);
-  buildGroupedBarSVG('dividendChart', {
-    labels: divLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true,
-    series: [ {name:'Dividends Paid', color: cssVar('--brand')||'#8E1E4D', values: dividendsQAll} ]
+  buildComboBarLineSVG('dividendChart', {
+    labels: divLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
+    bar: {name:'Dividends Paid', color: cssVar('--brand')||'#8E1E4D', values: dividendsQAll},
+    line: {name:'Payout Ratio %', color:'#4C6FA5', values: payoutQAll}
   });
   document.getElementById('dividendCallout').innerHTML =
-    divLabels[3]+': เงินปันผลจ่าย '+fmtTHB(dividendsQAll[3])+' ÷ Net Profit (after tax) '+fmtTHB(netProfitQAll[4])+' = Payout Ratio <b>'+fmtPct(payoutQAll[3],1)+'</b> · เฉลี่ย 4 ไตรมาส '+fmtPct(payoutQAll.reduce((a,b)=>a+b,0)/payoutQAll.length,1);
+    divLabels[3]+': Dividends Paid '+fmtTHB(dividendsQAll[3])+' ÷ Net Profit (after tax) '+fmtTHB(netProfitQAll[4])+' = Payout Ratio <b>'+fmtPct(payoutQAll[3],1)+'</b> · 4-quarter average '+fmtPct(payoutQAll.reduce((a,b)=>a+b,0)/payoutQAll.length,1);
   latestData.dividend = divLabels.map((q,i)=>({quarter:q, dividend:dividendsQAll[i], payout:payoutQAll[i]}));
 }
 
@@ -254,7 +319,7 @@ document.getElementById('eqWaterfallDownloadBtn').addEventListener('click', ()=>
 document.getElementById('eqWaterfallExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 document.getElementById('eqStatementDownloadBtn').addEventListener('click', ()=>{
-  const rows = [["Component", "Opening (Q1'26)", "+ Net Profit", "- Dividends", "Closing (Q2'26)"]];
+  const rows = [["Component", "Opening ("+latestData.labels.priorLabel+")", "+ Net Profit", "- Dividends", "Closing ("+latestData.labels.label+")"]];
   latestData.statement.forEach(r=> rows.push([r.label, Math.round(r.opening), Math.round(r.np), Math.round(r.div), Math.round(r.closing)]));
   downloadCSV(rows, 'statement_of_changes_in_equity.csv');
 });
@@ -272,6 +337,61 @@ document.getElementById('eqTrendTableBtn').addEventListener('click', ()=>{
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
+
+/* ---------- Filter bar: View By + As of (same pattern as Financial Analysis) ----------
+   As of only offers quarters 1-4 (Q3'25-Q2'26), never Q2'25 (idx0) -- a
+   roll-forward needs a PRIOR quarter's Retained Earnings, which Q2'25 has
+   no predecessor for in this dataset. */
+function positionViewByThumb(){
+  const toggle = document.getElementById('viewByToggle');
+  const thumb = document.getElementById('viewByThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+function buildAsOfDropdown(){
+  let html = '';
+  if(currentViewBy==='annual'){
+    html += '<div class="period-opt selected" data-annual="current"><span class="chk">✓</span>2026 (Current)</div>';
+  } else {
+    for(let i=quarterLabels.length-1; i>=1; i--){
+      const sel = pnlQuarterAnchor===i;
+      html += '<div class="period-opt'+(sel?' selected':'')+'" data-quarter="'+i+'"><span class="chk">'+(sel?'✓':'')+'</span>'+quarterLabels[i]+'</div>';
+    }
+  }
+  document.getElementById('periodDropdown').innerHTML = html;
+}
+function updateAsOfControl(){
+  document.getElementById('periodBtnLabel').textContent = currentAsOfLabel();
+  buildAsOfDropdown();
+}
+document.getElementById('viewByToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('#viewByToggle .timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionViewByThumb();
+  currentViewBy = btn.dataset.key;
+  updateAsOfControl();
+  renderAll();
+});
+document.getElementById('periodBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  document.getElementById('periodDropdown').classList.toggle('open');
+});
+document.getElementById('periodDropdown').addEventListener('click', (e)=>{
+  const opt = e.target.closest('.period-opt');
+  if(!opt) return;
+  if(opt.dataset.quarter) pnlQuarterAnchor = parseInt(opt.dataset.quarter,10);
+  document.getElementById('periodDropdown').classList.remove('open');
+  updateAsOfControl();
+  renderAll();
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.filter-item')) document.getElementById('periodDropdown').classList.remove('open');
+});
+positionViewByThumb();
+buildAsOfDropdown();
 
 /* ---------- Init ---------- */
 renderAll();

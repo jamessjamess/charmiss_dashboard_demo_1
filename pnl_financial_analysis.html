@@ -254,24 +254,13 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
   <!-- ===== PILL 2: FINANCIAL RATIOS ===== -->
   <div class="pill-view" id="view-fin-ratios">
   <div class="section-label">Financial Ratios</div>
-  <div class="chart-grid">
-    <div class="card">
-      <div class="chart-card-head">
-        <div class="chart-title-wrap">
-          <span class="chart-title">Margins Trend</span>
-          <button class="info-icon" data-info-title="Margins Trend" data-info-text="Gross/EBIT/EBITDA/Net Margin % ตามช่วงเวลาที่เลือก — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD ด้วย เส้น dashed ใช้ค่า YTD ตรงๆ ไม่ annualize) · Quarterly แสดง 5 ไตรมาสล่าสุด — ตัวเลขเดียวกับ P&amp;L Quarterly Trend เป๊ะ">i</button>
-        </div>
-        <div class="toolbar">
-          <button class="tool-btn" id="marginsTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="marginsTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="marginsTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <div class="chart-legend" id="marginsTrendLegend"></div>
-      <div class="canvas-wrap" id="marginsTrendCanvasWrap"><div id="marginsTrendChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="marginsTrendTableWrap"></div>
-      <div class="kpi-caption" id="marginsTrendFootnote" style="display:none;">Margins are period ratios (directly comparable across FY2024/FY2025/2026 YTD).</div>
-    </div>
+  <!-- Margins Trend (Gross/EBIT/EBITDA/Net %) cut here (P&L restructure
+       PART D, 2026-08-11) -- margin-over-time now lives on P&L's own §2
+       Trend combo charts, its one home; this pill keeps Returns/Liquidity/
+       Leverage only, in a 3-up grid instead of the old 2x2. The DuPont
+       Scorecard's profit-margin sparkline (Financial Scorecard pill) stays,
+       since it's a driver input to ROE, not a duplicate of this chart. -->
+  <div class="chart-grid chart-grid-3">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
@@ -497,9 +486,17 @@ const MASTER_ASSETS = [243e6, 249e6, 255e6, 262e6, 269e6, 277e6, 286e6, 296e6, 3
 
 const MASTER_EBITDA = MASTER_EBIT.map((v,i)=>v+MASTER_DA[i]);
 const MASTER_NET_PROFIT = MASTER_EBIT.map(v=> v*(1-TAX_RATE));
-const MASTER_GM = MASTER_SALES.map((s,i)=> MASTER_GP[i]/s*100);
-const MASTER_EBIT_M = MASTER_SALES.map((s,i)=> MASTER_EBIT[i]/s*100);
-const MASTER_EBITDA_M = MASTER_SALES.map((s,i)=> MASTER_EBITDA[i]/s*100);
+// Gross/EBIT/EBITDA Margin -- idx 5-9 keep the SSOT "5-Quarter P&L Table"
+// (pnl_executive_summary.html, P&L Detail pill) display-precision values,
+// same fix/reasoning as MASTER_NM below: that table computes its own
+// margins from an independently-generated monthly P&L series, so the plain
+// GP/EBIT/EBITDA ÷ Sales derivation here landed a few tenths of a point off
+// (e.g. Gross 48.0% here vs the SSOT's 47.9%) even though both are "real"
+// margins for the same quarter -- idx 0-4 (new history) fall back to the
+// plain derivation since there's no cross-page reference for those quarters.
+const MASTER_GM = MASTER_SALES.slice(0,5).map((s,i)=> MASTER_GP[i]/s*100).concat([48.1, 47.8, 47.3, 47.8, 47.9]);
+const MASTER_EBIT_M = MASTER_SALES.slice(0,5).map((s,i)=> MASTER_EBIT[i]/s*100).concat([28.6, 28.2, 26.4, 28.2, 28.3]);
+const MASTER_EBITDA_M = MASTER_SALES.slice(0,5).map((s,i)=> MASTER_EBITDA[i]/s*100).concat([31.6, 31.3, 29.4, 31.2, 31.4]);
 // Net Margin -- idx 5-9 keep the pre-existing hand-tuned "exact match to
 // P&L Quarterly Trend's 5Q table" display-precision values; idx 0-4 (new
 // history) fall back to the plain derivation since there's no cross-page
@@ -1088,9 +1085,9 @@ function renderAll(){
   const winLabels = windowLabels();
   const winCurrentRatio = windowSlice(MASTER_CURRENT_RATIO, QTD_Q3_26.currentRatio);
   const winQuickRatio = windowSlice(MASTER_QUICK_RATIO, QTD_Q3_26.quickRatio);
-  const winGM = windowSlice(MASTER_GM, QTD_Q3_26.gm);
-  const winEbitM = windowSlice(MASTER_EBIT_M, QTD_Q3_26.ebitMargin);
-  const winEbitdaM = windowSlice(MASTER_EBITDA_M, QTD_Q3_26.ebitdaMargin);
+  // winGM/winEbitM/winEbitdaM (Margins Trend's windowed data) removed with
+  // the chart itself (PART D) -- winNM stays, it still feeds the DuPont
+  // Scorecard's profit-margin sparkline (sparkNM below).
   const winNM = windowSlice(MASTER_NM, QTD_Q3_26.profitMargin);
   const winRoe = windowSlice(MASTER_ROE, QTD_Q3_26.roe);
   const winRoa = windowSlice(MASTER_ROA, QTD_Q3_26.roa);
@@ -1196,7 +1193,17 @@ function renderAll(){
   const activeCcc      = isAnnual ? (annualAnchor==='fy2025' ? FY2025.ccc : (TTM2026.invDays+TTM2026.arDays-TTM2026.apDays)) : winCcc[winCcc.length-1];
   const activePriorApDays = isAnnual ? (annualAnchor==='fy2025' ? FY2024.apDays : FY2025.apDays) : winApDays[0];
   const activeCccPrior = isAnnual ? (annualAnchor==='fy2025' ? FY2024.ccc : FY2025.ccc) : winCcc[0];
+  // QoQ-specific prior points (2026-08-11) -- kept SEPARATE from
+  // activeCccPrior/activePriorApDays above (those stay YoY, feeding the CCC
+  // Timeline's own "AP days stretching 70→77" narrative on the Cash Cycle
+  // pill, unrelated to this fix) so the Scorecard's CCC/Current Ratio
+  // companion-chip arrows compare to the immediately-prior quarter, same
+  // basis as every other chip's arrow (dupontPrevious = dupontFromQuarter
+  // (anchorIdx-1)) -- Annual reuses the same prior-year value since one FY
+  // back already IS "one period back" at annual granularity.
+  const activeCccPriorQoQ = isAnnual ? (annualAnchor==='fy2025' ? FY2024.ccc : FY2025.ccc) : winCcc[winCcc.length-2];
   const activeCurrentRatio = isAnnual ? (annualAnchor==='fy2025' ? FY2025.currentRatio : TTM2026.currentRatio) : winCurrentRatio[winCurrentRatio.length-1];
+  const activeCurrentRatioPrior = isAnnual ? (annualAnchor==='fy2025' ? FY2024.currentRatio : FY2025.currentRatio) : winCurrentRatio[winCurrentRatio.length-2];
   // Shared "period label" for card titles/callouts across all 4 pills.
   const activePeriodLabel = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 TTM') : (isQTD ? "Q3'26 QTD" : MASTER_QUARTER_LABELS[anchorIdx]);
 
@@ -1214,10 +1221,6 @@ function renderAll(){
   const showYtdPoint = isAnnual && annualAnchor==='current';
   const trendLabels = isAnnual ? (showYtdPoint ? ['FY2024','FY2025','2026 YTD'] : ['FY2024','FY2025']) : winLabels;
   const trendLabelsAnnualized = isAnnual ? (showYtdPoint ? ['FY2024','FY2025','2026 YTD (annualized)'] : ['FY2024','FY2025']) : winLabels;
-  const trendGM = isAnnual ? (showYtdPoint ? [FY2024.gm, FY2025.gm, YTD2026.gm] : [FY2024.gm, FY2025.gm]) : winGM;
-  const trendEbitM = isAnnual ? (showYtdPoint ? [FY2024.ebitMargin, FY2025.ebitMargin, YTD2026.ebitMargin] : [FY2024.ebitMargin, FY2025.ebitMargin]) : winEbitM;
-  const trendEbitdaM = isAnnual ? (showYtdPoint ? [FY2024.ebitdaMargin, FY2025.ebitdaMargin, YTD2026.ebitdaMargin] : [FY2024.ebitdaMargin, FY2025.ebitdaMargin]) : winEbitdaM;
-  const trendNM = isAnnual ? (showYtdPoint ? [FY2024.profitMargin, FY2025.profitMargin, YTD2026.profitMargin] : [FY2024.profitMargin, FY2025.profitMargin]) : winNM;
   const trendRoe = isAnnual ? (showYtdPoint ? [FY2024.roe, FY2025.roe, TTM2026.roe] : [FY2024.roe, FY2025.roe]) : winRoe;
   const trendRoa = isAnnual ? (showYtdPoint ? [FY2024.roa, FY2025.roa, TTM2026.roa] : [FY2024.roa, FY2025.roa]) : winRoa;
   // Splits a 3-point [FY2024,FY2025,YTD] series into a solid FY2024->FY2025
@@ -1238,22 +1241,8 @@ function renderAll(){
       { data:dashed, color, width, dash:'5,4', showLastLabel:true, hollowLastPoint:true, lastLabelFormatter:formatter }
     ];
   }
-  document.getElementById('marginsTrendLegend').innerHTML =
-    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>Gross Margin %</span>'
-    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>EBIT Margin %</span>'
-    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#4C6FA5"></span>EBITDA Margin %</span>'
-    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#B8860B"></span>Net Margin %</span>';
-  buildLineChartSVG('marginsTrendChart', {
-    labels: trendLabels, yFormatter: v=>v.toFixed(0)+'%',
-    series: [
-      ...splitYtdSeries(trendGM, good, 2.2, v=>fmtPct(v,1), '2026 YTD'),
-      ...splitYtdSeries(trendEbitM, brand, 2.2, v=>fmtPct(v,1), '2026 YTD'),
-      ...splitYtdSeries(trendEbitdaM, '#4C6FA5', 2.2, v=>fmtPct(v,1), '2026 YTD'),
-      ...splitYtdSeries(trendNM, '#B8860B', 2.6, v=>fmtPct(v,1), '2026 YTD')
-    ]
-  });
-  document.getElementById('marginsTrendFootnote').style.display = showYtdPoint ? '' : 'none';
-  latestData.marginsTrend = { labels:trendLabels, gm:trendGM, ebitM:trendEbitM, ebitdaM:trendEbitdaM, nm:trendNM };
+  // Margins Trend chart (legend/build/footnote/latestData) removed with
+  // its card (PART D) -- margin-over-time is now P&L §2's job alone.
   document.getElementById('returnsTrendLegend').innerHTML =
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>ROE %</span>'
     + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>ROA %</span>';
@@ -1451,15 +1440,20 @@ function renderAll(){
   document.getElementById('dpAssetTurnover').textContent = dupontCurrent.assetTurnover.toFixed(2)+'x';
   document.getElementById('dpEquityMultiplier').textContent = dupontCurrent.financialLeverage.toFixed(2)+'x';
 
-  // Direction vs prior TTM: rawDir is the literal value trend; the ARROW shown
-  // to the user encodes favorability (▲ = improved, ▼ = worsened), which only
-  // matches rawDir when higherIsBetter is true (flipped for CCC below).
+  // Direction vs prior period (QoQ, or the prior FY/YTD-year in Annual mode)
+  // -- 2026-08-11 fix: the arrow is now ALWAYS the literal value trend (▲ =
+  // went up, ▼ = went down), never flipped by favorability. Color is the
+  // ONLY thing favorability controls (green if improved, red if worsened),
+  // via `cls` -- so a "lower is better" metric like CCC going 179d→171d
+  // reads as ▼ (correctly shows it fell) colored green (correctly shows
+  // that's good), instead of the old behavior where the arrow itself flipped
+  // to ▲ for "improved," contradicting the value's actual direction.
   function dirMeta(current, prior, higherIsBetter){
     const rel = Math.abs(current-prior)/Math.abs(prior);
     if(rel < 0.005) return { cls:'flat', arrow:'▬' };
     const rawUp = current>prior;
     const improved = higherIsBetter ? rawUp : !rawUp;
-    return { cls: improved?'up':'down', arrow: improved?'▲':'▼' };
+    return { cls: improved?'up':'down', arrow: rawUp?'▲':'▼' };
   }
   // Populates one equation chip's dir arrow + a single RAG-dot/note subtext line.
   function applyChip(boxId, dirId, subId, node){
@@ -1491,7 +1485,7 @@ function renderAll(){
   applyChip('fhsBoxTurnover','fhsTurnoverDir','fhsTurnoverSub', fhsTurnover);
 
   const fhsLeverage = { value: dupontCurrent.financialLeverage, prior: dupontPrevious.financialLeverage, fmt:v=>v.toFixed(2)+'x', rag:'green',
-    note:'Low / declining interest-bearing debt', higherIsBetter:true };
+    note:'Low / declining interest-bearing debt', higherIsBetter:false };
   applyChip('fhsBoxLeverage','fhsLeverageDir','fhsLeverageSub', fhsLeverage);
 
   // Factor-box sparklines (2026-08-11) -- a "map" glance into each factor's
@@ -1518,12 +1512,13 @@ function renderAll(){
   // Annual + FY2025 still silently showed the Quarterly anchor's CCC/
   // Current Ratio here while every other widget on the page had already
   // switched to FY2025's own figures.
-  const companionLiquidity = { value: activeCurrentRatio, fmt:v=>v.toFixed(2)+'x', rag:'green', note:'Target 1.5–2.5x' };
+  const companionLiquidity = { value: activeCurrentRatio, prior: activeCurrentRatioPrior, fmt:v=>v.toFixed(2)+'x', rag:'green', higherIsBetter:true, note:'Target 1.5–2.5x' };
+  const liquidityDir = dirMeta(companionLiquidity.value, companionLiquidity.prior, companionLiquidity.higherIsBetter);
   document.getElementById('fhsCompanionLiquidity').innerHTML =
     '<div class="fhs-chip-row"><span class="fhs-chip-label">Current Ratio</span><span class="fhs-chip-value">'+companionLiquidity.fmt(companionLiquidity.value)+'</span>'
-    + '<span class="fhs-rag-dot '+companionLiquidity.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionLiquidity.note+'</span></div>';
+    + '<span class="fhs-dir '+liquidityDir.cls+'">'+liquidityDir.arrow+'</span><span class="fhs-rag-dot '+companionLiquidity.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionLiquidity.note+'</span></div>';
 
-  const companionCCC = { value: activeCcc, prior: activeCccPrior, fmt:v=>Math.round(v)+' days', rag:'amber', higherIsBetter:false,
+  const companionCCC = { value: activeCcc, prior: activeCccPriorQoQ, fmt:v=>Math.round(v)+' days', rag:'amber', higherIsBetter:false,
     note:'Target ≤160 days'+(isQTD?' · partial quarter':'') };
   const cccDir = dirMeta(companionCCC.value, companionCCC.prior, companionCCC.higherIsBetter);
   document.getElementById('fhsCompanionCCC').innerHTML =
@@ -1568,20 +1563,6 @@ document.getElementById('dptZoomOutBtn').addEventListener('click', ()=> setDptZo
    every other chart-first card on this page (e.g. Income Statement on
    P&L) -- table/download/expand buttons give back the exact-numbers view
    users are used to without making the table the default again. --- */
-document.getElementById('marginsTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('marginsTrendChart', 'financial_analysis_margins_trend.svg'));
-document.getElementById('marginsTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('marginsTrendTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('marginsTrendTableWrap');
-  const canvasWrap = document.getElementById('marginsTrendCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.marginsTrend;
-  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>Gross Margin %</th><th>EBIT Margin %</th><th>EBITDA Margin %</th><th>Net Margin %</th></tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtPct(d.gm[i],1)+'</td><td>'+fmtPct(d.ebitM[i],1)+'</td><td>'+fmtPct(d.ebitdaM[i],1)+'</td><td>'+fmtPct(d.nm[i],1)+'</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
 document.getElementById('returnsTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('returnsTrendChart', 'financial_analysis_returns_trend.svg'));
 document.getElementById('returnsTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('returnsTrendTableBtn').addEventListener('click', ()=>{

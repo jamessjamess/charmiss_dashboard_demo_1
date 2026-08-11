@@ -953,23 +953,57 @@ function buildComboBarLineSVG(containerId, opts){
     gridSvg += '<text x="'+(width-padR+7)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="start" fill="'+line.color+'">'+lineYFormatter(val)+'</text>';
   });
 
+  // opts.partialLastBar / opts.partialLastPoint (2026-08-11) — the LAST bar
+  // (reduced opacity + dashed outline, instead of solid fill) and/or the
+  // LAST line point+segment (dashed final segment + hollow marker) render
+  // as provisional/in-progress, same convention used elsewhere on this
+  // dashboard for an unclosed YTD/annual bucket. opts.barLastBarExtraLines
+  // (2026-08-11) — extra comparison text (e.g. YoY/MoM) above the LAST
+  // bar's own value label only.
   let barsSvg = '';
   const barY0 = barYAt(0);
+  const lastBarIdx = labels.length-1;
   labels.forEach((lb,i)=>{
     const v = barVals[i];
     const x = cellX(i) + stepX/2 - barW/2;
     const y = barYAt(v);
-    barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+Math.min(y,barY0).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0.5,Math.abs(barY0-y)).toFixed(1)+'" rx="2" fill="'+bar.color+'"/>';
+    const isLastBar = i===lastBarIdx;
+    const partialBar = opts.partialLastBar && isLastBar;
+    const barAttrs = partialBar ? ' fill-opacity="0.55" stroke="'+bar.color+'" stroke-width="1.5" stroke-dasharray="3,2"' : '';
+    barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+Math.min(y,barY0).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0.5,Math.abs(barY0-y)).toFixed(1)+'" rx="2" fill="'+bar.color+'"'+barAttrs+'/>';
     barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+bar.color+'">'+barYFormatter(v)+'</text>';
+    if(isLastBar && opts.barLastBarExtraLines && opts.barLastBarExtraLines.length){
+      // Each entry is a plain string (default gray) or a {text,color}
+      // object (2026-08-11, for polarity-colored YoY/MoM/QoQ comparisons).
+      opts.barLastBarExtraLines.forEach((extraLine,li)=>{
+        const isObj = extraLine && typeof extraLine === 'object';
+        const text = isObj ? extraLine.text : extraLine;
+        const color = isObj && extraLine.color ? extraLine.color : inkThree;
+        barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-6-12*(li+1)).toFixed(1)+'" font-size="9" font-weight="600" text-anchor="middle" fill="'+color+'">'+text+'</text>';
+      });
+    }
   });
 
-  let lineD = '', lineDots = '', lastIdx=-1;
+  let lineD = '', lineDashD = '', lineDots = '', lastIdx=-1, prevIdx=-1;
+  line.values.forEach((v,i)=>{
+    if(v===null || v===undefined) return;
+    prevIdx = lastIdx; lastIdx = i;
+  });
   line.values.forEach((v,i)=>{
     if(v===null || v===undefined) return;
     const x = cellX(i)+stepX/2, y = lineYAt(v);
-    lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
-    lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+line.color+'"/>';
-    lastIdx = i;
+    const isPartialPoint = opts.partialLastPoint && i===lastIdx && prevIdx>=0;
+    if(isPartialPoint){
+      // Final segment only: solid path stops at the prior point, a separate
+      // dashed path carries prevIdx->lastIdx, and the final point itself
+      // draws hollow instead of filled.
+      const px = cellX(prevIdx)+stepX/2, py = lineYAt(line.values[prevIdx]);
+      lineDashD = 'M'+px.toFixed(1)+','+py.toFixed(1)+' L'+x.toFixed(1)+','+y.toFixed(1);
+      lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="'+(cssVar('--card')||'#fff')+'" stroke="'+line.color+'" stroke-width="2"/>';
+    } else {
+      lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+      lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+line.color+'"/>';
+    }
   });
   let lastLabelSvg = '';
   if(lastIdx>=0){
@@ -978,12 +1012,101 @@ function buildComboBarLineSVG(containerId, opts){
     const lx = anchor==='end' ? x-8 : x+8;
     lastLabelSvg = '<text x="'+lx.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="'+anchor+'" fill="'+line.color+'">'+lineYFormatter(line.values[lastIdx])+'</text>';
   }
-  const lineSvg = '<path d="'+lineD.trim()+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+lineDots+lastLabelSvg;
+  const dashedSegSvg = lineDashD ? '<path d="'+lineDashD+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-dasharray="5,4" stroke-linecap="round"/>' : '';
+  const lineSvg = '<path d="'+lineD.trim()+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+dashedSegSvg+lineDots+lastLabelSvg;
 
   let xLabelsSvg = '';
   labels.forEach((lb,i)=>{
     xLabelsSvg += '<text x="'+(cellX(i)+stepX/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkThree+'">'+lb+'</text>';
   });
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+barsSvg+lineSvg+xLabelsSvg+'</svg>';
+}
+
+/* ---------- Grouped bar + line combo (dual independent Y-axis) — same
+   pairing idea as buildComboBarLineSVG, but for 2+ ฿-amount bar series side
+   by side per category (e.g. CFO + Free Cash Flow) plus one %-rate line on
+   the right axis (e.g. FCF Margin %), instead of a single bar series. Left
+   axis scales the grouped bars (0-anchored); right axis scales the line
+   independently. opts: {labels, series:[{name,color,values}], line:{name,
+   color,values}, barYFormatter, lineYFormatter, height, width}. ---------- */
+function buildGroupedBarLineSVG(containerId, opts){
+  const staleTooltip3 = document.getElementById('sharedChartTooltip');
+  if(staleTooltip3) staleTooltip3.classList.remove('show');
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 520;
+  const height = opts.height || (container ? container.clientHeight : 0) || 220;
+  const {labels, series, line} = opts;
+  const barYFormatter = opts.barYFormatter || (v=>v);
+  const lineYFormatter = opts.lineYFormatter || (v=>v);
+  const padL=46, padR=44, padT=18, padB=26;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+
+  let allBarVals = [];
+  series.forEach(s=> s.values.forEach(v=> allBarVals.push(v)));
+  const barMax = Math.max(0, ...allBarVals);
+  const barNice = niceAxisTicks(0, (barMax*1.15)||1, 4);
+  const lineValsClean = line.values.filter(v=>v!==null && v!==undefined);
+  const lineMinRaw = Math.min(...lineValsClean), lineMaxRaw = Math.max(...lineValsClean);
+  const lineSpan = (lineMaxRaw-lineMinRaw) || Math.abs(lineMaxRaw) || 1;
+  const lineNice = niceAxisTicks(lineMinRaw - lineSpan*0.15, lineMaxRaw + lineSpan*0.15, 4);
+
+  let barYMin=barNice.min, barYMax=barNice.max; if(barYMax===barYMin) barYMax=barYMin+1;
+  let lineYMin=lineNice.min, lineYMax=lineNice.max; if(lineYMax===lineYMin) lineYMax=lineYMin+1;
+
+  const barYAt = v => padT + (1-(v-barYMin)/(barYMax-barYMin))*plotH;
+  const lineYAt = v => padT + (1-(v-lineYMin)/(lineYMax-lineYMin))*plotH;
+  const groupCount = labels.length, seriesCount = series.length;
+  const groupGap = Math.max(6, Math.min(14, width/40));
+  const groupW = (plotW - groupGap*Math.max(0,groupCount-1))/Math.max(1,groupCount);
+  const barGap = 3;
+  const barW = Math.max(2, (groupW - barGap*(seriesCount+1))/seriesCount);
+
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkThree = cssVar('--ink-3')||'#898781';
+
+  let gridSvg = '';
+  barNice.ticks.forEach(val=>{
+    const y = barYAt(val);
+    gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkThree+'">'+barYFormatter(val)+'</text>';
+  });
+  lineNice.ticks.forEach(val=>{
+    const y = lineYAt(val);
+    gridSvg += '<text x="'+(width-padR+7)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="start" fill="'+line.color+'">'+lineYFormatter(val)+'</text>';
+  });
+
+  let barsSvg = '', xLabelsSvg = '';
+  const barY0 = barYAt(0);
+  labels.forEach((lb,gi)=>{
+    const groupX = padL + gi*(groupW+groupGap);
+    series.forEach((s,si)=>{
+      const val = s.values[gi];
+      const barX = groupX + barGap + si*(barW+barGap);
+      const y = barYAt(val);
+      barsSvg += '<rect x="'+barX.toFixed(1)+'" y="'+Math.min(y,barY0).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0.5,Math.abs(barY0-y)).toFixed(1)+'" rx="2" fill="'+s.color+'"/>';
+    });
+    xLabelsSvg += '<text x="'+(groupX+groupW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkThree+'">'+lb+'</text>';
+  });
+
+  let lineD = '', lineDots = '', lastIdx=-1;
+  line.values.forEach((v,i)=>{
+    if(v===null || v===undefined) return;
+    const groupX = padL + i*(groupW+groupGap);
+    const x = groupX + groupW/2, y = lineYAt(v);
+    lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+    lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+line.color+'"/>';
+    lastIdx = i;
+  });
+  let lastLabelSvg = '';
+  if(lastIdx>=0){
+    const groupX = padL + lastIdx*(groupW+groupGap);
+    const x = groupX+groupW/2, y = lineYAt(line.values[lastIdx]);
+    const anchor = x > width-padR-30 ? 'end' : 'start';
+    const lx = anchor==='end' ? x-8 : x+8;
+    lastLabelSvg = '<text x="'+lx.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="'+anchor+'" fill="'+line.color+'">'+lineYFormatter(line.values[lastIdx])+'</text>';
+  }
+  const lineSvg = '<path d="'+lineD.trim()+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+lineDots+lastLabelSvg;
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+barsSvg+lineSvg+xLabelsSvg+'</svg>';
@@ -1313,7 +1436,31 @@ function buildWaterfallSVG(containerId, steps, opts){
   const rotateDeg = opts.rotateLabels === true ? 35 : (opts.rotateLabels || 0);
   const rotateFontFamily = (container && getComputedStyle(container).fontFamily) || 'sans-serif';
   const maxLabelW = rotateDeg ? Math.max(0, ...steps.map(st => measureTextWidth(st.label, 10, '400', rotateFontFamily))) : 0;
-  const padL=54, padR=16, padT=16, padB = rotateDeg ? Math.ceil(20 + maxLabelW*Math.abs(Math.sin(rotateDeg*Math.PI/180))) : 34;
+  const padL=54, padR=16, padT=16;
+  // Upright wrapped labels (2026-08-11) -- the non-rotated path used to just
+  // clip/collide on a long label (e.g. "Selling & Distribution"); now each
+  // label greedy-wraps onto as many lines as it needs to fit its own slot
+  // width, staying upright instead of switching to a rotated/slanted look.
+  // Slot width isn't known until n/slotW below, so this is a first pass
+  // using plotW/steps.length as an estimate -- close enough since padL/R are
+  // fixed and this only feeds the padB reservation, not final layout.
+  function wrapLabelLines(label, maxWidth, fontSize, fontWeight, fontFamily){
+    const words = label.split(' ');
+    if(words.length<=1) return [label];
+    const lines = [];
+    let current = words[0];
+    for(let i=1;i<words.length;i++){
+      const test = current+' '+words[i];
+      if(measureTextWidth(test, fontSize, fontWeight, fontFamily) <= maxWidth) current = test;
+      else { lines.push(current); current = words[i]; }
+    }
+    lines.push(current);
+    return lines;
+  }
+  const estSlotW = (width-padL-padR)/Math.max(1,steps.length);
+  const wrappedLabelLines = rotateDeg ? [] : steps.map(st => wrapLabelLines(st.label, estSlotW-4, 10, '400', rotateFontFamily));
+  const maxLabelLineCount = wrappedLabelLines.length ? Math.max(1, ...wrappedLabelLines.map(l=>l.length)) : 1;
+  const padB = rotateDeg ? Math.ceil(20 + maxLabelW*Math.abs(Math.sin(rotateDeg*Math.PI/180))) : (22 + (maxLabelLineCount-1)*11);
   const plotW = width-padL-padR, plotH = height-padT-padB;
 
   // running totals to know each bar's floating base/top
@@ -1374,7 +1521,16 @@ function buildWaterfallSVG(containerId, steps, opts){
       const lx = (x+barW/2).toFixed(1), ly = height-8;
       xLabels += '<text x="'+lx+'" y="'+ly+'" font-size="10" text-anchor="end" fill="'+inkTertiary+'" transform="rotate('+rotateDeg+' '+lx+' '+ly+')">'+st.label+'</text>';
     } else {
-      xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+st.label+'</text>';
+      // Upright, wraps onto extra lines instead of rotating/clipping (see
+      // wrapLabelLines above) -- the LAST line sits at the same height-8
+      // baseline a single-line label always used, earlier lines stack
+      // upward from there into the padB room reserved for the widest wrap.
+      const lines = wrappedLabelLines[i] || [st.label];
+      const lx2 = (x+barW/2).toFixed(1);
+      lines.forEach((ln,li)=>{
+        const ly2 = height-8-(lines.length-1-li)*11;
+        xLabels += '<text x="'+lx2+'" y="'+ly2+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+ln+'</text>';
+      });
     }
     if(i<bars.length-1){
       const nextX = padL + (i+1)*slotW + (slotW-barW)/2;
@@ -1477,7 +1633,15 @@ function buildStackedBarSVG(containerId, opts){
   const height = opts.height || (container ? container.clientHeight : 0) || 260;
   const labels = opts.labels, series = opts.series; // series: [{name,color,values:[absolute per bucket]}]
   const valueFormatter = opts.valueFormatter || (v=>v);
-  const padL=54, padR=10, padT=10, padB=28;
+  // opts.line (2026-08-11) — an optional single %-rate line series on an
+  // independent right axis, overlaid on the stacked bars (e.g. "Selling
+  // Expense-to-Sales %" over a stacked expense-category breakdown) — same
+  // dual-axis convention as buildComboBarLineSVG, just paired with stacked
+  // (not single) bars. Existing callers without opts.line are unaffected
+  // (padR stays 10, no axis/line drawn).
+  const hasLine = !!opts.line;
+  const lineYFormatter = opts.lineYFormatter || (v=>v);
+  const padL=54, padR=hasLine?44:10, padT=10, padB=28;
   const plotW = width-padL-padR, plotH = height-padT-padB;
   const n = labels.length;
   const slotW = plotW/n;
@@ -1492,7 +1656,11 @@ function buildStackedBarSVG(containerId, opts){
   const totals = [];
   for(let i=0;i<n;i++) totals.push(series.reduce((a,s)=>a+s.values[i],0));
   const maxTotal = Math.max(...totals) || 1;
-  const niceMax = maxTotal * 1.12;
+  // Extra headroom when a total/comparison label needs to sit above the
+  // tallest bar (2026-08-11) — the default 1.12 only leaves room for a
+  // single bold total line, not the 1-2 extra comparison lines
+  // opts.lastBarExtraLines adds on top of it.
+  const niceMax = maxTotal * ((opts.showTotalLabels && opts.lastBarExtraLines && opts.lastBarExtraLines.length) ? 1.32 : (opts.showTotalLabels ? 1.16 : 1.12));
   const yAt = v => padT + (1 - v/niceMax) * plotH;
 
   let grid = '';
@@ -1506,27 +1674,88 @@ function buildStackedBarSVG(containerId, opts){
 
   const compact = barW < 34;
   const fontVal = compact ? 8 : 9.5;
+  // opts.showTotalLabels (2026-08-11) — a bold total-of-segments label above
+  // each bar, for callers where the overall total is as much the story as
+  // the mix (e.g. "Revenue by Channel"). opts.partialLastBar (2026-08-11) —
+  // renders the LAST bar only at reduced opacity with a dashed outline, the
+  // same "provisional, not a closed period" convention used elsewhere on
+  // this dashboard for an in-progress YTD/annual bucket. opts.lastBarExtraLines
+  // (2026-08-11) — extra text line(s) (e.g. a YoY/MoM comparison) drawn
+  // above the LAST bar's total label only, since only the latest bucket
+  // needs a comparison per this dashboard's convention.
+  const inkOneVar = cssVar('--ink-1') || '#0b0b0b';
 
-  let bars='', xLabels='';
+  let bars='', xLabels='', totalLabels='';
   for(let i=0;i<n;i++){
     let cum = 0;
     const x = padL + i*slotW + (slotW-barW)/2;
+    const isLast = i===n-1;
+    const partial = opts.partialLastBar && isLast;
     series.forEach(s=>{
       const val = s.values[i];
       const segH = (val/niceMax)*plotH;
       const y = padT + (plotH - cum - segH);
       const isHi = highlightSeries && s.name === highlightSeries;
-      bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"'+(isHi?' stroke="'+highlightColor+'" stroke-width="2.5"':'')+'/>';
+      const partialAttrs = partial ? ' fill-opacity="0.55" stroke="'+s.color+'" stroke-width="1.5" stroke-dasharray="3,2"' : '';
+      bars += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'"'+partialAttrs+(isHi?' stroke="'+highlightColor+'" stroke-width="2.5"':'')+'/>';
       if(segH > 16){
         bars += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y+segH/2+3).toFixed(1)+'" font-size="'+fontVal+'" font-weight="700" text-anchor="middle" fill="#fff">'+valueFormatter(val)+'</text>';
       }
       cum += segH;
     });
-    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="'+(compact?9:10)+'" text-anchor="middle" fill="'+inkTertiary+'">'+labels[i]+'</text>';
+    if(opts.showTotalLabels){
+      const total = series.reduce((a,s)=>a+s.values[i],0);
+      const topY = padT + (plotH - cum);
+      totalLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(topY-6).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+inkOneVar+'">'+valueFormatter(total)+'</text>';
+      if(isLast && opts.lastBarExtraLines && opts.lastBarExtraLines.length){
+        // Each entry is a plain string (default gray) or a {text,color}
+        // object (2026-08-11, for polarity-colored YoY/MoM/QoQ comparisons).
+        opts.lastBarExtraLines.forEach((extraLine,li)=>{
+          const isObj = extraLine && typeof extraLine === 'object';
+          const text = isObj ? extraLine.text : extraLine;
+          const color = isObj && extraLine.color ? extraLine.color : inkTertiary;
+          totalLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(topY-6-14*(li+1)).toFixed(1)+'" font-size="9.5" font-weight="600" text-anchor="middle" fill="'+color+'">'+text+'</text>';
+        });
+      }
+    }
+    const labelText = partial ? labels[i]+' (YTD)' : labels[i];
+    xLabels += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(height-8)+'" font-size="'+(compact?9:10)+'" text-anchor="middle" fill="'+inkTertiary+'">'+labelText+'</text>';
+  }
+
+  let lineSvg = '';
+  if(hasLine){
+    const lineValsClean = opts.line.values.filter(v=>v!==null && v!==undefined);
+    const lineMinRaw = Math.min(...lineValsClean), lineMaxRaw = Math.max(...lineValsClean);
+    const lineSpan = (lineMaxRaw-lineMinRaw) || Math.abs(lineMaxRaw) || 1;
+    const lineNice = niceAxisTicks(lineMinRaw - lineSpan*0.15, lineMaxRaw + lineSpan*0.15, 4);
+    let lineYMin=lineNice.min, lineYMax=lineNice.max; if(lineYMax===lineYMin) lineYMax=lineYMin+1;
+    const lineYAt = v => padT + (1-(v-lineYMin)/(lineYMax-lineYMin))*plotH;
+    let lineTicksSvg = '';
+    lineNice.ticks.forEach(val=>{
+      const y = lineYAt(val);
+      lineTicksSvg += '<text x="'+(width-padR+7)+'" y="'+(y+3).toFixed(1)+'" font-size="9" text-anchor="start" fill="'+opts.line.color+'">'+lineYFormatter(val)+'</text>';
+    });
+    const cellCenterX = i => padL + i*slotW + slotW/2;
+    let lineD = '', lineDots = '', lastIdx=-1;
+    opts.line.values.forEach((v,i)=>{
+      if(v===null || v===undefined) return;
+      const x = cellCenterX(i), y = lineYAt(v);
+      lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+      lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+opts.line.color+'"/>';
+      lastIdx = i;
+    });
+    let lastLabelSvg = '';
+    if(lastIdx>=0){
+      const x = cellCenterX(lastIdx), y = lineYAt(opts.line.values[lastIdx]);
+      const anchor = x > width-padR-30 ? 'end' : 'start';
+      const lx = anchor==='end' ? x-8 : x+8;
+      lastLabelSvg = '<text x="'+lx.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="'+anchor+'" fill="'+opts.line.color+'">'+lineYFormatter(opts.line.values[lastIdx])+'</text>';
+    }
+    lineSvg = lineTicksSvg + '<path d="'+lineD.trim()+'" fill="none" stroke="'+opts.line.color+'" stroke-width="2.4" stroke-dasharray="5,4" stroke-linecap="round" stroke-linejoin="round"/>'+lineDots+lastLabelSvg;
   }
 
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+grid+bars+xLabels+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+grid+bars+totalLabels+lineSvg+xLabels+'</svg>';
 }
 
 /* ---------- Pareto / Concentration chart — individual-share bars + a
