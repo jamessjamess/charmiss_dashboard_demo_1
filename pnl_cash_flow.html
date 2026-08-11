@@ -83,7 +83,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">CFO &amp; Free Cash Flow (5Q)</span>
-        <button class="info-icon" data-info-title="CFO & Free Cash Flow" data-info-text="Free Cash Flow = CFO − CapEx (การซื้อ PP&amp;E) — FCF Margin % = FCF ÷ Net Sales ของไตรมาสนั้น — Net Sales อ้างอิงจากชุดข้อมูลเดียวกับหน้า P&amp;L (Quarterly Trend) — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="CFO & Free Cash Flow" data-info-text="Free Cash Flow = CFO − CapEx (การซื้อ PP&amp;E) — FCF Margin % = FCF ÷ Net Sales ของไตรมาสนั้น — CFO/EBITDA % = CFO ÷ EBITDA ของไตรมาสนั้น (วัดคุณภาพกำไร — แปลงเป็นเงินสดได้มากแค่ไหน) — Net Sales/EBITDA อ้างอิงจากชุดข้อมูลเดียวกับหน้า P&amp;L (Quarterly Trend) — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="fcfTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -175,9 +175,9 @@ const fcfMarginQ2 = netSalesQ2 ? fcfQ2/netSalesQ2*100 : 0;
    EBIT/Net margin both dip that quarter), ending exactly at the Q2'26
    anchors above. --- */
 // CFO trailing quarters are set as ~72-73% of that quarter's real EBITDA
-// (Financial Analysis's Cash Generation group shows this same CFO/EBITDA %
-// -- keeping the ratio smooth here, instead of picking CFO figures
-// independently, avoids an erratic-looking ratio there).
+// (kept smooth here rather than picking CFO figures independently, which
+// avoids an erratic-looking CFO/EBITDA % ratio -- that ratio's home is this
+// page, moved here from Financial Analysis's old Cash Generation group).
 const ebitdaTrailing = [23870561, 23709114, 26153790, 25319751]; // real EBITDA Q2'25-Q1'26 (same figures as P&L Quarterly Trend)
 const cfoTrailing = [0.72, 0.73, 0.71, 0.73].map((r,i)=> ebitdaTrailing[i]*r);
 const capexTrailing = [2.8e6, 3.0e6, 3.1e6, 3.3e6];
@@ -187,6 +187,11 @@ const capexQ = [...capexTrailing, capexQ2];
 const fcfQ = cfoQ.map((v,i)=>v-capexQ[i]);
 const netSalesQAll = [...netSalesTrailing, netSalesQ2];
 const fcfMarginQ = fcfQ.map((v,i)=> netSalesQAll[i] ? v/netSalesQAll[i]*100 : 0);
+// Q2'26 EBITDA -- same figure as pnl_financial_analysis.html's MASTER_EBIT[9]+MASTER_DA[9]
+// (23,908,891 + 2,536,173), so CFO/EBITDA % ties across pages.
+const ebitdaQ2 = 26445064;
+const ebitdaQAll = [...ebitdaTrailing, ebitdaQ2];
+const cfoOverEbitdaQ = cfoQ.map((v,i)=> v/ebitdaQAll[i]*100);
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
@@ -262,9 +267,9 @@ function renderAll(){
     labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true,
     series: [ {name:'CFO', color: cssVar('--brand')||'#8E1E4D', values: cfoQ}, {name:'Free Cash Flow', color: cssVar('--good')||'#0ca30c', values: fcfQ} ]
   });
-  latestData.fcf = quarterLabels.map((q,i)=>({ quarter:q, cfo:cfoQ[i], fcf:fcfQ[i], margin:fcfMarginQ[i] }));
+  latestData.fcf = quarterLabels.map((q,i)=>({ quarter:q, cfo:cfoQ[i], fcf:fcfQ[i], margin:fcfMarginQ[i], cfoOverEbitda:cfoOverEbitdaQ[i] }));
   document.getElementById('fcfCallout').innerHTML =
-    'Free Cash Flow เป็นบวกทุกไตรมาส (FCF Margin '+fmtPct(fcfMarginQ[0],1)+' → '+fmtPct(fcfMarginQ[4],1)+') — เพียงพอต่อ CapEx และเงินปันผลโดยไม่ต้องพึ่งเงินกู้ · '+quarterLabels[4]+': CFO '+fmtTHB(cfoQ[4])+' ('+fmtPct(cfoQ[4]/netSalesQAll[4]*100,1)+' ของ Net Sales) − CapEx '+fmtTHB(capexQ[4])+' = FCF '+fmtTHB(fcfQ[4]);
+    'Free Cash Flow เป็นบวกทุกไตรมาส (FCF Margin '+fmtPct(fcfMarginQ[0],1)+' → '+fmtPct(fcfMarginQ[4],1)+') — เพียงพอต่อ CapEx และเงินปันผลโดยไม่ต้องพึ่งเงินกู้ · '+quarterLabels[4]+': CFO '+fmtTHB(cfoQ[4])+' ('+fmtPct(cfoQ[4]/netSalesQAll[4]*100,1)+' ของ Net Sales, '+fmtPct(cfoOverEbitdaQ[4],1)+' ของ EBITDA) − CapEx '+fmtTHB(capexQ[4])+' = FCF '+fmtTHB(fcfQ[4]);
 }
 
 /* --- Toolbar --- */
@@ -285,8 +290,8 @@ document.getElementById('fcfTableBtn').addEventListener('click', ()=>{
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.fcf;
-  let html = '<table class="mini-table"><thead><tr><th>Quarter</th><th>CFO</th><th>Free Cash Flow</th><th>FCF Margin %</th></tr></thead><tbody>';
-  d.forEach(r=>{ html += '<tr><td>'+r.quarter+'</td><td>'+fmtTHB(r.cfo)+'</td><td>'+fmtTHB(r.fcf)+'</td><td>'+fmtPct(r.margin,1)+'</td></tr>'; });
+  let html = '<table class="mini-table"><thead><tr><th>Quarter</th><th>CFO</th><th>Free Cash Flow</th><th>CFO/EBITDA %</th><th>FCF Margin %</th></tr></thead><tbody>';
+  d.forEach(r=>{ html += '<tr><td>'+r.quarter+'</td><td>'+fmtTHB(r.cfo)+'</td><td>'+fmtTHB(r.fcf)+'</td><td>'+fmtPct(r.cfoOverEbitda,1)+'</td><td>'+fmtPct(r.margin,1)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });

@@ -213,7 +213,15 @@ function buildLineChartSVG(containerId, opts){
   const showEvery = Math.max(1, Math.ceil(labels.length/maxLabels));
   labels.forEach((lb,i)=>{
     if(i%showEvery!==0 && i!==labels.length-1) return;
-    xLabelSvg += '<text x="'+xAt(i).toFixed(1)+'" y="'+(height-5)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
+    // Edge labels anchor toward the plot interior instead of centering on
+    // the axis endpoint — a middle-anchored label at x=width-padR (the last
+    // tick) has half its text overhang past the viewBox edge and gets
+    // clipped (e.g. "Dec 26" rendering as "Dec 2"). First/last ticks anchor
+    // start/end instead; interior ticks are unaffected.
+    const isFirst = i===0, isLast = i===labels.length-1;
+    const anchor = isLast ? 'end' : (isFirst ? 'start' : 'middle');
+    const x = isLast ? xAt(i)-2 : (isFirst ? xAt(i)+2 : xAt(i));
+    xLabelSvg += '<text x="'+x.toFixed(1)+'" y="'+(height-5)+'" font-size="9.5" text-anchor="'+anchor+'" fill="'+inkTertiary+'">'+lb+'</text>';
   });
 
   let seriesSvg = '';
@@ -275,24 +283,41 @@ function buildLineChartSVG(containerId, opts){
       // index, so callers can look up a parallel value (e.g. THB amount for
       // a %-based line) via closure and show both in one label. Existing
       // callers that only read the first arg are unaffected.
+      // (2026-08-11): lastLabelFormatter may now return an array of strings
+      // instead of one -- rendered as stacked lines (e.g. "47.9%" + "2026
+      // YTD" below it) for a provisional/annualized point that needs its own
+      // caption, not just its value. Single-string callers are unaffected.
       const label = s.lastLabelFormatter(s.data[lastIdx], lastIdx);
+      const lineCount = Array.isArray(label) ? label.length : 1;
       const anchor = x>width-64 ? 'end' : 'start';
       const lx = anchor==='end' ? x-6 : x+6;
-      if(!s.markers) seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+s.color+'"/>';
-      lastLabelInfos.push({ x:lx, y:y-8, anchor, color:s.color, label });
+      // opts.hollowLastPoint (2026-08-11): draws the auto last-point dot as a
+      // hollow ring in the series' OWN color instead of a solid fill -- for a
+      // provisional/annualized point (e.g. "2026 YTD") that shouldn't read as
+      // a confirmed actual the way every other point on the line does.
+      // Distinct from the existing s.markers hit/miss rings (always drawn in
+      // --good/--critical, a different semantic) -- this stays in-color.
+      if(!s.markers){
+        if(s.hollowLastPoint) seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="4" fill="'+(cssVar('--card')||'#fff')+'" stroke="'+s.color+'" stroke-width="2"/>';
+        else seriesSvg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+s.color+'"/>';
+      }
+      lastLabelInfos.push({ x:lx, y:y-8, anchor, color:s.color, label, gap:13+(lineCount-1)*11 });
     }
   });
-  // Dodge pass: sort top-to-bottom, push any label closer than MIN_LABEL_GAP
-  // to its neighbor further down so no two overlap, then render.
-  const MIN_LABEL_GAP = 13;
+  // Dodge pass: sort top-to-bottom, push any label closer than its own gap
+  // (13px for a single line, wider for a stacked multi-line label) to its
+  // neighbor further down so no two overlap, then render.
   lastLabelInfos.sort((a,b)=>a.y-b.y);
   for(let i=1;i<lastLabelInfos.length;i++){
-    if(lastLabelInfos[i].y < lastLabelInfos[i-1].y + MIN_LABEL_GAP){
-      lastLabelInfos[i].y = lastLabelInfos[i-1].y + MIN_LABEL_GAP;
+    if(lastLabelInfos[i].y < lastLabelInfos[i-1].y + lastLabelInfos[i-1].gap){
+      lastLabelInfos[i].y = lastLabelInfos[i-1].y + lastLabelInfos[i-1].gap;
     }
   }
   lastLabelInfos.forEach(info=>{
-    seriesSvg += '<text x="'+info.x.toFixed(1)+'" y="'+info.y.toFixed(1)+'" font-size="10.5" font-weight="700" fill="'+info.color+'" text-anchor="'+info.anchor+'">'+info.label+'</text>';
+    const lines = Array.isArray(info.label) ? info.label : [info.label];
+    lines.forEach((ln,li)=>{
+      seriesSvg += '<text x="'+info.x.toFixed(1)+'" y="'+(info.y+li*11).toFixed(1)+'" font-size="10.5" font-weight="700" fill="'+info.color+'" text-anchor="'+info.anchor+'">'+ln+'</text>';
+    });
   });
 
   const svg = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+xLabelSvg+seriesSvg+'</svg>';
@@ -323,6 +348,57 @@ function buildLineChartSVG(containerId, opts){
       if(e.target.closest('.marker-dot')) tooltip.classList.remove('show');
     };
   }
+}
+
+/* buildSparklineSVG (2026-08-11) -- a minimal, axis-less/label-less trend
+   line for a small inline box (e.g. under a DuPont factor chip), where the
+   exact figure is already shown by a bigger number right above it and the
+   sparkline's only job is "shape of the trend at a glance". Supports the
+   same solid-then-dashed-with-hollow-endpoint split buildLineChartSVG's
+   callers use for a provisional in-year point (opts.dashFromIndex = the
+   index where the dashed segment begins; the point BEFORE it stays solid).
+   Deliberately far simpler than buildLineChartSVG: no grid, no ticks, no
+   per-point labels -- just the line + endpoint marker. */
+function buildSparklineSVG(containerId, data, opts){
+  opts = opts || {};
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 100;
+  const height = opts.height || (container ? container.clientHeight : 0) || 22;
+  const color = opts.color || cssVar('--brand') || '#8E1E4D';
+  const padX = 3, padY = 3;
+  const plotW = width - padX*2, plotH = height - padY*2;
+  const vals = data.filter(v=> v!==null && v!==undefined);
+  let vMin = Math.min(...vals), vMax = Math.max(...vals);
+  if(vMax===vMin){ vMax += 1; vMin -= 1; }
+  const headroom = (vMax-vMin)*0.15;
+  vMin -= headroom; vMax += headroom;
+  const n = data.length;
+  const xAt = i => padX + (n<=1 ? 0 : i*(plotW/(n-1)));
+  const yAt = v => padY + (1-(v-vMin)/(vMax-vMin))*plotH;
+  const dashFrom = opts.dashFromIndex;
+  let solidD = '', dashedD = '', started1=false, started2=false;
+  data.forEach((v,i)=>{
+    if(v===null || v===undefined) return;
+    const x=xAt(i), y=yAt(v);
+    const isDashSeg = dashFrom!==undefined && i>=dashFrom-1;
+    if(isDashSeg){
+      dashedD += (started2?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+      started2 = true;
+    } else {
+      solidD += (started1?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+      started1 = true;
+    }
+  });
+  let svg = '';
+  if(solidD) svg += '<path d="'+solidD.trim()+'" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>';
+  if(dashedD) svg += '<path d="'+dashedD.trim()+'" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-dasharray="3,2.5" stroke-linecap="round" stroke-linejoin="round"/>';
+  const lastIdx = data.length-1, lastV = data[lastIdx];
+  if(lastV!==null && lastV!==undefined){
+    const x=xAt(lastIdx), y=yAt(lastV);
+    if(dashFrom!==undefined) svg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.4" fill="'+(cssVar('--card')||'#fff')+'" stroke="'+color+'" stroke-width="1.4"/>';
+    else svg += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2" fill="'+color+'"/>';
+  }
+  container.innerHTML = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
 }
 
 /* ---------- Custom donut chart (self-contained SVG) ---------- */
@@ -808,6 +884,94 @@ function buildGroupedBarSVG(containerId, opts){
       if(e.target.closest('rect[data-gi]')) tooltip.classList.remove('show');
     };
   }
+}
+
+/* ---------- Combo bar+line chart (dual independent Y-axis) — for pairing a
+   ฿-amount bar series with a %-rate line series on the same category axis
+   (e.g. Net Sales bars + Gross Margin % line, one per quarter) so a reader
+   gets both the amount and its rate in one card instead of two separate
+   single-metric cards. Left axis scales the bar series (0-anchored); right
+   axis scales the line series independently — the two are NEVER blended
+   into one shared domain, since a ฿ amount and a % rate have no common
+   scale. opts: {labels, bar:{name,color,values}, line:{name,color,values},
+   barYFormatter, lineYFormatter, height, width}. Only the line's LAST point
+   gets a text label (dots mark every point) — same "showLastLabel" reasoning
+   buildLineChartSVG's callers already use, since labeling every point on a
+   short 4-6-category axis is enough context without cluttering the bars. ---------- */
+function buildComboBarLineSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 520;
+  const height = opts.height || (container ? container.clientHeight : 0) || 220;
+  const {labels, bar, line} = opts;
+  const barYFormatter = opts.barYFormatter || (v=>v);
+  const lineYFormatter = opts.lineYFormatter || (v=>v);
+  const padL=46, padR=44, padT=18, padB=26;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+
+  const barVals = bar.values;
+  const lineValsClean = line.values.filter(v=>v!==null && v!==undefined);
+  const barMax = Math.max(0, ...barVals);
+  const barNice = niceAxisTicks(0, (barMax*1.15)||1, 4);
+  const lineMinRaw = Math.min(...lineValsClean), lineMaxRaw = Math.max(...lineValsClean);
+  const lineSpan = (lineMaxRaw-lineMinRaw) || Math.abs(lineMaxRaw) || 1;
+  const lineNice = niceAxisTicks(lineMinRaw - lineSpan*0.15, lineMaxRaw + lineSpan*0.15, 4);
+
+  let barYMin=barNice.min, barYMax=barNice.max; if(barYMax===barYMin) barYMax=barYMin+1;
+  let lineYMin=lineNice.min, lineYMax=lineNice.max; if(lineYMax===lineYMin) lineYMax=lineYMin+1;
+
+  const barYAt = v => padT + (1-(v-barYMin)/(barYMax-barYMin))*plotH;
+  const lineYAt = v => padT + (1-(v-lineYMin)/(lineYMax-lineYMin))*plotH;
+  const stepX = plotW/Math.max(1,labels.length);
+  const cellX = i => padL + i*stepX;
+  const barW = Math.max(6, stepX*0.42);
+
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkThree = cssVar('--ink-3')||'#898781';
+
+  let gridSvg = '';
+  barNice.ticks.forEach(val=>{
+    const y = barYAt(val);
+    gridSvg += '<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+y.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    gridSvg += '<text x="'+(padL-6)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="end" fill="'+inkThree+'">'+barYFormatter(val)+'</text>';
+  });
+  lineNice.ticks.forEach(val=>{
+    const y = lineYAt(val);
+    gridSvg += '<text x="'+(width-padR+7)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="start" fill="'+line.color+'">'+lineYFormatter(val)+'</text>';
+  });
+
+  let barsSvg = '';
+  const barY0 = barYAt(0);
+  labels.forEach((lb,i)=>{
+    const v = barVals[i];
+    const x = cellX(i) + stepX/2 - barW/2;
+    const y = barYAt(v);
+    barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+Math.min(y,barY0).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0.5,Math.abs(barY0-y)).toFixed(1)+'" rx="2" fill="'+bar.color+'"/>';
+    barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+bar.color+'">'+barYFormatter(v)+'</text>';
+  });
+
+  let lineD = '', lineDots = '', lastIdx=-1;
+  line.values.forEach((v,i)=>{
+    if(v===null || v===undefined) return;
+    const x = cellX(i)+stepX/2, y = lineYAt(v);
+    lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+    lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+line.color+'"/>';
+    lastIdx = i;
+  });
+  let lastLabelSvg = '';
+  if(lastIdx>=0){
+    const x = cellX(lastIdx)+stepX/2, y = lineYAt(line.values[lastIdx]);
+    const anchor = x > width-padR-30 ? 'end' : 'start';
+    const lx = anchor==='end' ? x-8 : x+8;
+    lastLabelSvg = '<text x="'+lx.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="'+anchor+'" fill="'+line.color+'">'+lineYFormatter(line.values[lastIdx])+'</text>';
+  }
+  const lineSvg = '<path d="'+lineD.trim()+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+lineDots+lastLabelSvg;
+
+  let xLabelsSvg = '';
+  labels.forEach((lb,i)=>{
+    xLabelsSvg += '<text x="'+(cellX(i)+stepX/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkThree+'">'+lb+'</text>';
+  });
+
+  document.getElementById(containerId).innerHTML =
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+barsSvg+lineSvg+xLabelsSvg+'</svg>';
 }
 
 /* ---------- Bullet bar chart (Actual bar colored green/red by hit-or-miss +

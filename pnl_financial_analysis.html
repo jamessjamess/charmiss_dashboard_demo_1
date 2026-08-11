@@ -32,6 +32,13 @@
 .fhs-rag-dot.amber{background:var(--warning);}
 .fhs-rag-dot.red{background:var(--critical);}
 .fhs-chip-companion{background:var(--card);}
+/* Factor-box sparklines (2026-08-11) -- a tiny trend glance under each of
+   the 3 DuPont factor legs (Profit Margin/Asset Turnover/Financial
+   Leverage), so the Scorecard doubles as a map into this factor's own full
+   chart on the Financial Ratios pill, not just a single point-in-time
+   number. Intentionally axis-less/label-less -- the big chip value above it
+   already carries the exact figure. */
+.fhs-chip-sparkline{margin-top:4px;height:22px;width:100%;min-width:70px;}
 @media (max-width:900px){
   .fhs-equation{flex-direction:column;align-items:stretch;}
   .fhs-op{padding:1px 0;}
@@ -85,7 +92,27 @@
    completed FY at a glance. */
 th.annual-current-col{font-style:italic;color:var(--ink-3);}
 td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in srgb, var(--ink-3) 7%, transparent) 0 6px, transparent 6px 12px);}
-.viewby-footnote{font-size:10.5px;color:var(--ink-3);margin-top:8px;}
+.viewby-footnote{font-size:12.5px;line-height:1.6;color:var(--ink-3);margin-top:8px;}
+.period-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+/* True pill switcher (2026-08-10 restructure) -- 4 full-screen alternatives,
+   exactly one .pill-view visible at a time via the nav click handler near
+   the bottom of the script. initSectionScrollSpy() is intentionally NOT
+   called on this page, same reasoning as the P&L page's own restructure. */
+.pill-view{display:none;}
+.pill-view.active{display:block;}
+.growth-insight{font-size:12.5px;line-height:1.6;color:var(--ink-2);background:var(--wash);border-radius:8px;padding:10px 14px;margin-top:10px;}
+
+/* Growth Rate small-multiples (2026-08-11) -- 1 mini chart per metric
+   instead of 1 combined grouped-bar chart, so each metric's own trend +
+   latest-period YoY/QoQ callout reads clearly without 4 series' bars and
+   labels overlapping in one plot. 2x2 on desktop, collapses to 1 column on
+   narrow viewports (mobile-first responsive per the request). */
+.growth-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+.growth-mini-grid.hidden{display:none;}
+@media (max-width:700px){ .growth-mini-grid{grid-template-columns:1fr;} }
+.growth-mini-chart{border:1px solid var(--hairline);border-radius:8px;padding:10px 12px 4px;}
+.growth-mini-title{font-size:12.5px;font-weight:700;margin-bottom:4px;}
 </style>
 </head>
 <body>
@@ -121,22 +148,14 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     </header>
 
   <div class="header-utility-row" id="headerUtilityRow">
-    <nav class="section-nav">
-      <a href="#sec-dupont">Financial Scorecard</a>
-      <a href="#sec-fin-ratios">Ratio Analysis</a>
-      <a href="#sec-leverage">Financial Leverage</a>
-      <a href="#sec-ccc-bridge">Cash Conversion Cycle</a>
-      <a href="#sec-inventory-provision">Inventory Provision</a>
+    <nav class="section-nav" id="pillNav">
+      <a href="#view-scorecard" data-view="scorecard" class="active">Financial Scorecard</a>
+      <a href="#view-fin-ratios" data-view="fin-ratios">Financial Ratios</a>
+      <a href="#view-growth-rate" data-view="growth-rate">Growth Rate</a>
+      <a href="#view-ccc" data-view="ccc">Cash Cycle</a>
     </nav>
     <div class="nav-filter-divider"></div>
     <div class="filter-bar-group">
-      <div class="filter-item">
-        <span class="filter-label" id="periodLabel">As of</span>
-        <button class="period-btn" id="periodBtn" title="ช่วงข้อมูลคงที่สำหรับ Mock นี้">
-          <span id="periodBtnLabel">Q2'26</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
-        </button>
-      </div>
       <div class="filter-item">
         <span class="filter-label">View By</span>
         <div class="timeframe-toggle" id="viewByToggle">
@@ -145,19 +164,27 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <button class="timeframe-opt" data-key="annual">Annual</button>
         </div>
       </div>
+      <div class="filter-item">
+        <span class="filter-label" id="periodLabel">As of</span>
+        <button class="period-btn" id="periodBtn" title="เลือกไตรมาส">
+          <span id="periodBtnLabel">Q2'26</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <div class="period-dropdown" id="periodDropdown"></div>
+      </div>
     </div>
   </div>
   </div>
 
   <div class="viewby-footnote" id="viewByFootnote" style="display:none;margin:-6px 0 14px;">ปีปัจจุบันเป็น YTD (flow: margin/growth) / TTM (ratio: ROE/ROA/turnover/leverage/D-E/Cash Cycle) — ยังไม่ใช่ FY เต็ม (2026 ยังไม่จบปี)</div>
 
-  <!-- ===== FINANCIAL HEALTH SCORECARD (DUPONT) ===== -->
-  <div class="section-label" id="sec-dupont">Financial Scorecard</div>
+  <!-- ===== PILL 1: FINANCIAL SCORECARD ===== -->
+  <div class="pill-view active" id="view-scorecard">
   <div class="card table-card single-label-col fhs-card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">DuPont ROE Decomposition (TTM)</span>
-        <button class="info-icon" data-info-title="Financial Scorecard" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — ฐาน TTM (4 ไตรมาสล่าสุดรวมกัน) คำนวณจากชุดข้อมูลเดียวกับ Financial Ratios/ตาราง DuPont Comparison ด้านล่าง ไม่สร้างเลขใหม่ — ทิศทาง (▲/▼) เทียบ Prior TTM (ending Q1'26) · สถานะ RAG และเป้า/ช่วงปกติ (Benchmark) เป็น Mock 100% รอ Finance/industry ยืนยัน">i</button>
+        <span class="chart-title" id="scorecardTitle">DuPont ROE Decomposition (TTM)</span>
+        <button class="info-icon" data-info-title="Financial Scorecard" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — ฐานอ้างอิงตาม View By/As of ที่เลือก (ไม่ fix เป็น TTM เสมอไป) คำนวณจากชุดข้อมูลเดียวกับ Financial Ratios ด้านบน ไม่สร้างเลขใหม่ — ทิศทาง (▲/▼) เทียบช่วงก่อนหน้า · สถานะ RAG และเป้า/ช่วงปกติ (Benchmark) เป็น Mock 100% รอ Finance/industry ยืนยัน">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="fhsExpandBtn" title="ดู DuPont ROE Tree แบบละเอียด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
@@ -167,7 +194,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     <div class="fhs-equation">
       <div class="fhs-chip fhs-chip-apex" id="fhsBoxApex">
         <div class="fhs-chip-row">
-          <span class="fhs-chip-label">ROE (TTM)</span>
+          <span class="fhs-chip-label" id="fhsApexLabel">ROE (TTM)</span>
           <span class="fhs-chip-value" id="fhsApexValue">–</span>
           <span class="fhs-dir" id="fhsApexDir">–</span>
         </div>
@@ -182,6 +209,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <button class="info-icon fhs-chip-icon" id="fhsMarginInfoBtn" title="รายละเอียด">i</button>
         </div>
         <div class="fhs-chip-sub" id="fhsMarginSub">–</div>
+        <div class="fhs-chip-sparkline" id="fhsMarginSparkline"></div>
       </div>
       <div class="fhs-op">×</div>
       <div class="fhs-chip" id="fhsBoxTurnover">
@@ -191,6 +219,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <span class="fhs-dir" id="fhsTurnoverDir">–</span>
         </div>
         <div class="fhs-chip-sub" id="fhsTurnoverSub">–</div>
+        <div class="fhs-chip-sparkline" id="fhsTurnoverSparkline"></div>
       </div>
       <div class="fhs-op">×</div>
       <div class="fhs-chip" id="fhsBoxLeverage">
@@ -200,6 +229,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <span class="fhs-dir" id="fhsLeverageDir">–</span>
         </div>
         <div class="fhs-chip-sub" id="fhsLeverageSub">–</div>
+        <div class="fhs-chip-sparkline" id="fhsLeverageSparkline"></div>
       </div>
     </div>
 
@@ -208,104 +238,152 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
       <div class="fhs-chip fhs-chip-companion" id="fhsCompanionCCC"></div>
     </div>
   </div>
+  </div><!-- /view-scorecard -->
 
-  <!-- ===== FINANCIAL RATIOS / GROWTH RATE / CASH CYCLE (2-column layout) ===== -->
-  <div class="section-label" id="sec-fin-ratios">Ratio Analysis</div>
-  <div class="chart-grid" style="align-items:start;">
-    <div>
-      <div class="card table-card single-label-col" style="margin-bottom:0;">
-        <div class="card-head">
-          <span class="card-title" id="finRatiosTitle">Financial Ratios (5Q)</span>
-          <button class="info-icon" data-info-title="Financial Ratios" data-info-text="Profitability margins = ตัวเลขเดียวกับ P&amp;L Quarterly Trend's 5-Quarter table เป๊ะ (ไม่สร้างเลขใหม่) · Liquidity/Leverage = ตัวเลขเดียวกับที่เคยอยู่หน้า Balance Sheet (ย้ายมาที่นี่) — Current Ratio = Current Assets ÷ Current Liabilities, Quick Ratio = (Current Assets − Inventory) ÷ Current Liabilities · D/E = Total Liabilities ÷ Equity, IBD/E = Interest-Bearing Debt ÷ Equity · ROE %, ROA %, Total Asset Turnover = Annualized ต่อไตรมาส (Net Profit × 4 ÷ Average Balance ของไตรมาสนั้น — Average Balance = (ยอดต้นไตรมาส+ยอดปลายไตรมาส) ÷ 2) ใช้ Equity/Assets ชุดเดียวกับ Financial Scorecard (DuPont) ด้านบน — Mock Data 100%">i</button>
-          <div class="toolbar" style="margin-left:auto;">
-            <button class="tool-btn" id="finRatiosDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          </div>
-        </div>
-        <table id="finRatiosTable"></table>
-      </div>
-    </div>
-    <div>
-      <div class="card table-card single-label-col" style="margin-bottom:14px;">
-        <div class="card-head">
-          <span class="card-title" id="growthRateTitle">Growth Rate % (QoQ, 5Q)</span>
-          <button class="info-icon" data-info-title="Growth Rate (%)" data-info-text="% เปลี่ยนแปลงเทียบไตรมาสก่อนหน้า (QoQ) — ไฟล์นี้มีข้อมูลย้อนหลังแค่ 5 ไตรมาส (Q2'25–Q2'26) จึงไม่มี Baseline ปีก่อนสำหรับคำนวณ YoY ได้จริง (แสดง '–' ในคอลัมน์แรกเพราะไม่มีไตรมาสก่อนหน้าให้เทียบ) · Total Revenue Growth ไม่แยกแสดงเพราะ Charmiss ไม่มี Revenue อื่นนอกจาก Net Sales (ค่าเดียวกับ Sales Growth) · Total Expense = Net Sales − Net Profit (หลังภาษี) — Mock Data 100%">i</button>
-          <div class="toolbar" style="margin-left:auto;">
-            <button class="tool-btn" id="growthRateDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          </div>
-        </div>
-        <table id="growthRateTable"></table>
-      </div>
-      <div class="card table-card single-label-col" style="margin-bottom:0;">
-        <div class="card-head">
-          <span class="card-title" id="cashCycleTitle">Cash Cycle (5Q)</span>
-          <button class="info-icon" data-info-title="Cash Cycle" data-info-text="Avg. Collection/Inventory/Payment Period (Days) = ตัวเลขเดียวกับที่เคยอยู่หน้า Balance Sheet เป๊ะ (แค่เปลี่ยนชื่อให้ตรงกับหน่วยจริง — เป็น Days ไม่ใช่ Turnover) · Turnover (Times) = 365 ÷ Days (สูตรมาตรฐาน ผูกกับตัวเลข Days ด้านบนเป๊ะ ไม่สร้างสมมติฐานใหม่) · Cash Cycle (Days) = Inventory Days + AR Days − AP Days · Cash Generation (CFO/EBITDA %, FCF Margin %) อ้างอิงจากหน้า Cash Flow — Mock Data 100%">i</button>
-          <div class="toolbar" style="margin-left:auto;">
-            <button class="tool-btn" id="cashCycleDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          </div>
-        </div>
-        <table id="cashCycleTable"></table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== FINANCIAL LEVERAGE ===== -->
-  <div class="section-label" id="sec-leverage">Financial Leverage</div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title" id="leverageTitle">D/E &amp; IBD/E Trend (5Q)</span>
-        <button class="info-icon" data-info-title="D/E & IBD/E Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity — Charmiss ไม่มีเงินกู้ยืมที่มีภาระดอกเบี้ย ณ ปัจจุบัน จึง IBD/E = 0.00x ตลอด แทนการเดาตัวเลขหนี้ใหม่ — Mock Data 100% (ย้ายมาจากหน้า Balance Sheet — ตัวเลขเดิมทุกจุด)">i</button>
-      </div>
-    </div>
-    <div class="chart-legend">
-      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>D/E</span>
-      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>IBD/E</span>
-    </div>
-    <div class="canvas-wrap" id="leverageCanvasWrap"><div id="leverageChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="leverageCallout" style="margin-top:10px;margin-bottom:0;">–</div>
-  </div>
-
-  <!-- ===== CASH CONVERSION CYCLE ===== -->
-  <div class="section-label" id="sec-ccc-bridge">Cash Conversion Cycle</div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">Cash Conversion Cycle Timeline</span>
-        <button class="info-icon" data-info-title="Cash Conversion Cycle Timeline" data-info-text="Operating Cycle = Inventory Days + AR Days · CCC = Operating Cycle − AP Days — แถบบนคือ Operating Cycle (Inventory ต่อด้วย Receivable) แถบล่างคือ Payable (จากจุด 0) ต่อด้วย CCC ซึ่งเริ่มตรงที่ Payable จบไปจนสุด Operating Cycle — ตัวเลขเดียวกับตาราง Cash Cycle ด้านบน (Q2'26) — Mock Data 100%">i</button>
-      </div>
-    </div>
-    <div class="canvas-wrap" id="cccBridgeCanvasWrap" style="height:150px;"><div id="cccBridgeChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="cccBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
-  </div>
-
-  <!-- ===== INVENTORY PROVISION ===== -->
-  <div class="section-label" id="sec-inventory-provision">Inventory Provision</div>
+  <!-- ===== PILL 2: FINANCIAL RATIOS ===== -->
+  <div class="pill-view" id="view-fin-ratios">
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title" id="provisionTitle">Inventory Provision Balance (5Q)</span>
-          <button class="info-icon" data-info-title="Inventory Provision Balance" data-info-text="เครื่องสำอางมีความเสี่ยงสินค้าหมดอายุ — Provision for Obsolescence กันไว้เป็น % ของ Inventory คงเหลือ (ประมาณการ) — Inventory Q1'26/Q2'26 ตรงกับหน้า Balance Sheet เป๊ะ (88/92 ล้านบาท) — Mock Data 100%">i</button>
+          <span class="chart-title">Margins Trend</span>
+          <button class="info-icon" data-info-title="Margins Trend" data-info-text="Gross/EBIT/EBITDA/Net Margin % ตามช่วงเวลาที่เลือก — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD ด้วย เส้น dashed ใช้ค่า YTD ตรงๆ ไม่ annualize) · Quarterly แสดง 5 ไตรมาสล่าสุด — ตัวเลขเดียวกับ P&amp;L Quarterly Trend เป๊ะ">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="marginsTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="marginsTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="marginsTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="chart-legend">
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-3)"></span>Inventory</span>
-        <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--critical)"></span>Provision Balance</span>
-      </div>
-      <div class="canvas-wrap" id="provisionCanvasWrap"><div id="provisionChart" style="width:100%;height:100%;"></div></div>
-      <div class="callout-text" id="provisionCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+      <div class="chart-legend" id="marginsTrendLegend"></div>
+      <div class="canvas-wrap" id="marginsTrendCanvasWrap"><div id="marginsTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="marginsTrendTableWrap"></div>
+      <div class="kpi-caption" id="marginsTrendFootnote" style="display:none;">Margins are period ratios (directly comparable across FY2024/FY2025/2026 YTD).</div>
     </div>
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Inventory Aging (Q2'26)</span>
-          <button class="info-icon" data-info-title="Inventory Aging" data-info-text="สัดส่วน Inventory คงเหลือ Q2'26 (฿92M) แบ่งตามระยะเวลาที่เหลือก่อนหมดอายุ — กลุ่ม '&lt;3 เดือน' คือกลุ่มเสี่ยงสูงสุดที่จะต้องตัดสต๊อกหรือลดราคาเร่งขาย — Mock Data 100%">i</button>
+          <span class="chart-title">Returns Trend</span>
+          <button class="info-icon" data-info-title="Returns Trend" data-info-text="ROE %, ROA % (Annualized) ตามช่วงเวลาที่เลือก — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD (annualized) ด้วย เส้น dashed — annualize ตัวเศษแล้วหาร average balance วิธีเดียวกับ DuPont Scorecard) · Quarterly แสดง 5 ไตรมาสล่าสุด — ใช้ Average Balances ชุดเดียวกับ Financial Scorecard">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="returnsTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="returnsTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="returnsTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="canvas-wrap" id="agingCanvasWrap"><div id="agingChart" style="width:100%;height:100%;"></div></div>
-      <div class="chart-legend" id="agingLegend"></div>
+      <div class="chart-legend" id="returnsTrendLegend"></div>
+      <div class="canvas-wrap" id="returnsTrendCanvasWrap"><div id="returnsTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="returnsTrendTableWrap"></div>
+      <div class="kpi-caption" id="returnsTrendFootnote" style="display:none;">Returns are annualized from YTD (same method as the DuPont Scorecard), not a closed-year actual.</div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Liquidity Trend</span>
+          <button class="info-icon" data-info-title="Liquidity Trend" data-info-text="Current Ratio = Current Assets ÷ Current Liabilities · Quick Ratio = (Current Assets − Inventory) ÷ Current Liabilities — ทั้งคู่เป็นค่า ณ สิ้นงวด (point-in-time), ไม่ต้อง annualize — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD ด้วย เส้น dashed) · Quarterly แสดง 5 ไตรมาสล่าสุด">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="liquidityTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="liquidityTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="liquidityTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="liquidityTrendLegend"></div>
+      <div class="canvas-wrap" id="liquidityTrendCanvasWrap"><div id="liquidityTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="liquidityTrendTableWrap"></div>
+    </div>
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Leverage Trend</span>
+          <button class="info-icon" data-info-title="Leverage Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity (subset ของ D/E เสมอ) — ทั้งคู่เป็นค่า ณ สิ้นงวด (point-in-time), ไม่ต้อง annualize — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD ด้วย เส้น dashed) · Quarterly แสดง 5 ไตรมาสล่าสุด — IBD/E เป็น illustrative mock, ไม่ผูก interest expense ใน P&L">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="leverageTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="leverageTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="leverageTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="leverageTrendLegend"></div>
+      <div class="canvas-wrap" id="leverageTrendCanvasWrap"><div id="leverageTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="leverageTrendTableWrap"></div>
     </div>
   </div>
+  </div><!-- /view-fin-ratios -->
+
+  <!-- ===== PILL 3: GROWTH RATE ===== -->
+  <div class="pill-view" id="view-growth-rate">
+    <div class="growth-mini-grid" id="growthMiniGrid">
+      <div class="growth-mini-chart">
+        <div class="growth-mini-title" id="growthMiniTitleSales" style="color:var(--brand);">Sales Growth Rate %</div>
+        <div class="canvas-wrap" style="height:170px;"><div id="growthChartSales" style="width:100%;height:100%;"></div></div>
+      </div>
+      <div class="growth-mini-chart">
+        <div class="growth-mini-title" style="color:#898781;">COGS Growth Rate %</div>
+        <div class="canvas-wrap" style="height:170px;"><div id="growthChartCogs" style="width:100%;height:100%;"></div></div>
+      </div>
+      <div class="growth-mini-chart">
+        <div class="growth-mini-title" style="color:#4C6FA5;">Total Expense Growth Rate %</div>
+        <div class="canvas-wrap" style="height:170px;"><div id="growthChartTotalExp" style="width:100%;height:100%;"></div></div>
+      </div>
+      <div class="growth-mini-chart">
+        <div class="growth-mini-title" id="growthMiniTitleNetProfit" style="color:var(--good);">Net Profit Growth Rate %</div>
+        <div class="canvas-wrap" style="height:170px;"><div id="growthChartNetProfit" style="width:100%;height:100%;"></div></div>
+      </div>
+    </div>
+    <div class="growth-insight" id="growthInsight">–</div>
+  </div><!-- /view-growth-rate -->
+
+  <!-- ===== PILL 4: CASH CONVERSION CYCLE ===== -->
+  <div class="pill-view" id="view-ccc">
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title" id="cccTimelineTitle">Cash Conversion Cycle Timeline</span>
+          <button class="info-icon" data-info-title="Cash Conversion Cycle Timeline" data-info-text="Operating Cycle = Inventory Days + AR Days · CCC = Operating Cycle − AP Days — แถบบนคือ Operating Cycle (Inventory ต่อด้วย Receivable) แถบล่างคือ Payable (จากจุด 0) ต่อด้วย CCC ซึ่งเริ่มตรงที่ Payable จบไปจนสุด Operating Cycle — ฐานอ้างอิงตาม View By/As of ที่เลือก (ตรงกับตาราง Turnover &amp; Cycle ด้านล่างเป๊ะ) — Mock Data 100%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="cccTimelineTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="cccTimelineDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="cccTimelineExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="cccBridgeCanvasWrap" style="height:172px;"><div id="cccBridgeChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="cccTimelineTableWrap"></div>
+      <div class="callout-text" id="cccBridgeCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Cash Conversion Cycle Trend</span>
+          <button class="info-icon" data-info-title="Cash Conversion Cycle Trend" data-info-text="CCC (Days) ตามช่วงเวลาที่เลือก — Annual แสดงเฉพาะปีที่ปิดแล้ว (FY2024–FY2025) · Quarterly แสดง 5 ไตรมาสล่าสุด — ยิ่งลดยิ่งดี (เงินทุนหมุนเวียนถูกปลดปล่อยเร็วขึ้น)">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="cccTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="cccTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="cccTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="cccTrendCanvasWrap"><div id="cccTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="cccTrendTableWrap"></div>
+      <div class="kpi-caption" id="cccTrendFootnote" style="display:none;">CCC is annualized from YTD balances (same method as the DuPont Scorecard), not a closed-year actual.</div>
+    </div>
+  </div>
+
+  <div class="card table-card single-label-col" style="margin-bottom:0;">
+    <div class="card-head">
+      <span class="card-title" id="cashCycleCompactTitle">Turnover &amp; Cycle</span>
+      <button class="info-icon" data-info-title="Turnover & Cycle" data-info-text="Avg. Collection/Inventory/Payment Period (Days) · Turnover (Times) = 365 ÷ Days — เฉพาะช่วงล่าสุด + ก่อนหน้า (ดูแนวโน้มยาวที่กราฟ CCC Trend ด้านบน) — CFO/EBITDA % และ FCF Margin % ย้ายไปที่หน้า Cash Flow — Mock Data 100%">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="cashCycleDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+      </div>
+    </div>
+    <table id="cashCycleTable"></table>
+  </div>
+  </div><!-- /view-ccc -->
 
 
 </div>
@@ -314,7 +392,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
   <div class="dpt-modal">
     <div class="dpt-modal-head">
       <div class="chart-title-wrap">
-        <span class="dpt-modal-title">DuPont ROE Tree — TTM (ending Q2'26)</span>
+        <span class="dpt-modal-title" id="dptModalTitle">DuPont ROE Tree — TTM (ending Q2'26)</span>
         <button class="info-icon" data-info-title="DuPont ROE Tree" data-info-text="Ratios use average balances · Goals are mock (pending Finance) · Leaf values derived from the same P&amp;L 5Q + Balance Sheet Q1'26 mix">i</button>
       </div>
       <div class="dpt-modal-controls">
@@ -366,60 +444,142 @@ const quarterLabels = quarterStarts.map(quarterYearLabel);
    quarter, EBITDA = EBIT + D&A, Net Profit = EBIT x 0.8) as P&L Quarterly
    Trend's 5-Quarter table -- ties to that table exactly, not re-guessed. */
 const TAX_RATE = 0.20;
-const netSalesQAll = [75634743, 75789637, 89098922, 81075377, 84539114];
-const grossProfitQAll = [36373120, 36207364, 42145971, 38754030, 40566408];
-const ebitQAll = [21645964, 21446912, 23509011, 22843778, 23908891];
-const daQAll = [2224597, 2262202, 2644779, 2475973, 2536173];
-const ebitdaQAll = ebitQAll.map((v,i)=>v+daQAll[i]);
-const gmQAll = grossProfitQAll.map((v,i)=> v/netSalesQAll[i]*100);
-const ebitMQAll = ebitQAll.map((v,i)=> v/netSalesQAll[i]*100);
-const ebitdaMQAll = ebitdaQAll.map((v,i)=> v/netSalesQAll[i]*100);
-const nmQAll = [22.8, 22.6, 21.1, 22.6, 22.6]; // exact match to P&L Quarterly Trend's 5Q table (EBIT x 0.8 / Net Sales, at display precision)
 
-/* --- Efficiency/Liquidity/Leverage: moved verbatim from Balance Sheet
-   (that page no longer shows these -- this is their only owner now). --- */
-const currentRatioQ = [2.71, 2.69, 2.66, 2.60, 2.58];
-const quickRatioQ = [1.42, 1.41, 1.40, 1.37, 1.36]; // new metric, no prior page owned it
-const invDaysQ = [199, 196, 192, 192, 188];
-const arDaysQ = [68, 67, 65, 63, 60];
-const apDaysQ = [70, 72, 73, 76, 77];
-const cccDaysQ = invDaysQ.map((v,i)=> v + arDaysQ[i] - apDaysQ[i]);
-const deRatioQ = [0.58, 0.56, 0.54, 0.53, 0.55];
-const ibdeRatioQ = [0, 0, 0, 0, 0];
+/* ============================================================================
+   MASTER quarterly dataset -- Q1'24 (idx 0) .. Q2'26 (idx 9), 10 quarters.
+   This is now the SINGLE source of truth: the "As of" selector picks an
+   anchorIdx (4..9) and every Quarterly-mode widget slices its 5-quarter
+   window from here, ending at that anchor. Q1'24-Q4'24 and Q1'25 are new
+   (fabricated once, extending the pre-existing Q2'25-Q2'26 quarters
+   backward with the same seasonal pattern -- Q4 peak, Q1/Q2 trough -- and
+   the same ~9% YoY growth already established between FY2024 and FY2025
+   in Annual mode); Q2'25-Q2'26 (idx 5-9) are byte-for-byte the original
+   hardcoded values this page always had.
+   Balance-sheet stock arrays (equity/assets) need ONE extra point per side
+   vs the flow arrays: MASTER_EQUITY[i]/MASTER_ASSETS[i] is the OPENING
+   balance of flow-quarter i (= closing balance of flow-quarter i-1), so
+   with 10 flow-quarters there are 11 balance points (idx 0..10, Q4'23-end
+   through Q2'26-end). idx 5..10 are exactly the pre-existing EQUITY_BY_Q/
+   ASSETS_BY_Q ("Q1'25...Q2'26 quarter-end").
+   The selectable anchor range is idx 4 (Q1'25) .. idx 9 (Q2'26) -- Q1'25 is
+   the earliest anchor for which BOTH the current AND prior TTM window have
+   a valid opening balance within this 11-point range. */
+const MASTER_QUARTER_LABELS = ["Q1'24","Q2'24","Q3'24","Q4'24","Q1'25","Q2'25","Q3'25","Q4'25","Q1'26","Q2'26"];
+const MASTER_SALES  = [68000000, 69300000, 69500000, 81700000, 74200000, 75634743, 75789637, 89098922, 81075377, 84539114];
+const MASTER_GP     = [32460000, 33090000, 33180000, 38990000, 35540000, 36373120, 36207364, 42145971, 38754030, 40566408];
+const MASTER_EBIT   = [18480000, 18840000, 18880000, 22200000, 20776000, 21645964, 21446912, 23509011, 22843778, 23908891];
+const MASTER_DA     = [1860000, 1900000, 1900000, 2240000, 2150000, 2224597, 2262202, 2644779, 2475973, 2536173];
+const MASTER_CURRENT_RATIO = [2.80, 2.78, 2.77, 2.76, 2.74, 2.71, 2.69, 2.66, 2.60, 2.58];
+const MASTER_QUICK_RATIO   = [1.48, 1.47, 1.46, 1.45, 1.44, 1.42, 1.41, 1.40, 1.37, 1.36];
+const MASTER_INV_DAYS = [209, 207, 206, 204, 202, 199, 196, 192, 192, 188];
+const MASTER_AR_DAYS  = [74, 73, 72, 71, 70, 68, 67, 65, 63, 60];
+const MASTER_AP_DAYS  = [64, 65, 67, 68, 69, 70, 72, 73, 76, 77];
+const MASTER_DE_RATIO = [0.64, 0.63, 0.62, 0.61, 0.60, 0.58, 0.56, 0.54, 0.53, 0.55];
+// IBD/E (2026-08-11, was flat 0.00 -- "no interest-bearing debt" placeholder)
+// -- now a smooth declining mock (interest-bearing debt being paid down),
+// always <= MASTER_DE_RATIO at every index since it's a subset of total
+// liabilities. Illustrative only; no interest expense is modeled in the P&L
+// (Interest Burden in the DuPont tree stays 1.00x regardless).
+const MASTER_IBDE_RATIO = [0.32, 0.30, 0.28, 0.26, 0.24, 0.20, 0.18, 0.16, 0.14, 0.12];
+const MASTER_CFO   = [13831200, 14310600, 14338200, 17108000, 16277460, 17186803.92, 17307653.22, 18569190.9, 18483418.23, 19700000];
+const MASTER_CAPEX = [2200000, 2300000, 2400000, 2600000, 2600000, 2800000, 3000000, 3100000, 3300000, 3600000];
+const MASTER_EQUITY = [149e6, 153e6, 157e6, 161e6, 165e6, 170e6, 178e6, 186e6, 194e6, 202e6, 209.9e6]; // Q4'23-end .. Q2'26-end
+const MASTER_ASSETS = [243e6, 249e6, 255e6, 262e6, 269e6, 277e6, 286e6, 296e6, 305e6, 310e6, 324.9e6];
 
-/* --- Cash Generation: same CFO/FCF figures as the Cash Flow page (CFO set
-   as ~72-73% of that quarter's real EBITDA there, so this ratio is smooth
-   by construction rather than independently re-guessed here). --- */
-const cfoQAll = [0.72,0.73,0.71,0.73].map((r,i)=> ebitdaQAll[i]*r).concat([19700000]);
-const capexQAll = [2.8e6, 3.0e6, 3.1e6, 3.3e6, 3.6e6];
-const fcfQAll = cfoQAll.map((v,i)=>v-capexQAll[i]);
-const cfoOverEbitdaQ = cfoQAll.map((v,i)=> v/ebitdaQAll[i]*100);
-const fcfMarginQ = fcfQAll.map((v,i)=> v/netSalesQAll[i]*100);
+const MASTER_EBITDA = MASTER_EBIT.map((v,i)=>v+MASTER_DA[i]);
+const MASTER_NET_PROFIT = MASTER_EBIT.map(v=> v*(1-TAX_RATE));
+const MASTER_GM = MASTER_SALES.map((s,i)=> MASTER_GP[i]/s*100);
+const MASTER_EBIT_M = MASTER_SALES.map((s,i)=> MASTER_EBIT[i]/s*100);
+const MASTER_EBITDA_M = MASTER_SALES.map((s,i)=> MASTER_EBITDA[i]/s*100);
+// Net Margin -- idx 5-9 keep the pre-existing hand-tuned "exact match to
+// P&L Quarterly Trend's 5Q table" display-precision values; idx 0-4 (new
+// history) fall back to the plain derivation since there's no cross-page
+// reference for those quarters to match.
+const MASTER_NM = MASTER_NET_PROFIT.slice(0,5).map((np,i)=> np/MASTER_SALES[i]*100).concat([22.8, 22.6, 21.1, 22.6, 22.6]);
+const MASTER_COGS = MASTER_SALES.map((s,i)=> s - MASTER_GP[i]);
+const MASTER_TOTAL_EXPENSE = MASTER_SALES.map((s,i)=> s - MASTER_NET_PROFIT[i]);
+const MASTER_CCC = MASTER_INV_DAYS.map((d,i)=> d + MASTER_AR_DAYS[i] - MASTER_AP_DAYS[i]);
+const MASTER_AR_TURNOVER = MASTER_AR_DAYS.map(d=> 365/d);
+const MASTER_INV_TURNOVER = MASTER_INV_DAYS.map(d=> 365/d);
+const MASTER_AP_TURNOVER = MASTER_AP_DAYS.map(d=> 365/d);
+// Per-quarter annualized ROE/ROA/Total Asset Turnover -- MASTER_EQUITY[i]/
+// MASTER_ASSETS[i] is quarter i's OPENING balance, [i+1] its closing.
+const MASTER_ROE = MASTER_NET_PROFIT.map((np,i)=> np*4/((MASTER_EQUITY[i]+MASTER_EQUITY[i+1])/2)*100);
+const MASTER_ROA = MASTER_NET_PROFIT.map((np,i)=> np*4/((MASTER_ASSETS[i]+MASTER_ASSETS[i+1])/2)*100);
+const MASTER_AT = MASTER_SALES.map((s,i)=> s*4/((MASTER_ASSETS[i]+MASTER_ASSETS[i+1])/2));
+// Financial Leverage (equity multiplier), same single-quarter average-balance
+// convention as MASTER_AT above -- no flow numerator to annualize here.
+const MASTER_FL = MASTER_ASSETS.slice(0,10).map((a,i)=> ((MASTER_ASSETS[i]+MASTER_ASSETS[i+1])/2)/((MASTER_EQUITY[i]+MASTER_EQUITY[i+1])/2));
+// QoQ growth (%) -- idx 0 (Q1'24) has no prior quarter in this dataset, so
+// it's always '–'; every other index has a valid prior within MASTER.
+function qoqGrowthSeries(vals){
+  return vals.map((v,i)=> i===0 ? null : (v-vals[i-1])/Math.abs(vals[i-1])*100);
+}
+const MASTER_SALES_GROWTH = qoqGrowthSeries(MASTER_SALES);
+const MASTER_COGS_GROWTH = qoqGrowthSeries(MASTER_COGS);
+const MASTER_TOTAL_EXPENSE_GROWTH = qoqGrowthSeries(MASTER_TOTAL_EXPENSE);
+const MASTER_NET_PROFIT_GROWTH = qoqGrowthSeries(MASTER_NET_PROFIT);
+
+/* --- Old fixed-window names, now DERIVED as the idx 5-9 slice of MASTER
+   (Q2'25-Q2'26) -- identical values to before this feature, so Annual
+   mode and the DEFAULT Quarterly view (anchor = Q2'26) are byte-for-byte
+   unchanged. --- */
+const netSalesQAll = MASTER_SALES.slice(5,10);
+const grossProfitQAll = MASTER_GP.slice(5,10);
+const ebitQAll = MASTER_EBIT.slice(5,10);
+const daQAll = MASTER_DA.slice(5,10);
+const ebitdaQAll = MASTER_EBITDA.slice(5,10);
+const gmQAll = MASTER_GM.slice(5,10);
+const ebitMQAll = MASTER_EBIT_M.slice(5,10);
+const ebitdaMQAll = MASTER_EBITDA_M.slice(5,10);
+const nmQAll = MASTER_NM.slice(5,10);
+const currentRatioQ = MASTER_CURRENT_RATIO.slice(5,10);
+const quickRatioQ = MASTER_QUICK_RATIO.slice(5,10);
+const invDaysQ = MASTER_INV_DAYS.slice(5,10);
+const arDaysQ = MASTER_AR_DAYS.slice(5,10);
+const apDaysQ = MASTER_AP_DAYS.slice(5,10);
+const cccDaysQ = MASTER_CCC.slice(5,10);
+const deRatioQ = MASTER_DE_RATIO.slice(5,10);
+const ibdeRatioQ = MASTER_IBDE_RATIO.slice(5,10);
+const cfoQAll = MASTER_CFO.slice(5,10);
+const capexQAll = MASTER_CAPEX.slice(5,10);
+const cogsQAll = MASTER_COGS.slice(5,10);
+const netProfitAfterTaxQAll = MASTER_NET_PROFIT.slice(5,10);
+const totalExpenseQAll = MASTER_TOTAL_EXPENSE.slice(5,10);
+const roeQAll = MASTER_ROE.slice(5,10);
+const roaQAll = MASTER_ROA.slice(5,10);
+const totalAssetTurnoverQAll = MASTER_AT.slice(5,10);
+const salesGrowthQ = qoqGrowthSeries(netSalesQAll);
+const cogsGrowthQ = qoqGrowthSeries(cogsQAll);
+const totalExpenseGrowthQ = qoqGrowthSeries(totalExpenseQAll);
+const netProfitGrowthQ = qoqGrowthSeries(netProfitAfterTaxQAll);
+const arTurnoverTimesQ = MASTER_AR_TURNOVER.slice(5,10);
+const invTurnoverTimesQ = MASTER_INV_TURNOVER.slice(5,10);
+const apTurnoverTimesQ = MASTER_AP_TURNOVER.slice(5,10);
+const EQUITY_BY_Q = MASTER_EQUITY.slice(5,11); // Q1'25...Q2'26 quarter-end
+const ASSETS_BY_Q = MASTER_ASSETS.slice(5,11); // Q1'25...Q2'26 quarter-end
+// Inventory Provision chart's own series -- NOT anchor-aware (that chart +
+// the Financial Leverage trend chart are explicitly excluded from the "As
+// of" selector's recompute list; they always show the fixed Q2'25-Q2'26
+// window, same as before this feature).
+const inventoryQ = [82e6, 84e6, 87e6, 88e6, 92e6]; // Q1'26/Q2'26 tie to Balance Sheet exactly (88/92)
+const provisionBalanceQ = [5.7e6, 5.9e6, 6.1e6, 6.3e6, 6.5e6];
 
 /* --- DuPont ROE Decomposition (TTM, standard 3-step, Average balances) ---
    ROE = Profit Margin x Asset Turnover x Financial Leverage, using AVERAGE
-   (not period-end) Total Assets/Equity: avg = (opening quarter-end balance
-   + closing quarter-end balance) / 2. Sales/EBIT are pulled from the SAME
-   netSalesQAll/ebitQAll arrays above (Profitability); balances are the same
-   quarter-end series the Balance Sheet + Statement of Equity pages show,
-   with one extra quarter (Q1'25) added solely so the PREVIOUS TTM window
-   also has an opening balance to average against. Interest Burden = EBIT /
-   EBT = 1.00x always (Charmiss carries no interest-bearing debt, same fact
-   IBD/E = 0.00x reflects elsewhere). ROE is computed directly as Net Profit
-   / Average Equity (the exact, canonical figure per spec) -- in full float
-   precision this is algebraically identical to the 3-factor product
-   (Sales and Average Assets cancel out), so both agree here; only rounding
-   the DISPLAYED 2-decimal factors and multiplying them back by hand would
-   drift a fraction of a point. */
-const EQUITY_BY_Q = [170e6, 178e6, 186e6, 194e6, 202e6, 209.9e6]; // Q1'25...Q2'26 quarter-end
-const ASSETS_BY_Q = [277e6, 286e6, 296e6, 305e6, 310e6, 324.9e6]; // Q1'25...Q2'26 quarter-end
-function ttmDupont(salesIdxStart, balOpenIdx, balCloseIdx){
-  const idxs = [salesIdxStart, salesIdxStart+1, salesIdxStart+2, salesIdxStart+3];
-  const sales = idxs.reduce((a,i)=>a+netSalesQAll[i],0);
-  const ebit = idxs.reduce((a,i)=>a+ebitQAll[i],0);
+   (not period-end) Total Assets/Equity. Generalized to take an anchor
+   index into MASTER so the "As of" selector can shift the whole TTM
+   window; ttmDupontAt(9) (anchor=Q2'26) reproduces the page's original
+   fixed TTM calc exactly. Interest Burden = EBIT/EBT = 1.00x always
+   (Charmiss carries no interest-bearing debt). */
+function ttmDupontAt(anchorIdx){
+  const idxs = [anchorIdx-3, anchorIdx-2, anchorIdx-1, anchorIdx];
+  const sales = idxs.reduce((a,i)=>a+MASTER_SALES[i],0);
+  const ebit = idxs.reduce((a,i)=>a+MASTER_EBIT[i],0);
+  const grossProfitTTM = idxs.reduce((a,i)=>a+MASTER_GP[i],0);
   const netProfit = ebit*(1-TAX_RATE);
-  const avgAssets = (ASSETS_BY_Q[balOpenIdx]+ASSETS_BY_Q[balCloseIdx])/2;
-  const avgEquity = (EQUITY_BY_Q[balOpenIdx]+EQUITY_BY_Q[balCloseIdx])/2;
+  const avgAssets = (MASTER_ASSETS[anchorIdx-3]+MASTER_ASSETS[anchorIdx+1])/2;
+  const avgEquity = (MASTER_EQUITY[anchorIdx-3]+MASTER_EQUITY[anchorIdx+1])/2;
   const operatingMargin = ebit/sales*100;
   const taxBurden = 1-TAX_RATE; // Net Profit / EBIT
   const interestBurden = 1.00; // EBIT / EBT -- no interest expense
@@ -429,45 +589,71 @@ function ttmDupont(salesIdxStart, balOpenIdx, balCloseIdx){
   const roa = netProfit/avgAssets*100; // = Profit Margin x Asset Turnover, exact
   const roe = netProfit/avgEquity*100; // canonical, exact
   const roeFromFactors = profitMargin*assetTurnover*financialLeverage; // cross-check -- matches `roe` exactly at full precision
-  return { sales, ebit, netProfit, avgAssets, avgEquity, operatingMargin, taxBurden, interestBurden, profitMargin, assetTurnover, financialLeverage, roa, roe, roeFromFactors };
+  return { sales, ebit, grossProfitTTM, netProfit, avgAssets, avgEquity, operatingMargin, taxBurden, interestBurden, profitMargin, assetTurnover, financialLeverage, roa, roe, roeFromFactors };
 }
-const dupontCurrent = ttmDupont(1, 1, 5); // TTM Q3'25-Q2'26, balances avg(Q2'25, Q2'26)
-const dupontPrevious = ttmDupont(0, 0, 4); // TTM Q2'25-Q1'26, balances avg(Q1'25, Q1'26)
+// Pinned to the default anchor (Q2'26) -- used by Annual mode only, which
+// never shifts with the "As of" selector.
+const dupontCurrentPinned = ttmDupontAt(9); // TTM Q3'25-Q2'26, balances avg(Q2'25, Q2'26)
+const dupontPreviousPinned = ttmDupontAt(8); // TTM Q2'25-Q1'26, balances avg(Q1'25, Q1'26)
 
-/* ---------- Derived series: Financial Ratios / Growth Rate / Cash Cycle tables ---------- */
-const cogsQAll = netSalesQAll.map((v,i)=> v - grossProfitQAll[i]);
-const netProfitAfterTaxQAll = ebitQAll.map(v=> v*(1-TAX_RATE));
-const totalExpenseQAll = netSalesQAll.map((v,i)=> v - netProfitAfterTaxQAll[i]);
+/* --- "As of" selector state -- anchorIdx (4..9) is the MASTER index the
+   5-quarter Quarterly-mode window ends at; isQTD is the special "This
+   Quarter" partial-period state. QTD_Q3_26 is a partial-quarter mock
+   (Charmiss real-world "today" per this session is Aug 2026, i.e. ~1
+   month into Q3'26 -- fraction=1/3): flow figures are the actual QTD
+   accumulation; annualized ratios scale the QTD figure up to a full-
+   quarter run-rate first (÷fraction), THEN apply the same x4 formula the
+   Annualized column uses elsewhere -- feeding a partial-quarter dollar
+   figure into that formula unscaled would understate the rate by
+   (1-fraction), which is what "ไม่ใช้ TTM...คิดแบบ annualized" plus the
+   partial-quarter caveat exists to guard against. Days/ratio-type stock
+   metrics and Inventory/Provision carry forward Q2'26's closing point
+   (the best available proxy -- Q3'26 hasn't closed, so there's no new
+   balance to report). Growth vs the prior (FULL) quarter is intentionally
+   left uncomputed ('–') -- QTD dollars vs a full prior quarter would read
+   as a large fake decline. */
+const MIN_ANCHOR_IDX = 4; // Q1'25 -- earliest anchor with a full prior-TTM window
+const DEFAULT_ANCHOR_IDX = 9; // Q2'26 -- last fully-closed quarter
+const HAS_Q3_26_QTD = true; // Charmiss "today" (per session date) has rolled into Q3'26
+let anchorIdx = DEFAULT_ANCHOR_IDX;
+let isQTD = false;
+const QTD_Q3_26 = { fraction: 1/3, sales: 29300000, grossProfit: 14060000, ebit: 8290000, da: 880000, capex: 1300000 };
+QTD_Q3_26.netProfit = QTD_Q3_26.ebit*(1-TAX_RATE);
+QTD_Q3_26.ebitda = QTD_Q3_26.ebit+QTD_Q3_26.da;
+QTD_Q3_26.gm = QTD_Q3_26.grossProfit/QTD_Q3_26.sales*100;
+QTD_Q3_26.ebitMargin = QTD_Q3_26.ebit/QTD_Q3_26.sales*100;
+QTD_Q3_26.ebitdaMargin = QTD_Q3_26.ebitda/QTD_Q3_26.sales*100;
+QTD_Q3_26.profitMargin = QTD_Q3_26.netProfit/QTD_Q3_26.sales*100;
+QTD_Q3_26.cfo = QTD_Q3_26.ebitda*0.74;
+QTD_Q3_26.fcf = QTD_Q3_26.cfo-QTD_Q3_26.capex;
+// Run-rate = QTD figure scaled to a hypothetical full quarter at the same pace
+const qtdRunRateSales = QTD_Q3_26.sales/QTD_Q3_26.fraction;
+const qtdRunRateEbit = QTD_Q3_26.ebit/QTD_Q3_26.fraction;
+const qtdRunRateNetProfit = qtdRunRateEbit*(1-TAX_RATE);
+QTD_Q3_26.equityProxy = MASTER_EQUITY[10]; // Q2'26-end -- flat proxy, Q3'26 hasn't closed
+QTD_Q3_26.assetsProxy = MASTER_ASSETS[10];
+QTD_Q3_26.roe = qtdRunRateNetProfit*4/QTD_Q3_26.equityProxy*100;
+QTD_Q3_26.roa = qtdRunRateNetProfit*4/QTD_Q3_26.assetsProxy*100;
+QTD_Q3_26.assetTurnover = qtdRunRateSales*4/QTD_Q3_26.assetsProxy;
+QTD_Q3_26.financialLeverage = QTD_Q3_26.assetsProxy/QTD_Q3_26.equityProxy;
+QTD_Q3_26.currentRatio = MASTER_CURRENT_RATIO[9]; QTD_Q3_26.quickRatio = MASTER_QUICK_RATIO[9];
+QTD_Q3_26.invDays = MASTER_INV_DAYS[9]; QTD_Q3_26.arDays = MASTER_AR_DAYS[9]; QTD_Q3_26.apDays = MASTER_AP_DAYS[9];
+QTD_Q3_26.ccc = QTD_Q3_26.invDays+QTD_Q3_26.arDays-QTD_Q3_26.apDays;
+QTD_Q3_26.arTurnover = 365/QTD_Q3_26.arDays; QTD_Q3_26.invTurnover = 365/QTD_Q3_26.invDays; QTD_Q3_26.apTurnover = 365/QTD_Q3_26.apDays;
+QTD_Q3_26.deRatio = MASTER_DE_RATIO[9]; QTD_Q3_26.ibdeRatio = MASTER_IBDE_RATIO[9];
+QTD_Q3_26.inventory = inventoryQ[4]; QTD_Q3_26.provisionBalance = provisionBalanceQ[4];
 
-// Per-quarter annualized ROE/ROA/Total Asset Turnover -- same average-balance
-// method as the DuPont TTM figures above, applied per-quarter instead of TTM.
-// EQUITY_BY_Q/ASSETS_BY_Q = [Q1'25, Q2'25, Q3'25, Q4'25, Q1'26, Q2'26]; our 5
-// quarters here (quarterStarts) are Q2'25..Q2'26, i.e. closing-balance index i+1.
-const roeQAll = netProfitAfterTaxQAll.map((np,i)=> np*4/((EQUITY_BY_Q[i]+EQUITY_BY_Q[i+1])/2)*100);
-const roaQAll = netProfitAfterTaxQAll.map((np,i)=> np*4/((ASSETS_BY_Q[i]+ASSETS_BY_Q[i+1])/2)*100);
-const totalAssetTurnoverQAll = netSalesQAll.map((s,i)=> s*4/((ASSETS_BY_Q[i]+ASSETS_BY_Q[i+1])/2));
-
-// QoQ growth (%) -- only 5 quarters of history exist in this file, so there is
-// no same-quarter-last-year baseline for a true YoY figure; first column is
-// always '–' since there's no prior quarter to compare Q2'25 against.
-function qoqGrowthSeries(vals){
-  return vals.map((v,i)=> i===0 ? null : (v-vals[i-1])/Math.abs(vals[i-1])*100);
+// 5-quarter window ending at anchorIdx (or, if isQTD, the 4 quarters
+// ending Q2'26 + Q3'26 QTD as the 5th slot). qtdVal is only used in QTD
+// mode; ordinary anchor selections ignore it.
+function windowSlice(masterArr, qtdVal){
+  if(isQTD) return [...masterArr.slice(DEFAULT_ANCHOR_IDX-3, DEFAULT_ANCHOR_IDX+1), qtdVal];
+  return masterArr.slice(anchorIdx-4, anchorIdx+1);
 }
-const salesGrowthQ = qoqGrowthSeries(netSalesQAll);
-const cogsGrowthQ = qoqGrowthSeries(cogsQAll);
-const totalExpenseGrowthQ = qoqGrowthSeries(totalExpenseQAll);
-const netProfitGrowthQ = qoqGrowthSeries(netProfitAfterTaxQAll);
-
-// Turnover (Times) = 365 / Days -- standard identity, ties exactly to the
-// existing Days figures (arDaysQ/invDaysQ/apDaysQ) above.
-const arTurnoverTimesQ = arDaysQ.map(d=> 365/d);
-const invTurnoverTimesQ = invDaysQ.map(d=> 365/d);
-const apTurnoverTimesQ = apDaysQ.map(d=> 365/d);
-
-// Promoted out of renderAll() (was local) so the Annual model below can
-// reference the same Q4'25/Q2'26 points -- values unchanged.
-const inventoryQ = [82e6, 84e6, 87e6, 88e6, 92e6]; // Q1'26/Q2'26 tie to Balance Sheet exactly (88/92)
-const provisionBalanceQ = [5.7e6, 5.9e6, 6.1e6, 6.3e6, 6.5e6];
+function windowLabels(){
+  if(isQTD) return [...MASTER_QUARTER_LABELS.slice(DEFAULT_ANCHOR_IDX-3, DEFAULT_ANCHOR_IDX+1), "Q3'26 QTD"];
+  return MASTER_QUARTER_LABELS.slice(anchorIdx-4, anchorIdx+1);
+}
 
 /* ---------- Annual data model (View By: Annual) ----------
    FY2024 = pure annual-level mock constants -- this file has no quarterly
@@ -489,20 +675,21 @@ const provisionBalanceQ = [5.7e6, 5.9e6, 6.1e6, 6.3e6, 6.5e6];
    stock/ratio metrics use TTM, reusing dupontCurrent and the existing
    Q2'26 point directly -- the exact same figures the Scorecard shows,
    not recomputed. */
-const Q1_25 = { // fabricated once, only to complete FY2025 -- never its
-  // own displayed column (Quarterly mode keeps showing the same 5
-  // rolling quarters, Q2'25-Q2'26, completely untouched by this feature).
-  sales: 74200000, grossProfit: 35540000, ebit: 20776000, da: 2150000,
-  currentRatio: 2.74, quickRatio: 1.44, invDays: 202, arDays: 70, apDays: 69, deRatio: 0.60,
-  capex: 2600000
+// Q1'25 = MASTER index 4 -- Annual mode's FY2025 build predates the "As
+// of" feature's MASTER dataset and references this object by name, so it's
+// kept as an alias (same values, single source) rather than rewritten.
+const Q1_25 = {
+  sales: MASTER_SALES[4], grossProfit: MASTER_GP[4], ebit: MASTER_EBIT[4], da: MASTER_DA[4],
+  currentRatio: MASTER_CURRENT_RATIO[4], quickRatio: MASTER_QUICK_RATIO[4], invDays: MASTER_INV_DAYS[4],
+  arDays: MASTER_AR_DAYS[4], apDays: MASTER_AP_DAYS[4], deRatio: MASTER_DE_RATIO[4], ibdeRatio: MASTER_IBDE_RATIO[4],
+  capex: MASTER_CAPEX[4], cfo: MASTER_CFO[4]
 };
 Q1_25.ebitda = Q1_25.ebit + Q1_25.da;
-Q1_25.cfo = Q1_25.ebitda * 0.71; // same ~0.71-0.73 CFO/EBITDA band the existing quarters use
 Q1_25.netProfit = Q1_25.ebit * (1-TAX_RATE);
 
 const FY2024 = {
   sales: 288500000, grossProfit: 137700000, ebit: 78400000, da: 7900000,
-  currentRatio: 2.75, quickRatio: 1.47, invDays: 205, arDays: 72, apDays: 66, deRatio: 0.62, ibdeRatio: 0,
+  currentRatio: 2.75, quickRatio: 1.47, invDays: 205, arDays: 72, apDays: 66, deRatio: 0.62, ibdeRatio: 0.34,
   avgEquity: 158000000, avgAssets: 258000000,
   cfo: 60410000, capex: 10800000,
   inventory: 78000000, provisionBalance: 5400000
@@ -521,8 +708,6 @@ FY2024.profitMargin = FY2024.netProfit/FY2024.sales*100;
 FY2024.gm = FY2024.grossProfit/FY2024.sales*100;
 FY2024.ebitMargin = FY2024.ebit/FY2024.sales*100;
 FY2024.ebitdaMargin = FY2024.ebitda/FY2024.sales*100;
-FY2024.cfoOverEbitda = FY2024.cfo/FY2024.ebitda*100;
-FY2024.fcfMargin = FY2024.fcf/FY2024.sales*100;
 FY2024.arTurnover = 365/FY2024.arDays;
 FY2024.invTurnover = 365/FY2024.invDays;
 FY2024.apTurnover = 365/FY2024.apDays;
@@ -538,7 +723,7 @@ const FY2025 = {
   arDays: (Q1_25.arDays + arDaysQ[0] + arDaysQ[1] + arDaysQ[2]) / 4,
   apDays: (Q1_25.apDays + apDaysQ[0] + apDaysQ[1] + apDaysQ[2]) / 4,
   deRatio: (Q1_25.deRatio + deRatioQ[0] + deRatioQ[1] + deRatioQ[2]) / 4,
-  ibdeRatio: 0,
+  ibdeRatio: (Q1_25.ibdeRatio + ibdeRatioQ[0] + ibdeRatioQ[1] + ibdeRatioQ[2]) / 4,
   avgEquity: (EQUITY_BY_Q[0]+EQUITY_BY_Q[1]+EQUITY_BY_Q[2]+EQUITY_BY_Q[3])/4,
   avgAssets: (ASSETS_BY_Q[0]+ASSETS_BY_Q[1]+ASSETS_BY_Q[2]+ASSETS_BY_Q[3])/4,
   cfo: Q1_25.cfo + cfoQAll[0] + cfoQAll[1] + cfoQAll[2],
@@ -560,18 +745,20 @@ FY2025.profitMargin = FY2025.netProfit/FY2025.sales*100;
 FY2025.gm = FY2025.grossProfit/FY2025.sales*100;
 FY2025.ebitMargin = FY2025.ebit/FY2025.sales*100;
 FY2025.ebitdaMargin = FY2025.ebitda/FY2025.sales*100;
-FY2025.cfoOverEbitda = FY2025.cfo/FY2025.ebitda*100;
-FY2025.fcfMargin = FY2025.fcf/FY2025.sales*100;
 FY2025.arTurnover = 365/FY2025.arDays;
 FY2025.invTurnover = 365/FY2025.invDays;
 FY2025.apTurnover = 365/FY2025.apDays;
 
-// 2025 YTD (Q1'25+Q2'25) -- YoY baseline for 2026 YTD growth rates only,
-// never its own displayed column.
+// 2025 YTD (Q1'25+Q2'25) -- YoY baseline for 2026 YTD growth rates, AND (new,
+// 2026-08-11) the fair prior-period comparison for the DuPont Scorecard's
+// own Annual+"2026 (Current)" branch (see dupontFromYTD below) -- never its
+// own displayed trend column.
 const YTD2025 = {
   sales: Q1_25.sales + netSalesQAll[0],
   grossProfit: Q1_25.grossProfit + grossProfitQAll[0],
-  ebit: Q1_25.ebit + ebitQAll[0]
+  ebit: Q1_25.ebit + ebitQAll[0],
+  avgAssets: (MASTER_ASSETS[5]+MASTER_ASSETS[6])/2, // bottom-up mean of the period's OWN 2 quarter-end points (Q1'25-end, Q2'25-end), same convention as FY2024/FY2025's avgAssets/avgEquity
+  avgEquity: (MASTER_EQUITY[5]+MASTER_EQUITY[6])/2
 };
 YTD2025.netProfit = YTD2025.ebit * (1-TAX_RATE);
 YTD2025.cogs = YTD2025.sales - YTD2025.grossProfit;
@@ -584,7 +771,9 @@ const YTD2026 = {
   ebit: ebitQAll[3]+ebitQAll[4],
   da: daQAll[3]+daQAll[4],
   cfo: cfoQAll[3]+cfoQAll[4],
-  capex: capexQAll[3]+capexQAll[4]
+  capex: capexQAll[3]+capexQAll[4],
+  avgAssets: (MASTER_ASSETS[9]+MASTER_ASSETS[10])/2, // Q1'26-end, Q2'26-end -- same bottom-up convention
+  avgEquity: (MASTER_EQUITY[9]+MASTER_EQUITY[10])/2
 };
 YTD2026.ebitda = YTD2026.ebit+YTD2026.da;
 YTD2026.netProfit = YTD2026.ebit * (1-TAX_RATE);
@@ -595,14 +784,40 @@ YTD2026.gm = YTD2026.grossProfit/YTD2026.sales*100;
 YTD2026.ebitMargin = YTD2026.ebit/YTD2026.sales*100;
 YTD2026.ebitdaMargin = YTD2026.ebitda/YTD2026.sales*100;
 YTD2026.profitMargin = YTD2026.netProfit/YTD2026.sales*100;
-YTD2026.cfoOverEbitda = YTD2026.cfo/YTD2026.ebitda*100;
-YTD2026.fcfMargin = YTD2026.fcf/YTD2026.sales*100;
 
-// 2026 TTM (stock/ratio metrics) -- reuses dupontCurrent + the latest
-// (Q2'26) point on every existing Days/Ratio array. No new numbers.
+// dupont-shaped adapter for a YTD object (2026-08-11) -- annualizes the flow
+// numerator (x2, since YTD = exactly half a year) and divides by the YTD
+// period's OWN average balance (avgAssets/avgEquity above), instead of
+// ttmDupontAt(9)'s real-trailing-4-quarter sum. Requested explicitly: the
+// DuPont Scorecard's Annual + "2026 (Current)" branch should read as an
+// annualized-YTD figure (matching what the page now labels "2026 YTD
+// (annualized)" on the Returns/CCC trend charts and what the Margins Trend
+// chart's own YTD point already is for flow ratios), not a smoothed trailing
+// TTM that mixes in 3 quarters from last year. Same taxBurden/interestBurden
+// constants ttmDupontAt/dupontFromFY always use (no interest-bearing debt).
+function dupontFromYTD(ytd){
+  const sales = ytd.sales*2, ebit = ytd.ebit*2, grossProfitTTM = ytd.grossProfit*2, netProfit = ytd.netProfit*2;
+  const operatingMargin = ebit/sales*100; // unchanged by the x2 (numerator and denominator both scale)
+  const taxBurden = 1-TAX_RATE, interestBurden = 1.00;
+  const profitMargin = operatingMargin*taxBurden*interestBurden;
+  const assetTurnover = sales/ytd.avgAssets;
+  const financialLeverage = ytd.avgAssets/ytd.avgEquity;
+  const roa = netProfit/ytd.avgAssets*100;
+  const roe = netProfit/ytd.avgEquity*100;
+  return { sales, ebit, grossProfitTTM, netProfit, avgAssets:ytd.avgAssets, avgEquity:ytd.avgEquity, operatingMargin, taxBurden, interestBurden, profitMargin, assetTurnover, financialLeverage, roa, roe };
+}
+const dupontFromYTD2026 = dupontFromYTD(YTD2026);
+const dupontFromYTD2025 = dupontFromYTD(YTD2025);
+
+// 2026 TTM (stock/ratio metrics) -- ROE/ROA/Asset Turnover/Financial
+// Leverage now come from dupontFromYTD2026 (annualized-YTD, see above,
+// 2026-08-11 fix -- previously dupontCurrentPinned/ttmDupontAt(9), a real
+// trailing TTM that disagreed with the Scorecard once the Scorecard itself
+// switched to the annualized-YTD convention); every Days/Ratio field below
+// is unrelated to ROE and stays the latest (Q2'26) point, unchanged.
 const TTM2026 = {
-  roe: dupontCurrent.roe, roa: dupontCurrent.roa, assetTurnover: dupontCurrent.assetTurnover,
-  financialLeverage: dupontCurrent.financialLeverage,
+  roe: dupontFromYTD2026.roe, roa: dupontFromYTD2026.roa, assetTurnover: dupontFromYTD2026.assetTurnover,
+  financialLeverage: dupontFromYTD2026.financialLeverage,
   currentRatio: currentRatioQ[4], quickRatio: quickRatioQ[4],
   invDays: invDaysQ[4], arDays: arDaysQ[4], apDays: apDaysQ[4], ccc: cccDaysQ[4],
   arTurnover: arTurnoverTimesQ[4], invTurnover: invTurnoverTimesQ[4], apTurnover: apTurnoverTimesQ[4],
@@ -615,6 +830,18 @@ const annualLabelsMixed = ["FY2024","FY2025","2026 YTD/TTM"];
 const annualLabelsStock = ["FY2024","FY2025","2026 TTM"];
 
 let currentViewBy = 'quarterly';
+// Annual mode's own "As of" anchor (2026-08-10 addition, mirrors the
+// Quarterly "As of" pattern) -- 'current' = today's partial FY2026 as the
+// unfinished last column (existing default: FY2024/FY2025/2026 YTD-TTM);
+// 'fy2025' = "as of" FY2025's close, a fully-closed year with no partial
+// column, so the still-open 2026 column drops entirely rather than showing
+// data from a year that, from this vantage point, hasn't happened yet.
+// Capped at FY2025 (not FY2024) since FY2024 itself has no quarterly
+// breakdown in this file's data model (see the FY2024 block below) -- there
+// is no earlier year to anchor on. Scorecard/Tree are NOT affected by this
+// (same "pinned, unaffected by View By" rule as the Quarterly/Annual toggle
+// itself) -- only Financial Ratios/Growth Rate/Cash Cycle react.
+let annualAnchor = 'current';
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
@@ -622,7 +849,6 @@ if (typeof renderNavMenu === 'function') {
 }
 initInfoPopovers();
 initThemeToggle(()=> renderAll());
-initSectionScrollSpy();
 
 (function initMenubarCollapse(){
   const wrap = document.getElementById('pageHeaderSticky');
@@ -664,7 +890,7 @@ function resolveColor(cssColorOrVar){
 function renderCCCTimeline(containerId, data){
   const container = document.getElementById(containerId);
   const width = (container && container.clientWidth) || 640;
-  const height = 150;
+  const height = 172;
   const inv = data.inventory, ar = data.receivable, ap = data.payable;
   const operatingCycle = inv + ar;
   const ccc = operatingCycle - ap;
@@ -712,21 +938,22 @@ function renderCCCTimeline(containerId, data){
 }
 
 /* DuPont ROE Tree (analyst drill-down modal, opened from the Scorecard's
-   expand button) -- all ratio nodes pulled live from dupontCurrent/Previous
-   (same TTM figures as the compact Scorecard above, no new numbers). The
-   Net Profit leaf (Sales/COGS/SG&A/Tax/Interest) is exact, derived from the
-   same 5Q grossProfitQAll/ebitQAll arrays over the identical TTM window
-   dupontCurrent uses. The Total Assets leaf (Current/Non-current + AR/
-   Inventories/Cash/Other) has no per-quarter category history on this page
-   (only a single lump Total Assets balance), so it's allocated using
-   Balance Sheet's own Q1'26 category weights (Current 193M : Non-current
-   117M of 310M total) -- proportional/approximate, flagged in the modal
-   footnote, but guaranteed to sum exactly to this page's avgAssets.
-   Status color is 2-state only (green/red, no amber) per this modal's own
-   spec -- a deliberately different rule from the compact Scorecard's
-   3-state RAG, scoped entirely to this tree. */
-function buildDupontTreeHTML(){
-  const cur = dupontCurrent, prev = dupontPrevious;
+   expand button) -- all ratio nodes pulled live from whichever cur/prev
+   the caller passes in (same TTM -- or, in QTD mode, annualized-QTD --
+   figures the compact Scorecard above shows, no new numbers; shifts with
+   the "As of" selector same as the Scorecard). The Net Profit leaf
+   (Sales/COGS/SG&A/Tax/Interest) is exact, using cur.grossProfitTTM (the
+   same window ttmDupontAt/QTD already summed, not re-sliced here). The
+   Total Assets leaf (Current/Non-current + AR/Inventories/Cash/Other) has
+   no per-quarter category history on this page (only a single lump Total
+   Assets balance), so it's allocated using Balance Sheet's own Q1'26
+   category weights (Current 193M : Non-current 117M of 310M total) --
+   proportional/approximate, flagged in the modal footnote, but guaranteed
+   to sum exactly to cur.avgAssets. Status color is 2-state only (green/
+   red, no amber) per this modal's own spec -- a deliberately different
+   rule from the compact Scorecard's 3-state RAG, scoped entirely to this
+   tree. */
+function buildDupontTreeHTML(cur, prev, apexLabel){
 
   function arrowHTML(current, prior){
     const rel = Math.abs(current-prior)/Math.abs(prior);
@@ -745,10 +972,10 @@ function buildDupontTreeHTML(){
     return '<div class="dpt-node '+cls+'"'+statusAttr+'>'+inner+'</div>';
   }
 
-  // Net Profit leaf -- exact, same TTM window (Q3'25..Q2'26, idxs [1,2,3,4]) as dupontCurrent
-  const grossProfitTTM = [1,2,3,4].reduce((a,i)=>a+grossProfitQAll[i],0);
-  const cogsTTM = cur.sales - grossProfitTTM;
-  const sgaTTM = grossProfitTTM - cur.ebit;
+  // Net Profit leaf -- exact, using cur's own window total (ttmDupontAt/QTD
+  // already computed the matching gross profit over the same window).
+  const cogsTTM = cur.sales - cur.grossProfitTTM;
+  const sgaTTM = cur.grossProfitTTM - cur.ebit;
   const taxTTM = cur.ebit * TAX_RATE;
   const interestTTM = 0;
 
@@ -781,7 +1008,7 @@ function buildDupontTreeHTML(){
       + '<div class="dpt-leaf-detail-row total"><span>= Total Assets (avg)</span><span>'+fmtTHB(cur.avgAssets)+'</span></div>'
     + '</div>';
 
-  return node('dpt-node-apex', 'ROE (TTM)', fmtPct(cur.roe,1),
+  return node('dpt-node-apex', 'ROE ('+(apexLabel||'TTM')+')', fmtPct(cur.roe,1),
       { goal:'Goal 35% ('+(roeVariance>=0?'+':'')+roeVariance.toFixed(1)+'pp)', good: cur.roe>=35, suffix: arrowHTML(cur.roe,prev.roe)+' from '+fmtPct(prev.roe,1) })
     + '<div class="dpt-connector">= ROA × Financial Leverage</div>'
     + '<div class="dpt-branch-row">'
@@ -841,139 +1068,352 @@ let latestData = {};
 
 function renderAll(){
   const isAnnual = currentViewBy === 'annual';
-  document.getElementById('finRatiosTitle').textContent = isAnnual ? 'Financial Ratios (3Y)' : 'Financial Ratios (5Q)';
-  document.getElementById('growthRateTitle').textContent = isAnnual ? 'Growth Rate % (YoY, 3Y)' : 'Growth Rate % (QoQ, 5Q)';
-  document.getElementById('cashCycleTitle').textContent = isAnnual ? 'Cash Cycle (3Y)' : 'Cash Cycle (5Q)';
-  document.getElementById('leverageTitle').textContent = isAnnual ? 'D/E & IBD/E Trend (3Y)' : 'D/E & IBD/E Trend (5Q)';
-  document.getElementById('provisionTitle').textContent = isAnnual ? 'Inventory Provision Balance (3Y)' : 'Inventory Provision Balance (5Q)';
-  // Shared grouped-table builder for Financial Ratios/Cash Cycle -- in
-  // Annual mode the LAST column (2026 YTD/TTM, unfinished year) gets the
-  // faded/hatched .annual-current-col treatment; Quarterly mode is
-  // byte-for-byte the same output as before this feature existed.
+
+  // "As of" window -- Quarterly-mode only (Annual mode's FY2024/FY2025/
+  // TTM2026 are pinned, never shift). Financial Ratios/Growth/Cash Cycle/
+  // CCC Timeline/Scorecard all read from these; the Leverage trend chart
+  // and Inventory Provision chart deliberately do NOT (excluded from the
+  // "As of" selector's recompute list per spec, same as before).
+  const winLabels = windowLabels();
+  const winCurrentRatio = windowSlice(MASTER_CURRENT_RATIO, QTD_Q3_26.currentRatio);
+  const winQuickRatio = windowSlice(MASTER_QUICK_RATIO, QTD_Q3_26.quickRatio);
+  const winGM = windowSlice(MASTER_GM, QTD_Q3_26.gm);
+  const winEbitM = windowSlice(MASTER_EBIT_M, QTD_Q3_26.ebitMargin);
+  const winEbitdaM = windowSlice(MASTER_EBITDA_M, QTD_Q3_26.ebitdaMargin);
+  const winNM = windowSlice(MASTER_NM, QTD_Q3_26.profitMargin);
+  const winRoe = windowSlice(MASTER_ROE, QTD_Q3_26.roe);
+  const winRoa = windowSlice(MASTER_ROA, QTD_Q3_26.roa);
+  const winAt = windowSlice(MASTER_AT, QTD_Q3_26.assetTurnover);
+  const winFL = windowSlice(MASTER_FL, QTD_Q3_26.financialLeverage);
+  const winDe = windowSlice(MASTER_DE_RATIO, QTD_Q3_26.deRatio);
+  const winIbde = windowSlice(MASTER_IBDE_RATIO, QTD_Q3_26.ibdeRatio);
+  const winArTurnover = windowSlice(MASTER_AR_TURNOVER, QTD_Q3_26.arTurnover);
+  const winArDays = windowSlice(MASTER_AR_DAYS, QTD_Q3_26.arDays);
+  const winInvTurnover = windowSlice(MASTER_INV_TURNOVER, QTD_Q3_26.invTurnover);
+  const winInvDays = windowSlice(MASTER_INV_DAYS, QTD_Q3_26.invDays);
+  const winApTurnover = windowSlice(MASTER_AP_TURNOVER, QTD_Q3_26.apTurnover);
+  const winApDays = windowSlice(MASTER_AP_DAYS, QTD_Q3_26.apDays);
+  const winCcc = windowSlice(MASTER_CCC, QTD_Q3_26.ccc);
+  // Growth's QTD slot is always null -- QTD dollars vs a FULL prior
+  // quarter would read as a large fake decline, not a real comparison.
+  const winSalesGrowth = isQTD ? [...MASTER_SALES_GROWTH.slice(6,10), null] : MASTER_SALES_GROWTH.slice(anchorIdx-4,anchorIdx+1);
+  const winCogsGrowth = isQTD ? [...MASTER_COGS_GROWTH.slice(6,10), null] : MASTER_COGS_GROWTH.slice(anchorIdx-4,anchorIdx+1);
+  const winTotalExpenseGrowth = isQTD ? [...MASTER_TOTAL_EXPENSE_GROWTH.slice(6,10), null] : MASTER_TOTAL_EXPENSE_GROWTH.slice(anchorIdx-4,anchorIdx+1);
+  const winNetProfitGrowth = isQTD ? [...MASTER_NET_PROFIT_GROWTH.slice(6,10), null] : MASTER_NET_PROFIT_GROWTH.slice(anchorIdx-4,anchorIdx+1);
+  // dupont-shaped adapter for an FY object -- NOT ttmDupontAt(anchor), which
+  // averages only the window's OPENING/CLOSING balance points and would
+  // silently disagree with FY2024/FY2025's own bottom-up avgEquity/avgAssets
+  // (the mean of all 4 quarter-end points WITHIN that year) by a few tenths
+  // of a point -- e.g. ROE 38.9% (ttmDupontAt(7)) vs the correct, already-
+  // reconciled FY2025.roe of 38.4%. Every field here reuses FY2024/FY2025's
+  // own already-verified numbers; taxBurden/interestBurden are the same
+  // constants ttmDupontAt always uses (no interest-bearing debt).
+  function dupontFromFY(fy){
+    return {
+      sales: fy.sales, ebit: fy.ebit, grossProfitTTM: fy.grossProfit, netProfit: fy.netProfit,
+      avgAssets: fy.avgAssets, avgEquity: fy.avgEquity,
+      operatingMargin: fy.ebitMargin, taxBurden: 1-TAX_RATE, interestBurden: 1.00,
+      profitMargin: fy.profitMargin, assetTurnover: fy.assetTurnover, financialLeverage: fy.financialLeverage,
+      roa: fy.roa, roe: fy.roe
+    };
+  }
+  // Scorecard/CCC/companion chips -- unified "active period" state (Part
+  // C, 2026-08-10 restructure): TTM is no longer hardcoded here. 4 branches,
+  // matching whatever the tables/charts elsewhere on the page already show
+  // for the SAME View By + As of selection, so one pill never shows two
+  // different bases for the same metric:
+  //  - Quarterly + This Quarter (QTD): annualized run-rate QTD figures.
+  //  - Quarterly + a quarter anchor: TTM ending that quarter (unchanged).
+  //  - Annual + This Year (current): annualized-YTD (dupontFromYTD2026,
+  //    2026-08-11 fix) -- explicitly requested so the Scorecard reads as an
+  //    in-year YTD projection, not a smoothed trailing-4-quarter TTM that
+  //    disagreed with the page's own "2026 YTD" Margins/Returns/CCC trend
+  //    points; prior-period comparison is the SAME method a year back
+  //    (dupontFromYTD2025), not a mismatched rolling TTM.
+  //  - Annual + Last Year (FY2025): FY2025's own actual figures (via
+  //    dupontFromFY) vs FY2024's -- exactly the same bottom-up totals the
+  //    Financial Ratios/Cash Cycle compact tables already show.
+  const dupontCurrent = isAnnual
+    ? (annualAnchor==='fy2025' ? dupontFromFY(FY2025) : dupontFromYTD2026)
+    : (isQTD ? {
+        sales: QTD_Q3_26.sales, ebit: QTD_Q3_26.ebit, grossProfitTTM: QTD_Q3_26.grossProfit,
+        netProfit: QTD_Q3_26.netProfit, avgAssets: QTD_Q3_26.assetsProxy, avgEquity: QTD_Q3_26.equityProxy,
+        operatingMargin: QTD_Q3_26.ebitMargin, taxBurden: 1-TAX_RATE, interestBurden: 1.00,
+        profitMargin: QTD_Q3_26.profitMargin, assetTurnover: QTD_Q3_26.assetTurnover,
+        financialLeverage: QTD_Q3_26.financialLeverage, roa: QTD_Q3_26.roa, roe: QTD_Q3_26.roe
+      } : ttmDupontAt(anchorIdx));
+  const dupontPrevious = isAnnual
+    ? (annualAnchor==='fy2025' ? dupontFromFY(FY2024) : dupontFromYTD2025)
+    : (isQTD ? dupontCurrentPinned : ttmDupontAt(anchorIdx-1));
+
+  // Active-period Days/Ratio figures for the CCC Timeline + Scorecard's
+  // Current Ratio companion chip -- same 4-branch logic as dupontCurrent
+  // above, so ROE/CCC/Current Ratio on this pill never disagree about which
+  // period they're describing (Part C2/C3). Quarterly branch is unchanged
+  // (still winInvDays/winArDays/etc, computed above); Annual now actually
+  // varies by annualAnchor instead of always reading the Quarterly window
+  // regardless of View By (the bug the FY2025 anchor exposed).
+  const activeInvDays = isAnnual ? (annualAnchor==='fy2025' ? FY2025.invDays : TTM2026.invDays) : winInvDays[winInvDays.length-1];
+  const activeArDays  = isAnnual ? (annualAnchor==='fy2025' ? FY2025.arDays  : TTM2026.arDays)  : winArDays[winArDays.length-1];
+  const activeApDays  = isAnnual ? (annualAnchor==='fy2025' ? FY2025.apDays  : TTM2026.apDays)  : winApDays[winApDays.length-1];
+  const activeCcc      = isAnnual ? (annualAnchor==='fy2025' ? FY2025.ccc : (TTM2026.invDays+TTM2026.arDays-TTM2026.apDays)) : winCcc[winCcc.length-1];
+  const activePriorApDays = isAnnual ? (annualAnchor==='fy2025' ? FY2024.apDays : FY2025.apDays) : winApDays[0];
+  const activeCccPrior = isAnnual ? (annualAnchor==='fy2025' ? FY2024.ccc : FY2025.ccc) : winCcc[0];
+  const activeCurrentRatio = isAnnual ? (annualAnchor==='fy2025' ? FY2025.currentRatio : TTM2026.currentRatio) : winCurrentRatio[winCurrentRatio.length-1];
+  // Shared "period label" for card titles/callouts across all 4 pills.
+  const activePeriodLabel = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 TTM') : (isQTD ? "Q3'26 QTD" : MASTER_QUARTER_LABELS[anchorIdx]);
+
+  /* === Financial Ratios pill: hero trend charts (Annual, closed years =
+     FY2024→FY2025 only; Annual + "2026 (Current)" = FY2024→FY2025→2026 YTD,
+     the 3rd point styled distinctly (dashed segment + hollow marker) since
+     it's a provisional in-year figure, not a closed actual; Quarterly =
+     existing 5Q/QTD window) + compact Liquidity & Leverage support table
+     (last 2 periods only). Margins are period ratios (flow/flow), so the
+     3rd point uses YTD2026 directly, no annualizing; Returns divide a flow
+     numerator by an average BALANCE, so the 3rd point instead reuses
+     TTM2026.roe/roa -- the same annualized-from-YTD figure the DuPont
+     Scorecard above already shows, not a separately-invented number. */
+  const good = cssVar('--good')||'#0ca30c', brand = cssVar('--brand')||'#8E1E4D';
+  const showYtdPoint = isAnnual && annualAnchor==='current';
+  const trendLabels = isAnnual ? (showYtdPoint ? ['FY2024','FY2025','2026 YTD'] : ['FY2024','FY2025']) : winLabels;
+  const trendLabelsAnnualized = isAnnual ? (showYtdPoint ? ['FY2024','FY2025','2026 YTD (annualized)'] : ['FY2024','FY2025']) : winLabels;
+  const trendGM = isAnnual ? (showYtdPoint ? [FY2024.gm, FY2025.gm, YTD2026.gm] : [FY2024.gm, FY2025.gm]) : winGM;
+  const trendEbitM = isAnnual ? (showYtdPoint ? [FY2024.ebitMargin, FY2025.ebitMargin, YTD2026.ebitMargin] : [FY2024.ebitMargin, FY2025.ebitMargin]) : winEbitM;
+  const trendEbitdaM = isAnnual ? (showYtdPoint ? [FY2024.ebitdaMargin, FY2025.ebitdaMargin, YTD2026.ebitdaMargin] : [FY2024.ebitdaMargin, FY2025.ebitdaMargin]) : winEbitdaM;
+  const trendNM = isAnnual ? (showYtdPoint ? [FY2024.profitMargin, FY2025.profitMargin, YTD2026.profitMargin] : [FY2024.profitMargin, FY2025.profitMargin]) : winNM;
+  const trendRoe = isAnnual ? (showYtdPoint ? [FY2024.roe, FY2025.roe, TTM2026.roe] : [FY2024.roe, FY2025.roe]) : winRoe;
+  const trendRoa = isAnnual ? (showYtdPoint ? [FY2024.roa, FY2025.roa, TTM2026.roa] : [FY2024.roa, FY2025.roa]) : winRoa;
+  // Splits a 3-point [FY2024,FY2025,YTD] series into a solid FY2024->FY2025
+  // segment + a dashed FY2025->YTD segment (hollow marker + "2026 YTD"-style
+  // 2nd label line on that endpoint only) -- Quarterly/closed-year Annual
+  // just returns the single unmodified series exactly as before.
+  function splitYtdSeries(data, color, width, formatter){
+    if(!showYtdPoint) return [{ data, color, width, showLastLabel:true, lastLabelFormatter:formatter }];
+    const solid = data.map((v,i)=> i<=1 ? v : null);
+    const dashed = data.map((v,i)=> i>=1 ? v : null);
+    return [
+      { data:solid, color, width },
+      // Caption line dropped (2026-08-11 fix) -- stacking a "2026 YTD" 2nd
+      // line under every series' own value label crowded 4 close-together
+      // lines into unreadable overlap; the x-axis tick already reads "2026
+      // YTD" and the footnote explains the convention once, so the dashed
+      // segment + hollow marker alone carry the "provisional" signal here.
+      { data:dashed, color, width, dash:'5,4', showLastLabel:true, hollowLastPoint:true, lastLabelFormatter:formatter }
+    ];
+  }
+  document.getElementById('marginsTrendLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>Gross Margin %</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>EBIT Margin %</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#4C6FA5"></span>EBITDA Margin %</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#B8860B"></span>Net Margin %</span>';
+  buildLineChartSVG('marginsTrendChart', {
+    labels: trendLabels, yFormatter: v=>v.toFixed(0)+'%',
+    series: [
+      ...splitYtdSeries(trendGM, good, 2.2, v=>fmtPct(v,1), '2026 YTD'),
+      ...splitYtdSeries(trendEbitM, brand, 2.2, v=>fmtPct(v,1), '2026 YTD'),
+      ...splitYtdSeries(trendEbitdaM, '#4C6FA5', 2.2, v=>fmtPct(v,1), '2026 YTD'),
+      ...splitYtdSeries(trendNM, '#B8860B', 2.6, v=>fmtPct(v,1), '2026 YTD')
+    ]
+  });
+  document.getElementById('marginsTrendFootnote').style.display = showYtdPoint ? '' : 'none';
+  latestData.marginsTrend = { labels:trendLabels, gm:trendGM, ebitM:trendEbitM, ebitdaM:trendEbitdaM, nm:trendNM };
+  document.getElementById('returnsTrendLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>ROE %</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>ROA %</span>';
+  buildLineChartSVG('returnsTrendChart', {
+    labels: trendLabelsAnnualized, yFormatter: v=>v.toFixed(0)+'%',
+    series: [
+      ...splitYtdSeries(trendRoe, brand, 2.6, v=>fmtPct(v,1), '2026 YTD (annualized)'),
+      ...splitYtdSeries(trendRoa, good, 2.2, v=>fmtPct(v,1), '2026 YTD (annualized)')
+    ]
+  });
+  document.getElementById('returnsTrendFootnote').style.display = showYtdPoint ? '' : 'none';
+  latestData.returnsTrend = { labels:trendLabelsAnnualized, roe:trendRoe, roa:trendRoa };
+
+  // Liquidity/Leverage Trend (2026-08-11, replaces the deleted Key Financial
+  // Ratios table) -- Current/Quick Ratio and D/E, IBD/E are point-in-time
+  // balance-sheet ratios (no flow numerator), so the "2026 YTD" point is
+  // just the latest snapshot, same trendLabels as Margins (not "annualized").
+  const trendCurrentRatio = isAnnual ? (showYtdPoint ? [FY2024.currentRatio, FY2025.currentRatio, TTM2026.currentRatio] : [FY2024.currentRatio, FY2025.currentRatio]) : winCurrentRatio;
+  const trendQuickRatio = isAnnual ? (showYtdPoint ? [FY2024.quickRatio, FY2025.quickRatio, TTM2026.quickRatio] : [FY2024.quickRatio, FY2025.quickRatio]) : winQuickRatio;
+  const trendDE = isAnnual ? (showYtdPoint ? [FY2024.deRatio, FY2025.deRatio, TTM2026.deRatio] : [FY2024.deRatio, FY2025.deRatio]) : winDe;
+  const trendIBDE = isAnnual ? (showYtdPoint ? [FY2024.ibdeRatio, FY2025.ibdeRatio, TTM2026.ibdeRatio] : [FY2024.ibdeRatio, FY2025.ibdeRatio]) : winIbde;
+  document.getElementById('liquidityTrendLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>Current Ratio</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+good+'"></span>Quick Ratio</span>';
+  buildLineChartSVG('liquidityTrendChart', {
+    labels: trendLabels, yFormatter: v=>v.toFixed(1)+'x',
+    series: [
+      ...splitYtdSeries(trendCurrentRatio, brand, 2.6, v=>v.toFixed(2)+'x'),
+      ...splitYtdSeries(trendQuickRatio, good, 2.2, v=>v.toFixed(2)+'x')
+    ]
+  });
+  latestData.liquidityTrend = { labels:trendLabels, currentRatio:trendCurrentRatio, quickRatio:trendQuickRatio };
+
+  document.getElementById('leverageTrendLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+brand+'"></span>D/E</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:#4C6FA5"></span>IBD/E</span>';
+  buildLineChartSVG('leverageTrendChart', {
+    labels: trendLabels, yFormatter: v=>v.toFixed(1)+'x',
+    series: [
+      ...splitYtdSeries(trendDE, brand, 2.6, v=>v.toFixed(2)+'x'),
+      ...splitYtdSeries(trendIBDE, '#4C6FA5', 2.2, v=>v.toFixed(2)+'x')
+    ]
+  });
+  latestData.leverageTrend = { labels:trendLabels, de:trendDE, ibde:trendIBDE };
+
+  // Shared grouped-table builder, now only used by the 2 compact support
+  // tables (2 columns always) -- the LAST column gets the faded/hatched
+  // .annual-current-col treatment whenever it represents an unfinished
+  // period (Annual "This Year"'s 2026 column, or Quarterly's QTD column).
   function groupedTableHTML(headerLabel, labels, groups){
     let body = '';
     groups.forEach(g=>{
-      body += '<tr class="ratio-group-row"><td colspan="6">'+g.name+'</td></tr>';
+      if(g.name) body += '<tr class="ratio-group-row"><td colspan="6">'+g.name+'</td></tr>';
       body += g.rows.map(r=>{
         const rowClass = r.bold ? ' class="income-stmt-total"' : '';
-        const tds = r.vals.map((v,i)=> '<td class="tnum'+(isAnnual && i===labels.length-1 ? ' annual-current-col' : '')+'">'+r.fmt(v)+'</td>').join('');
+        const tds = r.vals.map((v,i)=> '<td class="tnum'+(((isAnnual&&annualAnchor==='current')||isQTD) && i===labels.length-1 ? ' annual-current-col' : '')+'">'+r.fmt(v)+'</td>').join('');
         return '<tr'+rowClass+'><td>'+r.label+'</td>' + tds + '</tr>';
       }).join('');
     });
-    const thead = '<thead><tr><th>'+headerLabel+'</th>' + labels.map((l,i)=> '<th'+(isAnnual && i===labels.length-1 ? ' class="annual-current-col"' : '')+'>'+l+'</th>').join('') + '</tr></thead>';
+    const thead = '<thead><tr><th>'+headerLabel+'</th>' + labels.map((l,i)=> '<th'+(((isAnnual&&annualAnchor==='current')||isQTD) && i===labels.length-1 ? ' class="annual-current-col"' : '')+'>'+l+'</th>').join('') + '</tr></thead>';
     return thead + '<tbody>' + body + '</tbody>';
   }
+  // compact2() (2026-08-10 fix): Quarterly now shows the FULL 5-quarter
+  // window again (Q2'26 selected -> back to Q2'25), matching this page's
+  // original always-5Q convention -- an earlier pass over-compacted this to
+  // "last 2 periods" for BOTH modes, but that phrase in the original spec
+  // ("เฉพาะปีล่าสุด+ก่อน") meant Annual's 2 real years, not Quarterly's 5.
+  // Annual keeps its 2-column latest+prior (fy2025 anchor -> FY2024/FY2025;
+  // current anchor -> FY2025/the caller's own 'current-branch' value, which
+  // may be TTM2026.x for a stock/ratio metric or YTD2026.x for a flow one).
+  function compact2(fy2024V, fy2025V, currentBranchV, winArr){
+    if(isAnnual) return annualAnchor==='fy2025' ? [fy2024V, fy2025V] : [fy2025V, currentBranchV];
+    return winArr;
+  }
+  const compact2Labels = isAnnual ? (annualAnchor==='fy2025' ? annualLabelsMixed.slice(0,2) : annualLabelsMixed.slice(-2)) : winLabels;
 
-  /* === Financial Ratios (grouped table) === */
-  const finRatiosLabels = isAnnual ? annualLabelsMixed : quarterLabels;
-  const finRatiosGroups = isAnnual ? [
-    { name:'Liquidity', rows:[
-      { label:'Current Ratio (x)', vals:[FY2024.currentRatio, FY2025.currentRatio, TTM2026.currentRatio], fmt:v=>v.toFixed(2)+'x' },
-      { label:'Quick Ratio (x)', vals:[FY2024.quickRatio, FY2025.quickRatio, TTM2026.quickRatio], fmt:v=>v.toFixed(2)+'x' }
-    ]},
-    { name:'Profitability', rows:[
-      { label:'Gross Profit Margin (%)', vals:[FY2024.gm, FY2025.gm, YTD2026.gm], fmt:v=>fmtPct(v,1) },
-      { label:'EBIT Margin (%)', vals:[FY2024.ebitMargin, FY2025.ebitMargin, YTD2026.ebitMargin], fmt:v=>fmtPct(v,1) },
-      { label:'EBITDA Margin (%)', vals:[FY2024.ebitdaMargin, FY2025.ebitdaMargin, YTD2026.ebitdaMargin], fmt:v=>fmtPct(v,1) },
-      { label:'Net Profit Margin (%)', vals:[FY2024.profitMargin, FY2025.profitMargin, YTD2026.profitMargin], fmt:v=>fmtPct(v,1), bold:true }
-    ]},
-    { name:'Returns & Efficiency', rows:[
-      { label:'ROE % (Annualized)', vals:[FY2024.roe, FY2025.roe, TTM2026.roe], fmt:v=>fmtPct(v,1) },
-      { label:'ROA % (Annualized)', vals:[FY2024.roa, FY2025.roa, TTM2026.roa], fmt:v=>fmtPct(v,1) },
-      { label:'Total Asset Turnover (x, Annualized)', vals:[FY2024.assetTurnover, FY2025.assetTurnover, TTM2026.assetTurnover], fmt:v=>v.toFixed(2)+'x' }
-    ]},
-    { name:'Leverage', rows:[
-      { label:'D/E (x)', vals:[FY2024.deRatio, FY2025.deRatio, TTM2026.deRatio], fmt:v=>v.toFixed(2)+'x' },
-      { label:'IBD/E (x)', vals:[FY2024.ibdeRatio, FY2025.ibdeRatio, TTM2026.ibdeRatio], fmt:v=>v.toFixed(2)+'x' }
-    ]}
-  ] : [
-    { name:'Liquidity', rows:[
-      { label:'Current Ratio (x)', vals:currentRatioQ, fmt:v=>v.toFixed(2)+'x' },
-      { label:'Quick Ratio (x)', vals:quickRatioQ, fmt:v=>v.toFixed(2)+'x' }
-    ]},
-    { name:'Profitability', rows:[
-      { label:'Gross Profit Margin (%)', vals:gmQAll, fmt:v=>fmtPct(v,1) },
-      { label:'EBIT Margin (%)', vals:ebitMQAll, fmt:v=>fmtPct(v,1) },
-      { label:'EBITDA Margin (%)', vals:ebitdaMQAll, fmt:v=>fmtPct(v,1) },
-      { label:'Net Profit Margin (%)', vals:nmQAll, fmt:v=>fmtPct(v,1), bold:true }
-    ]},
-    { name:'Returns & Efficiency', rows:[
-      { label:'ROE % (Annualized)', vals:roeQAll, fmt:v=>fmtPct(v,1) },
-      { label:'ROA % (Annualized)', vals:roaQAll, fmt:v=>fmtPct(v,1) },
-      { label:'Total Asset Turnover (x, Annualized)', vals:totalAssetTurnoverQAll, fmt:v=>v.toFixed(2)+'x' }
-    ]},
-    { name:'Leverage', rows:[
-      { label:'D/E (x)', vals:deRatioQ, fmt:v=>v.toFixed(2)+'x' },
-      { label:'IBD/E (x)', vals:ibdeRatioQ, fmt:v=>v.toFixed(2)+'x' }
+  const compact2TitleRange = compact2Labels.length>2 ? compact2Labels[0]+'–'+compact2Labels[compact2Labels.length-1] : compact2Labels.join(' → ');
+
+  /* === Growth Rate pill: hero grouped-bar chart (Annual = 3 years back,
+     FY2024/FY2025/2026-current -- FY2024 has no FY2023 baseline so it's a
+     real category with no computable growth, shown as an empty "–" bar
+     rather than dropped, matching the 3-years-back convention the other
+     Annual trend charts on this page use for real data; Quarterly =
+     existing QoQ 5Q/QTD window) + English insight callout === */
+  const growthFmtChart = v => v===null ? 0 : v;
+  const growthLabelsFull = isAnnual ? (annualAnchor==='fy2025' ? ['FY2024','FY2025'] : ['FY2024','FY2025','2026 YTD']) : winLabels;
+  const gSalesFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.sales,FY2024.sales)] : [null, pctChange(FY2025.sales,FY2024.sales), pctChange(YTD2026.sales,YTD2025.sales)]) : winSalesGrowth;
+  const gCogsFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.cogs,FY2024.cogs)] : [null, pctChange(FY2025.cogs,FY2024.cogs), pctChange(YTD2026.cogs,YTD2025.cogs)]) : winCogsGrowth;
+  const gTotalExpFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.totalExpense,FY2024.totalExpense)] : [null, pctChange(FY2025.totalExpense,FY2024.totalExpense), pctChange(YTD2026.totalExpense,YTD2025.totalExpense)]) : winTotalExpenseGrowth;
+  const gNetProfitFull = isAnnual ? (annualAnchor==='fy2025' ? [null, pctChange(FY2025.netProfit,FY2024.netProfit)] : [null, pctChange(FY2025.netProfit,FY2024.netProfit), pctChange(YTD2026.netProfit,YTD2025.netProfit)]) : winNetProfitGrowth;
+  // Drop any category where every series is null -- ONLY for Quarterly's
+  // edge case (Q1'25 anchor's leading null, nobody deliberately navigates
+  // there to see an empty slot). Annual keeps its FY2024 placeholder
+  // category on purpose (see comment above) -- a bar chart has no way to
+  // draw a "no data" bar directly, so it renders as a 0-height bar with a
+  // "–" label instead of a real 0%, via the valueLabelFormatter below.
+  const validGIdx = isAnnual ? growthLabelsFull.map((_,i)=>i) : growthLabelsFull.map((_,i)=>i).filter(i=>
+    !(gSalesFull[i]===null && gCogsFull[i]===null && gTotalExpFull[i]===null && gNetProfitFull[i]===null));
+  const gLabels = validGIdx.map(i=>growthLabelsFull[i]);
+  const gCategoryIsNull = validGIdx.map(i=> gSalesFull[i]===null);
+  const gSales = validGIdx.map(i=>growthFmtChart(gSalesFull[i]));
+  const gCogs = validGIdx.map(i=>growthFmtChart(gCogsFull[i]));
+  const gTotalExp = validGIdx.map(i=>growthFmtChart(gTotalExpFull[i]));
+  const gNetProfit = validGIdx.map(i=>growthFmtChart(gNetProfitFull[i]));
+  // Latest-period QoQ + YoY comparison, computed ONCE and consumed by the
+  // per-metric mini-chart callouts below (the last bar's own 2-line YoY/QoQ
+  // label) -- this used to also feed a separate "Latest Period" table, but
+  // that table was removed (2026-08-11) as a pure duplicate of these same
+  // callout numbers already printed on each chart's last bar.
+  // Quarterly gets both QoQ and YoY; Annual gets YoY only (its bar already
+  // IS a YoY figure); QTD gets neither (no valid full-period baseline for
+  // a partial quarter, same reasoning the QoQ bar itself being null there
+  // already reflects) -- callout stays null in that case.
+  let latestCallout = null;
+  if(isAnnual){
+    const yoyBase = annualAnchor==='fy2025' ? 'FY2024' : '2025 YTD';
+    const latestLabel = annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD';
+    const yoy = annualAnchor==='fy2025'
+      ? { sales:pctChange(FY2025.sales,FY2024.sales), cogs:pctChange(FY2025.cogs,FY2024.cogs), totalExp:pctChange(FY2025.totalExpense,FY2024.totalExpense), netProfit:pctChange(FY2025.netProfit,FY2024.netProfit) }
+      : { sales:pctChange(YTD2026.sales,YTD2025.sales), cogs:pctChange(YTD2026.cogs,YTD2025.cogs), totalExp:pctChange(YTD2026.totalExpense,YTD2025.totalExpense), netProfit:pctChange(YTD2026.netProfit,YTD2025.netProfit) };
+    latestCallout = { yoy, qoq:null, yoyBase, latestLabel };
+  } else if(!isQTD){
+    const latestLabel = winLabels[winLabels.length-1], priorQLabel = winLabels[winLabels.length-2], yoyBaseLabel = MASTER_QUARTER_LABELS[anchorIdx-4];
+    const qoq = { sales:gSales[gSales.length-1], cogs:gCogs[gCogs.length-1], totalExp:gTotalExp[gTotalExp.length-1], netProfit:gNetProfit[gNetProfit.length-1] };
+    const yoy = {
+      sales: pctChange(MASTER_SALES[anchorIdx], MASTER_SALES[anchorIdx-4]),
+      cogs: pctChange(MASTER_COGS[anchorIdx], MASTER_COGS[anchorIdx-4]),
+      totalExp: pctChange(MASTER_TOTAL_EXPENSE[anchorIdx], MASTER_TOTAL_EXPENSE[anchorIdx-4]),
+      netProfit: pctChange(MASTER_NET_PROFIT[anchorIdx], MASTER_NET_PROFIT[anchorIdx-4])
+    };
+    latestCallout = { yoy, qoq, priorQLabel, yoyBaseLabel, latestLabel };
+  }
+
+  // Small-multiples (2026-08-11): 1 mini bar chart per metric instead of 1
+  // combined grouped-bar chart, sharing a FIXED y-axis domain across all 4
+  // so they're visually comparable at a glance. Every bar gets its own %
+  // label; the LAST bar additionally gets a 2-line (Quarterly) or 1-line
+  // (Annual) YoY/QoQ callout instead of the plain label, colored by sign.
+  const critColor = cssVar('--critical')||'#d03b3b';
+  const lastGIdx = gLabels.length-1;
+  function miniValueLabelFormatter(val, s, gi){
+    if(gCategoryIsNull[gi]) return '–';
+    if(gi===lastGIdx && latestCallout){
+      const key = s.key;
+      const lines = [{ text: fmtSignedPct(latestCallout.yoy[key],1)+' YoY', color: latestCallout.yoy[key]>=0?good:critColor }];
+      if(latestCallout.qoq) lines.push({ text: fmtSignedPct(latestCallout.qoq[key],1)+' QoQ', color: latestCallout.qoq[key]>=0?good:critColor });
+      return lines;
+    }
+    return fmtSignedPct(val,0);
+  }
+  function buildMiniGrowthChart(containerId, key, values, color){
+    buildGroupedBarSVG(containerId, {
+      labels: gLabels, yFormatter: v=>v.toFixed(0)+'%', referenceValue:0, showValueLabels:true,
+      domainMin:-20, domainMax:30, compactLabelWidth:20,
+      valueLabelFormatter: (val,s,gi)=>miniValueLabelFormatter(val,s,gi),
+      series: [{ name:'', key, color, values }]
+    });
+  }
+  buildMiniGrowthChart('growthChartSales', 'sales', gSales, brand);
+  buildMiniGrowthChart('growthChartCogs', 'cogs', gCogs, '#898781');
+  buildMiniGrowthChart('growthChartTotalExp', 'totalExp', gTotalExp, '#4C6FA5');
+  buildMiniGrowthChart('growthChartNetProfit', 'netProfit', gNetProfit, good);
+
+  const latestNP = gNetProfit[gNetProfit.length-1], latestSales = gSales[gSales.length-1];
+  const opLeverageWorking = latestNP > latestSales;
+  document.getElementById('growthInsight').innerHTML =
+    'Net Profit Growth (<b>'+fmtSignedPct(latestNP,1)+'</b>) '+(opLeverageWorking?'outpacing':'trailing')+' Sales Growth (<b>'+fmtSignedPct(latestSales,1)+'</b>) — '
+    + (opLeverageWorking ? 'operating leverage is working: costs are growing slower than revenue.' : 'costs are growing faster than revenue — margin pressure to watch.');
+  /* === Cash Conversion Cycle pill: trend chart (Annual, closed years =
+     FY2024→FY2025 only; Annual + "2026 (Current)" = +3rd point using
+     TTM2026.ccc, same annualized-from-YTD convention as Returns Trend since
+     CCC is a stock/day-count ratio, not a period flow; Quarterly = existing
+     window) + compact Turnover & Cycle support table (last 2 periods only) === */
+  const trendCcc = isAnnual ? (showYtdPoint ? [FY2024.ccc, FY2025.ccc, TTM2026.ccc] : [FY2024.ccc, FY2025.ccc]) : winCcc;
+  buildLineChartSVG('cccTrendChart', {
+    labels: trendLabelsAnnualized, yFormatter: v=>Math.round(v)+'d',
+    series: splitYtdSeries(trendCcc, brand, 2.6, v=>Math.round(v)+'d', '2026 YTD (annualized)')
+  });
+  document.getElementById('cccTrendFootnote').style.display = showYtdPoint ? '' : 'none';
+  latestData.cccTrend = { labels:trendLabelsAnnualized, ccc:trendCcc };
+  const cashCycleCompactGroups = [
+    { name:'', rows:[
+      { label:'A/R Turnover (Times)', vals: compact2(FY2024.arTurnover, FY2025.arTurnover, TTM2026.arTurnover, winArTurnover), fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Collection Period (Days)', vals: compact2(FY2024.arDays, FY2025.arDays, TTM2026.arDays, winArDays), fmt:v=>Math.round(v)+' days' },
+      { label:'Inventory Turnover (Times)', vals: compact2(FY2024.invTurnover, FY2025.invTurnover, TTM2026.invTurnover, winInvTurnover), fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Inventory Period (Days)', vals: compact2(FY2024.invDays, FY2025.invDays, TTM2026.invDays, winInvDays), fmt:v=>Math.round(v)+' days' },
+      { label:'A/P Turnover (Times)', vals: compact2(FY2024.apTurnover, FY2025.apTurnover, TTM2026.apTurnover, winApTurnover), fmt:v=>v.toFixed(2)+'x' },
+      { label:'Avg. Payment Period (Days)', vals: compact2(FY2024.apDays, FY2025.apDays, TTM2026.apDays, winApDays), fmt:v=>Math.round(v)+' days' },
+      { label:'Cash Cycle (Days)', vals: compact2(FY2024.ccc, FY2025.ccc, activeCcc, winCcc), fmt:v=>Math.round(v)+' days', bold:true }
     ]}
   ];
-  document.getElementById('finRatiosTable').innerHTML = groupedTableHTML('Ratio', finRatiosLabels, finRatiosGroups);
-  latestData.finRatiosGroups = finRatiosGroups;
-  latestData.finRatiosLabels = finRatiosLabels;
+  document.getElementById('cashCycleCompactTitle').textContent = 'Turnover & Cycle ('+compact2TitleRange+')';
+  document.getElementById('cashCycleTable').innerHTML = groupedTableHTML('Metric', compact2Labels, cashCycleCompactGroups);
+  latestData.cashCycleGroups = cashCycleCompactGroups;
+  latestData.cashCycleLabels = compact2Labels;
 
-  /* === Growth Rate (%) (flat table) === */
-  const growthFmt = v=> v===null ? '–' : fmtPct(v,1);
-  const growthLabels = isAnnual ? annualLabelsFlow : quarterLabels;
-  // Annual mode finally has real YoY (FY2025 vs FY2024, 2026 YTD vs 2025
-  // YTD) instead of QoQ -- the "no prior-year baseline" caveat that forced
-  // QoQ in Quarterly mode doesn't apply here since full years exist.
-  const growthRateRows = isAnnual ? [
-    { label:'Sales Growth', vals:[null, pctChange(FY2025.sales,FY2024.sales), pctChange(YTD2026.sales,YTD2025.sales)], fmt:growthFmt },
-    { label:'COGs Growth', vals:[null, pctChange(FY2025.cogs,FY2024.cogs), pctChange(YTD2026.cogs,YTD2025.cogs)], fmt:growthFmt },
-    { label:'Total Expense Growth', vals:[null, pctChange(FY2025.totalExpense,FY2024.totalExpense), pctChange(YTD2026.totalExpense,YTD2025.totalExpense)], fmt:growthFmt },
-    { label:'Net Profit Growth', vals:[null, pctChange(FY2025.netProfit,FY2024.netProfit), pctChange(YTD2026.netProfit,YTD2025.netProfit)], fmt:growthFmt, bold:true }
-  ] : [
-    { label:'Sales Growth', vals:salesGrowthQ, fmt:growthFmt },
-    { label:'COGs Growth', vals:cogsGrowthQ, fmt:growthFmt },
-    { label:'Total Expense Growth', vals:totalExpenseGrowthQ, fmt:growthFmt },
-    { label:'Net Profit Growth', vals:netProfitGrowthQ, fmt:growthFmt, bold:true }
-  ];
-  document.getElementById('growthRateTable').innerHTML =
-    '<thead><tr><th>Metric</th>' + growthLabels.map((l,i)=>'<th'+(isAnnual && i===growthLabels.length-1?' class="annual-current-col"':'')+'>'+l+'</th>').join('') + '</tr></thead><tbody>'
-    + growthRateRows.map(r=>{
-        const rowClass = r.bold ? ' class="income-stmt-total"' : '';
-        return '<tr'+rowClass+'><td>'+r.label+'</td>' + r.vals.map((v,i)=>'<td class="tnum'+(isAnnual && i===growthLabels.length-1?' annual-current-col':'')+'">'+r.fmt(v)+'</td>').join('') + '</tr>';
-      }).join('')
-    + '</tbody>';
-  latestData.growthRate = growthRateRows;
-  latestData.growthLabels = growthLabels;
-
-  /* === Cash Cycle (grouped table) === */
-  const cashCycleLabels = isAnnual ? annualLabelsMixed : quarterLabels;
-  const cashCycleGroups = isAnnual ? [
-    { name:'Turnover & Cycle', rows:[
-      { label:'A/R Turnover (Times)', vals:[FY2024.arTurnover, FY2025.arTurnover, TTM2026.arTurnover], fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Collection Period (Days)', vals:[FY2024.arDays, FY2025.arDays, TTM2026.arDays], fmt:v=>Math.round(v)+' days' },
-      { label:'Inventory Turnover (Times)', vals:[FY2024.invTurnover, FY2025.invTurnover, TTM2026.invTurnover], fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Inventory Period (Days)', vals:[FY2024.invDays, FY2025.invDays, TTM2026.invDays], fmt:v=>Math.round(v)+' days' },
-      { label:'A/P Turnover (Times)', vals:[FY2024.apTurnover, FY2025.apTurnover, TTM2026.apTurnover], fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Payment Period (Days)', vals:[FY2024.apDays, FY2025.apDays, TTM2026.apDays], fmt:v=>Math.round(v)+' days' },
-      { label:'Cash Cycle (Days)', vals:[FY2024.ccc, FY2025.ccc, TTM2026.ccc], fmt:v=>Math.round(v)+' days', bold:true }
-    ]},
-    { name:'Cash Generation', rows:[
-      { label:'CFO / EBITDA %', vals:[FY2024.cfoOverEbitda, FY2025.cfoOverEbitda, YTD2026.cfoOverEbitda], fmt:v=>fmtPct(v,1) },
-      { label:'FCF Margin %', vals:[FY2024.fcfMargin, FY2025.fcfMargin, YTD2026.fcfMargin], fmt:v=>fmtPct(v,1) }
-    ]}
-  ] : [
-    { name:'Turnover & Cycle', rows:[
-      { label:'A/R Turnover (Times)', vals:arTurnoverTimesQ, fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Collection Period (Days)', vals:arDaysQ, fmt:v=>Math.round(v)+' days' },
-      { label:'Inventory Turnover (Times)', vals:invTurnoverTimesQ, fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Inventory Period (Days)', vals:invDaysQ, fmt:v=>Math.round(v)+' days' },
-      { label:'A/P Turnover (Times)', vals:apTurnoverTimesQ, fmt:v=>v.toFixed(2)+'x' },
-      { label:'Avg. Payment Period (Days)', vals:apDaysQ, fmt:v=>Math.round(v)+' days' },
-      { label:'Cash Cycle (Days)', vals:cccDaysQ, fmt:v=>Math.round(v)+' days', bold:true }
-    ]},
-    { name:'Cash Generation', rows:[
-      { label:'CFO / EBITDA %', vals:cfoOverEbitdaQ, fmt:v=>fmtPct(v,1) },
-      { label:'FCF Margin %', vals:fcfMarginQ, fmt:v=>fmtPct(v,1) }
-    ]}
-  ];
-  document.getElementById('cashCycleTable').innerHTML = groupedTableHTML('Metric', cashCycleLabels, cashCycleGroups);
-  latestData.cashCycleGroups = cashCycleGroups;
-  latestData.cashCycleLabels = cashCycleLabels;
-
-  /* === Financial Scorecard (DuPont ROE Decomposition, TTM) === */
+  /* === Financial Scorecard (DuPont ROE Decomposition) === */
   document.getElementById('dpNetMargin').textContent = fmtPct(dupontCurrent.profitMargin,1);
   document.getElementById('dpAssetTurnover').textContent = dupontCurrent.assetTurnover.toFixed(2)+'x';
   document.getElementById('dpEquityMultiplier').textContent = dupontCurrent.financialLeverage.toFixed(2)+'x';
@@ -1011,80 +1451,77 @@ function renderAll(){
   applyChip('fhsBoxMargin','fhsMarginDir','fhsMarginSub', fhsMargin);
   document.getElementById('fhsMarginInfoBtn').dataset.infoTitle = 'Profit Margin Decomposition';
   document.getElementById('fhsMarginInfoBtn').dataset.infoText =
-    'Profit Margin '+fmtPct(dupontCurrent.profitMargin,1)+' = Operating Margin '+fmtPct(dupontCurrent.operatingMargin,1)+' × Tax Burden '+dupontCurrent.taxBurden.toFixed(2)+' × Interest Burden '+dupontCurrent.interestBurden.toFixed(2)+' — Interest Burden is always 1.00x, since Charmiss carries no interest-bearing debt (zero-info)';
+    'Profit Margin '+fmtPct(dupontCurrent.profitMargin,1)+' = Operating Margin '+fmtPct(dupontCurrent.operatingMargin,1)+' × Tax Burden '+dupontCurrent.taxBurden.toFixed(2)+' × Interest Burden '+dupontCurrent.interestBurden.toFixed(2)+' — Interest Burden is always 1.00x: interest-bearing debt exists (see Financial Leverage) but interest expense is not modeled in this P&L (illustrative, zero-info)';
 
   const fhsTurnover = { value: dupontCurrent.assetTurnover, prior: dupontPrevious.assetTurnover, fmt:v=>v.toFixed(2)+'x', rag:'amber',
     note:'Target 1.15x · eased on higher Inventory/AR', higherIsBetter:true };
   applyChip('fhsBoxTurnover','fhsTurnoverDir','fhsTurnoverSub', fhsTurnover);
 
   const fhsLeverage = { value: dupontCurrent.financialLeverage, prior: dupontPrevious.financialLeverage, fmt:v=>v.toFixed(2)+'x', rag:'green',
-    note:'No interest-bearing debt', higherIsBetter:true };
+    note:'Low / declining interest-bearing debt', higherIsBetter:true };
   applyChip('fhsBoxLeverage','fhsLeverageDir','fhsLeverageSub', fhsLeverage);
+
+  // Factor-box sparklines (2026-08-11) -- a "map" glance into each factor's
+  // own full trend chart on Financial Ratios (Net Margin/Asset Turnover) or
+  // Financial Scorecard's own Leverage trend; deliberately the plain
+  // single-quarter/single-year basis (matching the OTHER trend charts these
+  // same series feed, e.g. Margins Trend), NOT dupontCurrent's TTM/YTD-
+  // annualized basis above -- the two are complementary, expected to differ
+  // slightly (see PART C note: intentional cross-pill duplication, map vs
+  // detail), not a reconciliation target.
+  const sparkNM = isAnnual ? (showYtdPoint ? [FY2024.profitMargin, FY2025.profitMargin, YTD2026.profitMargin] : [FY2024.profitMargin, FY2025.profitMargin]) : winNM;
+  const sparkAT = isAnnual ? (showYtdPoint ? [FY2024.assetTurnover, FY2025.assetTurnover, dupontFromYTD2026.assetTurnover] : [FY2024.assetTurnover, FY2025.assetTurnover]) : winAt;
+  const sparkFL = isAnnual ? (showYtdPoint ? [FY2024.financialLeverage, FY2025.financialLeverage, dupontFromYTD2026.financialLeverage] : [FY2024.financialLeverage, FY2025.financialLeverage]) : winFL;
+  const sparkDashFrom = (isAnnual && showYtdPoint) ? sparkNM.length-1 : undefined;
+  buildSparklineSVG('fhsMarginSparkline', sparkNM, { color:cssVar('--good')||'#0ca30c', dashFromIndex:sparkDashFrom });
+  buildSparklineSVG('fhsTurnoverSparkline', sparkAT, { color:cssVar('--warning')||'#fab219', dashFromIndex:sparkDashFrom });
+  buildSparklineSVG('fhsLeverageSparkline', sparkFL, { color:cssVar('--brand')||'#8E1E4D', dashFromIndex:sparkDashFrom });
 
   // Companion chips -- Liquidity (Current Ratio) closes the tile DuPont
   // doesn't cover; Cash Conversion Cycle closes the working-capital tile.
-  // Values reuse currentRatioQ/cccDaysQ exactly (same arrays as the tables below).
-  const companionLiquidity = { value: currentRatioQ[4], fmt:v=>v.toFixed(2)+'x', rag:'green', note:'Target 1.5–2.5x' };
+  // Values now reuse the SAME active-period figures as the CCC Timeline/
+  // compact table (Part C3, 2026-08-10) -- previously these 2 chips always
+  // read the Quarterly window regardless of View By, so switching to
+  // Annual + FY2025 still silently showed the Quarterly anchor's CCC/
+  // Current Ratio here while every other widget on the page had already
+  // switched to FY2025's own figures.
+  const companionLiquidity = { value: activeCurrentRatio, fmt:v=>v.toFixed(2)+'x', rag:'green', note:'Target 1.5–2.5x' };
   document.getElementById('fhsCompanionLiquidity').innerHTML =
     '<div class="fhs-chip-row"><span class="fhs-chip-label">Current Ratio</span><span class="fhs-chip-value">'+companionLiquidity.fmt(companionLiquidity.value)+'</span>'
     + '<span class="fhs-rag-dot '+companionLiquidity.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionLiquidity.note+'</span></div>';
 
-  const companionCCC = { value: cccDaysQ[4], prior: cccDaysQ[0], fmt:v=>Math.round(v)+' days', rag:'amber', higherIsBetter:false,
-    note:'Target ≤160 days' };
+  const companionCCC = { value: activeCcc, prior: activeCccPrior, fmt:v=>Math.round(v)+' days', rag:'amber', higherIsBetter:false,
+    note:'Target ≤160 days'+(isQTD?' · partial quarter':'') };
   const cccDir = dirMeta(companionCCC.value, companionCCC.prior, companionCCC.higherIsBetter);
   document.getElementById('fhsCompanionCCC').innerHTML =
     '<div class="fhs-chip-row"><span class="fhs-chip-label">Cash Conversion Cycle</span><span class="fhs-chip-value">'+companionCCC.fmt(companionCCC.value)+'</span>'
     + '<span class="fhs-dir '+cccDir.cls+'">'+cccDir.arrow+'</span><span class="fhs-rag-dot '+companionCCC.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionCCC.note+'</span></div>';
 
+  // Scorecard title + ROE apex label + Tree modal title -- all 4 branches
+  // (Part C1, 2026-08-10): never hardcoded to "(TTM)" regardless of what's
+  // actually selected. Annual + Last Year (FY2025) now correctly reads
+  // "(FY2025)", not "(TTM)" showing a different (TTM2026) number.
+  const scorecardSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD, Annualized') : (isQTD ? 'QTD, Annualized' : 'TTM');
+  document.getElementById('scorecardTitle').textContent = 'DuPont ROE Decomposition ('+scorecardSuffix+')';
+  document.getElementById('fhsApexLabel').textContent = 'ROE ('+scorecardSuffix+')';
+
   latestData.dupont = { current: dupontCurrent, previous: dupontPrevious };
-  document.getElementById('dptTreeBody').innerHTML = buildDupontTreeHTML();
+  const modalSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 TTM') : (isQTD ? "Annualized (Q3'26 QTD)" : 'TTM (ending '+MASTER_QUARTER_LABELS[anchorIdx]+')');
+  document.getElementById('dptModalTitle').textContent = 'DuPont ROE Tree — '+modalSuffix;
+  document.getElementById('dptTreeBody').innerHTML = buildDupontTreeHTML(dupontCurrent, dupontPrevious, scorecardSuffix);
 
-  /* === Financial Leverage trend === */
-  const leverageLabels = isAnnual ? annualLabelsStock : quarterLabels;
-  const deSeries = isAnnual ? [FY2024.deRatio, FY2025.deRatio, TTM2026.deRatio] : deRatioQ;
-  const ibdeSeries = isAnnual ? [FY2024.ibdeRatio, FY2025.ibdeRatio, TTM2026.ibdeRatio] : ibdeRatioQ;
-  buildLineChartSVG('leverageChart', {
-    labels: leverageLabels, yFormatter: v=>v.toFixed(2)+'x',
-    series: [
-      { data: deSeries, color: cssVar('--brand')||'#8E1E4D', width:2.4, showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' },
-      { data: ibdeSeries, color: cssVar('--ink-3')||'#898781', width:1.8, dash:'4,3', showLastLabel:true, lastLabelFormatter:v=>v.toFixed(2)+'x' }
-    ]
-  });
-  const deLast = deSeries[deSeries.length-1], dePrev = deSeries[deSeries.length-2], lastLabel = leverageLabels[leverageLabels.length-1];
-  document.getElementById('leverageCallout').innerHTML =
-    'D/E '+(deLast>=dePrev?'ticked up':'eased')+' to <b>'+deLast.toFixed(2)+'x</b> in '+lastLabel+' from Trade Payables and Lease Liabilities growing with store expansion · no interest-bearing debt (IBD/E = 0.00x throughout)';
-
-  /* === Cash Conversion Cycle Timeline (Q2'26) === */
-  const cccTimelineData = { inventory: invDaysQ[4], receivable: arDaysQ[4], payable: apDaysQ[4] };
+  /* === Cash Conversion Cycle Timeline (Part C2, 2026-08-10) -- now driven
+     by the SAME active-period figures as the compact table below it on
+     this same pill, instead of always the Quarterly window regardless of
+     View By. Annual + FY2025 now shows Inventory 197d + AR 68d − AP 71d =
+     194d, matching the Cash Cycle compact table exactly (no more 2 CCC
+     numbers -- 171d TTM vs 194d FY2025 -- disagreeing on one screen). === */
+  document.getElementById('cccTimelineTitle').textContent = 'Cash Conversion Cycle Timeline ('+activePeriodLabel+')';
+  const cccTimelineData = { inventory: activeInvDays, receivable: activeArDays, payable: activeApDays };
   renderCCCTimeline('cccBridgeChart', cccTimelineData);
   document.getElementById('cccBridgeCallout').innerHTML =
-    'Inventory '+invDaysQ[4]+'d + AR '+arDaysQ[4]+'d − AP '+apDaysQ[4]+'d = <b>'+cccDaysQ[4]+' days</b> — AP days stretching ('+apDaysQ[0]+'→'+apDaysQ[4]+' days across 5Q) is the main lever offsetting still-high Inventory Days';
+    'Inventory '+Math.round(activeInvDays)+'d + AR '+Math.round(activeArDays)+'d − AP '+Math.round(activeApDays)+'d = <b>'+Math.round(activeCcc)+' days</b> — AP days stretching ('+Math.round(activePriorApDays)+'→'+Math.round(activeApDays)+' days) is the main lever offsetting still-high Inventory Days'+(isQTD?' (Q3\'26 QTD -- Days carried forward from Q2\'26, no new closing balance yet)':'');
   latestData.cccBridge = cccTimelineData;
-
-  /* === Inventory Provision Balance === */
-  const provisionLabels = isAnnual ? annualLabelsStock : quarterLabels;
-  const inventorySeries = isAnnual ? [FY2024.inventory, FY2025.inventory, TTM2026.inventory] : inventoryQ;
-  const provisionSeries = isAnnual ? [FY2024.provisionBalance, FY2025.provisionBalance, TTM2026.provisionBalance] : provisionBalanceQ;
-  const provisionPctQ = provisionSeries.map((v,i)=> v/inventorySeries[i]*100);
-  buildGroupedBarSVG('provisionChart', {
-    labels: provisionLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:false,
-    series: [ {name:'Inventory', color: cssVar('--ink-3')||'#898781', values: inventorySeries}, {name:'Provision Balance', color: cssVar('--critical')||'#d03b3b', values: provisionSeries} ]
-  });
-  const lastIdx = provisionLabels.length-1;
-  document.getElementById('provisionCallout').innerHTML =
-    'Provision for Obsolescence คงที่ราว '+fmtPct(Math.min(...provisionPctQ),1)+'–'+fmtPct(Math.max(...provisionPctQ),1)+' ของ Inventory ตลอด'+(isAnnual?' 3 ปี':' 5 ไตรมาส')+' — '+provisionLabels[lastIdx]+': Inventory '+fmtTHB(inventorySeries[lastIdx])+', Provision '+fmtTHB(provisionSeries[lastIdx])+' ('+fmtPct(provisionPctQ[lastIdx],1)+')';
-  latestData.provision = provisionLabels.map((q,i)=>({quarter:q, inventory:inventorySeries[i], provision:provisionSeries[i], pct:provisionPctQ[i]}));
-
-  /* === Inventory Aging (Q2'26) === */
-  const agingBuckets = [
-    { name:'>12 เดือนถึงหมดอายุ', value: 64e6, color: resolveColor(RAG_COLORS[0]) },
-    { name:'6–12 เดือน', value: 18e6, color: resolveColor(RAG_COLORS[1]) },
-    { name:'3–6 เดือน', value: 7e6, color: resolveColor(RAG_COLORS[2]) },
-    { name:'<3 เดือน (เสี่ยง)', value: 3e6, color: resolveColor('var(--critical)') }
-  ];
-  buildDonutSVG('agingChart', agingBuckets, 200, { showLabels:true });
-  document.getElementById('agingLegend').innerHTML = agingBuckets.map(b=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+b.color+'"></span>'+b.name+' ('+fmtTHB(b.value)+')</span>').join('');
-  latestData.aging = agingBuckets;
 }
 
 /* --- Toolbar --- */
@@ -1094,20 +1531,103 @@ document.getElementById('dptOverlay').addEventListener('click', (e)=>{ if(e.targ
 document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeDupontTreeModal(); });
 document.getElementById('dptZoomInBtn').addEventListener('click', ()=> setDptZoom(dptZoom+0.1));
 document.getElementById('dptZoomOutBtn').addEventListener('click', ()=> setDptZoom(dptZoom-0.1));
-document.getElementById('finRatiosDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Group','Ratio', ...latestData.finRatiosLabels]];
-  latestData.finRatiosGroups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> v.toFixed(2))])));
-  downloadCSV(rows, 'financial_analysis_financial_ratios.csv');
-});
-document.getElementById('growthRateDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Metric', ...latestData.growthLabels]];
-  latestData.growthRate.forEach(r=> rows.push([r.label, ...r.vals.map(v=> v===null ? '' : v.toFixed(2))]));
-  downloadCSV(rows, 'financial_analysis_growth_rate.csv');
-});
 document.getElementById('cashCycleDownloadBtn').addEventListener('click', ()=>{
   const rows = [['Group','Metric', ...latestData.cashCycleLabels]];
   latestData.cashCycleGroups.forEach(g=> g.rows.forEach(r=> rows.push([g.name, r.label, ...r.vals.map(v=> v.toFixed(2))])));
   downloadCSV(rows, 'financial_analysis_cash_cycle.csv');
+});
+
+/* --- Hero chart toolbars (2026-08-10): default view is the chart, same as
+   every other chart-first card on this page (e.g. Income Statement on
+   P&L) -- table/download/expand buttons give back the exact-numbers view
+   users are used to without making the table the default again. --- */
+document.getElementById('marginsTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('marginsTrendChart', 'financial_analysis_margins_trend.svg'));
+document.getElementById('marginsTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('marginsTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('marginsTrendTableWrap');
+  const canvasWrap = document.getElementById('marginsTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.marginsTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>Gross Margin %</th><th>EBIT Margin %</th><th>EBITDA Margin %</th><th>Net Margin %</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtPct(d.gm[i],1)+'</td><td>'+fmtPct(d.ebitM[i],1)+'</td><td>'+fmtPct(d.ebitdaM[i],1)+'</td><td>'+fmtPct(d.nm[i],1)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('returnsTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('returnsTrendChart', 'financial_analysis_returns_trend.svg'));
+document.getElementById('returnsTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('returnsTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('returnsTrendTableWrap');
+  const canvasWrap = document.getElementById('returnsTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.returnsTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>ROE %</th><th>ROA %</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+fmtPct(d.roe[i],1)+'</td><td>'+fmtPct(d.roa[i],1)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('liquidityTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('liquidityTrendChart', 'financial_analysis_liquidity_trend.svg'));
+document.getElementById('liquidityTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('liquidityTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('liquidityTrendTableWrap');
+  const canvasWrap = document.getElementById('liquidityTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.liquidityTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>Current Ratio (x)</th><th>Quick Ratio (x)</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+d.currentRatio[i].toFixed(2)+'x</td><td>'+d.quickRatio[i].toFixed(2)+'x</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('leverageTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('leverageTrendChart', 'financial_analysis_leverage_trend.svg'));
+document.getElementById('leverageTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('leverageTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('leverageTrendTableWrap');
+  const canvasWrap = document.getElementById('leverageTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.leverageTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>D/E (x)</th><th>IBD/E (x)</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+d.de[i].toFixed(2)+'x</td><td>'+d.ibde[i].toFixed(2)+'x</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('cccTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('cccTrendChart', 'financial_analysis_ccc_trend.svg'));
+document.getElementById('cccTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('cccTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('cccTrendTableWrap');
+  const canvasWrap = document.getElementById('cccTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.cccTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Period</th><th>Cash Conversion Cycle (Days)</th></tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td><td>'+Math.round(d.ccc[i])+' days</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('cccTimelineDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('cccBridgeChart', 'financial_analysis_ccc_timeline.svg'));
+document.getElementById('cccTimelineExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('cccTimelineTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('cccTimelineTableWrap');
+  const canvasWrap = document.getElementById('cccBridgeCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.cccBridge;
+  const opCycle = d.inventory + d.receivable, ccc = opCycle - d.payable;
+  let html = '<table class="mini-table"><thead><tr><th>Component</th><th>Days</th></tr></thead><tbody>'
+    + '<tr><td>Inventory</td><td>'+Math.round(d.inventory)+' days</td></tr>'
+    + '<tr><td>Receivable</td><td>'+Math.round(d.receivable)+' days</td></tr>'
+    + '<tr><td>Operating Cycle</td><td>'+Math.round(opCycle)+' days</td></tr>'
+    + '<tr><td>Payable</td><td>'+Math.round(d.payable)+' days</td></tr>'
+    + '<tr><td><b>Cash Conversion Cycle</b></td><td><b>'+Math.round(ccc)+' days</b></td></tr>'
+    + '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
 /* ---------- View By: Quarterly/Annual toggle ---------- */
@@ -1118,15 +1638,52 @@ function positionViewByThumb(){
   thumb.style.width = selected.offsetWidth + 'px';
   thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
 }
-function updatePeriodControl(){
+function currentAsOfLabel(){
+  if(currentViewBy === 'annual') return annualAnchor==='fy2025' ? 'FY2025' : '2026 (Current)';
+  return isQTD ? "Q3'26 · QTD" : MASTER_QUARTER_LABELS[anchorIdx];
+}
+// "As of" dropdown -- content depends on View By. Quarterly: This Quarter
+// (QTD, only if HAS_Q3_26_QTD) at top, then Last Quarter (default anchor)
+// descending back to MIN_ANCHOR_IDX (Q1'25, the earliest anchor with a full
+// prior-TTM window to compare against). Annual: just 2 options, capped by
+// how far back this file's annual data model actually goes (see annualAnchor
+// declaration above).
+function buildPeriodDropdown(){
+  let html = '';
   if(currentViewBy === 'annual'){
-    document.getElementById('periodLabel').textContent = 'Years';
-    document.getElementById('periodBtnLabel').textContent = "FY2024 → 2026";
-  } else {
-    document.getElementById('periodLabel').textContent = 'As of';
-    document.getElementById('periodBtnLabel').textContent = "Q2'26";
+    html += '<div class="period-opt'+(annualAnchor==='current'?' selected':'')+'" data-annual-anchor="current"><span class="chk">'+(annualAnchor==='current'?'✓':'')+'</span>This Year (2026 · Current)</div>';
+    html += '<div class="period-opt'+(annualAnchor==='fy2025'?' selected':'')+'" data-annual-anchor="fy2025"><span class="chk">'+(annualAnchor==='fy2025'?'✓':'')+'</span>Last Year (FY2025)</div>';
+    document.getElementById('periodDropdown').innerHTML = html;
+    return;
   }
-  document.getElementById('viewByFootnote').style.display = currentViewBy === 'annual' ? 'block' : 'none';
+  if(HAS_Q3_26_QTD){
+    html += '<div class="period-opt'+(isQTD?' selected':'')+'" data-qtd="1"><span class="chk">'+(isQTD?'✓':'')+'</span>This Quarter (Q3\'26 · QTD)</div>';
+    html += '<div class="period-divider"></div>';
+  }
+  for(let i=DEFAULT_ANCHOR_IDX; i>=MIN_ANCHOR_IDX; i--){
+    const label = i===DEFAULT_ANCHOR_IDX ? 'Last Quarter ('+MASTER_QUARTER_LABELS[i]+')' : MASTER_QUARTER_LABELS[i];
+    const selected = !isQTD && anchorIdx===i;
+    html += '<div class="period-opt'+(selected?' selected':'')+'" data-anchor="'+i+'"><span class="chk">'+(selected?'✓':'')+'</span>'+label+'</div>';
+  }
+  document.getElementById('periodDropdown').innerHTML = html;
+}
+function updateFootnote(){
+  const footnote = document.getElementById('viewByFootnote');
+  if(currentViewBy === 'annual'){
+    footnote.style.display = 'none';
+  } else if(isQTD){
+    footnote.textContent = "Q3'26 เป็น QTD (ไตรมาสปัจจุบันยังไม่จบ) — metric flow (margin/growth) คือยอดสะสมถึงปัจจุบัน · metric ratio/annualized (ROE, ROA, Asset Turnover, Cash Cycle) คำนวณแบบ Annualized เดิม ไม่ใช่ TTM · Days/Inventory/Provision ใช้ค่าปิดล่าสุดของ Q2'26 (ยังไม่มียอดปิดไตรมาสใหม่) — ตัวเลขนี้จะเปลี่ยนเมื่อไตรมาสปิดจริง";
+    footnote.style.display = 'block';
+  } else {
+    footnote.style.display = 'none';
+  }
+}
+function updatePeriodControl(){
+  document.getElementById('periodLabel').textContent = 'As of';
+  document.getElementById('periodBtnLabel').textContent = currentAsOfLabel();
+  document.getElementById('periodBtn').disabled = false;
+  buildPeriodDropdown();
+  updateFootnote();
 }
 document.getElementById('viewByToggle').addEventListener('click', (e)=>{
   const btn = e.target.closest('.timeframe-opt');
@@ -1138,7 +1695,45 @@ document.getElementById('viewByToggle').addEventListener('click', (e)=>{
   updatePeriodControl();
   renderAll();
 });
+document.getElementById('periodBtn').addEventListener('click', (e)=>{
+  e.stopPropagation();
+  document.getElementById('periodDropdown').classList.toggle('open');
+});
+document.getElementById('periodDropdown').addEventListener('click', (e)=>{
+  const opt = e.target.closest('.period-opt');
+  if(!opt) return;
+  if(opt.dataset.annualAnchor){ annualAnchor = opt.dataset.annualAnchor; }
+  else if(opt.dataset.qtd){ isQTD = true; }
+  else { isQTD = false; anchorIdx = parseInt(opt.dataset.anchor,10); }
+  document.getElementById('periodDropdown').classList.remove('open');
+  updatePeriodControl();
+  renderAll();
+});
+document.addEventListener('click', (e)=>{
+  if(!e.target.closest('.filter-item')) document.getElementById('periodDropdown').classList.remove('open');
+});
+
+/* ---------- Pill switcher (2026-08-10 restructure) -- 4 full-screen
+   views, exactly one .pill-view visible at a time. renderAll() runs on
+   every switch too: its buildXxxSVG calls measure clientWidth, which is 0
+   while a .pill-view is display:none, so a pill's charts would otherwise
+   render once at page load using a fallback width and never match their
+   true container size once actually viewed (same fix as the P&L page's
+   own restructure). ---------- */
+document.getElementById('pillNav').addEventListener('click', (e)=>{
+  const a = e.target.closest('a[data-view]');
+  if(!a) return;
+  e.preventDefault();
+  document.querySelectorAll('#pillNav a').forEach(x=>x.classList.remove('active'));
+  a.classList.add('active');
+  document.querySelectorAll('.pill-view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('view-'+a.dataset.view).classList.add('active');
+  window.scrollTo(0,0);
+  renderAll();
+});
+
 positionViewByThumb();
+updatePeriodControl();
 
 /* ---------- Init ---------- */
 renderAll();
