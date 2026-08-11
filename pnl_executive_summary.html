@@ -274,7 +274,7 @@
   <div class="pill-view" id="view-cost">
   <div class="section-label">Expense Breakdown</div>
 
-  <div class="chart-grid">
+  <div class="chart-grid" style="margin-bottom:18px;">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
@@ -288,7 +288,7 @@
         </div>
       </div>
       <div class="chart-legend" id="opexTrendLegend"></div>
-      <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:280px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:205px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="opexTrendTableWrap"></div>
     </div>
 
@@ -305,7 +305,7 @@
         </div>
       </div>
       <div class="chart-legend" id="costStructLegend"></div>
-      <div class="canvas-wrap" id="costStructCanvasWrap" style="height:280px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
+      <div class="canvas-wrap" id="costStructCanvasWrap" style="height:205px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
       <div class="data-table-wrap" id="costStructTableWrap"></div>
     </div>
   </div>
@@ -318,11 +318,14 @@
           <button class="info-icon" data-info-title="Selling Expense Breakdown" data-info-text="แตก Marketing/Ads เป็นหมวดย่อย (Advertising &amp; Promotion, Digital/Content Marketing, People cost, Others) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ Marketing/Ads รวมเป๊ะทุกไตรมาส">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="sellingExpTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="sellingExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="sellingExpExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
       <div class="chart-legend" id="sellingExpLegend"></div>
       <div class="canvas-wrap" id="sellingExpCanvasWrap" style="height:260px;"><div id="sellingExpChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="sellingExpTableWrap"></div>
       <div class="callout-text" id="sellingExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
     </div>
     <div class="card">
@@ -332,11 +335,14 @@
           <button class="info-icon" data-info-title="Administration Expense Breakdown" data-info-text="แตก SG&A เป็นหมวดย่อย (People cost, Rental &amp; Depreciation, Other Admin Expenses, Advisor &amp; Professional Fees, Service Cost) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ SG&A รวมเป๊ะทุกไตรมาส">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="adminExpTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="adminExpDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="adminExpExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
       <div class="chart-legend" id="adminExpLegend"></div>
       <div class="canvas-wrap" id="adminExpCanvasWrap" style="height:260px;"><div id="adminExpChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="adminExpTableWrap"></div>
       <div class="callout-text" id="adminExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
     </div>
   </div>
@@ -1288,7 +1294,7 @@ function renderBreakdown(){
   // the same figures the old 100%-stacked chart showed, e.g. MT COGS
   // 54.4% -- only the bar's overall height is no longer forced to 100%).
   buildStackedBarSVG('costStructChart', {
-    labels: costStructGroups, height:280,
+    labels: costStructGroups, height:205,
     series: costLines.map(cl => ({ name:cl.name, color:cl.color,
       values: costStructGroups.map(g=>{ const ns = costStructNetSales(g); return ns ? costStructValue(g, cl.key)/ns*100 : 0; }) })),
     valueFormatter: v=>fmtPct(v,1),
@@ -1402,6 +1408,7 @@ function renderCostCategoryDetail(){
     const lastIdx = series[0].values.length-1;
     const latestShare = names.map((name,i)=>({ name, value: series[i].values[lastIdx], pct: totalsByBucket[lastIdx] ? series[i].values[lastIdx]/totalsByBucket[lastIdx]*100 : 0 })).sort((a,b)=>b.value-a.value);
     document.getElementById(calloutId).innerHTML = '<b>'+latestShare[0].name+'</b> is the largest share of '+calloutNoun+' ('+latestShare[0].pct.toFixed(0)+'%), consistently across the period';
+    latestData[chartId] = { labels: cdWin.labels, series, ratioLineName, ratioValues: ratioSeries };
   }
   renderSplit(pnlCompany.marketing, SELLING_EXPENSE_SPLIT, 'sellingExpChart', 'sellingExpLegend', 'sellingExpCallout', 'Selling Expense', 'Selling Expense-to-Sales %');
   renderSplit(pnlCompany.sga, ADMIN_EXPENSE_SPLIT, 'adminExpChart', 'adminExpLegend', 'adminExpCallout', 'Admin Expense', 'Admin Expense-to-Sales %');
@@ -1447,7 +1454,7 @@ function renderCostStructure(){
     name:l.name, color:l.color,
     values: shareGroups.map(grp => grp.reduce((sum,i)=> sum + groupKeys.reduce((s,g)=> s + l.keys.reduce((ks,key)=> ks + pnlByChannel[g][key][i], 0), 0), 0))
   }));
-  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:280 });
+  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:205 });
   document.getElementById('opexTrendLegend').innerHTML = opexLines.map(l =>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+l.color+'"></span>'+l.name+'</span>'
   ).join('');
@@ -1477,8 +1484,24 @@ document.getElementById('opexTrendTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('sellingExpDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('sellingExpChart', 'pnl_selling_expense_breakdown.svg'));
-document.getElementById('adminExpDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('adminExpChart', 'pnl_admin_expense_breakdown.svg'));
+function wireSplitToolbar(chartId, prefix, filename){
+  document.getElementById(prefix+'DownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer(chartId, filename));
+  document.getElementById(prefix+'ExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+  document.getElementById(prefix+'TableBtn').addEventListener('click', ()=>{
+    const wrap = document.getElementById(prefix+'TableWrap');
+    const canvasWrap = document.getElementById(prefix+'CanvasWrap');
+    const showing = wrap.classList.contains('visible');
+    if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+    const d = latestData[chartId];
+    let html = '<table class="mini-table"><thead><tr><th>Category</th>' + d.labels.map(l=>'<th>'+l+'</th>').join('') + '</tr></thead><tbody>';
+    d.series.forEach(s=>{ html += '<tr><td>'+s.name+'</td>' + s.values.map(v=>'<td>'+fmtTHB(v)+'</td>').join('') + '</tr>'; });
+    html += '<tr><td>'+d.ratioLineName+'</td>' + d.ratioValues.map(v=>'<td>'+fmtPct(v,1)+'</td>').join('') + '</tr>';
+    html += '</tbody></table>';
+    wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+  });
+}
+wireSplitToolbar('sellingExpChart', 'sellingExp', 'pnl_selling_expense_breakdown.svg');
+wireSplitToolbar('adminExpChart', 'adminExp', 'pnl_admin_expense_breakdown.svg');
 
 /* ---------- Init ---------- */
 renderCostStructure();

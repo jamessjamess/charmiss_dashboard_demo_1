@@ -6,6 +6,11 @@
 <title>Charmiss — Financial Statement · Equity Changes</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
+<style>
+.reference-section{margin-top:8px;}
+.reference-table-wrap{display:none;}
+.reference-table-wrap.open{display:block;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -80,27 +85,16 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Equity Roll-Forward Waterfall</span>
-        <button class="info-icon" data-info-title="Equity Roll-Forward" data-info-text="Opening Equity → +Net Profit (after tax) → −Dividends Paid → Closing Equity, Q1'26 → Q2'26 — Closing ต้องเท่ากับ Equity ใน Balance Sheet Q2'26 เป๊ะ (฿209.9M) — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Equity Roll-Forward" data-info-text="Opening Equity → +Net Profit (after tax) → −Dividends Paid → Closing Equity — Closing ต้องเท่ากับ Equity ใน Balance Sheet ของงวดเดียวกันเป๊ะ — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
+        <button class="tool-btn" id="eqWaterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
         <button class="tool-btn" id="eqWaterfallDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="eqWaterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
     <div class="canvas-wrap" id="eqWaterfallCanvasWrap" style="height:260px;"><div id="eqWaterfallChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="eqWaterfallCallout" style="margin-top:10px;margin-bottom:0;">–</div>
-  </div>
-
-  <div class="card table-card single-label-col" style="margin-bottom:14px;">
-    <div class="card-head">
-      <span class="card-title">Statement of Changes in Equity (by component)</span>
-      <button class="info-icon" data-info-title="Statement of Changes in Equity" data-info-text="แยกตามองค์ประกอบ Equity — ทุนที่ออกและชำระแล้ว/สำรองตามกฎหมายไม่มีการเคลื่อนไหวในงวดนี้ (ไม่มีการเพิ่มทุน, ไม่มีการจัดสรรสำรองเพิ่ม) — กำไรสะสมเปลี่ยนแปลงจาก Net Profit (after tax) หัก เงินปันผลจ่าย เท่านั้น — ไม่มี Other Comprehensive Income (OCI) ในงวดนี้ — Mock Data 100%">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="eqStatementDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-      </div>
-    </div>
-    <table id="eqStatementTable"></table>
-    <div class="kpi-caption" style="margin-top:8px;">No Other Comprehensive Income (OCI) or capital raised this period — the OCI-segregated Statement of Changes in Equity is omitted as there is nothing to report.</div>
+    <div class="data-table-wrap" id="eqWaterfallTableWrap"></div>
   </div>
 
   <!-- ===== EQUITY & RETAINED EARNINGS TREND ===== -->
@@ -108,8 +102,8 @@
   <div class="card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Total Equity &amp; Retained Earnings (5Q)</span>
-        <button class="info-icon" data-info-title="Total Equity & Retained Earnings" data-info-text="Total Equity 5 ไตรมาส (ชุดเดียวกับที่ Financial Analysis's DuPont ใช้คิด Equity Multiplier — ไม่สร้างเลขใหม่) — Retained Earnings = Total Equity − ทุนที่ออกและชำระแล้ว (100) − สำรองตามกฎหมาย (10) เพราะ 2 องค์ประกอบนี้คงที่ตลอด 5 ไตรมาส — Mock Data 100%">i</button>
+        <span class="chart-title">Total Equity &amp; Retained Earnings</span>
+        <button class="info-icon" data-info-title="Total Equity & Retained Earnings" data-info-text="Total Equity ราย Quarter (ชุดเดียวกับที่ Financial Analysis's DuPont ใช้คิด Equity Multiplier — ไม่สร้างเลขใหม่) — Retained Earnings = Total Equity − ทุนที่ออกและชำระแล้ว (100) − สำรองตามกฎหมาย (10) เพราะ 2 องค์ประกอบนี้คงที่ทุกไตรมาส — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="eqTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -130,8 +124,13 @@
   <div class="card" style="margin-bottom:6px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Dividends Paid &amp; Payout Ratio (4Q)</span>
-        <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'26 ตรงกับบรรทัด Financing ในหน้า Cash Flow (฿11.2M) เป๊ะ — Mock Data 100%">i</button>
+        <span class="chart-title">Dividends Paid &amp; Payout Ratio</span>
+        <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'25 ไม่มี Retained Earnings งวดก่อนหน้าให้ roll-forward จึงไม่มีข้อมูล — Mock Data 100%">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="dividendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="dividendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="dividendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
     <div class="chart-legend">
@@ -139,9 +138,32 @@
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#4C6FA5"></span>Payout Ratio % (right axis)</span>
     </div>
     <div class="canvas-wrap" id="dividendCanvasWrap"><div id="dividendChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="dividendCallout" style="margin-top:10px;margin-bottom:0;">–</div>
+    <div class="data-table-wrap" id="dividendTableWrap"></div>
   </div>
 
+  <!-- ===== REFERENCE: Statement of Changes in Equity (by component), demoted
+       to a collapsed reference at the very end -- SSOT the Waterfall above
+       already reads from exactly, not a section of its own to lead with
+       (chart-first). Same collapsible pattern as P&L/Cash Flow/Balance
+       Sheet. ===== -->
+  <div class="reference-section">
+    <button class="tool-btn" id="referenceToggleBtn" style="width:auto;padding:6px 12px;gap:6px;display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--ink-2);">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg>
+      Show statement of changes in equity
+    </button>
+    <div class="reference-table-wrap" id="referenceTableWrap">
+      <div class="card table-card single-label-col" style="margin-top:10px;margin-bottom:0;">
+        <div class="card-head">
+          <span class="card-title">Statement of Changes in Equity (by component)</span>
+          <button class="info-icon" data-info-title="Statement of Changes in Equity" data-info-text="แยกตามองค์ประกอบ Equity — ทุนที่ออกและชำระแล้ว/สำรองตามกฎหมายไม่มีการเคลื่อนไหวในงวดนี้ (ไม่มีการเพิ่มทุน, ไม่มีการจัดสรรสำรองเพิ่ม) — กำไรสะสมเปลี่ยนแปลงจาก Net Profit (after tax) หัก เงินปันผลจ่าย เท่านั้น — ไม่มี Other Comprehensive Income (OCI) ในงวดนี้ — Mock Data 100%">i</button>
+          <div class="toolbar" style="margin-left:auto;">
+            <button class="tool-btn" id="eqStatementDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          </div>
+        </div>
+        <table id="eqStatementTable"></table>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -261,9 +283,6 @@ function renderAll(){
     { label:'Closing Equity', value: active.closing, type:'end' }
   ];
   buildWaterfallSVG('eqWaterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:260 });
-  document.getElementById('eqWaterfallCallout').innerHTML =
-    active.label+': Opening '+fmtTHB(active.opening)+' + Net Profit '+fmtTHB(active.np)+' − Dividends '+fmtTHB(-active.div)+' = Closing <b>'+fmtTHB(active.closing)+'</b>'
-    + (active.label==="Q2'26" ? ' — ties exactly to Equity on Balance Sheet Q2\'26 · Net Profit ties to P&amp;L (after tax) · Dividends ties to Cash Flow (Financing)' : '');
   latestData.waterfall = waterfallSteps;
 
   /* === Statement of Changes in Equity (by component) === Share Capital/
@@ -291,32 +310,45 @@ function renderAll(){
   latestData.statement = rows;
   latestData.labels = { label: active.label, priorLabel: active.priorLabel };
 
-  /* === Total Equity & Retained Earnings Trend (5Q) === */
+  /* === Total Equity & Retained Earnings Trend === */
   buildGroupedBarSVG('eqTrendChart', {
     labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true,
     series: [ {name:'Total Equity', color: cssVar('--ink-3')||'#898781', values: totalEquityQ}, {name:'Retained Earnings', color: cssVar('--brand')||'#8E1E4D', values: retainedEarningsQ} ]
   });
   latestData.eqTrend = quarterLabels.map((q,i)=>({quarter:q, equity:totalEquityQ[i], retained:retainedEarningsQ[i]}));
 
-  /* === Dividend & Payout Ratio (4Q) === PART 3B: Payout Ratio % added as a
-     real 2nd series (right-axis line) -- the card was already titled
-     "...& Payout Ratio" but only ever plotted Dividends Paid, so
-     buildGroupedBarSVG (bar-only) swapped for buildComboBarLineSVG
-     (bar+line, shared.js) to actually carry it. */
-  const divLabels = quarterLabels.slice(1);
+  /* === Dividend & Payout Ratio === Payout Ratio % is a real 2nd series
+     (right-axis line), so buildGroupedBarSVG (bar-only) is swapped for
+     buildComboBarLineSVG (bar+line, shared.js). Window widened from 4Q to
+     5Q (2026-08-12) to match the Equity Trend chart's window above --
+     divValuesFull/payoutValuesFull lead with a null for Q2'25 (no prior
+     Retained Earnings to roll forward from in this dataset, same reason
+     Q2'25 is excluded from the As of dropdown), which buildComboBarLineSVG
+     renders as a "–" placeholder bar instead of a fabricated ฿0. */
+  const divValuesFull = [null, ...dividendsQAll];
+  const payoutValuesFull = [null, ...payoutQAll];
   buildComboBarLineSVG('dividendChart', {
-    labels: divLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
-    bar: {name:'Dividends Paid', color: cssVar('--brand')||'#8E1E4D', values: dividendsQAll},
-    line: {name:'Payout Ratio %', color:'#4C6FA5', values: payoutQAll}
+    labels: quarterLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
+    bar: {name:'Dividends Paid', color: cssVar('--brand')||'#8E1E4D', values: divValuesFull},
+    line: {name:'Payout Ratio %', color:'#4C6FA5', values: payoutValuesFull}
   });
-  document.getElementById('dividendCallout').innerHTML =
-    divLabels[3]+': Dividends Paid '+fmtTHB(dividendsQAll[3])+' ÷ Net Profit (after tax) '+fmtTHB(netProfitQAll[4])+' = Payout Ratio <b>'+fmtPct(payoutQAll[3],1)+'</b> · 4-quarter average '+fmtPct(payoutQAll.reduce((a,b)=>a+b,0)/payoutQAll.length,1);
-  latestData.dividend = divLabels.map((q,i)=>({quarter:q, dividend:dividendsQAll[i], payout:payoutQAll[i]}));
+  latestData.dividend = quarterLabels.map((q,i)=>({quarter:q, dividend:divValuesFull[i], payout:payoutValuesFull[i]}));
 }
 
 /* --- Toolbar --- */
 document.getElementById('eqWaterfallDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('eqWaterfallChart', 'equity_waterfall.svg'));
 document.getElementById('eqWaterfallExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('eqWaterfallTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('eqWaterfallTableWrap');
+  const canvasWrap = document.getElementById('eqWaterfallCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.waterfall;
+  let html = '<table class="mini-table"><thead><tr><th>Step</th><th>Value</th></tr></thead><tbody>';
+  d.forEach(st=>{ html += '<tr><td>'+st.label+'</td><td>'+(st.type==='delta'?(st.value>=0?'+':''):'')+fmtTHB(st.value)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
 
 document.getElementById('eqStatementDownloadBtn').addEventListener('click', ()=>{
   const rows = [["Component", "Opening ("+latestData.labels.priorLabel+")", "+ Net Profit", "- Dividends", "Closing ("+latestData.labels.label+")"]];
@@ -336,6 +368,28 @@ document.getElementById('eqTrendTableBtn').addEventListener('click', ()=>{
   d.forEach(r=>{ html += '<tr><td>'+r.quarter+'</td><td>'+fmtTHB(r.equity)+'</td><td>'+fmtTHB(r.retained)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('dividendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('dividendChart', 'dividends_payout.svg'));
+document.getElementById('dividendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('dividendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('dividendTableWrap');
+  const canvasWrap = document.getElementById('dividendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.dividend;
+  let html = '<table class="mini-table"><thead><tr><th>Quarter</th><th>Dividends Paid</th><th>Payout Ratio %</th></tr></thead><tbody>';
+  d.forEach(r=>{ html += '<tr><td>'+r.quarter+'</td><td>'+(r.dividend===null?'–':fmtTHB(r.dividend))+'</td><td>'+(r.payout===null?'–':fmtPct(r.payout,1))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Reference section collapse toggle (chart-first restructure) ---------- */
+document.getElementById('referenceToggleBtn').addEventListener('click', (e)=>{
+  const wrap = document.getElementById('referenceTableWrap');
+  const opening = !wrap.classList.contains('open');
+  wrap.classList.toggle('open', opening);
+  e.currentTarget.lastChild.textContent = opening ? ' Hide statement of changes in equity' : ' Show statement of changes in equity';
 });
 
 /* ---------- Filter bar: View By + As of (same pattern as Financial Analysis) ----------

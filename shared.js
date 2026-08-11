@@ -966,6 +966,14 @@ function buildComboBarLineSVG(containerId, opts){
   labels.forEach((lb,i)=>{
     const v = barVals[i];
     const x = cellX(i) + stepX/2 - barW/2;
+    // opts.bar with a null/undefined value (2026-08-12) -- no baseline to
+    // compute that period's bar from (same convention as the line series
+    // above, which already skips null points); renders as a "–" label at
+    // the zero line instead of a fabricated ฿0 bar.
+    if(v===null || v===undefined){
+      barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(barY0-6).toFixed(1)+'" font-size="9" font-weight="700" text-anchor="middle" fill="'+inkThree+'">–</text>';
+      return;
+    }
     const y = barYAt(v);
     const isLastBar = i===lastBarIdx;
     const partialBar = opts.partialLastBar && isLastBar;

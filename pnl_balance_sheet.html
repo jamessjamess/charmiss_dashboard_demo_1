@@ -6,6 +6,11 @@
 <title>Charmiss — Financial Statement · Balance Sheet</title>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
+<style>
+.reference-section{margin-top:8px;}
+.reference-table-wrap{display:none;}
+.reference-table-wrap.open{display:block;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -73,47 +78,74 @@
   <!-- ===== BALANCE SHEET ===== -->
   <div class="section-label" id="sec-balance-sheet">Balance Sheet</div>
 
-  <div class="card table-card single-label-col" style="margin-bottom:14px;">
-    <div class="card-head">
-      <span class="card-title">Condensed Balance Sheet</span>
-      <button class="info-icon" data-info-title="Condensed Balance Sheet" data-info-text="งบแสดงฐานะการเงินแบบย่อ Q1'26 vs Q2'26 — ตัวเลขเดียวกับกราฟ Asset Breakdown/Liabilities &amp; Equity Breakdown ด้านล่าง แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Stacked Bar — Total Assets = Total Liabilities + Equity ทั้ง 2 งวด — Mock Data 100%">i</button>
-      <div class="toolbar" style="margin-left:auto;">
-        <button class="tool-btn" id="condensedDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-      </div>
-    </div>
-    <table id="condensedTable"></table>
-  </div>
-
+  <!-- Chart-first (2026-08-12 restructure): Asset/Liabilities&Equity
+       Breakdown lead the page as the hero view -- both now multi-period
+       (Part B, page-aware View By: Quarterly = up to 5 quarters ending at
+       AS OF, clipped at the start of this page's data; Annual = FY2024/
+       FY2025/2026(Current) up to AS OF), not a fixed 2-bar comparison. The
+       Condensed table (same underlying figures, exact numbers instead of
+       bars) moves to a collapsed reference at the very end -- SSOT, not the
+       lead. Every bar here is a complete as-of snapshot (Part C) -- none of
+       this page's charts use the dashed/hollow "partial period" styling
+       P&L/Cash Flow's flow-statement charts use for their still-open
+       current bucket, since a Balance Sheet snapshot is never partial. -->
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Asset Breakdown</span>
-          <button class="info-icon" data-info-title="Asset Breakdown" data-info-text="Total Assets แยกตามหมวด เทียบ Q1'26 vs Q2'26 (ไตรมาสก่อนหน้า) — Mock Data 100%">i</button>
+          <button class="info-icon" data-info-title="Asset Breakdown" data-info-text="Total Assets แยกตามหมวด ราย Quarter-end/Year-end ตาม View By ที่เลือก จนถึง AS OF — ทุกงวดเป็น Snapshot ที่สมบูรณ์ (ไม่มี Partial) — Mock Data 100%">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="assetTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="assetDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="assetExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
       <div class="chart-legend" id="assetLegend"></div>
       <div class="canvas-wrap" id="assetCanvasWrap" style="height:300px;"><div id="assetChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="assetTableWrap"></div>
     </div>
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Liabilities &amp; Equity Breakdown</span>
-          <button class="info-icon" data-info-title="Liabilities & Equity Breakdown" data-info-text="Total Liabilities + Equity แยกตามหมวด เทียบ Q1'26 vs Q2'26 — ผลรวมเท่ากับ Total Assets เสมอ (Accounting Identity) — Mock Data 100%">i</button>
+          <button class="info-icon" data-info-title="Liabilities & Equity Breakdown" data-info-text="Total Liabilities + Equity แยกตามหมวด ราย Quarter-end/Year-end ตาม View By ที่เลือก จนถึง AS OF — ผลรวมเท่ากับ Total Assets เสมอทุกงวด (Accounting Identity) — Mock Data 100%">i</button>
         </div>
         <div class="toolbar">
+          <button class="tool-btn" id="liabTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
           <button class="tool-btn" id="liabDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="liabExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
       <div class="chart-legend" id="liabLegend"></div>
       <div class="canvas-wrap" id="liabCanvasWrap" style="height:300px;"><div id="liabChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="liabTableWrap"></div>
     </div>
   </div>
-  <div class="callout-text" id="bsCallout" style="margin:-6px 0 14px;">–</div>
 
+  <!-- ===== REFERENCE: Condensed Balance Sheet, demoted to a collapsed
+       reference at the very end -- SSOT the 2 charts above already read
+       from exactly, not a section of its own to lead with (chart-first).
+       Same collapsible pattern as P&L/Cash Flow. ===== -->
+  <div class="reference-section">
+    <button class="tool-btn" id="referenceToggleBtn" style="width:auto;padding:6px 12px;gap:6px;display:inline-flex;align-items:center;font-size:12px;font-weight:600;color:var(--ink-2);">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg>
+      Show detailed balance sheet
+    </button>
+    <div class="reference-table-wrap" id="referenceTableWrap">
+      <div class="card table-card single-label-col" style="margin-top:10px;margin-bottom:0;">
+        <div class="card-head">
+          <span class="card-title">Condensed Balance Sheet</span>
+          <button class="info-icon" data-info-title="Condensed Balance Sheet" data-info-text="งบแสดงฐานะการเงินแบบย่อ — งวดก่อนหน้า vs งวดที่เลือก (AS OF) — ตัวเลขเดียวกับกราฟ Asset Breakdown/Liabilities &amp; Equity Breakdown ด้านบน แค่นำเสนอเป็นตัวเลข Exact แทนภาพ Stacked Bar — Total Assets = Total Liabilities + Equity ทุกงวด — Mock Data 100%">i</button>
+          <div class="toolbar" style="margin-left:auto;">
+            <button class="tool-btn" id="condensedDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          </div>
+        </div>
+        <table id="condensedTable"></table>
+      </div>
+    </div>
+  </div>
 
 </div>
 
@@ -126,15 +158,16 @@
 <script src="nav-menu.js"></script>
 <script>
 /* ============================================================================
-   This page is a fully new, self-contained mock data domain — Balance Sheet
-   items have no prior module in this dashboard, so unlike every other P&L
-   file there is no existing ฿ figure to reconcile against. The only
-   consistency rule that applies is the accounting identity itself: Total
-   Assets must equal Total Liabilities + Equity in every period, by
-   construction. Key Financial Ratio (5Q) and Financial Leverage (5Q) moved
-   to the Financial Analysis page (Financial Statement restructure) — this
-   page now owns only the two-quarter snapshot (Condensed table + the
-   existing Asset/Liabilities&Equity Breakdown charts).
+   Balance Sheet — a self-contained mock data domain (Equity and Cash tie
+   exactly to Equity Changes/Cash Flow only at the Q1'26/Q2'26 anchors those
+   pages share; every other period is this page's own independently
+   backfilled illustrative trend — see the "Anchor-only reconciliation"
+   comment above backfillSeries()). The accounting identity itself (Total
+   Assets = Total Liabilities + Equity) holds exactly in every period, by
+   construction, since Equity is always solved as the plug. Chart-first
+   (2026-08-12): Asset/Liabilities&Equity Breakdown lead as multi-period
+   trend charts (Part B); the Condensed table is a collapsed SSOT reference
+   at the end, not the lead (Part A).
    ============================================================================ */
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
@@ -160,48 +193,57 @@ const LIAB_Q1 = { 'Trade & other payables':58e6, 'Lease liabilities':34e6, 'Othe
 const LIAB_GROWTH = { 'Trade & other payables':0.069, 'Lease liabilities':0.029, 'Other liabilities':0.125 };
 const LIAB_CATEGORIES = Object.keys(LIAB_Q1);
 
-/* ---------- Filter bar (2026-08-11 unification): backfilling 5 quarters ----------
-   The original build only ever modeled 2 snapshots (Q1'26 base + Q2'26,
-   independently grown per category). To let As of select any of the 5
-   quarters Financial Analysis/P&L/Cash Flow already show, Q2'25-Q4'25 are
-   generated by INVERSE-compounding each category's own Q1'26->Q2'26 growth
-   rate backward from the Q1'26 base -- Q1'26 and Q2'26 themselves are
-   UNCHANGED (still exactly the original reconciling figures, incl. the
-   "Others" plug + rounded-total treatment); only 3 new earlier quarters are
-   added, same "smooth illustrative trend leading into the real anchor"
-   convention Cash Flow's own trailing quarters already use. Annual View By
-   has no separate FY-end snapshot in this model (only quarter-end
-   snapshots exist) -- scoped to "2026 (Current)" only, same as Cash Flow. */
-function backfillSeries(categories, q1Values, growth, othersIdx){
-  // Returns 4 rounded rows (Q2'25,Q3'25,Q4'25,Q1'26) -- Q1'26 (idx3) is the
-  // untouched original base; Q2'25-Q4'25 (idx0-2) are inverse-compounded
-  // then rounded the same "round total first, plug the smallest category"
-  // way the original Q1->Q2 growth step already does. othersIdx is the
-  // category index to use as the rounding plug, or undefined to skip
-  // plugging (liabilities have no dedicated "Others" catch-all category).
-  const raw = [null,null,null,q1Values];
-  for(let i=2;i>=0;i--) raw[i] = categories.map((c,ci)=> raw[i+1][ci]/(1+growth[c]));
+/* ---------- Filter bar (2026-08-12 chart-first + multi-period restructure) ----------
+   Extended from 3 back-steps to 5 (Q4'24/Q1'25 added ahead of the original
+   Q2'25) so Annual View By has a real FY2024 (Q4'24 quarter-end) snapshot to
+   show -- Q2'25 through Q2'26 (the original 5 quarters) are BYTE-IDENTICAL
+   to before: backfillSeries still computes each of them via the exact same
+   inverse-compounding-from-the-Q1'26-anchor + "round total, plug the
+   smallest category" formula, just with 2 more (independently rounded) rows
+   ahead of them now. Q1'26 and Q2'26 themselves remain the untouched
+   original reconciling figures.
+
+   Anchor-only reconciliation (confirmed): Equity ties exactly to Equity
+   Changes' Closing Equity, and Cash ties exactly to Cash Flow's Ending
+   Cash, ONLY at the Q1'26/Q2'26 anchors those 2 pages also anchor to --
+   every earlier quarter here (Q4'24-Q4'25) is this page's OWN independently
+   backfilled illustrative trend, same "smooth trend leading into the real
+   anchor" convention Cash Flow/Equity Changes use for their own trailing
+   quarters (2026-08-12 closeout: the on-page footnote explaining this was
+   cut module-wide -- ties/anchors are still documented here in code). */
+function backfillSeries(categories, anchorValues, growth, othersIdx, backSteps){
+  // Returns backSteps+1 rounded rows, anchorValues sitting at the LAST
+  // index (backSteps); every earlier index is anchorValues inverse-
+  // compounded one quarter at a time, then rounded the same "round total
+  // first, plug the smallest category" way the original Q1->Q2 growth step
+  // already does. othersIdx is the category index to use as the rounding
+  // plug, or undefined to skip plugging (liabilities have no dedicated
+  // "Others" catch-all category).
+  const raw = new Array(backSteps+1);
+  raw[backSteps] = anchorValues;
+  for(let i=backSteps-1;i>=0;i--) raw[i] = categories.map((c,ci)=> raw[i+1][ci]/(1+growth[c]));
   return raw.map((row,qi)=>{
-    if(qi===3) return row; // Q1'26 -- exact, unchanged
+    if(qi===backSteps) return row; // anchor (Q1'26) -- exact, unchanged
     const total = roundToNearestTHB100K(row.reduce((a,b)=>a+b,0));
     const rounded = row.map((v,i)=> i===othersIdx ? v : roundToNearestTHB100K(v));
     if(othersIdx!==undefined) rounded[othersIdx] = total - rounded.reduce((a,b,i)=> i===othersIdx ? a : a+b, 0);
     return rounded;
   });
 }
-const assetByQ = backfillSeries(ASSET_CATEGORIES, ASSET_CATEGORIES.map(k=>ASSET_Q1[k]), ASSET_GROWTH, OTHERS_IDX);
+const BACK_STEPS = 5; // Q1'26 anchor minus 5 quarters = Q4'24
+const assetByQ = backfillSeries(ASSET_CATEGORIES, ASSET_CATEGORIES.map(k=>ASSET_Q1[k]), ASSET_GROWTH, OTHERS_IDX, BACK_STEPS);
 const assetQ2Raw = ASSET_CATEGORIES.map(k=>ASSET_Q1[k]*(1+ASSET_GROWTH[k]));
 const totalAssetsQ2 = roundToNearestTHB100K(assetQ2Raw.reduce((a,b)=>a+b,0));
 const assetQ2 = assetQ2Raw.map((v,i)=> i===OTHERS_IDX ? v : roundToNearestTHB100K(v));
 assetQ2[OTHERS_IDX] = totalAssetsQ2 - assetQ2.reduce((a,b,i)=> i===OTHERS_IDX ? a : a+b, 0);
-assetByQ.push(assetQ2); // idx4 -- Q2'26, exact, unchanged
+assetByQ.push(assetQ2); // idx6 -- Q2'26, exact, unchanged
 const totalAssetsByQ = assetByQ.map(row=> row.reduce((a,b)=>a+b,0));
 
-const liabByQ = backfillSeries(LIAB_CATEGORIES, LIAB_CATEGORIES.map(k=>LIAB_Q1[k]), LIAB_GROWTH, undefined);
+const liabByQ = backfillSeries(LIAB_CATEGORIES, LIAB_CATEGORIES.map(k=>LIAB_Q1[k]), LIAB_GROWTH, undefined, BACK_STEPS);
 const liabQ2 = LIAB_CATEGORIES.map(k=>roundToNearestTHB100K(LIAB_Q1[k]*(1+LIAB_GROWTH[k])));
-liabByQ.push(liabQ2); // idx4 -- Q2'26, exact, unchanged
+liabByQ.push(liabQ2); // idx6 -- Q2'26, exact, unchanged
 // Equity is always the plug (Total Assets - Total Liabilities) so the
-// accounting identity holds exactly for all 5 quarters, not just Q1/Q2.
+// accounting identity holds exactly for all 7 quarters, not just Q1/Q2.
 const equityByQ = liabByQ.map((row,qi)=> totalAssetsByQ[qi] - row.reduce((a,b)=>a+b,0));
 const liabEquityCategories = [...LIAB_CATEGORIES, 'Equity'];
 const liabEquityByQ = liabByQ.map((row,qi)=> [...row, equityByQ[qi]]);
@@ -212,12 +254,48 @@ function quarterYearLabel(startIdx){
 }
 const TODAY = 29;
 const curQuarterStart = Math.floor(TODAY/3)*3;
-const quarterStarts = [curQuarterStart-12, curQuarterStart-9, curQuarterStart-6, curQuarterStart-3, curQuarterStart];
+// idx0=Q4'24 1=Q1'25 2=Q2'25 3=Q3'25 4=Q4'25 5=Q1'26 6=Q2'26
+const quarterStarts = [curQuarterStart-18, curQuarterStart-15, curQuarterStart-12, curQuarterStart-9, curQuarterStart-6, curQuarterStart-3, curQuarterStart];
 const quarterLabels = quarterStarts.map(quarterYearLabel);
-let pnlQuarterAnchor = 4; // default Q2'26 (idx4, the last)
+
+// Annual (fiscal-year-end) anchors -- FY2024/FY2025 are real closed-year
+// snapshots (this page's own Q4'24/Q4'25 quarter-ends, idx0/idx4); "2026
+// (Current)" is simply the latest available snapshot (idx6, Q2'26) -- NOT a
+// YTD/partial figure the way a flow statement's still-open-year bucket is,
+// since a Balance Sheet snapshot is always complete as of its date (Part
+// C) -- labeled "(Current)" only to flag FY2026 itself hasn't closed yet,
+// not that this number is provisional. fy2024 has no prior year to compare
+// against (idx-1 doesn't exist), so it's a valid chart bucket but not a
+// selectable AS OF option -- same "no baseline" reasoning used elsewhere on
+// this dashboard (e.g. Financial Analysis's old Growth Rate FY2024 bucket).
+const ANNUAL_IDX = { fy2024:0, fy2025:4, current:6 };
+const ANNUAL_LABEL = { 0:'FY2024', 4:'FY2025', 6:'2026 (Current)' };
+let pnlQuarterAnchor = 6; // default Q2'26 (idx6, the last)
+let pnlAnnualAnchor = 'current';
 let currentViewBy = 'quarterly';
-function currentAsOfLabel(){ return currentViewBy==='annual' ? '2026 (Current)' : quarterLabels[pnlQuarterAnchor]; }
-function activeQIdx(){ return currentViewBy==='annual' ? 4 : pnlQuarterAnchor; }
+function currentAsOfLabel(){ return currentViewBy==='annual' ? ANNUAL_LABEL[ANNUAL_IDX[pnlAnnualAnchor]] : quarterLabels[pnlQuarterAnchor]; }
+function activeQIdx(){ return currentViewBy==='annual' ? ANNUAL_IDX[pnlAnnualAnchor] : pnlQuarterAnchor; }
+// Multi-period window ending at the AS OF anchor (Part B) -- Quarterly: up
+// to 5 quarters, clipped at idx0 if the anchor is early. Annual: FY2024
+// alone / FY2024+FY2025 / all 3, depending on anchor -- same "anchor clips
+// the window" convention this dashboard's Annual View By uses everywhere.
+function activeWindow(){
+  if(currentViewBy==='annual'){
+    const idxs = pnlAnnualAnchor==='fy2025' ? [ANNUAL_IDX.fy2024, ANNUAL_IDX.fy2025] : [ANNUAL_IDX.fy2024, ANNUAL_IDX.fy2025, ANNUAL_IDX.current];
+    return { idxs, labels: idxs.map(i=>ANNUAL_LABEL[i]) };
+  }
+  const startIdx = Math.max(0, pnlQuarterAnchor-4);
+  const idxs = []; for(let i=startIdx;i<=pnlQuarterAnchor;i++) idxs.push(i);
+  return { idxs, labels: idxs.map(i=>quarterLabels[i]) };
+}
+// "Selected + prior" pair for the collapsible detailed table's Δ/%change
+// columns (still a 2-period compare, per spec) -- prior is simply the
+// period immediately before the AS OF anchor in this page's own model
+// (Annual: the previous FY-end/anchor, not literally the previous quarter).
+function priorIdx(){
+  if(currentViewBy==='annual') return pnlAnnualAnchor==='fy2025' ? ANNUAL_IDX.fy2024 : ANNUAL_IDX.fy2025;
+  return pnlQuarterAnchor-1;
+}
 
 /* ---------- Nav menu / popovers / theme ---------- */
 if (typeof renderNavMenu === 'function') {
@@ -254,12 +332,14 @@ initSectionScrollSpy();
 const RAG_COLORS = ['var(--cat-1)','var(--cat-2)','var(--cat-3)','var(--cat-4)','var(--cat-5)','var(--cat-6)','var(--brand)','var(--ink-3)'];
 let latestData = {};
 
+function labelForIdx(idx){ return currentViewBy==='annual' ? ANNUAL_LABEL[idx] : quarterLabels[idx]; }
 function renderAll(){
-  // AS OF selects the snapshot quarter; the table/charts always compare it
-  // to the period immediately before it (PART C of the filter-bar
-  // unification) -- q=selected, p=prior.
-  const q = activeQIdx(), p = q-1;
-  const qLabel = quarterLabels[q], pLabel = quarterLabels[p];
+  // AS OF selects the snapshot period; the collapsible table always
+  // compares it to the period immediately before it (q=selected, p=prior).
+  // The 2 charts show the FULL multi-period window instead (Part B).
+  const win = activeWindow();
+  const q = win.idxs[win.idxs.length-1], p = priorIdx();
+  const qLabel = labelForIdx(q), pLabel = labelForIdx(p);
   const assetQ1 = assetByQ[p], assetQ2 = assetByQ[q];
   const totalAssetsQ1 = totalAssetsByQ[p], totalAssetsQ2 = totalAssetsByQ[q];
   const liabQ1 = liabByQ[p], liabQ2 = liabByQ[q];
@@ -295,19 +375,42 @@ function renderAll(){
   latestData.condensed = condensedRows;
   latestData.labels = { qLabel, pLabel };
 
-  /* === Asset Breakdown === */
-  const assetSeries = ASSET_CATEGORIES.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values:[assetQ1[i], assetQ2[i]] }));
-  buildStackedBarSVG('assetChart', { labels:[pLabel,qLabel], series: assetSeries, valueFormatter: fmtTHB });
+  /* === Last-bar QoQ/YoY comparison (view-by-aware) === Quarterly: the last
+     bar's own comparison is QoQ (vs p, the immediately prior quarter) plus
+     a genuine YoY (vs 4 quarters back) when that quarter exists in this
+     page's data; Annual: p IS the prior FY-anchor already, so that one
+     comparison reads as YoY (no QoQ concept at annual granularity). Same
+     {text,color} shape buildStackedBarSVG's opts.lastBarExtraLines already
+     expects (used elsewhere on this dashboard for the same purpose). */
+  const goodC = cssVar('--good-text')||'#006300', badC = cssVar('--critical')||'#d03b3b';
+  function lastBarComparisons(totalsByIdx){
+    const lines = [];
+    const cur = totalsByIdx[q];
+    const priorVal = totalsByIdx[p];
+    if(priorVal){
+      const d = (cur-priorVal)/Math.abs(priorVal)*100;
+      const tag = currentViewBy==='annual' ? 'YoY' : 'QoQ';
+      lines.push({ text: tag+' '+fmtSignedPct(d,1), color: d>=0?goodC:badC });
+    }
+    if(currentViewBy!=='annual' && q-4>=0){
+      const yoyVal = totalsByIdx[q-4];
+      if(yoyVal){ const d=(cur-yoyVal)/Math.abs(yoyVal)*100; lines.push({ text:'YoY '+fmtSignedPct(d,1), color: d>=0?goodC:badC }); }
+    }
+    return lines;
+  }
+
+  /* === Asset Breakdown (Part B: full multi-period window, not just [p,q]) === */
+  const assetSeries = ASSET_CATEGORIES.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values: win.idxs.map(idx=>assetByQ[idx][i]) }));
+  buildStackedBarSVG('assetChart', { labels: win.labels, series: assetSeries, valueFormatter: fmtTHB, showTotalLabels:true, lastBarExtraLines: lastBarComparisons(totalAssetsByQ) });
   document.getElementById('assetLegend').innerHTML = assetSeries.map(s=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>').join('');
+  latestData.asset = { labels: win.labels, series: assetSeries };
 
-  /* === Liabilities & Equity Breakdown === */
-  const liabSeries = liabEquityCategories.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values:[liabEquityQ1[i], liabEquityQ2[i]] }));
-  buildStackedBarSVG('liabChart', { labels:[pLabel,qLabel], series: liabSeries, valueFormatter: fmtTHB });
+  /* === Liabilities & Equity Breakdown (Part B: full multi-period window) === */
+  const liabEquityTotalByQ = liabEquityByQ.map(row=> row.reduce((a,b)=>a+b,0));
+  const liabSeries = liabEquityCategories.map((name,i)=>({ name, color: resolveColor(RAG_COLORS[i % RAG_COLORS.length]), values: win.idxs.map(idx=>liabEquityByQ[idx][i]) }));
+  buildStackedBarSVG('liabChart', { labels: win.labels, series: liabSeries, valueFormatter: fmtTHB, showTotalLabels:true, lastBarExtraLines: lastBarComparisons(liabEquityTotalByQ) });
   document.getElementById('liabLegend').innerHTML = liabSeries.map(s=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>').join('');
-
-  const assetGrowthPct = (totalAssetsQ2-totalAssetsQ1)/totalAssetsQ1*100;
-  document.getElementById('bsCallout').innerHTML =
-    'Total Assets grew <b>'+fmtSignedPct(assetGrowthPct,1)+'</b> QoQ ('+pLabel+' '+fmtTHB(totalAssetsQ1)+' → '+qLabel+' '+fmtTHB(totalAssetsQ2)+'), driven mostly by Cash and Inventories increasing alongside higher Net Sales — Total Assets ties to Total Liabilities + Equity in both quarters ('+fmtTHB(totalAssetsQ1)+' = '+fmtTHB(liabEquityQ1.reduce((a,b)=>a+b,0))+', '+fmtTHB(totalAssetsQ2)+' = '+fmtTHB(liabEquityQ2.reduce((a,b)=>a+b,0))+')';
+  latestData.liab = { labels: win.labels, series: liabSeries };
 }
 
 /* --- Toolbar --- */
@@ -317,12 +420,38 @@ document.getElementById('condensedDownloadBtn').addEventListener('click', ()=>{
   downloadCSV(rows, 'pnl_condensed_balance_sheet.csv');
 });
 document.getElementById('assetDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('assetChart', 'pnl_balance_sheet_assets.svg'));
+document.getElementById('assetExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('assetTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('assetTableWrap');
+  const canvasWrap = document.getElementById('assetCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.asset;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th>' + d.labels.map(l=>'<th>'+l+'</th>').join('') + '</tr></thead><tbody>';
+  d.series.forEach(s=>{ html += '<tr><td>'+s.name+'</td>' + s.values.map(v=>'<td>'+fmtTHB(v)+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
 document.getElementById('liabDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('liabChart', 'pnl_balance_sheet_liabilities_equity.svg'));
+document.getElementById('liabExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('liabTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('liabTableWrap');
+  const canvasWrap = document.getElementById('liabCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.liab;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th>' + d.labels.map(l=>'<th>'+l+'</th>').join('') + '</tr></thead><tbody>';
+  d.series.forEach(s=>{ html += '<tr><td>'+s.name+'</td>' + s.values.map(v=>'<td>'+fmtTHB(v)+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
 
 /* ---------- Filter bar: View By + As of (same pattern as Financial Analysis) ----------
-   As of only offers quarters 1-4 (Q3'25-Q2'26), never Q2'25 (idx0) -- a
-   snapshot needs a PRIOR period to compare against, and Q2'25 is the
-   earliest quarter this file's backfilled data model has. */
+   Quarterly As of offers the 5 selectable quarters (Part B: Q2'25-Q2'26,
+   idx2-6) -- idx0/idx1 (Q4'24/Q1'25) exist only as backing data for the
+   trailing-window clip and the Annual FY2024 bucket, not as their own
+   selectable option. Annual As of offers FY2025/2026 (Current) -- FY2024
+   is excluded the same way (no prior year to compare against). */
 function positionViewByThumb(){
   const toggle = document.getElementById('viewByToggle');
   const thumb = document.getElementById('viewByThumb');
@@ -333,9 +462,13 @@ function positionViewByThumb(){
 function buildAsOfDropdown(){
   let html = '';
   if(currentViewBy==='annual'){
-    html += '<div class="period-opt selected" data-annual="current"><span class="chk">✓</span>2026 (Current)</div>';
+    const opts = [['current','2026 (Current)'],['fy2025','FY2025']];
+    opts.forEach(([key,label])=>{
+      const sel = pnlAnnualAnchor===key;
+      html += '<div class="period-opt'+(sel?' selected':'')+'" data-annual="'+key+'"><span class="chk">'+(sel?'✓':'')+'</span>'+label+'</div>';
+    });
   } else {
-    for(let i=quarterLabels.length-1; i>=1; i--){
+    for(let i=quarterLabels.length-1; i>=2; i--){
       const sel = pnlQuarterAnchor===i;
       html += '<div class="period-opt'+(sel?' selected':'')+'" data-quarter="'+i+'"><span class="chk">'+(sel?'✓':'')+'</span>'+quarterLabels[i]+'</div>';
     }
@@ -364,6 +497,7 @@ document.getElementById('periodDropdown').addEventListener('click', (e)=>{
   const opt = e.target.closest('.period-opt');
   if(!opt) return;
   if(opt.dataset.quarter) pnlQuarterAnchor = parseInt(opt.dataset.quarter,10);
+  if(opt.dataset.annual) pnlAnnualAnchor = opt.dataset.annual;
   document.getElementById('periodDropdown').classList.remove('open');
   updateAsOfControl();
   renderAll();
@@ -373,6 +507,14 @@ document.addEventListener('click', (e)=>{
 });
 positionViewByThumb();
 buildAsOfDropdown();
+
+/* ---------- Reference section collapse toggle (chart-first restructure) ---------- */
+document.getElementById('referenceToggleBtn').addEventListener('click', (e)=>{
+  const wrap = document.getElementById('referenceTableWrap');
+  const opening = !wrap.classList.contains('open');
+  wrap.classList.toggle('open', opening);
+  e.currentTarget.lastChild.textContent = opening ? ' Hide detailed balance sheet' : ' Show detailed balance sheet';
+});
 
 /* ---------- Init ---------- */
 renderAll();

@@ -150,7 +150,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     <nav class="section-nav" id="pillNav">
       <a href="#view-scorecard" data-view="scorecard" class="active">Financial Scorecard</a>
       <a href="#view-fin-ratios" data-view="fin-ratios">Financial Ratios</a>
-      <a href="#view-ccc" data-view="ccc">Cash Cycle</a>
+      <a href="#view-ccc" data-view="ccc">Cash Conversion Cycle</a>
     </nav>
     <div class="nav-filter-divider"></div>
     <div class="filter-bar-group">
@@ -174,7 +174,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
   </div>
   </div>
 
-  <div class="viewby-footnote" id="viewByFootnote" style="display:none;margin:-6px 0 14px;">ปีปัจจุบันเป็น YTD (flow: margin/growth) / TTM (ratio: ROE/ROA/turnover/leverage/D-E/Cash Cycle) — ยังไม่ใช่ FY เต็ม (2026 ยังไม่จบปี)</div>
+  <div class="viewby-footnote" id="viewByFootnote" style="display:none;margin:-6px 0 14px;">ปีปัจจุบันเป็น YTD (flow: margin/growth) / TTM (ratio: ROE/ROA/turnover/leverage/D-E/Cash Conversion Cycle) — ยังไม่ใช่ FY เต็ม (2026 ยังไม่จบปี)</div>
 
   <!-- ===== PILL 1: FINANCIAL SCORECARD ===== -->
   <div class="pill-view" id="view-scorecard">
@@ -182,7 +182,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
   <div class="card table-card single-label-col fhs-card" style="margin-bottom:14px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title" id="scorecardTitle">DuPont ROE Decomposition (TTM)</span>
+        <span class="chart-title" id="scorecardTitle">DuPont ROE Decomposition</span>
         <button class="info-icon" data-info-title="Financial Scorecard" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — ฐานอ้างอิงตาม View By/As of ที่เลือก (ไม่ fix เป็น TTM เสมอไป) คำนวณจากชุดข้อมูลเดียวกับ Financial Ratios ด้านบน ไม่สร้างเลขใหม่ — ทิศทาง (▲/▼) เทียบช่วงก่อนหน้า · สถานะ RAG และเป้า/ช่วงปกติ (Benchmark) เป็น Mock 100% รอ Finance/industry ยืนยัน">i</button>
       </div>
       <div class="toolbar">
@@ -303,7 +303,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
 
   <!-- ===== PILL 3: CASH CONVERSION CYCLE ===== -->
   <div class="pill-view" id="view-ccc">
-  <div class="section-label">Cash Cycle</div>
+  <div class="section-label">Cash Conversion Cycle</div>
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
@@ -1158,8 +1158,6 @@ function renderAll(){
   const activeCccPriorQoQ = isAnnual ? (annualAnchor==='fy2025' ? FY2024.ccc : FY2025.ccc) : winCcc[winCcc.length-2];
   const activeCurrentRatio = isAnnual ? (annualAnchor==='fy2025' ? FY2025.currentRatio : TTM2026.currentRatio) : winCurrentRatio[winCurrentRatio.length-1];
   const activeCurrentRatioPrior = isAnnual ? (annualAnchor==='fy2025' ? FY2024.currentRatio : FY2025.currentRatio) : winCurrentRatio[winCurrentRatio.length-2];
-  // Shared "period label" for card titles/callouts across all 4 pills.
-  const activePeriodLabel = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 TTM') : (isQTD ? "Q3'26 QTD" : MASTER_QUARTER_LABELS[anchorIdx]);
 
   /* === Financial Ratios pill: hero trend charts (Annual, closed years =
      FY2024→FY2025 only; Annual + "2026 (Current)" = FY2024→FY2025→2026 YTD,
@@ -1389,12 +1387,13 @@ function renderAll(){
     '<div class="fhs-chip-row"><span class="fhs-chip-label">Cash Conversion Cycle</span><span class="fhs-chip-value">'+companionCCC.fmt(companionCCC.value)+'</span>'
     + '<span class="fhs-dir '+cccDir.cls+'">'+cccDir.arrow+'</span><span class="fhs-rag-dot '+companionCCC.rag+'"></span><span class="fhs-chip-sub" style="margin-top:0;">'+companionCCC.note+'</span></div>';
 
-  // Scorecard title + ROE apex label + Tree modal title -- all 4 branches
-  // (Part C1, 2026-08-10): never hardcoded to "(TTM)" regardless of what's
-  // actually selected. Annual + Last Year (FY2025) now correctly reads
-  // "(FY2025)", not "(TTM)" showing a different (TTM2026) number.
+  // ROE apex label + Tree modal title -- never hardcoded to "(TTM)"
+  // regardless of what's actually selected. Annual + Last Year (FY2025) now
+  // correctly reads "(FY2025)", not "(TTM)" showing a different (TTM2026)
+  // number. The scorecard chart-title itself stays static (2026-08-12
+  // closeout: AS OF already shows the period, so the title no longer
+  // carries a dynamic period suffix).
   const scorecardSuffix = isAnnual ? (annualAnchor==='fy2025' ? 'FY2025' : '2026 YTD, Annualized') : (isQTD ? 'QTD, Annualized' : MASTER_QUARTER_LABELS[anchorIdx]);
-  document.getElementById('scorecardTitle').textContent = 'DuPont ROE Decomposition ('+scorecardSuffix+')';
   document.getElementById('fhsApexLabel').textContent = 'ROE ('+scorecardSuffix+')';
 
   latestData.dupont = { current: dupontCurrent, previous: dupontPrevious };
@@ -1406,9 +1405,10 @@ function renderAll(){
      by the SAME active-period figures as the compact table below it on
      this same pill, instead of always the Quarterly window regardless of
      View By. Annual + FY2025 now shows Inventory 197d + AR 68d − AP 71d =
-     194d, matching the Cash Cycle compact table exactly (no more 2 CCC
-     numbers -- 171d TTM vs 194d FY2025 -- disagreeing on one screen). === */
-  document.getElementById('cccTimelineTitle').textContent = 'Cash Conversion Cycle Timeline ('+activePeriodLabel+')';
+     194d, matching the Cash Conversion Cycle compact table exactly (no more
+     2 CCC numbers -- 171d TTM vs 194d FY2025 -- disagreeing on one screen).
+     Chart-title itself stays static (2026-08-12 closeout: AS OF already
+     shows the period). === */
   const cccTimelineData = { inventory: activeInvDays, receivable: activeArDays, payable: activeApDays };
   renderCCCTimeline('cccBridgeChart', cccTimelineData);
   document.getElementById('cccBridgeCallout').innerHTML =
@@ -1623,7 +1623,7 @@ function updateFootnote(){
   if(currentViewBy === 'annual'){
     footnote.style.display = 'none';
   } else if(isQTD){
-    footnote.textContent = "Q3'26 เป็น QTD (ไตรมาสปัจจุบันยังไม่จบ) — metric flow (margin/growth) คือยอดสะสมถึงปัจจุบัน · metric ratio/annualized (ROE, ROA, Asset Turnover, Cash Cycle) คำนวณแบบ Annualized เดิม ไม่ใช่ TTM · Days/Inventory/Provision ใช้ค่าปิดล่าสุดของ Q2'26 (ยังไม่มียอดปิดไตรมาสใหม่) — ตัวเลขนี้จะเปลี่ยนเมื่อไตรมาสปิดจริง";
+    footnote.textContent = "Q3'26 เป็น QTD (ไตรมาสปัจจุบันยังไม่จบ) — metric flow (margin/growth) คือยอดสะสมถึงปัจจุบัน · metric ratio/annualized (ROE, ROA, Asset Turnover, Cash Conversion Cycle) คำนวณแบบ Annualized เดิม ไม่ใช่ TTM · Days/Inventory/Provision ใช้ค่าปิดล่าสุดของ Q2'26 (ยังไม่มียอดปิดไตรมาสใหม่) — ตัวเลขนี้จะเปลี่ยนเมื่อไตรมาสปิดจริง";
     footnote.style.display = 'block';
   } else {
     footnote.style.display = 'none';
