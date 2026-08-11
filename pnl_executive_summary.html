@@ -14,8 +14,6 @@
    instead of a visibility toggle. */
 .pill-view{display:block;margin-bottom:28px;}
 .pill-view:last-child{margin-bottom:0;}
-.cost-analysis-subhead{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--ink-3);text-transform:uppercase;margin:18px 0 10px 2px;}
-.cost-analysis-subhead:first-child{margin-top:0;}
 /* Margin/cost-ratio strip (2026-08-11) -- a compact 1-row, N-up alternative
    to a full gauge card: value + delta-vs-target/YoY + a RAG dot, no SVG
    gauge arc. Used for the Overview margin strip and the Cost Efficiency
@@ -66,10 +64,9 @@
 
     <div class="header-utility-row" id="headerUtilityRow">
       <nav class="section-nav" id="pillNav">
-        <a href="#view-overview" data-view="overview" class="active">Overview</a>
-        <a href="#view-trend" data-view="trend">Trend</a>
-        <a href="#view-drivers" data-view="drivers">Profit Drivers</a>
-        <a href="#view-cost" data-view="cost">Cost</a>
+        <a href="#view-overview" data-view="overview" class="active">Income Statement</a>
+        <a href="#view-trend" data-view="trend">Performance</a>
+        <a href="#view-cost" data-view="cost">Expense Breakdown</a>
       </nav>
       <div class="nav-filter-divider"></div>
       <!-- Filter bar (2026-08-11 unification) -- VIEW BY + AS OF only, same
@@ -103,8 +100,9 @@
     </div>
   </div>
 
-  <!-- ===== §1 OVERVIEW ===== -->
+  <!-- ===== §1 INCOME STATEMENT ===== -->
   <div class="pill-view" id="view-overview">
+  <div class="section-label">Income Statement</div>
 
   <!-- Waterfall leads -- the ladder to after-tax Net Profit is the single
        clearest "whole page in one chart" view. -->
@@ -124,17 +122,37 @@
     <div class="data-table-wrap" id="waterfallTableWrap"></div>
   </div>
 
-  <!-- Margin strip: 4 profit margins in 1 row (higher = better, green zone
-       at the high end via buildGaugeSVG's opts.invert) -- the level-vs-target
-       (RAG) snapshot complement to the §2 combo charts' trend-over-time view.
-       Cost-ratio gauges live on §4 Cost, now as a compact strip (PART C5). -->
-  <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr);">
+  <!-- Margin/cost-ratio strip: 6 gauges in 1 row, ordered left→right to
+       mirror the waterfall above (Cost of Sales % → Gross Margin % → SG&A %
+       → EBIT Margin % → EBITDA Margin % (Est.) → Net Margin %) so each % sits
+       under the waterfall step it's derived from. Margin cards read
+       higher=better (green zone at the high end via buildGaugeSVG's
+       opts.invert); the 2 cost-ratio cards (Cost of Sales, SG&A) read the
+       opposite way -- lower=better, so opts.invert is omitted on those 2
+       only, swapping which end reads green vs red. -->
+  <div class="kpi-grid" style="grid-template-columns:repeat(6,1fr);">
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">Cost of Sales-to-Sales %</span>
+        <button class="info-icon" data-info-title="Cost of Sales-to-Sales %" data-info-text="COGS ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งต่ำยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง — รวมกับ Gross Margin % ได้ 100% เสมอ">i</button>
+      </div>
+      <div id="kpiCOGSGauge" style="height:110px;"></div>
+    </div>
+
     <div class="card">
       <div class="card-head">
         <span class="card-title">Gross Margin %</span>
         <button class="info-icon" data-info-title="Gross Margin %" data-info-text="Gross Profit ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งสูงยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
       </div>
       <div id="kpiGMGauge" style="height:110px;"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <span class="card-title">SG&A-to-Sales %</span>
+        <button class="info-icon" data-info-title="SG&A-to-Sales %" data-info-text="SG&A ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งต่ำยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+      </div>
+      <div id="kpiSGAGauge" style="height:110px;"></div>
     </div>
 
     <div class="card">
@@ -176,7 +194,7 @@
        bucket) and show a YoY(+MoM/QoQ) comparison on the latest bar/point
        only, per this dashboard's "only the latest bucket compares" rule. ===== -->
   <div class="pill-view" id="view-trend">
-  <div class="cost-analysis-subhead">Key Financial Performance</div>
+  <div class="section-label">Performance</div>
 
   <div class="chart-grid">
     <div class="card">
@@ -248,52 +266,37 @@
 
   </div><!-- /view-trend -->
 
-  <!-- ===== §3 PROFIT DRIVERS (Category Profit Matrix+Ranking, Cost
-       Structure by Channel+Channel Ranking -- moved here from the old
-       Category Profitability/Cost Analysis pills; PART C2 drops "Net
-       Margin % Trend by Channel" (redundant with Cost Structure + Ranking,
-       which are both already-YTD "current margin" views this trend
-       couldn't agree with), PART C3 drops the Highest/Lowest Margin
-       Category cards (already readable off the Ranking table). ===== -->
-  <div class="pill-view" id="view-drivers">
-  <div class="kpi-caption" id="driversMonthlyFallbackNote" style="display:none;margin:-2px 0 12px;">Shown quarterly — monthly category/channel allocation not available</div>
+  <!-- ===== §4 COST EFFICIENCY (PART C5: 5 big gauges -> a compact strip;
+       "Selling & Admin Expense-to-Sales % Trend" cut -- its 2 ratios are
+       already in the strip below, and its own comparison already reads off
+       OPEX Trend + the Selling/Admin Expense Breakdown, without a 3rd
+       differently-scoped line chart repeating the same 2 numbers). ===== -->
+  <div class="pill-view" id="view-cost">
+  <div class="section-label">Expense Breakdown</div>
 
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Category Profit Matrix</span>
-          <button class="info-icon" data-info-title="Category Profit Matrix" data-info-text="แกนนอน (X) = Net Profit Contribution (฿), แกนตั้ง (Y) = Net Margin % เส้นประคือค่ามัธยฐาน — Premium Stars/Volume Engines/Niche Premium/Needs Review">i</button>
+          <span class="chart-title">Total Cost Trend</span>
+          <button class="info-icon" data-info-title="Total Cost Trend" data-info-text="COGS / Trade Spend / Logistics / Marketing&Ads / SG&A รายเดือน Company-wide ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน)">i</button>
         </div>
         <div class="toolbar">
-          <button class="tool-btn" id="profitMatrixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-          <button class="tool-btn" id="profitMatrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="profitMatrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+          <button class="tool-btn" id="opexTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="opexTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="opexTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="canvas-wrap" id="profitMatrixCanvasWrap" style="height:280px;"><div id="profitMatrixChart" style="width:100%;height:100%;"></div></div>
-      <div class="data-table-wrap" id="profitMatrixTableWrap"></div>
+      <div class="chart-legend" id="opexTrendLegend"></div>
+      <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:280px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="opexTrendTableWrap"></div>
     </div>
 
-    <div class="card table-card">
-      <div class="card-head">
-        <span class="card-title">Category Profitability Ranking</span>
-        <button class="info-icon" data-info-title="Category Profitability Ranking" data-info-text="ทั้ง 6 หมวดหมู่ เรียงตาม Net Margin % จากมากไปน้อย (Blended ทุก Channel) — Source of truth สำหรับ Margin ต่อหมวดหมู่ในหน้านี้">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="catRankDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="catRankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <table id="catRankTable"></table>
-    </div>
-  </div>
-
-  <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Cost Structure by Channel</span>
-          <button class="info-icon" data-info-title="Cost Structure by Channel" data-info-text="สัดส่วน % ของ Net Sales แยกเป็น COGS / Trade Spend / Logistics / Marketing&Ads / SG&A / Tax (20% Mock Rate) / Net Profit (after tax) ต่อ Channel ในช่วงเวลาที่เลือก — รวมทุก Segment ได้ 100% พอดี">i</button>
+          <span class="chart-title">Cost-to-Sales by Channel</span>
+          <button class="info-icon" data-info-title="Cost-to-Sales by Channel" data-info-text="COGS / Trade Spend / Logistics / Marketing&Ads / SG&A รวมกันเป็น % ของ Net Sales ต่อ Channel ในช่วงเวลาที่เลือก — แท่งสูง = ต้นทุนรวมสูงเทียบกับยอดขาย (ไม่คุ้ม), แท่งเตี้ย = ต้นทุนต่ำกว่ายอดขาย (คุ้มกว่า) — ไม่รวม Tax/Net Profit จึงไม่เต็ม 100%">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="costStructTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -303,59 +306,15 @@
       </div>
       <div class="chart-legend" id="costStructLegend"></div>
       <div class="canvas-wrap" id="costStructCanvasWrap" style="height:280px;"><div id="costStructChart" style="width:100%;height:100%;"></div></div>
-      <div class="callout-text" id="costStructCallout" style="margin-top:10px;margin-bottom:0;">–</div>
       <div class="data-table-wrap" id="costStructTableWrap"></div>
     </div>
-
-    <div class="card table-card">
-      <div class="card-head">
-        <span class="card-title">Ranking — by Channel</span>
-        <button class="info-icon" data-info-title="Ranking by Channel" data-info-text="จัดอันดับ Channel (MT/TT/Ecom) ตาม Net Profit (after tax) ในช่วงเวลาที่เลือก พร้อม Metric สำคัญของแต่ละ Channel">i</button>
-        <div class="toolbar" style="margin-left:auto;">
-          <button class="tool-btn" id="rankPnlDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-          <button class="tool-btn" id="rankPnlExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-        </div>
-      </div>
-      <table id="rankPnlTable"></table>
-    </div>
   </div>
 
-  </div><!-- /view-drivers -->
-
-  <!-- ===== §4 COST EFFICIENCY (PART C5: 5 big gauges -> a compact strip;
-       "Selling & Admin Expense-to-Sales % Trend" cut -- its 2 ratios are
-       already in the strip below, and its own comparison already reads off
-       OPEX Trend + the Selling/Admin Expense Breakdown, without a 3rd
-       differently-scoped line chart repeating the same 2 numbers). ===== -->
-  <div class="pill-view" id="view-cost">
-
-  <div class="cost-analysis-subhead">Cost Ratios</div>
-  <div class="metric-strip" id="costRatioStrip" style="grid-template-columns:repeat(5,1fr);"></div>
-
-  <div class="cost-analysis-subhead">Expense Trend</div>
-  <div class="card" style="margin-bottom:14px;">
-    <div class="chart-card-head">
-      <div class="chart-title-wrap">
-        <span class="chart-title">OPEX Trend</span>
-        <button class="info-icon" data-info-title="OPEX Trend" data-info-text="Trade Spend / Logistics / Marketing&Ads / SG&A รายเดือน Company-wide ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน)">i</button>
-      </div>
-      <div class="toolbar">
-        <button class="tool-btn" id="opexTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
-        <button class="tool-btn" id="opexTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
-        <button class="tool-btn" id="opexTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
-      </div>
-    </div>
-    <div class="chart-legend" id="opexTrendLegend"></div>
-    <div class="canvas-wrap" id="opexTrendCanvasWrap" style="height:200px;"><div id="opexTrendChart" style="width:100%;height:100%;"></div></div>
-    <div class="data-table-wrap" id="opexTrendTableWrap"></div>
-  </div>
-
-  <div class="cost-analysis-subhead">Expense Breakdown (5Q)</div>
   <div class="chart-grid">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Selling Expense Breakdown (5Q)</span>
+          <span class="chart-title">Selling Expense Breakdown</span>
           <button class="info-icon" data-info-title="Selling Expense Breakdown" data-info-text="แตก Marketing/Ads เป็นหมวดย่อย (Advertising &amp; Promotion, Digital/Content Marketing, People cost, Others) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ Marketing/Ads รวมเป๊ะทุกไตรมาส">i</button>
         </div>
         <div class="toolbar">
@@ -369,7 +328,7 @@
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Administration Expense Breakdown (5Q)</span>
+          <span class="chart-title">Administration Expense Breakdown</span>
           <button class="info-icon" data-info-title="Administration Expense Breakdown" data-info-text="แตก SG&A เป็นหมวดย่อย (People cost, Rental &amp; Depreciation, Other Admin Expenses, Advisor &amp; Professional Fees, Service Cost) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ SG&A รวมเป๊ะทุกไตรมาส">i</button>
         </div>
         <div class="toolbar">
@@ -381,7 +340,6 @@
       <div class="callout-text" id="adminExpCallout" style="margin-top:10px;margin-bottom:0;">–</div>
     </div>
   </div>
-  <div class="kpi-caption" style="margin:-6px 0 0;">Trade Spend and Logistics are still shown as single lump sums, not broken into sub-categories (see OPEX Trend/Cost Ratio strip above) — neither has People/Rental/Advertising-style components the way Selling/Admin Expense actually do in this business.</div>
 
   </div><!-- /view-cost -->
 
@@ -505,7 +463,6 @@ const ecomCategoryShares = [
   {name:'Hair Care', pct:14.0}, {name:'Fragrance', pct:11.6}, {name:'Accessories', pct:8.0}
 ];
 const categorySharesByChannel = { MT: mtCategoryShares, TT: ttCategoryShares, Ecom: ecomCategoryShares };
-const CATEGORY_NAMES = ['Skin Care','Color Cosmetics','Personal Care','Hair Care','Fragrance','Accessories'];
 
 /* Margin model: Category base margin % × Channel adjustment factor, clamped. */
 const CATEGORY_BASE_MARGIN = { 'Fragrance':62, 'Color Cosmetics':58, 'Skin Care':54, 'Hair Care':46, 'Personal Care':42, 'Accessories':38 };
@@ -591,17 +548,6 @@ const DA_RATE_OF_SALES = 0.030;
 pnlCompany.da = pnlCompany.netSales.map(v => v * DA_RATE_OF_SALES);
 pnlCompany.ebitda = pnlCompany.netProfit.map((v,i) => v + pnlCompany.da[i]);
 
-/* Blended (company-wide) margin by category — used by "Margin by Category". */
-function categoryNetSales(channel, catName, s, e){
-  const shares = categorySharesByChannel[channel];
-  const c = shares.find(x=>x.name===catName);
-  if(!c) return 0;
-  return sumRange(groupActual[channel], s, e) * c.pct/100;
-}
-function categoryOpexRateTotal(channel){
-  const r = OPEX_RATES[channel];
-  return r.tradeSpend + r.logistics + r.marketing + r.sga;
-}
 /* ---------- Filter bar (2026-08-11 unification): VIEW BY + AS OF ----------
    Replaces the old PERIOD dropdown (an arbitrary RANGE picker: Year to
    Date/This Month/Custom Range/etc) -- every widget now reads a single
@@ -709,14 +655,20 @@ document.getElementById('referenceToggleBtn').addEventListener('click', (e)=>{
    is exactly the bug this unification fixes. */
 let currentTimeFrame = 'quarterly';
 function bucketMonths(idx, timeFrame){
-  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
-  const groups = []; let curQ = null;
+  if(timeFrame==='monthly') return idx.map(i=>[i]);
+  const keyFn = timeFrame==='annual' ? (i=>Math.floor(i/12)) : (i=>Math.floor(i/3));
+  const groups = []; let curKey = null;
   idx.forEach(i=>{
-    const q = Math.floor(i/3);
-    if(q!==curQ){ curQ=q; groups.push([]); }
+    const k = keyFn(i);
+    if(k!==curKey){ curKey=k; groups.push([]); }
     groups[groups.length-1].push(i);
   });
   return groups;
+}
+function annualShareLabel(group){
+  const year = 2024 + Math.floor(group[0]/12);
+  const currentYear = 2024 + Math.floor(TODAY/12);
+  return year===currentYear ? year+' (Current)' : 'FY'+year;
 }
 function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
 function bucketRatio(numArr, denArr, groups){
@@ -750,7 +702,7 @@ function trendWindow(){
     const fy2024 = []; for(let i=0;i<12;i++) fy2024.push(i);
     const fy2025 = []; for(let i=12;i<24;i++) fy2025.push(i);
     const fy2026ytd = []; for(let i=24;i<=TODAY;i++) fy2026ytd.push(i);
-    const allYears = [{key:'fy2024', label:'FY2024', group:fy2024}, {key:'fy2025', label:'FY2025', group:fy2025}, {key:'current', label:'2026 YTD', group:fy2026ytd}];
+    const allYears = [{key:'fy2024', label:'FY2024', group:fy2024}, {key:'fy2025', label:'FY2025', group:fy2025}, {key:'current', label:'2026', group:fy2026ytd}];
     const anchorPos = allYears.findIndex(y=>y.key===pnlAnnualAnchor);
     const visible = allYears.slice(0, anchorPos+1);
     const isLastPartial = pnlAnnualAnchor==='current';
@@ -845,25 +797,29 @@ function renderSummary(){
   const ebitSum = sumRange(pnlCompany.netProfit, s, e); // pnlCompany.netProfit IS EBIT -- see Tax cascade note above
   const netProfitSum = sumRange(pnlCompany.netProfitAfterTax, s, e); // after-tax bottom line
   const ebitdaSum = sumRange(pnlCompany.ebitda, s, e);
+  const cogsPct = netSalesSum ? (netSalesSum-grossProfitSum)/netSalesSum*100 : 0; // reconciles to 100 - grossMarginPct exactly (cogs = netSales - grossProfit by construction)
   const grossMarginPct = netSalesSum ? grossProfitSum/netSalesSum*100 : 0;
+  const sgaPct = netSalesSum ? sumRange(pnlCompany.sga, s, e)/netSalesSum*100 : 0;
   const ebitMarginPct = netSalesSum ? ebitSum/netSalesSum*100 : 0;
   const ebitdaMarginPct = netSalesSum ? ebitdaSum/netSalesSum*100 : 0;
   const netMarginPct = netSalesSum ? netProfitSum/netSalesSum*100 : 0; // after-tax
 
   /* === KPI visual hierarchy: Row 1 is ฿-amount P&L waterfall amounts
-     (Revenue/Gross Profit/EBIT/EBITDA/Net Profit); Row 2 is the 4 profit
-     margins as gauges (higher = better — green zone at the high end via
-     opts.invert). Cost-ratio gauges (COGS/OPEX/SG&A/Selling-to-Revenue) and
-     the margin-%-with-sparkline cards this row used to carry were both
-     removed in the Financial Statement de-dup pass: cost ratios now live on
-     the Cost Structure pill, and margin trend-over-time is still covered by
-     the Margin Trend chart further down this page — this gauge row is the
-     "snapshot" complement to that "trend" view, not a duplicate of either.
+     (Revenue/Gross Profit/EBIT/EBITDA/Net Profit); Row 2 is 6 gauges, ordered
+     left→right to mirror the waterfall (Cost of Sales % → Gross Margin % →
+     SG&A % → EBIT Margin % → EBITDA Margin % (Est.) → Net Margin %) -- the
+     level-vs-target (RAG) snapshot complement to the §2 combo charts'
+     trend-over-time view. The 4 profit-margin gauges read higher = better
+     (green zone at the high end via opts.invert); the 2 cost-ratio gauges
+     (Cost of Sales, SG&A) read lower = better, so opts.invert is omitted on
+     those 2 only -- same zone thresholds, opposite color reading.
      Profit Target Attainment% and Full Year Profit Forecast stay removed —
      no target/forecast view in this P&L section. === */
   // Thresholds are illustrative placeholders pending real industry
   // benchmarks (see each card's info-icon caveat).
+  buildGaugeSVG('kpiCOGSGauge', cogsPct, { max:70, greenTo:55, amberTo:65 });
   buildGaugeSVG('kpiGMGauge', grossMarginPct, { max:60, greenTo:35, amberTo:45, invert:true });
+  buildGaugeSVG('kpiSGAGauge', sgaPct, { max:20, greenTo:9, amberTo:12 });
   buildGaugeSVG('kpiEBITMGauge', ebitMarginPct, { max:40, greenTo:15, amberTo:22, invert:true });
   buildGaugeSVG('kpiEBITDAMGauge', ebitdaMarginPct, { max:45, greenTo:18, amberTo:25, invert:true });
   buildGaugeSVG('kpiNMGauge', netMarginPct, { max:35, greenTo:12, amberTo:18, invert:true });
@@ -1010,25 +966,6 @@ function renderSummary(){
   ];
   buildWaterfallSVG('waterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:280 });
   latestData.waterfall = waterfallSteps;
-
-  /* === Table: Ranking — by Channel === Net Profit/Net Margin % are after
-     tax (matches Net Margin Trend by Channel on the Breakdown pill); Profit
-     Target Attainment stays EBIT-level since targetNetProfitByChannel is
-     itself an EBIT-level target (Sales Target × 22% Net Margin assumption,
-     pre-tax). === */
-  const rankRows = groupKeys.map(g=>{
-    const net = sumRange(pnlByChannel[g].netSales,s,e);
-    const gp = sumRange(pnlByChannel[g].grossProfit,s,e);
-    const ebitCh = sumRange(pnlByChannel[g].netProfit,s,e);
-    const npAfterTax = sumRange(pnlByChannel[g].netProfitAfterTax,s,e);
-    const tgtNp = sumRange(targetNetProfitByChannel[g],s,e);
-    return { name:g, net, gm: net?gp/net*100:0, nm: net?npAfterTax/net*100:0, np:npAfterTax, attain: tgtNp?ebitCh/tgtNp*100:0, color: groupColor[g] };
-  }).sort((x,y)=>y.np-x.np);
-  document.getElementById('rankPnlTable').innerHTML =
-    '<thead><tr><th>#</th><th>Channel</th><th>Net Sales</th><th>Gross Margin %</th><th>Net Margin %</th><th>Net Profit</th><th>Profit Target Attainment</th></tr></thead><tbody>'
-    + rankRows.map((r,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td class="channel-name-cell"><span class="channel-dot" style="background:'+r.color+'"></span>'+r.name+'</td><td class="tnum">'+fmtTHB(r.net)+'</td><td class="tnum">'+fmtPct(r.gm,1)+'</td><td class="tnum">'+fmtPct(r.nm,1)+'</td><td class="tnum">'+fmtTHB(r.np)+'</td><td class="tnum">'+fmtPct(r.attain,0)+'</td></tr>').join('')
-    + '</tbody>';
-  latestData.ranking = rankRows;
 }
 
 /* --- Toolbar --- (§2 combo charts: same table/download/expand pattern, one
@@ -1110,13 +1047,6 @@ document.getElementById('waterfallTableBtn').addEventListener('click', ()=>{
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
-
-document.getElementById('rankPnlDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['#','Channel','Net Sales','Gross Margin %','Net Margin %','Net Profit','Profit Target Attainment %']];
-  latestData.ranking.forEach((r,i)=> rows.push([i+1, r.name, Math.round(r.net), r.gm.toFixed(1), r.nm.toFixed(1), Math.round(r.np), r.attain.toFixed(0)]));
-  downloadCSV(rows, 'pnl_ranking_by_channel.csv');
-});
-document.getElementById('rankPnlExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 /* ---------- Init ---------- */
 renderSummary();
@@ -1289,26 +1219,6 @@ renderQuarterlyTrend();
    (same seed, same order). Keep the two in sync.
    ============================================================================ */
 /* -------------------- Part 2: P&L-only mock data (kept in sync with pnl_executive_summary.html) -------------------- */
-const CAT_COLOR_INDEX = {};
- /* Corporate Tax cascade (post-build review) — same TAX_RATE/formula as the
-   other 3 P&L files. pnlByChannel[g].netProfit is EBIT (left as-is, not
-   renamed, since Cost Structure by Channel and every margin formula below
-   already depends on it); .netProfitAfterTax is the new bottom line. */
-/* channelFilter: 'all' blends MT+TT+Ecom, otherwise a single channel key. Used
-   by every Zone B chart/table so they all respond consistently to the Channel
-   filter dropdown. */
-function categoryMarginsFor(catName, channelFilter, s, e){
-  const channels = channelFilter==='all' ? groupKeys : [channelFilter];
-  let netSalesSum=0, grossProfitSum=0, ebitSum=0;
-  channels.forEach(channel=>{
-    const net = categoryNetSales(channel, catName, s, e);
-    const gp = net * effectiveMarginPct(channel, catName)/100;
-    const opex = net * categoryOpexRateTotal(channel);
-    netSalesSum += net; grossProfitSum += gp; ebitSum += (gp - opex);
-  });
-  const netProfitAfterTax = ebitSum * (1-TAX_RATE); // Tax cascade: Net Profit = EBIT after tax
-  return { netSales:netSalesSum, grossMarginPct: netSalesSum?grossProfitSum/netSalesSum*100:0, netMarginPct: netSalesSum?netProfitAfterTax/netSalesSum*100:0, netProfit: netProfitAfterTax };
-}
 function resolveColor(cssColorOrVar){
   const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
   return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
@@ -1326,24 +1236,13 @@ initThemeToggle(()=> renderBreakdown());
 /* ---------- Render ---------- */
 
 function renderBreakdown(){
-  // §3 Profit Drivers never runs at Monthly grain (category/channel
+  // Cost Structure by Channel never runs at Monthly grain (category/channel
   // allocation isn't tracked per-month in this mock model) -- falls back to
-  // the quarter containing the current Monthly AS OF anchor, with a visible
-  // note (PART B of the filter-bar unification).
+  // the quarter containing the current Monthly AS OF anchor.
   const fallingBack = currentTimeFrame==='monthly';
   const [s,e] = fallingBack ? monthlyFallbackQuarterRange() : activeAnchorRange();
-  document.getElementById('driversMonthlyFallbackNote').style.display = fallingBack ? '' : 'none';
   const brand = cssVar('--brand') || '#8E1E4D';
-  const good = cssVar('--good') || '#0ca30c';
   const baseline = cssVar('--baseline') || '#c3c2b7';
-  // Bug fix (B1, 2026-08-10): Category Profitability used to be scoped by a
-  // Channel filter dropdown that lived on the old "Margin Quality by
-  // Channel" section -- conflating category-level data with a channel-level
-  // control. Category Profitability is now always all-channels-blended;
-  // an actual per-channel view lives on Cost Analysis instead (Net Margin %
-  // Trend by Channel / Cost Structure by Channel / Ranking by Channel,
-  // rendered further down this same function -- unaffected by this change).
-  const channelFilter = 'all';
 
   // "Net Margin % Trend by Channel" cut (PART C2, 2026-08-11) -- Cost
   // Structure by Channel (composition, below) + Ranking by Channel (SSOT
@@ -1352,87 +1251,50 @@ function renderBreakdown(){
   // to even agree with them (see the old fix note this replaced), which was
   // itself a sign the 3rd chart wasn't adding an independent view.
 
-  /* === ZONE A2: Cost Structure by Channel (stacked 100%) — moved to §3
-     Profit Drivers (PART B item 6), rendering logic unchanged === */
+  /* === ZONE A2: Cost Structure by Channel — moved to §4 Cost, beside Total
+     Cost Trend. Expense-only (2026-08-11): Tax/Net Profit segments removed
+     so every remaining segment is a cost line -- bars no longer force-fill
+     100% (switched from buildStacked100BarSVG to buildStackedBarSVG, a
+     shared-axis stacked bar), so each channel's bar height now directly
+     reads as "total cost % of that channel's Net Sales" (shorter bar =
+     lower total cost = more efficient), with COGS/Trade Spend/Logistics/
+     Marketing/SG&A kept granular (not combined) since e.g. Trade Spend
+     varies sharply by channel and is worth reading at a glance. === */
+  // Trade Spend/Logistics/Marketing are the same 3 lines Total Cost Trend
+  // (above) collapses into one green "Selling & Distribution" band -- here
+  // they stay granular (per-channel Trade Spend is worth reading on its
+  // own), but colored as a 3-shade ramp of that SAME green (dark/medium/
+  // light) rather than 3 unrelated hues, so the two charts read as one
+  // color system: COGS=gray, Selling & Distribution=green (broken into
+  // shades here), SG&A=orange, in that order in both charts.
   const costLines = [
     { key:'cogs', name:'COGS', color: baseline },
-    { key:'tradeSpend', name:'Trade Spend', color: resolveColor('var(--cat-1)') },
+    { key:'tradeSpend', name:'Trade Spend', color: resolveColor('var(--cat-2-dark)') },
     { key:'logistics', name:'Logistics', color: resolveColor('var(--cat-2)') },
-    { key:'marketing', name:'Marketing/Ads', color: resolveColor('var(--cat-3)') },
-    { key:'sga', name:'SG&A', color: resolveColor('var(--cat-4)') },
-    { key:'tax', name:'Tax (20%)', color: resolveColor('var(--cat-5)') },
-    { key:'netProfitAfterTax', name:'Net Profit (after tax)', color: good }
+    { key:'marketing', name:'Marketing/Ads', color: resolveColor('var(--cat-2-light)') },
+    { key:'sga', name:'SG&A', color: resolveColor('var(--cat-4)') }
   ];
   document.getElementById('costStructLegend').innerHTML = costLines.map(cl =>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+cl.color+'"></span>'+cl.name+'</span>'
   ).join('');
-  buildStacked100BarSVG('costStructChart', {
-    labels: groupKeys, height:280,
-    series: costLines.map(cl => ({ name:cl.name, color:cl.color, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })),
-    valueFormatter: fmtTHB,
-    /* 1-decimal so the Net Profit segment's % is directly comparable to
-       Executive Summary's Ranking table Net Margin % (both same formula,
-       same underlying value -- 0-decimal rounding here previously made
-       25.66% look like "26%" next to Ranking's "25.7%", reading as a data
-       mismatch when it was only a display-precision difference). */
-    pctDecimals: 1
+  // Total column = company-wide aggregate (pnlCompany), alongside the 3
+  // per-channel columns -- reads straight off the same [cl.key] series as
+  // the channel columns, just summed company-wide instead of per-channel,
+  // so it always ties exactly to the 3 channel columns combined.
+  const costStructGroups = [...groupKeys, 'Total'];
+  const costStructValue = (g, key) => g==='Total' ? sumRange(pnlCompany[key], s, e) : sumRange(pnlByChannel[g][key], s, e);
+  const costStructNetSales = g => g==='Total' ? sumRange(pnlCompany.netSales, s, e) : sumRange(pnlByChannel[g].netSales, s, e);
+  // Chart reads %-of-that-group's-Net-Sales per segment (ties exactly to
+  // the same figures the old 100%-stacked chart showed, e.g. MT COGS
+  // 54.4% -- only the bar's overall height is no longer forced to 100%).
+  buildStackedBarSVG('costStructChart', {
+    labels: costStructGroups, height:280,
+    series: costLines.map(cl => ({ name:cl.name, color:cl.color,
+      values: costStructGroups.map(g=>{ const ns = costStructNetSales(g); return ns ? costStructValue(g, cl.key)/ns*100 : 0; }) })),
+    valueFormatter: v=>fmtPct(v,1),
+    showTotalLabels: true
   });
-  latestData.costStruct = { channels: groupKeys, lines: costLines.map(cl => ({ name:cl.name, values: groupKeys.map(g=> sumRange(pnlByChannel[g][cl.key],s,e)) })) };
-
-  /* Insight: each channel's own cost structure is a fixed %-of-sales rate
-     (OPEX_RATES), so the "top differentiating cost driver" per channel is
-     stable regardless of period. Excludes COGS (passive, not a spend
-     decision) and Net Profit (the result, not a driver) from the
-     comparison, then reports the 2 channel/driver combos with the highest
-     %-of-sales, drawn from different channels so the callout doesn't repeat
-     the same channel twice. */
-  const costDriverKeys = ['tradeSpend','logistics','marketing','sga'];
-  const driverCombos = [];
-  groupKeys.forEach(g=>{
-    const netSalesSum = sumRange(pnlByChannel[g].netSales, s, e);
-    costDriverKeys.forEach(key=>{
-      const line = costLines.find(cl=>cl.key===key);
-      const pct = netSalesSum ? sumRange(pnlByChannel[g][key], s, e)/netSalesSum*100 : 0;
-      driverCombos.push({ channel:g, name:line.name, pct });
-    });
-  });
-  driverCombos.sort((a,b)=>b.pct-a.pct);
-  const topCombo = driverCombos[0];
-  const secondCombo = driverCombos.find(c=>c.channel!==topCombo.channel);
-  document.getElementById('costStructCallout').innerHTML =
-    '<b>'+topCombo.channel+'</b> has the highest '+topCombo.name+' <span class="pos">('+topCombo.pct.toFixed(0)+'% of Net Sales)</span>'
-    + (secondCombo ? ' · <b>'+secondCombo.channel+'</b> has the highest '+secondCombo.name+' <span class="pos">('+secondCombo.pct.toFixed(0)+'% of Net Sales)</span>' : '');
-
-  /* === ZONE B: Category margins under current Channel filter === */
-  const catMargins = CATEGORY_NAMES.map(cat => ({ name:cat, ...categoryMarginsFor(cat, channelFilter, s, e) }));
-  const sortedByNetMargin = [...catMargins].sort((a,b)=>b.netMarginPct-a.netMarginPct);
-  // Highest/Lowest Margin Category cards cut (PART C3, 2026-08-11) -- both
-  // numbers are already readable straight off the Ranking table below
-  // (top row / bottom row), so the 2 cards were a pure duplicate.
-
-  // "Margin by Category" bar chart cut (C4, 2026-08-10) -- its 2 series
-  // (Gross/Net Margin %) duplicated the Category Profitability Ranking
-  // table's own columns exactly; Profit Matrix below is the one chart that
-  // adds information the table doesn't (2-D margin × contribution view).
-
-  /* === ZONE B2: Category Profit Matrix === */
-  const matrixPoints = catMargins.map(c => ({
-    x: c.netProfit, y: c.netMarginPct, label: c.name, color: resolveColor('var(--cat-'+CAT_COLOR_INDEX[c.name]+')')
-  }));
-  buildScatterSVG('profitMatrixChart', matrixPoints, {
-    xFormatter: fmtTHB, yFormatter: v=>v.toFixed(0)+'%',
-    xAxisTitle: 'Net Profit Contribution (฿)', yAxisTitle: 'Net Margin (%)',
-    quadrantLabels: { topRight:'Premium Stars', topLeft:'Niche Premium', bottomRight:'Volume Engines', bottomLeft:'Needs Review' }
-  });
-  latestData.matrix = matrixPoints;
-
-  /* === ZONE B3: Category Profitability Ranking table === */
-  document.getElementById('catRankTable').innerHTML =
-    '<thead><tr><th>#</th><th>Category</th><th>Net Sales</th><th>Gross Margin %</th><th>Net Margin %</th><th>Net Profit</th></tr></thead><tbody>'
-    + sortedByNetMargin.map((c,i)=>'<tr><td class="rank-num">'+(i+1)+'</td><td>'+c.name+'</td><td class="tnum">'+fmtTHB(c.netSales)+'</td><td class="tnum">'+fmtPct(c.grossMarginPct,1)+'</td><td class="tnum">'+fmtPct(c.netMarginPct,1)+'</td><td class="tnum">'+fmtTHB(c.netProfit)+'</td></tr>').join('')
-    + '</tbody>';
-  latestData.catRank = sortedByNetMargin;
-
+  latestData.costStruct = { channels: costStructGroups, lines: costLines.map(cl => ({ name:cl.name, values: costStructGroups.map(g=> costStructValue(g, cl.key)) })) };
 }
 
 /* --- Toolbar --- */
@@ -1450,26 +1312,6 @@ document.getElementById('costStructTableBtn').addEventListener('click', ()=>{
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('profitMatrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('profitMatrixChart', 'pnl_category_profit_matrix.svg'));
-document.getElementById('profitMatrixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
-document.getElementById('profitMatrixTableBtn').addEventListener('click', ()=>{
-  const wrap = document.getElementById('profitMatrixTableWrap');
-  const canvasWrap = document.getElementById('profitMatrixCanvasWrap');
-  const showing = wrap.classList.contains('visible');
-  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
-  const d = latestData.matrix;
-  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Net Profit</th><th>Net Margin %</th></tr></thead><tbody>';
-  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.x)+'</td><td>'+p.y.toFixed(1)+'%</td></tr>'; });
-  html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
-});
-
-document.getElementById('catRankDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['#','Category','Net Sales','Gross Margin %','Net Margin %','Net Profit']];
-  latestData.catRank.forEach((c,i)=> rows.push([i+1, c.name, Math.round(c.netSales), c.grossMarginPct.toFixed(1), c.netMarginPct.toFixed(1), Math.round(c.netProfit)]));
-  downloadCSV(rows, 'pnl_category_profitability_ranking.csv');
-});
-document.getElementById('catRankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 
 /* ---------- Init ---------- */
 renderBreakdown();
@@ -1549,7 +1391,7 @@ function renderCostCategoryDetail(){
     // bars' own labels show), not an independently-computed ratio.
     const netSalesByBucket = cdWin.groups.map(grp => groupSum(pnlCompany.netSales, grp));
     const ratioSeries = totalsByBucketRounded.map((t,i)=> netSalesByBucket[i] ? t/netSalesByBucket[i]*100 : 0);
-    const ratioColor = '#4C6FA5';
+    const ratioColor = resolveColor('var(--cat-6)');
     buildStackedBarSVG(chartId, {
       labels: cdWin.labels, series, valueFormatter: fmtTHB, showTotalLabels:true, partialLastBar: cdWin.isLastPartial,
       line: {name:ratioLineName, color:ratioColor, values:ratioSeries}, lineYFormatter: v=>fmtPct(v,1)
@@ -1578,70 +1420,34 @@ function renderCostStructure(){
   const good = cssVar('--good') || '#0ca30c';
   const baseline = cssVar('--baseline') || '#c3c2b7';
 
-  const netSalesSum = sumRange(pnlCompany.netSales, s, e);
-  const cogsSum = sumRange(pnlCompany.cogs, s, e);
-  const tradeSpendSum = sumRange(pnlCompany.tradeSpend, s, e);
-  const logisticsSum = sumRange(pnlCompany.logistics, s, e);
-  const marketingSum = sumRange(pnlCompany.marketing, s, e);
-  const sgaSum = sumRange(pnlCompany.sga, s, e);
-  const opexSum = tradeSpendSum + logisticsSum + marketingSum + sgaSum;
-  const netProfitSum = sumRange(pnlCompany.netProfit, s, e);
-  const opexRatioPct = netSalesSum ? opexSum/netSalesSum*100 : 0;
-
-  /* === SECTION 1: Cost Ratio strip (PART C5, 2026-08-11) — value + YoY
-     delta + a RAG dot per ratio, 5 total in 1 row, replacing 5 big gauges.
-     All YTD vs same range Last Year, so OPEX's own pp change always equals
-     the sum of its 4 components' pp changes by construction (same "ratio
-     of sums" reasoning used everywhere else on this page). Cost ratios are
-     "lower = better" -- greenTo/amberTo are the same RAG thresholds the old
-     gauges used (no opts.invert), just read directly instead of drawn as an
-     arc. */
-  const lyStart = s-12, lyEnd = e-12;
-  const lyNetSales = sumRange(pnlCompany.netSales, lyStart, lyEnd);
-  const lyTradeSpend = sumRange(pnlCompany.tradeSpend, lyStart, lyEnd);
-  const lyLogistics = sumRange(pnlCompany.logistics, lyStart, lyEnd);
-  const lyMarketing = sumRange(pnlCompany.marketing, lyStart, lyEnd);
-  const lySga = sumRange(pnlCompany.sga, lyStart, lyEnd);
-  const lyOpexSum = lyTradeSpend + lyLogistics + lyMarketing + lySga;
-  const ratioOf = (v, base) => base ? v/base*100 : 0;
-  const diffPP = (thisV, lastV) => thisV - lastV;
-  const ratioRows = [
-    { label:'OPEX Ratio %', thisPeriod: opexRatioPct, lastYear: ratioOf(lyOpexSum, lyNetSales), greenTo:20, amberTo:26 },
-    { label:'Trade Spend-to-Sales %', thisPeriod: ratioOf(tradeSpendSum, netSalesSum), lastYear: ratioOf(lyTradeSpend, lyNetSales), greenTo:6, amberTo:9 },
-    { label:'Logistics-to-Sales %', thisPeriod: ratioOf(logisticsSum, netSalesSum), lastYear: ratioOf(lyLogistics, lyNetSales), greenTo:4, amberTo:6 },
-    { label:'Marketing-to-Sales %', thisPeriod: ratioOf(marketingSum, netSalesSum), lastYear: ratioOf(lyMarketing, lyNetSales), greenTo:3, amberTo:4.5 },
-    { label:'SG&A-to-Sales %', thisPeriod: ratioOf(sgaSum, netSalesSum), lastYear: ratioOf(lySga, lyNetSales), greenTo:9, amberTo:12 }
-  ];
-  document.getElementById('costRatioStrip').innerHTML = ratioRows.map(r=>{
-    const d = diffPP(r.thisPeriod, r.lastYear);
-    const dotColor = r.thisPeriod<=r.greenTo ? (cssVar('--good')||'#0ca30c') : r.thisPeriod<=r.amberTo ? (cssVar('--warning')||'#fab219') : (cssVar('--critical')||'#d03b3b');
-    return '<div class="metric-strip-item">'
-      + '<div class="metric-strip-label">'+r.label+'</div>'
-      + '<div class="metric-strip-value">'+fmtPct(r.thisPeriod,1)+' <span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+dotColor+';margin-left:3px;vertical-align:middle;"></span></div>'
-      + '<div class="metric-strip-delta"><span class="'+invDelta(d)+'">'+fmtSignedPPDecimal(d)+'</span> YoY</div>'
-      + '</div>';
-  }).join('');
-
-  /* === SECTION 2: OPEX Trend (trailing 18 months, company-wide, ignores Period filter) === */
+  /* === Total Cost Trend (trailing 18 months, company-wide, ignores Period filter) === */
   const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
-  // View By: shareGroups buckets the trailing-18-month shareIdx into quarters
-  // when Quarterly is active (monthly is a no-op passthrough) — independent
-  // of the Period filter, same as shareIdx itself already was.
+  // View By: shareGroups buckets the trailing-18-month shareIdx into
+  // quarters or years when Quarterly/Annual is active (monthly is a no-op
+  // passthrough) — independent of the Period filter, same as shareIdx
+  // itself already was.
   const shareGroups = bucketMonths(shareIdx, currentTimeFrame);
-  const shareLabels = currentTimeFrame==='quarterly' ? shareGroups.map(quarterLabel) : shareIdx.map(i=>monthLabels[i]);
+  const shareLabels = currentTimeFrame==='quarterly' ? shareGroups.map(quarterLabelFull)
+    : currentTimeFrame==='annual' ? shareGroups.map(annualShareLabel)
+    : shareIdx.map(i=>monthLabels[i]);
+  // Trade Spend/Logistics/Marketing collapsed into one "Selling &
+  // Distribution" band (2026-08-11) -- the per-category detail is already
+  // one card down in Selling Expense Breakdown, so this trend only needs to
+  // carry 3 bands: COGS / Selling & Distribution / SG&A. keys (plural) sums
+  // across all 3 underlying series so the band always reconciles exactly to
+  // Trade Spend + Logistics + Marketing for that bucket.
   const opexLines = [
-    { name:'Trade Spend', color: resolveColor('var(--cat-1)'), key:'tradeSpend' },
-    { name:'Logistics', color: resolveColor('var(--cat-2)'), key:'logistics' },
-    { name:'Marketing/Ads', color: resolveColor('var(--cat-3)'), key:'marketing' },
-    { name:'SG&A', color: resolveColor('var(--cat-4)'), key:'sga' }
+    { name:'COGS', color: baseline, keys:['cogs'] },
+    { name:'Selling & Distribution', color: resolveColor('var(--cat-2)'), keys:['tradeSpend','logistics','marketing'] },
+    { name:'SG&A', color: resolveColor('var(--cat-4)'), keys:['sga'] }
   ];
   // ฿-amount series (all months already closed within this trailing window):
   // sum-of-months per group, no masking needed.
   const opexSeries = opexLines.map(l => ({
     name:l.name, color:l.color,
-    values: shareGroups.map(grp => grp.reduce((sum,i)=> sum + groupKeys.reduce((s,g)=> s + pnlByChannel[g][l.key][i], 0), 0))
+    values: shareGroups.map(grp => grp.reduce((sum,i)=> sum + groupKeys.reduce((s,g)=> s + l.keys.reduce((ks,key)=> ks + pnlByChannel[g][key][i], 0), 0), 0))
   }));
-  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:200 });
+  buildStackedAreaSVG('opexTrendChart', { labels: shareLabels, series: opexSeries, height:280 });
   document.getElementById('opexTrendLegend').innerHTML = opexLines.map(l =>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+l.color+'"></span>'+l.name+'</span>'
   ).join('');

@@ -464,7 +464,7 @@ function buildGaugeSVG(containerId, value, opts){
     + '<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="'+inkOne+'"/>';
   const valueLabel = '<text x="'+cx+'" y="'+(cy-r*0.42).toFixed(1)+'" text-anchor="middle" font-size="'+Math.max(13,Math.round(r*0.34))+'" font-weight="700" fill="'+inkOne+'">'+valueFormatter(value)+'</text>';
   const scaleLabels = '<text x="'+(cx-r-2)+'" y="'+(cy+12)+'" text-anchor="start" font-size="9" fill="'+inkThree+'">0</text>'
-    + '<text x="'+(cx+r+2)+'" y="'+(cy+12)+'" text-anchor="end" font-size="9" fill="'+inkThree+'">'+valueFormatter(max)+'</text>';
+    + '<text x="'+(cx+r+2)+'" y="'+(cy+12)+'" text-anchor="end" font-size="9" fill="'+inkThree+'">'+Math.round(max)+'%</text>';
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" overflow="visible">'+zonesSvg+needleSvg+valueLabel+scaleLabels+'</svg>';
 }
