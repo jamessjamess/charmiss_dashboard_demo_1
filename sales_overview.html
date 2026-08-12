@@ -885,9 +885,11 @@ function renderAll(periodKey, custom){
     const over = attainVal>=100;
     return '<div class="chgap-row'+(isTotal?' total':'')+'">'
       + '<div class="chgap-name">'+(dotColor?'<span class="chgap-dot" style="background:'+dotColor+'"></span>':'')+name+'</div>'
+      + '<div class="chgap-mobile-label">YoY Growth</div>'
       + chGapTrack(grew?'pos':'neg', chGapBarStyle(growth||0, pcMaxAbsGrowth), isTotal?null:chGapPos(revGrowth||0, pcMaxAbsGrowth), 26)
       + '<div class="chgap-value-wrap"><div class="chgap-badge '+(grew?'pos':'neg')+'">'+(grew?'▲':'▼')+' '+(growth!==null?fmtSignedPct(growth):'–')+'</div>'
       + (growthAmt!=null ? '<div class="chgap-value-sub '+(growthAmt>=0?'pos':'neg')+'">'+(growthAmt>=0?'+':'−')+fmtTHB(Math.abs(growthAmt))+'</div>' : '')+'</div>'
+      + '<div class="chgap-mobile-label">Target Attainment %</div>'
       + chGapTrack(over?'pos':'neg', chGapBarStyle0(attainVal, pcAttainDomainMax), isTotal?null:(attainPct/pcAttainDomainMax*100), attainZeroPos)
       + '<div class="chgap-value-wrap"><div class="chgap-value '+(over?'pos':'neg')+'">'+fmtPct(attainVal,1)+'</div>'
       + '<div class="chgap-value-sub '+(over?'pos':'neg')+'">'+(over?'+':'−')+fmtTHB(Math.abs(diffTHB))+'</div></div>'

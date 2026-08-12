@@ -1443,15 +1443,35 @@ function buildWaterfallSVG(containerId, steps, opts){
   // needing a hand-tuned number per angle.
   const rotateDeg = opts.rotateLabels === true ? 35 : (opts.rotateLabels || 0);
   const rotateFontFamily = (container && getComputedStyle(container).fontFamily) || 'sans-serif';
-  const maxLabelW = rotateDeg ? Math.max(0, ...steps.map(st => measureTextWidth(st.label, 10, '400', rotateFontFamily))) : 0;
-  const padL=54, padR=16, padT=16;
+  const padL=54, padR=16;
+  // Responsive compact mode (2026-08-13) -- narrow containers (mobile) give
+  // each step a slot too thin for the default font sizes: value labels
+  // ("+฿9.9M") and category labels ("Selling & Distribution") from
+  // neighboring bars start overlapping horizontally once the slot shrinks
+  // below where the text itself is wider than the gap between adjacent bar
+  // centers. Same "shrink font under a width threshold" convention already
+  // used by buildStacked100BarSVG's `compact`/`fontPct` -- barW itself only
+  // depends on width/padL/padR/steps.length (not on padB below), so it can
+  // be computed here, ahead of every label-sizing decision that follows.
+  const estSlotW = (width-padL-padR)/Math.max(1,steps.length);
+  const compact = estSlotW*0.55 < 34;
+  const labelFontSize = compact ? 8.5 : 10;
+  const valueFontSize = compact ? 9 : 10.5;
+  const lineHeight = Math.round(labelFontSize+1);
+  // Value-label stagger (2026-08-13) -- alternate bars raise their value
+  // label an extra `staggerOffset` above the bar top in compact mode, so
+  // adjacent labels ("+฿9.9M" / "-฿4.8M") sit at clearly different heights
+  // instead of racing to fit into a slot too narrow for both to sit on the
+  // same baseline without touching. Cheaper and more robust than measuring
+  // exact text widths per pair -- any vertical gap avoids the collision
+  // regardless of how wide a given formatted value turns out to be.
+  const staggerOffset = compact ? 11 : 0;
+  const padT = 16 + staggerOffset;
+  const maxLabelW = rotateDeg ? Math.max(0, ...steps.map(st => measureTextWidth(st.label, labelFontSize, '400', rotateFontFamily))) : 0;
   // Upright wrapped labels (2026-08-11) -- the non-rotated path used to just
   // clip/collide on a long label (e.g. "Selling & Distribution"); now each
   // label greedy-wraps onto as many lines as it needs to fit its own slot
   // width, staying upright instead of switching to a rotated/slanted look.
-  // Slot width isn't known until n/slotW below, so this is a first pass
-  // using plotW/steps.length as an estimate -- close enough since padL/R are
-  // fixed and this only feeds the padB reservation, not final layout.
   function wrapLabelLines(label, maxWidth, fontSize, fontWeight, fontFamily){
     const words = label.split(' ');
     if(words.length<=1) return [label];
@@ -1465,10 +1485,9 @@ function buildWaterfallSVG(containerId, steps, opts){
     lines.push(current);
     return lines;
   }
-  const estSlotW = (width-padL-padR)/Math.max(1,steps.length);
-  const wrappedLabelLines = rotateDeg ? [] : steps.map(st => wrapLabelLines(st.label, estSlotW-4, 10, '400', rotateFontFamily));
+  const wrappedLabelLines = rotateDeg ? [] : steps.map(st => wrapLabelLines(st.label, estSlotW-(compact?12:4), labelFontSize, '400', rotateFontFamily));
   const maxLabelLineCount = wrappedLabelLines.length ? Math.max(1, ...wrappedLabelLines.map(l=>l.length)) : 1;
-  const padB = rotateDeg ? Math.ceil(20 + maxLabelW*Math.abs(Math.sin(rotateDeg*Math.PI/180))) : (22 + (maxLabelLineCount-1)*11);
+  const padB = rotateDeg ? Math.ceil(20 + maxLabelW*Math.abs(Math.sin(rotateDeg*Math.PI/180))) : (22 + (maxLabelLineCount-1)*lineHeight);
   const plotW = width-padL-padR, plotH = height-padT-padB;
 
   // running totals to know each bar's floating base/top
@@ -1515,7 +1534,8 @@ function buildWaterfallSVG(containerId, steps, opts){
     const color = st.type==='start'||st.type==='end' ? neutral : (st.value>=0 ? good : bad);
     barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+color+'"/>';
     const labelVal = st.type==='delta' ? (st.value>=0?'+':'') + yFormatter(st.value) : yFormatter(st.value);
-    barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+(y-6).toFixed(1)+'" font-size="10.5" font-weight="700" text-anchor="middle" fill="'+color+'">'+labelVal+'</text>';
+    const labelY = y-6-(staggerOffset && i%2===1 ? staggerOffset : 0);
+    barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+labelY.toFixed(1)+'" font-size="'+valueFontSize+'" font-weight="700" text-anchor="middle" fill="'+color+'">'+labelVal+'</text>';
     if(rotateDeg){
       // Fix (2026-08-06): rotate(-35) was the wrong sign — in SVG's y-down
       // coordinate system that sweeps the text-anchor="end" label DOWNWARD
@@ -1527,7 +1547,7 @@ function buildWaterfallSVG(containerId, steps, opts){
       // staying inside the padB reserved for this mode (at 90° the label
       // runs straight up, reading bottom-to-top).
       const lx = (x+barW/2).toFixed(1), ly = height-8;
-      xLabels += '<text x="'+lx+'" y="'+ly+'" font-size="10" text-anchor="end" fill="'+inkTertiary+'" transform="rotate('+rotateDeg+' '+lx+' '+ly+')">'+st.label+'</text>';
+      xLabels += '<text x="'+lx+'" y="'+ly+'" font-size="'+labelFontSize+'" text-anchor="end" fill="'+inkTertiary+'" transform="rotate('+rotateDeg+' '+lx+' '+ly+')">'+st.label+'</text>';
     } else {
       // Upright, wraps onto extra lines instead of rotating/clipping (see
       // wrapLabelLines above) -- the LAST line sits at the same height-8
@@ -1536,8 +1556,8 @@ function buildWaterfallSVG(containerId, steps, opts){
       const lines = wrappedLabelLines[i] || [st.label];
       const lx2 = (x+barW/2).toFixed(1);
       lines.forEach((ln,li)=>{
-        const ly2 = height-8-(lines.length-1-li)*11;
-        xLabels += '<text x="'+lx2+'" y="'+ly2+'" font-size="10" text-anchor="middle" fill="'+inkTertiary+'">'+ln+'</text>';
+        const ly2 = height-8-(lines.length-1-li)*lineHeight;
+        xLabels += '<text x="'+lx2+'" y="'+ly2+'" font-size="'+labelFontSize+'" text-anchor="middle" fill="'+inkTertiary+'">'+ln+'</text>';
       });
     }
     if(i<bars.length-1){
