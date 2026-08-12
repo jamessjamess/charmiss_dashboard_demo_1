@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — Account Management</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">C</div>
+      <div class="brand-name">Charmiss</div>
+      <div id="navMenuMount"></div>
+    </div>
+    <button type="button" class="acct-back-btn" id="acctBackBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to Dashboard
+    </button>
+  </header>
+
+  <div class="acct-wrap">
+
+    <div class="section-label">Profile</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="acct-profile">
+        <div class="acct-avatar-lg">NV</div>
+        <div>
+          <div class="acct-profile-name">Nattapong V.</div>
+          <div class="acct-profile-role">VP of Sales</div>
+        </div>
+      </div>
+      <div class="acct-profile-meta">
+        Email: nattapong.v@charmiss.co.th<br>
+        Department: Sales &amp; Commercial<br>
+        Access level: Company-wide (all channels)
+      </div>
+    </div>
+
+    <div class="section-label">Appearance</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="acct-row">
+        <div>
+          <div class="acct-row-label">Dark Mode</div>
+          <div class="acct-row-desc">สลับโหมดสีของ Dashboard ทั้งหมด — ค่านี้จะถูกจำไว้และใช้ทุกหน้าจนกว่าจะเปลี่ยนอีกครั้ง</div>
+        </div>
+        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
+          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="section-label">Notifications</div>
+    <div class="card" style="margin-bottom:20px;">
+      <div class="acct-row">
+        <div>
+          <div class="acct-row-label">Weekly Performance Summary</div>
+          <div class="acct-row-desc">อีเมลสรุปยอดขายเทียบเป้าทุกวันจันทร์ ครอบคลุมทั้ง MT, TT และ Ecom</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="notifWeekly"><span class="switch-track"></span></label>
+      </div>
+      <div class="acct-row">
+        <div>
+          <div class="acct-row-label">Target Attainment Alerts</div>
+          <div class="acct-row-desc">แจ้งเตือนเมื่อ Channel หรือ Partner ใดหลุด Target เกิน 10%</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="notifTarget"><span class="switch-track"></span></label>
+      </div>
+      <div class="acct-row">
+        <div>
+          <div class="acct-row-label">Data Refresh Notifications</div>
+          <div class="acct-row-desc">แจ้งเตือนเมื่อข้อมูลเดือนล่าสุดถูกอัปเดตเข้าระบบแล้ว</div>
+        </div>
+        <label class="switch"><input type="checkbox" id="notifRefresh"><span class="switch-track"></span></label>
+      </div>
+    </div>
+
+    <div class="section-label">About</div>
+    <div class="card">
+      <div class="acct-about">
+        Charmiss Dashboard · v2.4<br>
+        Last data refresh: 1 Aug 2026, 09:00
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="nav-menu.js"></script>
+<script src="shared.js"></script>
+<script>
+try { renderNavMenu(null, 'Account Management'); } catch(e) { console.error('Nav menu render failed:', e); }
+
+document.getElementById('acctBackBtn').addEventListener('click', ()=>{
+  if(document.referrer && document.referrer.indexOf(location.origin)===0 && document.referrer!==location.href){
+    window.location.href = document.referrer;
+  } else if(history.length>1){
+    history.back();
+  } else {
+    window.location.href = 'sales_overview.html';
+  }
+});
+
+/* ---- Notification toggles: client-side only (no backend), persisted
+   to localStorage same as everything else in this mock. Default is on --
+   these are the settings a VP of Sales would expect enabled out of the box. ---- */
+const NOTIF_KEYS = { notifWeekly:'charmiss-notif-weekly', notifTarget:'charmiss-notif-target', notifRefresh:'charmiss-notif-refresh' };
+Object.keys(NOTIF_KEYS).forEach(id=>{
+  const el = document.getElementById(id);
+  const key = NOTIF_KEYS[id];
+  let stored;
+  try { stored = localStorage.getItem(key); } catch(e) { stored = null; }
+  el.checked = stored===null ? true : stored==='1';
+  el.addEventListener('change', ()=>{
+    try { localStorage.setItem(key, el.checked ? '1' : '0'); } catch(e){}
+  });
+});
+
+initThemeToggle();
+</script>
+</body>
+</html>

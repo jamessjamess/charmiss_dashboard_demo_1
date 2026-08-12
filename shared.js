@@ -2088,17 +2088,24 @@ function initSectionScrollSpy(){
 
 /* ---------- Dark mode toggle. SVG colors are baked in at render time (see
    buildLineChartSVG comment), so toggling calls `onToggle` to force a full
-   re-render — pass in whatever function redraws the current page's charts. ---------- */
+   re-render — pass in whatever function redraws the current page's charts.
+   Persisted to localStorage (2026-08-12) so the choice made on Account
+   Management holds when navigating back to a dashboard page -- each page's
+   own <head> re-applies the stored value before this script ever runs (see
+   the inline snippet at the top of every page), so `isDark` here just needs
+   to start in sync with whatever data-theme is already on <html>. ---------- */
 function initThemeToggle(onToggle){
   const themeToggle = document.getElementById('themeToggle');
   const themeIcon = document.getElementById('themeIcon');
   if(!themeToggle) return;
   const MOON = '<path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/>';
   const SUN = '<circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M2.5 8H1M15 8h-1.5M3.5 3.5l1 1M11.5 11.5l1 1M12.5 3.5l-1 1M4.5 11.5l-1 1"/>';
-  let isDark = false;
+  let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  themeIcon.innerHTML = isDark ? SUN : MOON;
   themeToggle.addEventListener('click', ()=>{
     isDark = !isDark;
     document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+    try{ localStorage.setItem('charmiss-theme', isDark ? 'dark' : 'light'); }catch(e){}
     themeIcon.innerHTML = isDark ? SUN : MOON;
     if(typeof onToggle === 'function') onToggle();
   });

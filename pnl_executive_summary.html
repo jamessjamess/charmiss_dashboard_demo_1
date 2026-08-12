@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Charmiss — Financial Statement · P&amp;L</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
 <style>
@@ -48,14 +49,7 @@
         </nav>
       </div>
       <div class="user-area">
-        <div class="user-meta">
-          <div class="user-name">Nattapong V.</div>
-          <div class="user-role">VP of Sales</div>
-        </div>
-        <div class="avatar">NV</div>
-        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
-          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
-        </button>
+        <a class="avatar" href="account_management.html" title="Account Management">NV</a>
         <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
         </button>
@@ -595,12 +589,11 @@ function currentAsOfLabel(){
   return monthLabels[pnlMonthAnchor];
 }
 
-/* ---------- Nav menu / popovers / theme ---------- */
+/* ---------- Nav menu / popovers ---------- */
 if (typeof renderNavMenu === 'function') {
   try { renderNavMenu('pnl', 'Financial Statement · P&L'); } catch(e) { console.error('Nav menu render failed:', e); }
 }
 initInfoPopovers();
-initThemeToggle(()=> renderSummary());
 
 /* ---------- Scroll + scroll-spy nav (2026-08-11 restructure, replaces the
    2026-08-10 4-pill hard-switch) -- every section stays on the page,
@@ -1072,7 +1065,6 @@ renderSummary();
    not renamed, since every OPEX/margin formula above already depends on
    it); Net Profit after tax is the new bottom line everywhere this page
    used to show "Net Profit". */
-initThemeToggle(()=> renderQuarterlyTrend());
 
 /* ---------- 5 rolling quarters ending at TODAY's quarter (Q2'26) ---------- */
 function quarterYearLabel(startIdx){
@@ -1231,7 +1223,6 @@ function resolveColor(cssColorOrVar){
 }
 
 
-initThemeToggle(()=> renderBreakdown());
 
 /* ---------- Filter bar ---------- all click handling (View By toggle, AS OF
    dropdown) lives in ONE consolidated script block at the very end of this
@@ -1337,7 +1328,6 @@ renderBreakdown();
    Tax only needs to exist at the company-wide level. */
 
 
-initThemeToggle(()=> renderCostStructure());
 
 /* ---------- Filter bar ---------- all click handling (View By toggle, AS OF
    dropdown) lives in ONE consolidated script block at the very end of this

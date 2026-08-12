@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Charmiss — TT Overview · Breakdown</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="tt-shared.css">
 <link rel="stylesheet" href="nav-menu.css">
 </head>
@@ -26,12 +27,7 @@
       </div>
       <div class="topbar-right">
         <div class="user-info-row">
-          <div class="user-meta">
-            <div class="user-name">Nattapong V.</div>
-            <div class="user-role">VP of Sales</div>
-          </div>
-          <div class="user-avatar-circle">NV</div>
-          <button class="mode-toggle-btn" id="modeToggle" type="button" title="Switch to dark mode" aria-label="Switch to dark mode"></button>
+          <a class="user-avatar-circle" href="account_management.html" title="Account Management">NV</a>
           <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
           </button>
@@ -674,24 +670,7 @@
   document.getElementById("regionLevelSelect").addEventListener("change", render);
   document.getElementById("customerCategoryHeatmapLevelSelect").addEventListener("change", render);
 
-  /* ---- Dark / Light mode toggle ---- */
-  const MODE_ICONS = {
-    moon: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>',
-    sun: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1.5v1.5M8 13v1.5M2.5 8H1M15 8h-1.5M3.5 3.5l1 1M11.5 11.5l1 1M12.5 3.5l-1 1M4.5 11.5l-1 1"/></svg>',
-  };
-  let isDark = false;
-  const modeToggleBtn = document.getElementById("modeToggle");
-  modeToggleBtn.innerHTML = MODE_ICONS.moon;
-  modeToggleBtn.addEventListener("click", function(){
-    isDark = !isDark;
-    document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
-    this.innerHTML = isDark ? MODE_ICONS.sun : MODE_ICONS.moon;
-    this.title = isDark ? "Switch to light mode" : "Switch to dark mode";
-    render();
-    this.setAttribute("aria-label", this.title);
-  });
-
-  /* ---- Menu bar collapse (same mechanism as sales_overview.html / shared.css pages) ---- */
+/* ---- Menu bar collapse (same mechanism as sales_overview.html / shared.css pages) ---- */
   (function initMenubarCollapse(){
     const wrap = document.getElementById("pageHeaderSticky");
     const btn = document.getElementById("menubarCollapseBtn");

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Charmiss — MT Overview · Breakdown</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
 </head>
@@ -23,14 +24,7 @@
         </nav>
       </div>
       <div class="user-area">
-        <div class="user-meta">
-          <div class="user-name">Nattapong V.</div>
-          <div class="user-role">VP of Sales</div>
-        </div>
-        <div class="avatar">NV</div>
-        <button class="theme-toggle" id="themeToggle" title="สลับโหมดสี">
-          <svg id="themeIcon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.5A5.5 5.5 0 016.5 2.5a5.5 5.5 0 105.5 6.5"/></svg>
-        </button>
+        <a class="avatar" href="account_management.html" title="Account Management">NV</a>
         <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
         </button>
@@ -551,12 +545,11 @@ function periodLabelText(key, custom){
   }
 }
 
-/* ---------- Nav menu / popovers / theme ---------- */
+/* ---------- Nav menu / popovers ---------- */
 if (typeof renderNavMenu === 'function') {
   try { renderNavMenu('mt-breakdown', 'MT Overview · Breakdown'); } catch(e) { console.error('Nav menu render failed:', e); }
 }
 initInfoPopovers();
-initThemeToggle(()=> renderAll());
 
 /* ---------- Menu bar collapse (same mechanism as sales_overview.html). ---------- */
 (function initMenubarCollapse(){
