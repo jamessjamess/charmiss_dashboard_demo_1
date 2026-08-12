@@ -39,10 +39,11 @@ button,select{font-family:inherit;}
 .logo{width:34px;height:34px;border-radius:9px;background:var(--brand);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;flex-shrink:0;}
 .brand-name{font-weight:700;font-size:18px;letter-spacing:-.01em;}
 .user-area{display:flex;align-items:center;gap:14px;}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-wash);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
-.user-meta{line-height:1.25;text-align:right;}
-.user-name{font-weight:700;font-size:13px;}
-.user-role{font-size:11.5px;color:var(--ink-3);}
+/* Avatar is the sole entry point into Account Management (2026-08-12) --
+   header no longer shows name/role/theme-toggle inline (moved to that page),
+   so the avatar is now a link, not a static div. */
+.avatar{width:34px;height:34px;border-radius:50%;background:var(--brand-wash);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;text-decoration:none;transition:box-shadow .15s ease;}
+.avatar:hover{box-shadow:0 0 0 3px var(--brand-wash);}
 .theme-toggle{width:34px;height:34px;border-radius:50%;border:1px solid var(--border-2);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ink-2);flex-shrink:0;}
 .theme-toggle svg{width:16px;height:16px;}
 
@@ -384,7 +385,6 @@ button,select{font-family:inherit;}
   .cat-label{width:88px;font-size:11px;}
   .dumbbell-values{width:130px;font-size:10.5px;}
   .filterbar{flex-direction:column;align-items:flex-start;}
-  .user-meta{display:none;}
   .tabs{width:100%;overflow-x:auto;}
 }
 @media (max-width:480px){
@@ -546,3 +546,29 @@ button,select{font-family:inherit;}
 .chart-tooltip-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
 .chart-tooltip-name{flex:1;color:var(--ink-2);}
 .chart-tooltip-value{font-weight:700;margin-left:10px;}
+
+/* ===================== Account Management page (2026-08-12) =====================
+   Reached only via the header avatar link (see .avatar above) -- narrower,
+   single-column settings layout since it's a list of preferences, not a
+   multi-chart dashboard. */
+.acct-wrap{max-width:640px;margin:0 auto;}
+.acct-back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:650;color:var(--ink-2);background:var(--card);border:1px solid var(--border-2);border-radius:8px;padding:7px 12px;cursor:pointer;text-decoration:none;flex-shrink:0;}
+.acct-back-btn:hover{border-color:var(--brand);color:var(--brand);}
+.acct-back-btn svg{width:14px;height:14px;}
+.acct-profile{display:flex;align-items:center;gap:16px;}
+.acct-avatar-lg{width:60px;height:60px;border-radius:50%;background:var(--brand-wash);color:var(--brand);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:20px;flex-shrink:0;}
+.acct-profile-name{font-size:16px;font-weight:700;color:var(--ink-1);}
+.acct-profile-role{font-size:12.5px;color:var(--ink-3);margin-top:2px;}
+.acct-profile-meta{font-size:11.5px;color:var(--ink-3);margin-top:9px;line-height:1.7;}
+.acct-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 0;border-bottom:1px solid var(--hairline);}
+.acct-row:last-child{border-bottom:none;}
+.acct-row-label{font-size:13px;font-weight:650;color:var(--ink-1);}
+.acct-row-desc{font-size:11.5px;color:var(--ink-3);margin-top:2px;max-width:400px;line-height:1.45;}
+.acct-about{font-size:11.5px;color:var(--ink-3);line-height:1.8;}
+.switch{position:relative;display:inline-block;width:36px;height:21px;flex-shrink:0;}
+.switch input{position:absolute;opacity:0;width:1px;height:1px;}
+.switch-track{position:absolute;inset:0;background:var(--border-2);border-radius:21px;transition:background .18s ease;cursor:pointer;}
+.switch-track:before{content:'';position:absolute;width:15px;height:15px;left:3px;top:3px;background:#fff;border-radius:50%;transition:transform .18s ease;}
+.switch input:checked + .switch-track{background:var(--brand);}
+.switch input:checked + .switch-track:before{transform:translateX(15px);}
+.switch input:focus-visible + .switch-track{outline:2px solid var(--brand);outline-offset:2px;}

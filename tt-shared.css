@@ -117,20 +117,6 @@
   }
   .topbar-right{ display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
   .asof{ font-size:12.5px; color:var(--ink-3); }
-  .mode-toggle-btn{
-    /* was position:absolute;top:0;right:0 — that pulled it out of the user-info row's flex flow
-       (which already reserves gap:10px for it) and collapsed it onto the row's own top-right
-       corner, landing directly on top of the user info instead of sitting beside it (Round 25
-       bug fix, when this row was still called .user-badge-row). Flex-flow sizing (flex:none)
-       keeps it a fixed size like before. Shape/size/background matched to Sales Overview and
-       MT Overview's .theme-toggle on 2026-07-31 (was a 32x32 rounded square on var(--page) —
-       now a 34x34 full circle on var(--card), same as every other page in the system). */
-    flex:none; width:34px; height:34px; padding:0; border-radius:50%;
-    border:1px solid var(--border-2); background:var(--card); color:var(--ink-2); cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .mode-toggle-btn:hover{ background:var(--wash); }
-  .mode-toggle-btn svg{ width:16px; height:16px; display:block; }
 
   h1{ font-size:22px; font-weight:650; letter-spacing:-0.01em; margin:0 0 4px; }
 
@@ -794,13 +780,15 @@
      3 separate files (2026-07-31 split — see tt_sales_person.html), so the button/dropdown
      shell was pure leftover chrome with nothing left to click into. Removed. ---------- */
   .user-info-row{ display:flex; align-items:center; gap:14px; }
-  .user-meta{ display:flex; flex-direction:column; align-items:flex-end; line-height:1.25; text-align:right; }
+  /* Sole entry point into Account Management (2026-08-12) -- now a link, not
+     a static div; name/role/mode-toggle moved to that page (see shared.css's
+     .avatar comment for the equivalent change on the other page family). */
   .user-avatar-circle{
     width:34px; height:34px; border-radius:50%; background:var(--brand-wash); color:var(--brand);
     display:flex; align-items:center; justify-content:center; font-size:12.5px; font-weight:700; flex:none;
+    text-decoration:none; transition:box-shadow .15s ease;
   }
-  .user-name{ font-size:13px; font-weight:700; color:var(--ink-1); }
-  .user-role{ font-size:11.5px; color:var(--ink-3); }
+  .user-avatar-circle:hover{ box-shadow:0 0 0 3px var(--brand-wash); }
 
   /* ---------- Ranked bar list + Level toggle (2026-08-06) — ported byte-for-byte
      from shared.css so "Sales by Category" here renders identically to MT Overview's
