@@ -560,7 +560,18 @@ function buildHBarCompareSVG(containerId, items, opts){
     const barH = rowHeight*0.42;
     const barX = xAt(it.value);
     const x0 = Math.min(refX, barX), barW = Math.max(1, Math.abs(barX-refX));
-    rows += '<text x="'+(labelW-8)+'" y="'+(y+rowHeight/2+4)+'" font-size="12" text-anchor="end" fill="'+cssVar('--ink-2')+'">'+it.label+'</text>';
+    // it.separator/it.bold (2026-08-13) -- opt-in "Total row" treatment for
+    // callers that append a company-wide summary row after per-channel/
+    // per-partner rows (e.g. Sales Overview's Target vs Actual per Channel):
+    // a divider line above the row plus a darker/bolder label, same visual
+    // language as .chgap-row.total elsewhere. Off by default, so existing
+    // callers render byte-identical to before.
+    if(it.separator){
+      rows += '<line x1="0" y1="'+y+'" x2="'+width+'" y2="'+y+'" stroke="'+cssVar('--border-2')+'" stroke-width="1.5"/>';
+    }
+    const labelWeight = it.bold ? '700' : '400';
+    const labelFill = it.bold ? cssVar('--ink-1') : cssVar('--ink-2');
+    rows += '<text x="'+(labelW-8)+'" y="'+(y+rowHeight/2+4)+'" font-size="12" font-weight="'+labelWeight+'" text-anchor="end" fill="'+labelFill+'">'+it.label+'</text>';
     rows += '<rect x="'+x0.toFixed(1)+'" y="'+barY.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+barH.toFixed(1)+'" rx="4" fill="'+it.color+'"/>';
     // it.subLabel (2026-08-06) — optional second, smaller line under the main
     // value (e.g. "+฿582.1K over target"), for callers that want the raw ฿
@@ -777,7 +788,13 @@ function buildGroupedBarSVG(containerId, opts){
       // exactly as before for callers that don't set it. opts.tooltips (new,
       // 2026-08-06) does the same cursor affordance, plus wires the shared
       // hover tooltip below.
-      bars += '<rect data-gi="'+gi+'" x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"'+((opts.clickableBars||opts.tooltips)?' style="cursor:pointer;"':'')+'/>';
+      // opts.partialLastBar (2026-08-14, same convention as
+      // buildComboBarLineSVG/buildGroupedBarLineSVG) — every bar in the LAST
+      // group renders reduced-opacity + dashed outline instead of solid fill,
+      // for an unclosed YTD/annual bucket.
+      const partialBar = opts.partialLastBar && gi===groupCount-1;
+      const partialAttrs = partialBar ? ' fill-opacity="0.55" stroke="'+color+'" stroke-width="1.5" stroke-dasharray="3,2"' : '';
+      bars += '<rect data-gi="'+gi+'" x="'+barX.toFixed(1)+'" y="'+y0.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+color+'"'+partialAttrs+((opts.clickableBars||opts.tooltips)?' style="cursor:pointer;"':'')+'/>';
       // opts.tickValues (2026-08-06) — a short horizontal tick mark drawn on
       // top of series index 0's bar at a given value, colored green/red by
       // hit/miss. Built for "Net Sales vs Target by Channel": the bar itself
@@ -1084,27 +1101,47 @@ function buildGroupedBarLineSVG(containerId, opts){
     gridSvg += '<text x="'+(width-padR+7)+'" y="'+(y+3).toFixed(1)+'" font-size="9.5" text-anchor="start" fill="'+line.color+'">'+lineYFormatter(val)+'</text>';
   });
 
+  // opts.partialLastBar / opts.partialLastPoint (2026-08-14, ported from
+  // buildComboBarLineSVG's same-named convention) -- the LAST group's bars
+  // (reduced opacity + dashed outline) and/or the LAST line point+segment
+  // (dashed final segment + hollow marker) render as provisional/in-progress,
+  // for an unclosed YTD/annual bucket (e.g. Cash Flow's "2026 YTD" column).
   let barsSvg = '', xLabelsSvg = '';
   const barY0 = barYAt(0);
+  const lastGroupIdx = groupCount-1;
   labels.forEach((lb,gi)=>{
     const groupX = padL + gi*(groupW+groupGap);
+    const partialGroup = opts.partialLastBar && gi===lastGroupIdx;
     series.forEach((s,si)=>{
       const val = s.values[gi];
       const barX = groupX + barGap + si*(barW+barGap);
       const y = barYAt(val);
-      barsSvg += '<rect x="'+barX.toFixed(1)+'" y="'+Math.min(y,barY0).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0.5,Math.abs(barY0-y)).toFixed(1)+'" rx="2" fill="'+s.color+'"/>';
+      const barAttrs = partialGroup ? ' fill-opacity="0.55" stroke="'+s.color+'" stroke-width="1.5" stroke-dasharray="3,2"' : '';
+      barsSvg += '<rect x="'+barX.toFixed(1)+'" y="'+Math.min(y,barY0).toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0.5,Math.abs(barY0-y)).toFixed(1)+'" rx="2" fill="'+s.color+'"'+barAttrs+'/>';
     });
     xLabelsSvg += '<text x="'+(groupX+groupW/2).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkThree+'">'+lb+'</text>';
   });
 
-  let lineD = '', lineDots = '', lastIdx=-1;
+  let lineD = '', lineDashD = '', lineDots = '', lastIdx=-1, prevIdx=-1;
+  line.values.forEach((v,i)=>{
+    if(v===null || v===undefined) return;
+    prevIdx = lastIdx; lastIdx = i;
+  });
   line.values.forEach((v,i)=>{
     if(v===null || v===undefined) return;
     const groupX = padL + i*(groupW+groupGap);
     const x = groupX + groupW/2, y = lineYAt(v);
-    lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
-    lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+line.color+'"/>';
-    lastIdx = i;
+    const isPartialPoint = opts.partialLastPoint && i===lastIdx && prevIdx>=0;
+    if(isPartialPoint){
+      const pGroupX = padL + prevIdx*(groupW+groupGap);
+      const px = pGroupX + groupW/2, py = lineYAt(line.values[prevIdx]);
+      lineD += 'L'+px.toFixed(1)+','+py.toFixed(1)+' ';
+      lineDashD = '<path d="M'+px.toFixed(1)+','+py.toFixed(1)+' L'+x.toFixed(1)+','+y.toFixed(1)+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-dasharray="4,3"/>';
+      lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3.5" fill="'+(cssVar('--card')||'#fff')+'" stroke="'+line.color+'" stroke-width="2"/>';
+    } else {
+      lineD += (lineD?'L':'M')+x.toFixed(1)+','+y.toFixed(1)+' ';
+      lineDots += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="3" fill="'+line.color+'"/>';
+    }
   });
   let lastLabelSvg = '';
   if(lastIdx>=0){
@@ -1114,7 +1151,7 @@ function buildGroupedBarLineSVG(containerId, opts){
     const lx = anchor==='end' ? x-8 : x+8;
     lastLabelSvg = '<text x="'+lx.toFixed(1)+'" y="'+(y-9).toFixed(1)+'" font-size="10" font-weight="700" text-anchor="'+anchor+'" fill="'+line.color+'">'+lineYFormatter(line.values[lastIdx])+'</text>';
   }
-  const lineSvg = '<path d="'+lineD.trim()+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+lineDots+lastLabelSvg;
+  const lineSvg = '<path d="'+lineD.trim()+'" fill="none" stroke="'+line.color+'" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>'+lineDashD+lineDots+lastLabelSvg;
 
   document.getElementById(containerId).innerHTML =
     '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+barsSvg+lineSvg+xLabelsSvg+'</svg>';
@@ -1419,9 +1456,23 @@ function buildTrajectorySparklineSVG(containerId, actualValues, projectedEndValu
 }
 
 /* ---------- Waterfall chart — used for "Growth Contribution Waterfall".
-   steps: [{label, value, type}] where type is 'start'|'end' (neutral/ink bar,
-   value is an absolute total) or 'delta' (value is a +/- contribution,
-   colored green/red). Each delta bar floats from the previous bar's top. ---------- */
+   steps: [{label, value, type, color, bold, section, tooltip}] where type is
+   'start'|'end' (neutral/ink bar, value is an absolute total), 'delta'
+   (value is a +/- contribution, colored green/red by default), or
+   'subtotal' (a recap bar spanning a group of deltas that already ran, e.g.
+   Cash Flow Waterfall's "Operating +19.7" after its component deltas;
+   doesn't touch the running total, just re-displays that same net span).
+   Each delta/subtotal bar floats from the running total. `color` (any step)
+   overrides the default neutral/green/red heuristic. `bold` (any step)
+   bolds+darkens its category label, for a subtotal that needs to read apart
+   from the plain-weight line items around it. `section` (any step) groups
+   consecutive steps sharing the same string under one background band +
+   header label (see opts.sectionColors below); steps with no section
+   (typically Beginning/Ending) sit outside every band as plain anchors.
+   `tooltip` (any step) is an optional [{label,value}] breakdown shown on
+   hover, for a step that collapses finer line items into one bar.
+   opts.sectionColors: optional {sectionName: fill} map for a distinct tint
+   per band instead of one uniform neutral wash. ---------- */
 function buildWaterfallSVG(containerId, steps, opts){
   opts = opts || {};
   const container = document.getElementById(containerId);
@@ -1466,13 +1517,29 @@ function buildWaterfallSVG(containerId, steps, opts){
   // exact text widths per pair -- any vertical gap avoids the collision
   // regardless of how wide a given formatted value turns out to be.
   const staggerOffset = compact ? 11 : 0;
-  const padT = 16 + staggerOffset;
+  // st.section (2026-08-13) -- opt-in background band + header label grouping
+  // consecutive steps into named activities (e.g. Cash Flow Waterfall's
+  // Operating/Investing/Financing) without a marker/dot -- reserves an extra
+  // header strip above the plot for the group name text. Off by default.
+  const hasSections = steps.some(st=>st.section);
+  const sectionHeaderH = hasSections ? 16 : 0;
+  const padT = 16 + staggerOffset + sectionHeaderH;
   const maxLabelW = rotateDeg ? Math.max(0, ...steps.map(st => measureTextWidth(st.label, labelFontSize, '400', rotateFontFamily))) : 0;
   // Upright wrapped labels (2026-08-11) -- the non-rotated path used to just
   // clip/collide on a long label (e.g. "Selling & Distribution"); now each
   // label greedy-wraps onto as many lines as it needs to fit its own slot
   // width, staying upright instead of switching to a rotated/slanted look.
   function wrapLabelLines(label, maxWidth, fontSize, fontWeight, fontFamily){
+    // Explicit "\n" (2026-08-13) -- an opt-in hard break for a label the
+    // caller always wants split at a specific point (e.g. Cash Flow
+    // Waterfall's "Operating\nActivities"), instead of the width-measured
+    // greedy wrap below deciding whether/where to break. Needed because two
+    // adjacent 2-word "X Activities" labels can each independently measure
+    // as "fits on one line" at a given width yet still collide with each
+    // other once both are centered in their own narrow slot -- forcing the
+    // break removes that ambiguity entirely rather than fighting it with a
+    // tighter width threshold.
+    if(label.indexOf('\n')!==-1) return label.split('\n');
     const words = label.split(' ');
     if(words.length<=1) return [label];
     const lines = [];
@@ -1495,6 +1562,14 @@ function buildWaterfallSVG(containerId, steps, opts){
   const bars = steps.map(st=>{
     if(st.type==='start'){ const base=0, top=st.value; running=st.value; return {base, top, value:st.value}; }
     if(st.type==='end'){ return {base:0, top:st.value, value:st.value}; }
+    // subtotal (2026-08-13) -- a recap bar for a group of deltas that already
+    // ran (e.g. Operating's Net Profit/D&A/Working Capital), floating from
+    // where the group started to where `running` already sits after those
+    // deltas. Doesn't touch `running` itself -- the group's own deltas
+    // already advanced it there; this just re-draws that same net span as
+    // one bar (darker, via st.color) instead of the individual wiggle, so it
+    // must come before the generic delta case below or it would double-count.
+    if(st.type==='subtotal'){ const top = running, base = running - st.value; return {base, top, value:st.value}; }
     const base = running, top = running+st.value; running = top;
     return {base, top, value:st.value};
   });
@@ -1531,11 +1606,30 @@ function buildWaterfallSVG(containerId, steps, opts){
     const y0 = yAt(b.base), y1 = yAt(b.top);
     const y = Math.min(y0,y1), h = Math.max(1,Math.abs(y1-y0));
     const st = steps[i];
-    const color = st.type==='start'||st.type==='end' ? neutral : (st.value>=0 ? good : bad);
-    barsSvg += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+color+'"/>';
-    const labelVal = st.type==='delta' ? (st.value>=0?'+':'') + yFormatter(st.value) : yFormatter(st.value);
+    // st.color (2026-08-13) -- opt-in override for callers that group bars by
+    // activity/category rather than by sign (e.g. Cash Flow Waterfall's
+    // Operating/Investing/Financing families) -- falls back to the original
+    // start/end-neutral or delta-sign heuristic when omitted, so existing
+    // callers render byte-identical to before.
+    const color = st.color || (st.type==='start'||st.type==='end' ? neutral : (st.value>=0 ? good : bad));
+    // st.bold also draws a border around the bar itself (2026-08-13) -- the
+    // same signal already used to bold+darken its category label below, so
+    // a subtotal-role bar (whether it's a true 'subtotal' step or a 'delta'
+    // step playing that role, e.g. Investing's single CapEx bar) reads apart
+    // from a plain line item by shape, not just by its already-darker fill
+    // -- works for a green or a red subtotal alike, no extra color needed.
+    const strokeAttr = st.bold ? ' stroke="'+inkOne+'" stroke-width="1.5"' : '';
+    barsSvg += '<rect data-idx="'+i+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="'+color+'"'+strokeAttr+'/>';
+    const labelVal = (st.type==='delta'||st.type==='subtotal') ? (st.value>=0?'+':'') + yFormatter(st.value) : yFormatter(st.value);
     const labelY = y-6-(staggerOffset && i%2===1 ? staggerOffset : 0);
     barsSvg += '<text x="'+(x+barW/2).toFixed(1)+'" y="'+labelY.toFixed(1)+'" font-size="'+valueFontSize+'" font-weight="700" text-anchor="middle" fill="'+color+'">'+labelVal+'</text>';
+    // st.bold (2026-08-13) -- bolder/darker category label for a step that's
+    // a group subtotal (e.g. "Operating Activities"), same purpose as
+    // buildHBarCompareSVG's it.bold: distinguishes it from the plain line
+    // items around it now that color alone (green/red by sign) no longer
+    // encodes subtotal-vs-detail the way the old activity-color scheme did.
+    const labelWeight = st.bold ? '700' : '400';
+    const labelFill = st.bold ? inkOne : inkTertiary;
     if(rotateDeg){
       // Fix (2026-08-06): rotate(-35) was the wrong sign — in SVG's y-down
       // coordinate system that sweeps the text-anchor="end" label DOWNWARD
@@ -1547,7 +1641,7 @@ function buildWaterfallSVG(containerId, steps, opts){
       // staying inside the padB reserved for this mode (at 90° the label
       // runs straight up, reading bottom-to-top).
       const lx = (x+barW/2).toFixed(1), ly = height-8;
-      xLabels += '<text x="'+lx+'" y="'+ly+'" font-size="'+labelFontSize+'" text-anchor="end" fill="'+inkTertiary+'" transform="rotate('+rotateDeg+' '+lx+' '+ly+')">'+st.label+'</text>';
+      xLabels += '<text x="'+lx+'" y="'+ly+'" font-size="'+labelFontSize+'" font-weight="'+labelWeight+'" text-anchor="end" fill="'+labelFill+'" transform="rotate('+rotateDeg+' '+lx+' '+ly+')">'+st.label+'</text>';
     } else {
       // Upright, wraps onto extra lines instead of rotating/clipping (see
       // wrapLabelLines above) -- the LAST line sits at the same height-8
@@ -1557,7 +1651,7 @@ function buildWaterfallSVG(containerId, steps, opts){
       const lx2 = (x+barW/2).toFixed(1);
       lines.forEach((ln,li)=>{
         const ly2 = height-8-(lines.length-1-li)*lineHeight;
-        xLabels += '<text x="'+lx2+'" y="'+ly2+'" font-size="'+labelFontSize+'" text-anchor="middle" fill="'+inkTertiary+'">'+ln+'</text>';
+        xLabels += '<text x="'+lx2+'" y="'+ly2+'" font-size="'+labelFontSize+'" font-weight="'+labelWeight+'" text-anchor="middle" fill="'+labelFill+'">'+ln+'</text>';
       });
     }
     if(i<bars.length-1){
@@ -1567,8 +1661,66 @@ function buildWaterfallSVG(containerId, steps, opts){
     }
   });
 
+  // st.section (2026-08-13) -- draws AFTER the loop (needs slotW, computed
+  // above) but assembled BEFORE gridSvg/bars in the final markup so the band
+  // sits behind everything as a backdrop. Consecutive steps sharing the same
+  // section string become one band; steps with no section (Beginning/Ending)
+  // are left uncovered, sitting outside every band as plain anchors.
+  // opts.sectionColors (2026-08-13) -- optional {sectionName: fill} map for
+  // a distinct-but-faint tint per group (e.g. Cash Flow Waterfall's
+  // Operating/Investing/Financing each getting their own hue) instead of one
+  // uniform wash for every band; falls back to the plain neutral wash for
+  // any section not listed (or when the option is omitted entirely).
+  let bandSvg = '';
+  if(hasSections){
+    const wash = cssVar('--wash')||'rgba(11,11,11,.035)';
+    const sectionColors = opts.sectionColors || {};
+    const bandY0 = padT, bandY1 = height-padB;
+    let i=0;
+    while(i<steps.length){
+      const sec = steps[i].section;
+      if(!sec){ i++; continue; }
+      let j=i+1;
+      while(j<steps.length && steps[j].section===sec) j++;
+      const x0 = padL + i*slotW, x1 = padL + j*slotW;
+      const bandFill = sectionColors[sec] || wash;
+      bandSvg += '<rect x="'+x0.toFixed(1)+'" y="'+bandY0.toFixed(1)+'" width="'+(x1-x0).toFixed(1)+'" height="'+(bandY1-bandY0).toFixed(1)+'" fill="'+bandFill+'"/>';
+      // Thin divider at each band edge (2026-08-13) -- a subtle backup cue
+      // at the seam between two tints, in case two adjacent hues ever read
+      // too close to tell apart on their own (e.g. a low-saturation display).
+      // Coincides exactly with the next band's own left edge, so this draws
+      // one line per seam, not a doubled-up pair.
+      bandSvg += '<line x1="'+x0.toFixed(1)+'" y1="'+bandY0.toFixed(1)+'" x2="'+x0.toFixed(1)+'" y2="'+bandY1.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1" opacity="0.6"/>';
+      bandSvg += '<line x1="'+x1.toFixed(1)+'" y1="'+bandY0.toFixed(1)+'" x2="'+x1.toFixed(1)+'" y2="'+bandY1.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1" opacity="0.6"/>';
+      bandSvg += '<text x="'+((x0+x1)/2).toFixed(1)+'" y="'+(padT-6).toFixed(1)+'" font-size="9.5" font-weight="700" letter-spacing="0.5" text-anchor="middle" fill="'+inkTertiary+'">'+sec+'</text>';
+      i = j;
+    }
+  }
+
   document.getElementById(containerId).innerHTML =
-    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+gridSvg+connectorSvg+barsSvg+xLabels+'</svg>';
+    '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+bandSvg+gridSvg+connectorSvg+barsSvg+xLabels+'</svg>';
+
+  // st.tooltip (2026-08-13) -- opt-in drill-down for a step that's itself a
+  // collapsed group of finer line items (e.g. Cash Flow Waterfall's
+  // "Working Capital" bar, which nets 4-5 Balance Sheet deltas into one
+  // step) -- hovering shows the breakdown without needing a separate bar per
+  // line item. Off by default; only steps that set it get a listener.
+  container.querySelectorAll('rect[data-idx]').forEach(rect=>{
+    const st = steps[+rect.getAttribute('data-idx')];
+    if(!st.tooltip) return;
+    const tooltip = ensureChartTooltip();
+    rect.style.cursor = 'pointer';
+    rect.addEventListener('mousemove', (e)=>{
+      tooltip.innerHTML = '<div class="chart-tooltip-title">'+st.label+'</div>'
+        + st.tooltip.map(t=>'<div class="chart-tooltip-row"><span class="chart-tooltip-name">'+t.label+'</span><span class="chart-tooltip-value">'+(t.value>=0?'+':'')+yFormatter(t.value)+'</span></div>').join('');
+      const pw = 220;
+      let left = e.clientX+14; if(left+pw>window.innerWidth-12) left = e.clientX-pw-14;
+      let top = e.clientY+14; if(top+140>window.innerHeight-12) top = e.clientY-150;
+      tooltip.style.left = Math.max(12,left)+'px'; tooltip.style.top = Math.max(12,top)+'px';
+      tooltip.classList.add('show');
+    });
+    rect.addEventListener('mouseleave', ()=> tooltip.classList.remove('show'));
+  });
 }
 
 /* ---------- 100%-stacked vertical bar chart (per period bucket, e.g.

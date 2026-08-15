@@ -76,7 +76,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Cash Flow Waterfall</span>
-        <button class="info-icon" data-info-title="Cash Flow Waterfall" data-info-text="Beginning Cash → CFO → CFI → CFF → Ending Cash, Q2'26 (Indirect Method) — เขียว = เงินเข้า, แดง = เงินออก — Ending Cash ต้องเท่ากับ Cash &amp; Cash Equivalents ใน Balance Sheet Q2'26 เป๊ะ — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Cash Flow Waterfall" data-info-text="Beginning Cash → Net Profit → D&amp;A (Est.) → Trade Receivables/Inventories/Trade Payables/Other Liabilities → Operating Activities (subtotal) → Investing Activities → Dividends Paid/Lease-Other → Financing Activities (subtotal) → Ending Cash (Indirect Method) — โครง waterfall เหมือนกันเป๊ะทุก View By (Quarterly/Annual), ต่างกันแค่ตัวเลข — Q2'26 ผูกกับ Balance Sheet เป๊ะทุกรายการ ส่วน Annual (FY2024/FY2025/2026 YTD) มาจากโมเดล/backfill (2026 YTD ใช้ค่าที่กำหนดตรง ส่วน FY2024/FY2025 สเกลตามสัดส่วนเดียวกันจากยอด Working Capital ที่ reconcile อยู่แล้ว) — ไตรมาสอื่น (Q2'25-Q1'26) ไม่มีข้อมูลย่อยจึงแสดงเป็นก้อนรวมต่อกิจกรรม — เขียว=เงินเข้า แดง=เงินออก, เข้ม+ตัวหนา=subtotal ของกิจกรรมนั้น อ่อน=รายการย่อย, เทา=Beginning/Ending Cash (anchor ไม่ใช่ flow) — แถบพื้นหลังคนละเฉดต่อกิจกรรม (Operating/Investing/Financing) — Ending Cash ต้องเท่ากับ Cash &amp; Cash Equivalents ใน Balance Sheet Q2'26 เป๊ะ — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="cfWaterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -84,7 +84,8 @@
         <button class="tool-btn" id="cfWaterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
-    <div class="canvas-wrap" id="cfWaterfallCanvasWrap" style="height:280px;"><div id="cfWaterfallChart" style="width:100%;height:100%;"></div></div>
+    <div class="chart-legend" id="cfWaterfallLegend"></div>
+    <div class="canvas-wrap" id="cfWaterfallCanvasWrap" style="height:300px;"><div id="cfWaterfallChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="cfWaterfallTableWrap"></div>
   </div>
 
@@ -93,8 +94,8 @@
   <div class="card" style="margin-bottom:6px;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">CFO &amp; Free Cash Flow</span>
-        <button class="info-icon" data-info-title="CFO & Free Cash Flow" data-info-text="Free Cash Flow = CFO − CapEx (การซื้อ PP&amp;E) — FCF Margin % = FCF ÷ Net Sales ของไตรมาสนั้น — CFO/EBITDA % = CFO ÷ EBITDA ของไตรมาสนั้น (วัดคุณภาพกำไร — แปลงเป็นเงินสดได้มากแค่ไหน) — Net Sales/EBITDA อ้างอิงจากชุดข้อมูลเดียวกับหน้า P&amp;L (Quarterly Trend) — Mock Data 100%">i</button>
+        <span class="chart-title">Operating Cash Flow &amp; Free Cash Flow</span>
+        <button class="info-icon" data-info-title="Operating Cash Flow & Free Cash Flow" data-info-text="Free Cash Flow = Operating Cash Flow − CapEx (การซื้อ PP&amp;E) — FCF Margin % = FCF ÷ Net Sales ของไตรมาสนั้น — Operating Cash Flow / EBITDA % = Operating Cash Flow ÷ EBITDA ของไตรมาสนั้น (วัดคุณภาพกำไร — แปลงเป็นเงินสดได้มากแค่ไหน) — Net Sales/EBITDA อ้างอิงจากชุดข้อมูลเดียวกับหน้า P&amp;L (Quarterly Trend) — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="fcfTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -103,7 +104,7 @@
       </div>
     </div>
     <div class="chart-legend">
-      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>CFO</span>
+      <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--brand)"></span>Operating Cash Flow</span>
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--good)"></span>Free Cash Flow</span>
       <span class="chart-legend-item"><span class="chart-legend-dot" style="background:#4C6FA5"></span>FCF Margin % (right axis)</span>
     </div>
@@ -135,7 +136,7 @@
           </div>
         </div>
         <table id="cfStatementTable"></table>
-        <div class="kpi-caption" id="cfStatementDetailNote" style="display:none;margin-top:8px;">Detailed working-capital lines (Trade Receivables/Inventories/Trade Payables/Other Liabilities) are only tracked for Q2'26 — other quarters show CFO/CFI/CFF totals only.</div>
+        <div class="kpi-caption" id="cfStatementDetailNote" style="display:none;margin-top:8px;">Trade Receivables/Inventories/Trade Payables/Other Liabilities tie exactly to Balance Sheet deltas only for Q2'26 — every Annual bucket (FY2024/FY2025/2026 YTD) shows the same 4 line items from a modeled/backfilled split instead (see the info icon above), and other quarters show Operating/Investing/Financing Activities totals only.</div>
         <div class="kpi-caption" id="cfStatementReconNote" style="margin-top:8px;">Working Capital changes tie exactly to Balance Sheet Q1'26→Q2'26 deltas (Trade Receivables, Inventories, Trade Payables, Other liabilities) — see Balance Sheet page.</div>
       </div>
     </div>
@@ -271,22 +272,125 @@ const beginningQAll = [null,null,null,null, CF_Q2.beginningCash];
 const endingQAll = [null,null,null,null, endingCashQ2];
 for(let i=3;i>=0;i--){ endingQAll[i] = beginningQAll[i+1]; beginningQAll[i] = endingQAll[i] - netChangeQAll[i]; }
 
+/* ---------- FY2024/FY2025 Annual aggregates (2026-08-14 request) ----------
+   Extends this page's model back to Q1'24, ONLY for Annual View By's own
+   aggregation -- the Quarterly window (Q2'25-Q2'26 above) is untouched.
+   Reuses the SAME real company-wide EBIT/D&A/CFO/CapEx/Equity figures
+   Financial Analysis's MASTER dataset already establishes for Q1'24-Q1'25
+   (this page carries no quarterly breakdown of its own that far back) --
+   not a competing number, the same underlying company fact reused, exactly
+   like Q2'26's own anchor already reuses the real P&L Net Profit figure.
+   Q1'25 stitches onto the EXISTING (unchanged) Q2'25 beginning-cash point
+   below, so nothing already on this page moves. Net Profit for Q2'25-Q4'25
+   reuses eqNetProfitQAll (already defined above, same values as Financial
+   Analysis's own MASTER_EBIT there); D&A for those 3 quarters reuses
+   Financial Analysis's MASTER_DA (this page has no D&A line of its own
+   before Q2'26 -- only a ratio-derived CFO total). Working Capital is the
+   plug (CFO - Net Profit - D&A) for both FY buckets, same convention Q2'26's
+   own detailed breakdown already uses for its 4 working-capital lines. */
+const MASTER_EBIT_BACK   = [18480000, 18840000, 18880000, 22200000, 20776000]; // Q1'24-Q1'25
+const MASTER_DA_BACK     = [1860000, 1900000, 1900000, 2240000, 2150000];
+const MASTER_CFO_BACK    = [13831200, 14310600, 14338200, 17108000, 16277460];
+const MASTER_CAPEX_BACK  = [2200000, 2300000, 2400000, 2600000, 2600000];
+const MASTER_EQUITY_BACK = [149e6, 153e6, 157e6, 161e6, 165e6, 170e6]; // Q4'23-end .. Q1'25-end
+const MASTER_DA_2025Q    = [2224597, 2262202, 2644779]; // Q2'25/Q3'25/Q4'25 real D&A
+
+const backRE = MASTER_EQUITY_BACK.map(v=> v - SHARE_CAPITAL - LEGAL_RESERVE);
+const backNP = MASTER_EBIT_BACK.map(v=> v*0.8);
+const backDiv = [0,1,2,3,4].map(i=> backRE[i] + backNP[i] - backRE[i+1]); // Q1'24-Q1'25 dividend (RE roll-forward plug)
+const backFin = backDiv.map(v=> -v + leaseOtherQ2);
+const backNetChange = MASTER_CFO_BACK.map((v,i)=> v - MASTER_CAPEX_BACK[i] + backFin[i]);
+const backEnding = new Array(5), backBeginning = new Array(5);
+backEnding[4] = beginningQAll[0]; // Q1'25 ending = Q2'25's existing (unchanged) beginning
+backBeginning[4] = backEnding[4] - backNetChange[4];
+for(let i=3;i>=0;i--){ backEnding[i] = backBeginning[i+1]; backBeginning[i] = backEnding[i] - backNetChange[i]; }
+
+function sumRange(arr,s,e){ let r=0; for(let i=s;i<=e;i++) r+=arr[i]; return r; }
+// Net Sales/EBIT for Q1'24-Q4'24, reused for FY2024's own FCF Margin %/
+// CFO-EBITDA % (same MASTER dataset as everything else above) -- this page
+// has no Net Sales line of its own before Q2'25 (netSalesTrailing starts
+// there), same reason it needed MASTER_CFO_BACK etc. for CFO/CapEx.
+const MASTER_SALES_BACK = [68000000, 69300000, 69500000, 81700000, 74200000]; // Q1'24-Q1'25
+
+// Working Capital 4-line breakdown for Annual buckets (2026-08-14 request) --
+// every Annual bucket now decomposes its Working Capital plug into the same
+// 4 line items Quarterly's own Q2'26 detail uses (Trade Receivables/
+// Inventories/Trade Payables/Other Liabilities), instead of collapsing to
+// one bar. WC_RATIO_2026YTD is the exact requested split for the 2026 YTD
+// bucket (sums to -4.3M); FY2024/FY2025 have no per-quarter component data
+// of their own in this file, so their existing (unchanged) wc plug is
+// decomposed by scaling this same ratio shape to their own total -- the
+// total itself never moves, only how it's split across the 4 labels.
+const WC_RATIO_2026YTD = { ar:-8.0e6, inv:-7.3e6, ap:8.0e6, ol:3.0e6 }; // sums to -4.3e6
+function scaleWCBreakdown(totalWC){
+  const scale = totalWC / (WC_RATIO_2026YTD.ar+WC_RATIO_2026YTD.inv+WC_RATIO_2026YTD.ap+WC_RATIO_2026YTD.ol);
+  return { ar: WC_RATIO_2026YTD.ar*scale, inv: WC_RATIO_2026YTD.inv*scale, ap: WC_RATIO_2026YTD.ap*scale, ol: WC_RATIO_2026YTD.ol*scale };
+}
+const FY2024 = (function(){
+  const cfo = sumRange(MASTER_CFO_BACK,0,3), capex = sumRange(MASTER_CAPEX_BACK,0,3),
+    np = sumRange(backNP,0,3), da = sumRange(MASTER_DA_BACK,0,3), cff = sumRange(backFin,0,3),
+    ebit = sumRange(MASTER_EBIT_BACK,0,3), sales = sumRange(MASTER_SALES_BACK,0,3);
+  const wc = cfo-np-da;
+  return { label:'FY2024', cfo, cfi:-capex, cff, np, da, wc, wcBreakdown: scaleWCBreakdown(wc), ebitda: ebit+da, sales,
+    netChange: cfo-capex+cff, beginning: backBeginning[0], ending: backEnding[3], isDetailed:true };
+})();
+const FY2025 = (function(){
+  const cfo = MASTER_CFO_BACK[4]+cfoQ[0]+cfoQ[1]+cfoQ[2];
+  const capex = MASTER_CAPEX_BACK[4]+capexQ[0]+capexQ[1]+capexQ[2];
+  const np = backNP[4]+eqNetProfitQAll[0]+eqNetProfitQAll[1]+eqNetProfitQAll[2];
+  const da = MASTER_DA_BACK[4]+MASTER_DA_2025Q[0]+MASTER_DA_2025Q[1]+MASTER_DA_2025Q[2];
+  const cff = backFin[4]+cffQAll[0]+cffQAll[1]+cffQAll[2];
+  const ebit = MASTER_EBIT_BACK[4]+eqEbitQAll[0]+eqEbitQAll[1]+eqEbitQAll[2]; // Q1'25 + Q2'25/Q3'25/Q4'25 real EBIT
+  const sales = MASTER_SALES_BACK[4]+netSalesTrailing[0]+netSalesTrailing[1]+netSalesTrailing[2];
+  const wc = cfo-np-da;
+  return { label:'FY2025', cfo, cfi:-capex, cff, np, da, wc, wcBreakdown: scaleWCBreakdown(wc), ebitda: ebit+da, sales,
+    netChange: cfo-capex+cff, beginning: backBeginning[4], ending: endingQAll[2], isDetailed:true };
+})();
+
+const ANNUAL_LABEL_CF = { fy2024:'FY2024', fy2025:'FY2025', current:'2026 YTD' };
 let pnlQuarterAnchor = 4; // index into quarterStarts/quarterLabels/cfoQ/etc -- default Q2'26 (the last, idx4)
+let pnlAnnualAnchor = 'current';
 let currentViewBy = 'quarterly';
-function currentAsOfLabel(){ return currentViewBy==='annual' ? '2026 (Current)' : quarterLabels[pnlQuarterAnchor]; }
+function currentAsOfLabel(){ return currentViewBy==='annual' ? ANNUAL_LABEL_CF[pnlAnnualAnchor] : quarterLabels[pnlQuarterAnchor]; }
 // Returns the Waterfall/Statement's active period -- a single quarter (View
-// By Quarterly) or 2026 YTD = Q1'26+Q2'26 combined (View By Annual, the
-// only annual option this page's data model supports -- see comment
-// above). Only the exact Q2'26 quarter (idx4) carries full granular
-// operating-activity line items in this mock model; every other selection
-// (an earlier quarter, or the YTD combine) shows CFO/CFI/CFF totals only.
+// By Quarterly) or one of FY2024/FY2025/2026 YTD (View By Annual, 2026-08-14
+// -- previously only "2026 (Current)" was selectable). Every Annual bucket
+// and the exact Q2'26 quarter carry full Operating-activity detail (Net
+// Profit/D&A/Working Capital, or Q2'26's own finer 4-line Working Capital
+// breakdown); every other quarter selection shows Operating/Investing/
+// Financing Activities totals only (this page's model has no line-item
+// detail for those).
 function getActivePeriodData(){
   if(currentViewBy==='annual'){
-    const cfo = cfoQ[3]+cfoQ[4], cfi = cfiQAll[3]+cfiQAll[4], cff = cffQAll[3]+cffQAll[4];
-    return { label:'2026 YTD', cfo, cfi, cff, netChange: cfo+cfi+cff, beginning: beginningQAll[3], ending: endingQAll[4], isDetailed:false };
+    if(pnlAnnualAnchor==='fy2024') return FY2024;
+    if(pnlAnnualAnchor==='fy2025') return FY2025;
+    const cfi = cfiQAll[3]+cfiQAll[4], cff = cffQAll[3]+cffQAll[4];
+    // Q1'26 Net Profit/D&A reuse the same real MASTER_EBIT/MASTER_DA[8]
+    // figures Financial Analysis carries for that quarter (this page has no
+    // line-item detail of its own before Q2'26); Q2'26 uses CF_Q2's own
+    // anchor values directly, same as the Quarterly-mode detailed branch.
+    const q1_26_da = 2475973;
+    const np = eqNetProfitQAll[3] + CF_Q2.operating.find(r=>r.item.includes('Net Profit')).value;
+    const da = q1_26_da + CF_Q2.operating.find(r=>r.item.includes('D&A')).value;
+    // Working Capital (2026-08-14 fix) -- the requested exact 4-line split
+    // for the combined Q1'26+Q2'26 window (WC_RATIO_2026YTD above), with wc/
+    // cfo now DERIVED from it instead of wc being a cfoQ[3]+cfoQ[4]-based
+    // plug. The shift versus the old plug (~0.03M) is invisible at this
+    // page's display rounding, and every other anchor (Beginning/Investing/
+    // Financing/Ending) is untouched.
+    const wc = WC_RATIO_2026YTD.ar+WC_RATIO_2026YTD.inv+WC_RATIO_2026YTD.ap+WC_RATIO_2026YTD.ol;
+    const cfo = np + da + wc;
+    return { label:'2026 YTD', cfo, cfi, cff, netChange: cfo+cfi+cff, beginning: beginningQAll[3], ending: endingQAll[4],
+      np, da, wc, wcBreakdown: WC_RATIO_2026YTD, isDetailed:true };
   }
   const i = pnlQuarterAnchor;
-  return { label: quarterLabels[i], cfo:cfoQ[i], cfi:cfiQAll[i], cff:cffQAll[i], netChange:netChangeQAll[i], beginning:beginningQAll[i], ending:endingQAll[i], isDetailed: i===4 };
+  // hasFullWC (2026-08-14) -- true only for the literal Q2'26 quarter, the
+  // one period with the finest 4-line Working Capital breakdown (tied
+  // exactly to Balance Sheet deltas); every Annual bucket is also
+  // isDetailed now but only carries a single Working Capital plug figure,
+  // not this level of granularity -- see the Statement table below, which
+  // needs to tell those two "detailed" tiers apart.
+  return { label: quarterLabels[i], cfo:cfoQ[i], cfi:cfiQAll[i], cff:cffQAll[i], netChange:netChangeQAll[i], beginning:beginningQAll[i], ending:endingQAll[i], isDetailed: i===4, hasFullWC: i===4 };
 }
 
 /* ---------- Nav menu / popovers ---------- */
@@ -324,44 +428,194 @@ let latestData = {};
 
 function renderAll(){
   const active = getActivePeriodData();
+  // Financing sub-breakdown for Annual buckets (2026-08-14) -- shared between
+  // the waterfall and the statement table below so both stay in sync (was a
+  // single collapsed Financing bar/row before, inconsistent with Quarterly's
+  // own Dividends Paid/Lease-Other line items). Lease/Other is modeled as a
+  // flat leaseOtherQ2 every quarter throughout this file (Quarterly's own
+  // detailed branch, cffQAll, backFin all use the same constant), so any
+  // period's existing cff total splits cleanly into leaseOtherQ2*(quarters in
+  // period) + a Dividends Paid remainder -- active.cff itself never changes.
+  const annualFinBreakdown = currentViewBy==='annual' ? (()=>{
+    const finQuarters = pnlAnnualAnchor==='current' ? 2 : 4; // FY2024/FY2025 = 4 quarters, 2026 YTD = Q1'26+Q2'26
+    const leaseOtherPortion = leaseOtherQ2 * finQuarters;
+    return { leaseOtherPortion, divPortion: active.cff - leaseOtherPortion };
+  })() : null;
 
   /* === Cash Flow Waterfall === AS OF-driven (PART C of the filter-bar
      unification): follows whichever quarter/YTD is selected, not always
      Q2'26. Only the Q2'26 anchor itself ties EXACTLY to the Balance Sheet
      (by construction); every other selection ties to its own ROLLED
      Beginning/Ending in the 5-quarter chain above, which is itself anchored
-     to that Q2'26 tie-out. */
-  const waterfallSteps = [
-    { label:'Beginning Cash', value: active.beginning, type:'start' },
-    { label:'CFO', value: active.cfo, type:'delta' },
-    { label:'CFI', value: active.cfi, type:'delta' },
-    { label:'CFF', value: active.cff, type:'delta' },
-    { label:'Ending Cash', value: active.ending, type:'end' }
-  ];
-  buildWaterfallSVG('cfWaterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:280 });
+     to that Q2'26 tie-out.
+     Detailed, always-on (no toggle): whenever the active period actually
+     carries full operating-activity line items (Q2'26 only, see
+     active.isDetailed), the waterfall decomposes Operating into its own 3
+     deltas + Financing into its own 2. Investing has only 1 line (CapEx), so
+     it doubles as its own subtotal -- one bar, not two. Every other AS OF
+     selection (no line-item detail modeled) falls back to the plain 3-bar
+     Operating/Investing/Financing view.
+     Color = direction, not activity (2026-08-13 revision — reverted the
+     navy/purple/brown activity coloring from the previous pass): green =
+     increase, red = decrease, dark shade = that group's subtotal (Operating/
+     Investing/Financing), light shade = a line item, gray (buildWaterfallSVG's
+     own neutral default) = Beginning/Ending since they're an anchor, not a
+     flow. Groups are now visually separated by a background band + header
+     label (st.section, drawn behind the bars — see buildWaterfallSVG) instead
+     of by color or a marker. */
+  const goodLight = cssVar('--good')||'#0ca30c', goodDark = cssVar('--good-text')||'#006300';
+  const badLight = cssVar('--critical')||'#d03b3b', badDark = cssVar('--critical-dark')||'#9A2B2B';
+  const flowColor = v => v>=0 ? goodLight : badLight;
+  const subtotalColor = v => v>=0 ? goodDark : badDark;
+  let waterfallSteps;
+  if(currentViewBy==='quarterly' && active.isDetailed){
+    // Q2'26 only -- this page's ONE quarter with full Balance-Sheet-tied
+    // working-capital line items, so Operating gets its finest breakdown
+    // here (6 lines); every Annual bucket below only has a single Working
+    // Capital plug figure, not this level of detail.
+    const npRow = CF_Q2.operating.find(r=>r.item.includes('Net Profit'));
+    const daRow = CF_Q2.operating.find(r=>r.item.includes('D&A'));
+    // Working Capital broken out into its own 4 non-zero drivers (2026-08-13
+    // request — replaces the single collapsed "Working Capital" bar + hover
+    // tooltip from the previous pass) -- ±Prepaid & Other is exactly 0.0
+    // this quarter, so it's left out rather than shown as a contentless
+    // "+฿0" bar. Order matches the request: receivables/inventories (both
+    // outflows, red) before payables/other liabilities (both inflows, green).
+    const arRow = CF_Q2.operating.find(r=>r.item.includes('Trade Receivables'));
+    const invRow = CF_Q2.operating.find(r=>r.item.includes('Inventories'));
+    const apRow = CF_Q2.operating.find(r=>r.item.includes('Trade Payables'));
+    const otherLiabRow = CF_Q2.operating.find(r=>r.item.includes('Other Liabilities'));
+    const capexRow = CF_Q2.investing[0];
+    const divRow = CF_Q2.financing.find(r=>r.item.includes('Dividends'));
+    const leaseRow = CF_Q2.financing.find(r=>r.item.includes('Lease'));
+    waterfallSteps = [
+      { label:'Beginning Cash', value: active.beginning, type:'start' },
+      { label:'Net Profit', value: npRow.value, type:'delta', color: flowColor(npRow.value), section:'OPERATING ACTIVITIES' },
+      { label:'D&A (Est.)', value: daRow.value, type:'delta', color: flowColor(daRow.value), section:'OPERATING ACTIVITIES' },
+      { label:'Trade Receivables', value: arRow.value, type:'delta', color: flowColor(arRow.value), section:'OPERATING ACTIVITIES' },
+      { label:'Inventories', value: invRow.value, type:'delta', color: flowColor(invRow.value), section:'OPERATING ACTIVITIES' },
+      { label:'Trade Payables', value: apRow.value, type:'delta', color: flowColor(apRow.value), section:'OPERATING ACTIVITIES' },
+      { label:'Other Liabilities', value: otherLiabRow.value, type:'delta', color: flowColor(otherLiabRow.value), section:'OPERATING ACTIVITIES' },
+      // "\n" (2026-08-13) -- forces these onto 2 lines always, rather than
+      // leaving it to width-measured auto-wrap: two adjacent 2-word "X
+      // Activities" labels could each independently measure as "fits on one
+      // line" yet still collide once both are centered in their own narrow
+      // slot (this is exactly what was happening at Operating/Investing's
+      // shared boundary) -- an explicit break removes that ambiguity.
+      { label:'Operating\nActivities', value: active.cfo, type:'subtotal', color: subtotalColor(active.cfo), bold:true, section:'OPERATING ACTIVITIES' },
+      { label:'Investing\nActivities', value: capexRow.value, type:'delta', color: subtotalColor(capexRow.value), bold:true, section:'INVESTING ACTIVITIES' },
+      { label:'Dividends Paid', value: divRow.value, type:'delta', color: flowColor(divRow.value), section:'FINANCING ACTIVITIES' },
+      { label:'Lease/Other', value: leaseRow.value, type:'delta', color: flowColor(leaseRow.value), section:'FINANCING ACTIVITIES' },
+      { label:'Financing\nActivities', value: active.cff, type:'subtotal', color: subtotalColor(active.cff), bold:true, section:'FINANCING ACTIVITIES' },
+      { label:'Ending Cash', value: active.ending, type:'end' }
+    ];
+  } else if(currentViewBy==='annual'){
+    // Every Annual bucket (FY2024/FY2025/2026 YTD) now has the EXACT SAME
+    // waterfall structure as Quarterly's own Q2'26 detail (2026-08-14 fix --
+    // Working Capital used to collapse into one bar here, structurally
+    // inconsistent next to Quarterly's 4-line breakdown; only the underlying
+    // numbers differ between periods, never the shape). Working Capital's 4
+    // items come from active.wcBreakdown (see WC_RATIO_2026YTD/scaleWCBreakdown
+    // above); Financing's 2 items come from annualFinBreakdown (Lease/Other
+    // modeled as a flat leaseOtherQ2 every quarter throughout this whole
+    // file, so any period's total splits cleanly into leaseOtherQ2*(quarters
+    // in period) + a Dividends Paid remainder) -- shared with the statement
+    // table below so both stay in sync, and neither changes active.cff.
+    const { leaseOtherPortion, divPortion } = annualFinBreakdown;
+    const wcb = active.wcBreakdown;
+    waterfallSteps = [
+      { label:'Beginning Cash', value: active.beginning, type:'start' },
+      { label:'Net Profit', value: active.np, type:'delta', color: flowColor(active.np), section:'OPERATING ACTIVITIES' },
+      { label:'D&A (Est.)', value: active.da, type:'delta', color: flowColor(active.da), section:'OPERATING ACTIVITIES' },
+      { label:'Trade Receivables', value: wcb.ar, type:'delta', color: flowColor(wcb.ar), section:'OPERATING ACTIVITIES' },
+      { label:'Inventories', value: wcb.inv, type:'delta', color: flowColor(wcb.inv), section:'OPERATING ACTIVITIES' },
+      { label:'Trade Payables', value: wcb.ap, type:'delta', color: flowColor(wcb.ap), section:'OPERATING ACTIVITIES' },
+      { label:'Other Liabilities', value: wcb.ol, type:'delta', color: flowColor(wcb.ol), section:'OPERATING ACTIVITIES' },
+      { label:'Operating\nActivities', value: active.cfo, type:'subtotal', color: subtotalColor(active.cfo), bold:true, section:'OPERATING ACTIVITIES' },
+      { label:'Investing\nActivities', value: active.cfi, type:'delta', color: subtotalColor(active.cfi), bold:true, section:'INVESTING ACTIVITIES' },
+      { label:'Dividends Paid', value: divPortion, type:'delta', color: flowColor(divPortion), section:'FINANCING ACTIVITIES' },
+      { label:'Lease/Other', value: leaseOtherPortion, type:'delta', color: flowColor(leaseOtherPortion), section:'FINANCING ACTIVITIES' },
+      { label:'Financing\nActivities', value: active.cff, type:'subtotal', color: subtotalColor(active.cff), bold:true, section:'FINANCING ACTIVITIES' },
+      { label:'Ending Cash', value: active.ending, type:'end' }
+    ];
+  } else {
+    waterfallSteps = [
+      { label:'Beginning Cash', value: active.beginning, type:'start' },
+      { label:'Operating\nActivities', value: active.cfo, type:'delta', color: subtotalColor(active.cfo), bold:true },
+      { label:'Investing\nActivities', value: active.cfi, type:'delta', color: subtotalColor(active.cfi), bold:true },
+      { label:'Financing\nActivities', value: active.cff, type:'delta', color: subtotalColor(active.cff), bold:true },
+      { label:'Ending Cash', value: active.ending, type:'end' }
+    ];
+  }
+  // Section band tints (2026-08-13) -- distinct-but-faint hue per activity
+  // (reusing the existing cat-1/cat-3/cat-4 categorical hues at low alpha,
+  // see shared.css) so the 3 groups read apart at a glance without the bars
+  // themselves going back to activity coloring -- bars stay green/red by
+  // sign; only the backdrop behind them is tinted per group. Only matters
+  // for the detailed view (the condensed 3-bar fallback has no .section).
+  const sectionColors = active.isDetailed ? {
+    'OPERATING ACTIVITIES': cssVar('--band-operating')||'rgba(76,111,165,.08)',
+    'INVESTING ACTIVITIES': cssVar('--band-investing')||'rgba(140,111,176,.08)',
+    'FINANCING ACTIVITIES': cssVar('--band-financing')||'rgba(201,123,99,.08)'
+  } : undefined;
+  buildWaterfallSVG('cfWaterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:300, sectionColors });
   latestData.waterfall = waterfallSteps;
+  document.getElementById('cfWaterfallLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+goodLight+'"></span>Increase</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+badLight+'"></span>Decrease</span>'
+    // Subtotal chip (2026-08-13, was plain bold text with no swatch) -- an
+    // outlined/hollow dot rather than a solid fill, since a subtotal can be
+    // green (Operating) or red (Investing/Financing) and this one chip needs
+    // to represent both without needing 2 legend entries. The border is the
+    // same visual cue the actual subtotal bars now carry (see st.bold in
+    // buildWaterfallSVG), so "chip has a border" reads directly as "bar has
+    // a border" — not tied to any one color.
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:transparent;border:1.5px solid var(--ink-1);"></span>Subtotal</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-2)"></span>Cash position</span>';
 
-  /* === Cash Flow Statement table === Full granular operating-activity
-     detail only exists for Q2'26 in this mock model (see file header
-     comment); any other AS OF selection shows a condensed CFO/CFI/CFF
-     summary instead of fabricating working-capital line items that were
-     never modeled for that period. */
-  document.getElementById('cfStatementDetailNote').style.display = active.isDetailed ? 'none' : '';
-  document.getElementById('cfStatementReconNote').style.display = active.isDetailed ? '' : 'none';
+  /* === Cash Flow Statement table === 2-tier detail, matching the waterfall
+     above: Q2'26 (hasFullWC) reads its 4 Working Capital line items + 2
+     Financing line items directly off CF_Q2 (the real statement, tied
+     exactly to Balance Sheet deltas, plus the zero-value "Prepaid & Other"
+     row that quarter happens to carry); every Annual bucket (isDetailed)
+     now shows the SAME 4 Working Capital + 2 Financing line items too (see
+     active.wcBreakdown/annualFinBreakdown, 2026-08-14 fix -- was a single
+     collapsed "± Working Capital (net)" row before, structurally
+     inconsistent with Q2'26's own breakdown), just sourced from the
+     modeled/backfilled split instead of a real per-line Balance Sheet tie;
+     every other quarter shows condensed Operating/Investing/Financing
+     Activities totals only (no line-item detail modeled for those). */
+  document.getElementById('cfStatementDetailNote').style.display = active.hasFullWC ? 'none' : '';
+  document.getElementById('cfStatementReconNote').style.display = active.hasFullWC ? '' : 'none';
   let rows;
-  if(active.isDetailed){
+  if(active.hasFullWC){
     rows = [];
     CF_Q2.operating.forEach(r=> rows.push({...r, group:'Operating'}));
-    rows.push({ item:'Net Cash from Operating Activities (CFO)', value: active.cfo, bold:true, group:'sub' });
+    rows.push({ item:'Net Cash from Operating Activities', value: active.cfo, bold:true, group:'sub' });
     CF_Q2.investing.forEach(r=> rows.push({...r, group:'Investing'}));
-    rows.push({ item:'Net Cash from Investing Activities (CFI)', value: active.cfi, bold:true, group:'sub' });
+    rows.push({ item:'Net Cash from Investing Activities', value: active.cfi, bold:true, group:'sub' });
     CF_Q2.financing.forEach(r=> rows.push({...r, group:'Financing'}));
-    rows.push({ item:'Net Cash from Financing Activities (CFF)', value: active.cff, bold:true, group:'sub' });
+    rows.push({ item:'Net Cash from Financing Activities', value: active.cff, bold:true, group:'sub' });
+  } else if(active.isDetailed){
+    const wcb = active.wcBreakdown;
+    rows = [
+      { item:'Net Profit (after tax)', value: active.np },
+      { item:'+ D&A (add-back)', value: active.da, isEstimate:true },
+      { item:'(Increase) in Trade Receivables', value: wcb.ar },
+      { item:'(Increase) in Inventories', value: wcb.inv },
+      { item:'Increase in Trade Payables', value: wcb.ap },
+      { item:'Increase in Other Liabilities', value: wcb.ol },
+      { item:'Net Cash from Operating Activities', value: active.cfo, bold:true, group:'sub' },
+      { item:'Net Cash from Investing Activities', value: active.cfi, bold:true, group:'sub' },
+      { item:'Dividends Paid', value: annualFinBreakdown.divPortion },
+      { item:'Lease Liability (net) / Other', value: annualFinBreakdown.leaseOtherPortion },
+      { item:'Net Cash from Financing Activities', value: active.cff, bold:true, group:'sub' }
+    ];
   } else {
     rows = [
-      { item:'Net Cash from Operating Activities (CFO)', value: active.cfo, bold:true, group:'sub' },
-      { item:'Net Cash from Investing Activities (CFI)', value: active.cfi, bold:true, group:'sub' },
-      { item:'Net Cash from Financing Activities (CFF)', value: active.cff, bold:true, group:'sub' }
+      { item:'Net Cash from Operating Activities', value: active.cfo, bold:true, group:'sub' },
+      { item:'Net Cash from Investing Activities', value: active.cfi, bold:true, group:'sub' },
+      { item:'Net Cash from Financing Activities', value: active.cff, bold:true, group:'sub' }
     ];
   }
   rows.push({ item:'Net Change in Cash', value: active.netChange, bold:true, group:'sub' });
@@ -377,19 +631,37 @@ function renderAll(){
     + '</tbody>';
   latestData.cfStatement = rows;
 
-  /* === CFO & Free Cash Flow === PART 1B: FCF Margin % added as a real
-     3rd series (right-axis line), not just a number in the callout text --
-     buildGroupedBarSVG (2 bars only) swapped for buildGroupedBarLineSVG
-     (N bars + 1 line, shared.js) to carry it. */
+  /* === Operating Cash Flow & Free Cash Flow === PART 1B: FCF Margin % added
+     as a real 3rd series (right-axis line), not just a number in the
+     callout text -- buildGroupedBarSVG (2 bars only) swapped for
+     buildGroupedBarLineSVG (N bars + 1 line, shared.js) to carry it.
+     Annual View By (2026-08-14 request) shows FY2024/FY2025/2026 YTD
+     instead of always the 5-quarter window -- 2026 YTD is still an
+     unclosed year, so it renders as the established partial/dashed-hollow
+     bar+point convention (see buildGroupedBarLineSVG's opts.partialLastBar/
+     partialLastPoint, ported there from buildComboBarLineSVG for this). */
+  const fcfLabels = currentViewBy==='annual' ? ['FY2024','FY2025','2026 YTD'] : quarterLabels;
+  const fcfCfoValues = currentViewBy==='annual' ? [FY2024.cfo, FY2025.cfo, cfoQ[3]+cfoQ[4]] : cfoQ;
+  const fcfFcfValues = currentViewBy==='annual' ? [FY2024.cfo+FY2024.cfi, FY2025.cfo+FY2025.cfi, (cfoQ[3]+cfoQ[4])-(capexQ[3]+capexQ[4])] : fcfQ;
+  const fcfMarginValues = currentViewBy==='annual'
+    ? [ (FY2024.cfo+FY2024.cfi)/FY2024.sales*100, (FY2025.cfo+FY2025.cfi)/FY2025.sales*100, ((cfoQ[3]+cfoQ[4])-(capexQ[3]+capexQ[4]))/(netSalesQAll[3]+netSalesQAll[4])*100 ]
+    : fcfMarginQ;
   buildGroupedBarLineSVG('fcfChart', {
-    labels: quarterLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
-    series: [ {name:'CFO', color: cssVar('--brand')||'#8E1E4D', values: cfoQ}, {name:'Free Cash Flow', color: cssVar('--good')||'#0ca30c', values: fcfQ} ],
-    line: {name:'FCF Margin %', color:'#4C6FA5', values: fcfMarginQ}
+    labels: fcfLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
+    series: [ {name:'Operating Cash Flow', color: cssVar('--brand')||'#8E1E4D', values: fcfCfoValues}, {name:'Free Cash Flow', color: cssVar('--good')||'#0ca30c', values: fcfFcfValues} ],
+    line: {name:'FCF Margin %', color:'#4C6FA5', values: fcfMarginValues},
+    partialLastBar: currentViewBy==='annual', partialLastPoint: currentViewBy==='annual'
   });
-  latestData.fcf = quarterLabels.map((q,i)=>({ quarter:q, cfo:cfoQ[i], fcf:fcfQ[i], margin:fcfMarginQ[i], cfoOverEbitda:cfoOverEbitdaQ[i] }));
-  // CFO/EBITDA % (2026-08-11) -- a real stat element, not just prose (see
-  // PART 1B) -- always shows the latest quarter's figure.
-  document.getElementById('cfoEbitdaStat').textContent = 'CFO/EBITDA % (Q2\'26): ' + fmtPct(cfoOverEbitdaQ[4],1);
+  latestData.fcf = fcfLabels.map((q,i)=>({ quarter:q, cfo:fcfCfoValues[i], fcf:fcfFcfValues[i], margin:fcfMarginValues[i],
+    cfoOverEbitda: currentViewBy==='annual' ? [FY2024.cfo/FY2024.ebitda*100, FY2025.cfo/FY2025.ebitda*100, (cfoQ[3]+cfoQ[4])/(ebitdaQAll[3]+ebitdaQAll[4])*100][i] : cfoOverEbitdaQ[i] }));
+  // Operating Cash Flow / EBITDA % (2026-08-11, label now follows AS OF
+  // instead of a fixed "(Q2'26)" -- 2026-08-14) -- a real stat element, not
+  // just prose (see PART 1B). Always shows the currently-selected AS OF
+  // period's own figure, whichever quarter/FY bucket that is.
+  const cfoEbitdaActive = currentViewBy==='annual'
+    ? (pnlAnnualAnchor==='fy2024' ? FY2024.cfo/FY2024.ebitda*100 : pnlAnnualAnchor==='fy2025' ? FY2025.cfo/FY2025.ebitda*100 : (cfoQ[3]+cfoQ[4])/(ebitdaQAll[3]+ebitdaQAll[4])*100)
+    : cfoOverEbitdaQ[pnlQuarterAnchor];
+  document.getElementById('cfoEbitdaStat').textContent = 'Operating Cash Flow / EBITDA % ('+currentAsOfLabel()+'): ' + fmtPct(cfoEbitdaActive,1);
 }
 
 /* --- Toolbar --- */
@@ -402,7 +674,7 @@ document.getElementById('cfWaterfallTableBtn').addEventListener('click', ()=>{
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.waterfall;
   let html = '<table class="mini-table"><thead><tr><th>Step</th><th>Value</th></tr></thead><tbody>';
-  d.forEach(st=>{ html += '<tr><td>'+st.label+'</td><td>'+(st.type==='delta'?(st.value>=0?'+':''):'')+fmtTHB(st.value)+'</td></tr>'; });
+  d.forEach(st=>{ html += '<tr><td>'+st.label+'</td><td>'+((st.type==='delta'||st.type==='subtotal')&&st.value>=0?'+':'')+fmtTHB(st.value)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
@@ -429,7 +701,7 @@ document.getElementById('fcfTableBtn').addEventListener('click', ()=>{
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.fcf;
-  let html = '<table class="mini-table"><thead><tr><th>Quarter</th><th>CFO</th><th>Free Cash Flow</th><th>CFO/EBITDA %</th><th>FCF Margin %</th></tr></thead><tbody>';
+  let html = '<table class="mini-table"><thead><tr><th>Quarter</th><th>Operating Cash Flow</th><th>Free Cash Flow</th><th>Operating Cash Flow / EBITDA %</th><th>FCF Margin %</th></tr></thead><tbody>';
   d.forEach(r=>{ html += '<tr><td>'+r.quarter+'</td><td>'+fmtTHB(r.cfo)+'</td><td>'+fmtTHB(r.fcf)+'</td><td>'+fmtPct(r.cfoOverEbitda,1)+'</td><td>'+fmtPct(r.margin,1)+'</td></tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
@@ -446,7 +718,13 @@ function positionViewByThumb(){
 function buildAsOfDropdown(){
   let html = '';
   if(currentViewBy==='annual'){
-    html += '<div class="period-opt selected" data-annual="current"><span class="chk">✓</span>2026 (Current)</div>';
+    // 3 selectable FY buckets (2026-08-14, was "2026 (Current)" alone) --
+    // FY2024/FY2025 now carry the same detailed breakdown as 2026 YTD (see
+    // getActivePeriodData), so all 3 are valid single-period AS OF anchors.
+    [['current','2026 YTD'],['fy2025','FY2025'],['fy2024','FY2024']].forEach(([key,label])=>{
+      const sel = pnlAnnualAnchor===key;
+      html += '<div class="period-opt'+(sel?' selected':'')+'" data-annual="'+key+'"><span class="chk">'+(sel?'✓':'')+'</span>'+label+'</div>';
+    });
   } else {
     for(let i=quarterLabels.length-1; i>=0; i--){
       const sel = pnlQuarterAnchor===i;
@@ -477,6 +755,7 @@ document.getElementById('periodDropdown').addEventListener('click', (e)=>{
   const opt = e.target.closest('.period-opt');
   if(!opt) return;
   if(opt.dataset.quarter) pnlQuarterAnchor = parseInt(opt.dataset.quarter,10);
+  if(opt.dataset.annual) pnlAnnualAnchor = opt.dataset.annual;
   document.getElementById('periodDropdown').classList.remove('open');
   updateAsOfControl();
   renderAll();

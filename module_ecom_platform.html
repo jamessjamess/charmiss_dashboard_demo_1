@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — ECOM Overview · Platform</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="module_ecom_executive_summary.html">Executive Summary</a>
+          <a class="tab active tab-link" href="module_ecom_platform.html">Platform</a>
+        </nav>
+      </div>
+      <div class="user-area">
+        <a class="avatar" href="account_management.html" title="Account Management">NV</a>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <nav class="section-nav">
+        <a href="#sec-platform-performance">Platform Performance</a>
+        <a href="#sec-order-economics">Order Economics</a>
+      </nav>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
+        <div class="filter-left">
+          <span class="filter-label">Period</span>
+          <button class="period-btn" id="periodBtn">
+            <span id="periodBtnLabel">Year to Date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="periodDropdown">
+            <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+            <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+            <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+            <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+            <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+            <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+            <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+            <div class="period-divider"></div>
+            <div class="custom-range-label">Custom Range</div>
+            <div class="custom-range-row">
+              <select id="customFrom"></select>
+              <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+              <select id="customTo"></select>
+            </div>
+            <button class="apply-btn" id="applyCustom">Apply</button>
+          </div>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PILL 1: PLATFORM PERFORMANCE ===== -->
+  <div class="section-label" id="sec-platform-performance">Platform Performance</div>
+
+  <!-- ===== ROW 1: Sales by Platform Over Time | Return/Cancellation Rate by Platform ===== -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Platform Over Time</span>
+          <button class="info-icon" data-info-title="Sales by Platform Over Time" data-info-text="ยอดขายรายเดือนของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือกจาก Filter ด้านบน (Period) — ไม่ plot เดือน/ไตรมาสที่ยังไม่ปิดงบ — Time Series จริงต่อ Platform (ไม่ใช่สัดส่วนคงที่ของยอดรวม Ecom) จึงเห็น Trend ที่แตกต่างกันจริงต่อ Platform">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="platformTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="platformTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="platformTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="platformTrendLegend"></div>
+      <div class="canvas-wrap" id="platformTrendCanvasWrap" style="height:260px;"><div id="platformTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="platformTrendTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Return/Cancellation Rate by Platform</span>
+          <button class="info-icon" data-info-title="Return/Cancellation Rate by Platform" data-info-text="Return/Cancellation Rate ของแต่ละ Platform ในช่วงเวลาที่เลือก (Ecom-wide Rate เดียวกับ Return/Cancellation Rate Trend ของ Executive Summary × ตัวคูณ Skew เฉพาะของแต่ละ Platform — TikTok มี Return/Cancellation สูงกว่าเฉลี่ยจาก Impulse Buying, Line Shop ต่ำกว่าเฉลี่ยจากฐานลูกค้าประจำ) — เขียว = ต่ำกว่า Threshold 8%, แดง = สูงกว่า">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="cancelByPlatformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="cancelByPlatformDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="cancelByPlatformExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">All 4 platforms, ranked · dashed line = 8% threshold</div>
+      <div class="cat-bars" id="cancelByPlatformBars"></div>
+      <div class="data-table-wrap" id="cancelByPlatformTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== ROW 2: Target vs Actual per Platform | YoY Growth by Platform =====
+       (2026-08-14, moved up from Row 3 — insight-box callouts cut per direct feedback.) -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Target vs Actual per Platform</span>
+          <button class="info-icon" data-info-title="Target vs Actual per Platform" data-info-text="Target Attainment % ของแต่ละ Platform (Lazada/Shopee/TikTok/Line Shop) เส้นอ้างอิงที่ 100%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="pgAttainTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="pgAttainDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="pgAttainExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="pgAttainCanvasWrap" style="height:220px;"><div id="pgAttainChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="pgAttainTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">YoY Growth by Platform</span>
+          <button class="info-icon" data-info-title="YoY Growth by Platform" data-info-text="%Growth ยอดขายเทียบปีก่อน ต่อ Platform — เรียงลำดับเดียวกับ Target vs Actual per Platform ทางซ้าย เส้นอ้างอิงที่ 0%">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="pgGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="pgGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="pgGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="pgGrowthCanvasWrap" style="height:220px;"><div id="pgGrowthChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="pgGrowthTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== ROW 3: Platform Share of Sales Over Time (full width, 100% stacked bar) ===== -->
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Platform Share of Sales Over Time</span>
+        <button class="info-icon" data-info-title="Platform Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Period Filter ด้านบน) — คำนวณจากยอดขายจริงต่อ Platform ในแต่ละเดือน หารด้วยยอดรวม Ecom เดือนนั้น ไม่ใช่สัดส่วนคงที่">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="platformShareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="platformShareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="platformShareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="platformShareLegend"></div>
+    <div class="canvas-wrap" id="platformShareCanvasWrap" style="height:280px;"><div id="platformShareChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="platformShareCallout" style="margin-top:10px;">–</div>
+    <div class="data-table-wrap" id="platformShareTableWrap"></div>
+  </div>
+
+  <!-- ===== PILL 2: ORDER ECONOMICS ===== -->
+  <div class="section-label" id="sec-order-economics" style="margin-top:24px;">Order Economics</div>
+
+  <!-- ===== ROW 1: AOV by Platform | Order Count Trend ===== -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">AOV by Platform</span>
+          <button class="info-icon" data-info-title="AOV by Platform" data-info-text="Average Order Value เฉลี่ยของแต่ละ Platform ในช่วงเวลาที่เลือก — คำนวณจาก AOV เฉลี่ย Company-wide ของช่วงเวลานั้นจริง (ecomAOVSeries) × ตัวคูณ Skew เฉพาะ Platform จึงเปลี่ยนตาม Period Filter ที่เลือกจริง">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="aovByPlatformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="aovByPlatformDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="aovByPlatformExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-subtitle">This period · by platform</div>
+      <div class="canvas-wrap" id="aovByPlatformCanvasWrap" style="height:180px;"><div id="aovByPlatformChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="aovByPlatformTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Order Count Trend</span>
+          <button class="info-icon" data-info-title="Order Count Trend" data-info-text="จำนวนออเดอร์โดยประมาณของแต่ละ Platform ในช่วงเวลาที่เลือก — คำนวณจาก ยอดขายจริงต่อเดือนของ Platform ÷ AOV ของ Platform เดือนนั้น (ecomAOVSeries × aovIndex เดียวกับการ์ด AOV by Platform) จึงคูณกลับ (จำนวนออเดอร์ × AOV) ได้ยอดขายเดิมเป๊ะ ไม่ plot เดือน/ไตรมาสที่ยังไม่ปิดงบ">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="orderCountTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="orderCountTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="orderCountTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="chart-legend" id="orderCountTrendLegend"></div>
+      <div class="canvas-wrap" id="orderCountTrendCanvasWrap" style="height:180px;"><div id="orderCountTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="orderCountTrendTableWrap"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — identical to module_ecom_executive_summary.html's shared
+   block (same seed, same order). Keep the two in sync; see the comment there.
+   ============================================================================ */
+const rand = mulberry32(20260630);
+const MONTHS_TOTAL = 36;
+const TODAY = 29;
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
+
+function genSeries(base, growthPerMonth, targetBoostFn){
+  const actual = [], target = [];
+  let level = base;
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const moy = i % 12;
+    let seasonal = 1;
+    if([9,10,11].includes(moy)) seasonal = 1.13;
+    if(moy === 1) seasonal = 0.9;
+    if(moy === 6 || moy === 7) seasonal = 0.96;
+    const noiseA = 0.94 + rand()*0.12;
+    const noiseT = 0.97 + rand()*0.05;
+    actual.push(Math.round(level * seasonal * noiseA));
+    target.push(Math.round(level * seasonal * noiseT * (targetBoostFn ? targetBoostFn(i) : 1)));
+    level = level * (1 + growthPerMonth);
+  }
+  return {actual, target};
+}
+const channelDefs = [
+  {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT', targetBoostFn: i=>i>=24?1.25:1},
+  {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:1800000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1550000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok', color:'#7A5A2E', base:850000, growth:0.0270, group:'Ecom'},
+  {key:'LineShop', label:'Line Shop', color:'#4C8C5C', base:400000, growth:0.0120, group:'Ecom'}
+];
+channelDefs.forEach(c => { const s = genSeries(c.base, c.growth, c.targetBoostFn); c.actual = s.actual; c.target = s.target; });
+const groupKeys = ['MT','TT','Ecom'];
+function groupSeries(groupKey, field){
+  const arr = new Array(MONTHS_TOTAL).fill(0);
+  channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });
+  return arr;
+}
+const groupActual = {}, groupTarget = {};
+groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
+for(let i=0;i<MONTHS_TOTAL;i++){
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
+  ecomCancelRate.push(0.065 + rand()*0.02);
+}
+const ecomChannels = channelDefs.filter(c=>c.group==='Ecom'); // Lazada, Shopee, TikTok, Line Shop, in this order
+
+const ecomAOVSeries = [];
+{ let level = 480; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.42)*14; level = Math.max(360, Math.min(640, level)); ecomAOVSeries.push(level); } }
+
+/* -------------------- Part 2: Platform-only mock data -------------------- */
+const ecomPlatformStats = {
+  Lazada: { aovIndex: 1.15, cancelFactor: 0.90 },
+  Shopee: { aovIndex: 1.00, cancelFactor: 1.00 },
+  TikTok: { aovIndex: 0.75, cancelFactor: 1.20 },
+  LineShop: { aovIndex: 1.05, cancelFactor: 0.85 }
+};
+
+function getPeriodRange(key, custom){
+  switch(key){
+    case 'thisMonth': return [TODAY, TODAY];
+    case 'lastMonth': return [TODAY-1, TODAY-1];
+    case 'thisQuarter': return [TODAY-2, TODAY];
+    case 'lastQuarter': return [TODAY-5, TODAY-3];
+    case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
+    case 'custom': return custom;
+    case 'ytd': default: return [24, TODAY];
+  }
+}
+function periodLabelText(key, custom){
+  switch(key){
+    case 'thisMonth': return 'Jun 2026';
+    case 'lastMonth': return 'May 2026';
+    case 'thisQuarter': return 'Q2 2026';
+    case 'lastQuarter': return 'Q1 2026';
+    case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
+    case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
+    case 'ytd': default: return 'Year to Date';
+  }
+}
+
+/* ---------- Nav menu / popovers ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('ecom-platform', 'ECOM Overview · Platform'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+
+/* ---------- Menu bar collapse (same mechanism as sales_overview.html). ---------- */
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+initSectionScrollSpy();
+
+/* ---------- Custom range selects ---------- */
+const customFromSel = document.getElementById('customFrom');
+const customToSel = document.getElementById('customTo');
+for(let i=0;i<=TODAY;i++){
+  const optF = document.createElement('option'); optF.value=i; optF.textContent=monthLabels[i]; customFromSel.appendChild(optF);
+  const optT = document.createElement('option'); optT.value=i; optT.textContent=monthLabels[i]; customToSel.appendChild(optT);
+}
+customFromSel.value = 24; customToSel.value = TODAY;
+
+/* ---------- Period dropdown ---------- */
+const periodBtn = document.getElementById('periodBtn');
+const periodDropdown = document.getElementById('periodDropdown');
+const periodBtnLabel = document.getElementById('periodBtnLabel');
+let currentPeriodKey = 'ytd';
+let currentCustom = [24, TODAY];
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderAll();
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderAll();
+});
+/* ---------- View By (Monthly/Quarterly) toggle ---------- */
+let currentTimeFrame = 'monthly';
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll();
+});
+positionTimeFrameThumb();
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+// bucketSum (2026-08-14, ported from module_ecom_executive_summary.html for Sales by Platform
+// Over Time, moved here from that page's old "Monthly Sales by Platform").
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
+
+// buildStackedBarPctSVG (2026-08-14, direct feedback — Platform Share of Sales Over Time
+// switched from a stream area to a 100% stacked bar, one full column per period, so every
+// "Share of Sales" chart on the dashboard reads the same way; module_mt_partner.html gets an
+// identical copy of this function for its own Partner Share of Sales Over Time). Page-local
+// (not added to shared.js) — same opts shape as buildStreamAreaSVG so call sites are a
+// near drop-in swap: {labels, series:[{name,color,values:[absolute per period]}], valueFormatter}.
+function buildStackedBarPctSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 700;
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
+  const labels = opts.labels, series = opts.series;
+  const valueFormatter = opts.valueFormatter || (v=>v);
+  const n = labels.length;
+  const padL=30, padR=8, padT=10, padB=22;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkTertiary = cssVar('--ink-3')||'#898781';
+
+  const totals = labels.map((lb,m)=> series.reduce((a,s)=>a+s.values[m],0) || 1);
+  const pctByMonth = series.map(s => s.values.map((v,m)=> v/totals[m]*100));
+
+  const barGroupW = plotW/Math.max(1,n);
+  const xCenter = m => padL + barGroupW*(m+0.5);
+  const barW = Math.max(4, Math.min(56, barGroupW*0.55));
+  const y = v => padT + (1 - v/100) * plotH;
+
+  let svg = '';
+  [0,50,100].forEach(v=>{
+    const yy = y(v);
+    svg += '<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+yy.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    svg += '<text x="'+(padL-6)+'" y="'+(yy+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+v+'%</text>';
+  });
+
+  for(let m=0;m<n;m++){
+    let acc = 0;
+    series.forEach((s,i)=>{
+      const pct = pctByMonth[i][m];
+      const y0 = y(acc), y1 = y(acc+pct);
+      const segH = y0-y1;
+      svg += '<rect x="'+(xCenter(m)-barW/2).toFixed(1)+'" y="'+y1.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'" opacity="0.92"/>';
+      if(segH >= 13){
+        svg += '<text x="'+xCenter(m).toFixed(1)+'" y="'+((y0+y1)/2+3.5).toFixed(1)+'" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fff">'+pct.toFixed(0)+'%</text>';
+      }
+      acc += pct;
+    });
+  }
+
+  const showEvery = n>12 ? 3 : 1;
+  labels.forEach((lb,m)=>{
+    if(m%showEvery!==0 && m!==n-1) return;
+    svg += '<text x="'+xCenter(m).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
+  });
+
+  container.innerHTML = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+
+  /* Hover tooltip: nearest-column lookup, same shared tooltip buildStreamAreaSVG uses, showing
+     every series' real %/value at that period. */
+  const tooltip = ensureChartTooltip();
+  container.onmousemove = (e)=>{
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const scaleX = rect.width ? width/rect.width : 1;
+    const svgX = mouseX*scaleX;
+    let m = Math.round((svgX-padL-barGroupW/2)/(barGroupW||1));
+    m = Math.max(0, Math.min(n-1, m));
+    const rows = series.map((s,i)=>({ name:s.name, color:s.color, pct: pctByMonth[i][m], value: s.values[m] }))
+      .sort((a,b)=>b.value-a.value);
+    tooltip.innerHTML = '<div class="chart-tooltip-title">'+labels[m]+'</div>'
+      + rows.map(r=>'<div class="chart-tooltip-row"><span class="chart-tooltip-dot" style="background:'+r.color+';"></span><span class="chart-tooltip-name">'+r.name+'</span><span class="chart-tooltip-value">'+valueFormatter(r.value)+' · '+r.pct.toFixed(0)+'%</span></div>').join('');
+    const pw = 240;
+    let left = e.clientX + 14;
+    if(left + pw > window.innerWidth - 12) left = e.clientX - pw - 14;
+    let top = e.clientY + 14;
+    if(top + 140 > window.innerHeight - 12) top = e.clientY - 150;
+    tooltip.style.left = Math.max(12,left) + 'px';
+    tooltip.style.top = Math.max(12,top) + 'px';
+    tooltip.classList.add('show');
+  };
+  container.onmouseleave = ()=>{ tooltip.classList.remove('show'); };
+}
+
+// restaggerEndLabels (2026-08-14, direct feedback) — page-local post-process for
+// buildLineChartSVG's own end-label dodge (shared.js, off-limits to edit for this page):
+// its built-in minimum gap (13px) wasn't enough whenever several platforms' latest values
+// land within a few hundred THB/orders of each other (Lazada/Shopee/TikTok clustering).
+// Re-reads the already-rendered end-label <text> elements right after buildLineChartSVG
+// draws them — identified by the same font-size="10.5" it always gives them — and widens
+// the gap to 16px, without touching the shared chart-drawing function itself.
+function restaggerEndLabels(containerId, minGap){
+  const svg = document.getElementById(containerId).querySelector('svg');
+  if(!svg) return;
+  const labels = [...svg.querySelectorAll('text[font-size="10.5"]')]
+    .map(el => ({ el, y: parseFloat(el.getAttribute('y')) }))
+    .sort((a,b) => a.y - b.y);
+  for(let i=1;i<labels.length;i++){
+    if(labels[i].y < labels[i-1].y + minGap) labels[i].y = labels[i-1].y + minGap;
+  }
+  labels.forEach(l => l.el.setAttribute('y', l.y.toFixed(1)));
+}
+
+/* ---------- Render ---------- */
+let latestData = {};
+
+function renderAll(){
+  const [s,e] = getPeriodRange(currentPeriodKey, currentCustom);
+  const good = cssVar('--good') || '#0ca30c';
+  const critical = cssVar('--critical') || '#d03b3b';
+  /* === Sales by Platform Over Time (2026-08-14, Round 2 direct feedback — now genuinely
+     PERIOD-scoped, was hardcoded to the full 3-year history) — real per-platform time series
+     (each platform in ecomChannels has its own independently-generated .actual[], not a fixed %
+     split of the Ecom total). Clamped to Math.min(e,TODAY) so no unclosed future period is ever
+     plotted, same convention MT's own "Sales by Partner Over Time" already uses. Shared index
+     range/groups/labels also feed Order Count Trend below, so the two stay period-aligned. === */
+  const platformTrendIdx = []; for(let i=s; i<=Math.min(e,TODAY); i++) platformTrendIdx.push(i);
+  const platformTrendGroups = bucketMonths(platformTrendIdx, currentTimeFrame);
+  const platformTrendLabels = currentTimeFrame==='quarterly'
+    ? platformTrendGroups.map(g => quarterLabel(g)+' '+String(2024+Math.floor(g[0]/12)).slice(2))
+    : platformTrendIdx.map(i=>monthLabels[i]);
+  const platformTrendSeries = ecomChannels.map(c=>({
+    data: bucketSum(c.actual, platformTrendGroups), color: c.color, width:2.2, showLastLabel:true, lastLabelFormatter: v => c.label+' '+fmtTHB(v)
+  }));
+  buildLineChartSVG('platformTrendChart', { labels: platformTrendLabels, yFormatter: v=>fmtTHB(v), series: platformTrendSeries });
+  restaggerEndLabels('platformTrendChart', 16);
+  document.getElementById('platformTrendLegend').innerHTML = ecomChannels.map(c=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+c.color+'"></span>'+c.label+'</span>'
+  ).join('');
+  latestData.platformTrend = { labels: platformTrendLabels, platforms: ecomChannels.map((c,i)=>({name:c.label, values:platformTrendSeries[i].data})) };
+
+  /* === Return/Cancellation Rate by Platform — Ecom-wide period average
+     (real, from ecomCancelRate) × each platform's cancelFactor skew
+     (illustrative, but at least period-sensitive since the base it
+     multiplies is real). Always shows all 4 platforms ranked. === */
+  const periodCancelPctAvg = sumRange(ecomCancelRate, s, e)/(e-s+1)*100;
+  const cancelByPlatform = ecomChannels.map(c=>{
+    const value = periodCancelPctAvg * ecomPlatformStats[c.key].cancelFactor;
+    return { label:c.label, value };
+  }).sort((a,b)=>b.value-a.value);
+  const CANCEL_CEILING_PCT = 8;
+  const maxCancelRate = Math.max(CANCEL_CEILING_PCT, ...cancelByPlatform.map(p=>p.value));
+  const cancelRefPct = (CANCEL_CEILING_PCT/maxCancelRate*100).toFixed(1);
+  document.getElementById('cancelByPlatformBars').innerHTML = cancelByPlatform.map(p=>{
+    const widthPct = (p.value/maxCancelRate*100).toFixed(1);
+    const color = p.value>=CANCEL_CEILING_PCT ? 'var(--critical)' : 'var(--good-text)';
+    return '<div class="cat-row"><span class="cat-label">'+p.label+'</span>'
+      + '<div class="cat-track"><div class="cat-ref-line" style="left:'+cancelRefPct+'%;"></div><div class="cat-fill" style="width:'+widthPct+'%;background:'+color+';"><span class="cat-fill-label">'+fmtPct(p.value,1)+'</span></div></div></div>';
+  }).join('');
+  latestData.cancelByPlatform = cancelByPlatform;
+
+  /* === Target vs Actual per Platform + YoY Growth by Platform (2026-08-14, moved up to Row 2 —
+     insight-box callouts cut per direct feedback) — same ecomChannels real monthly actual/target
+     series as before, only the location/presentation changed. === */
+  const pgLastYear = ecomChannels.map(c=> s-12>=0 ? sumRange(c.actual, s-12, e-12) : null);
+  const pgThisYear = ecomChannels.map(c=> sumRange(c.actual, s, e));
+  const pgTarget = ecomChannels.map(c=> sumRange(c.target, s, e));
+  const pgGrowth = pgThisYear.map((v,i)=> pgLastYear[i] ? pctChange(v, pgLastYear[i]) : null);
+  const pgGrowthAmt = pgThisYear.map((v,i)=> pgLastYear[i]!=null ? v-pgLastYear[i] : null);
+  const pgAttainPct = pgThisYear.map((v,i)=> pgTarget[i] ? (v/pgTarget[i]*100) : 0);
+  const pgDiff = pgThisYear.map((v,i)=> v - pgTarget[i]);
+  const pgList = ecomChannels.map((c,i)=>({ name:c.label, attain:pgAttainPct[i], diff:pgDiff[i], growthYoY:pgGrowth[i], growthAmt:pgGrowthAmt[i] }));
+
+  buildHBarCompareSVG('pgAttainChart', pgList.map(p=>({
+    label: p.name, value: p.attain, color: p.attain>=100 ? good : critical,
+    subLabel: (p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff)), subLabelColor: p.diff>=0 ? good : critical
+  })), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:90, rowHeight:44 });
+  latestData.pgAttain = pgList;
+
+  buildHBarCompareSVG('pgGrowthChart', pgList.map(p=>({
+    label: p.name, value: p.growthYoY!==null?p.growthYoY:0, color: (p.growthYoY||0)>=0 ? good : critical,
+    subLabel: p.growthAmt!=null ? (p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt)) : '–', subLabelColor: (p.growthAmt||0)>=0 ? good : critical
+  })), { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:90, rowHeight:44 });
+  latestData.pgGrowth = pgList;
+
+  /* === Platform Share of Sales Over Time (Round 2 direct feedback: 100% stacked bar instead of
+     a stream area, so every "Share of Sales" chart on the dashboard reads the same way) —
+     real per-platform monthly actuals (not jittered), so the mix genuinely shifts based on each
+     platform's own noise/growth. === */
+  const pShareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) pShareIdx.push(i);
+  const pShareLabels = pShareIdx.map(i=>monthLabels[i]);
+  const pShareGroups = bucketMonths(pShareIdx, currentTimeFrame);
+  const pShareBucketLabels = currentTimeFrame==='quarterly' ? pShareGroups.map(quarterLabel) : pShareLabels;
+  const pShareSeries = ecomChannels.map(c=>({
+    name: c.label, color: c.color,
+    values: bucketSum(c.actual, pShareGroups)
+  }));
+  buildStackedBarPctSVG('platformShareChart', { labels: pShareBucketLabels, series: pShareSeries, valueFormatter: fmtTHB });
+  document.getElementById('platformShareLegend').innerHTML = ecomChannels.map(c=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+c.color+'"></span>'+c.label+'</span>'
+  ).join('');
+  latestData.platformShare = { labels: pShareBucketLabels, series: pShareSeries };
+  const pShareFirstTotal = pShareSeries.reduce((a,ser)=>a+ser.values[0],0);
+  const pShareLastTotal = pShareSeries.reduce((a,ser)=>a+ser.values[ser.values.length-1],0);
+  const pShareDeltas = pShareSeries.map(ser=>{
+    const firstPct = pShareFirstTotal ? ser.values[0]/pShareFirstTotal*100 : 0;
+    const lastPct = pShareLastTotal ? ser.values[ser.values.length-1]/pShareLastTotal*100 : 0;
+    return { name: ser.name, delta: lastPct-firstPct };
+  });
+  const pShareGainer = pShareDeltas.reduce((a,b)=>b.delta>a.delta?b:a);
+  const pShareLoser = pShareDeltas.reduce((a,b)=>b.delta<a.delta?b:a);
+  document.getElementById('platformShareCallout').innerHTML = 'Mix shift, '+pShareBucketLabels[0]+'→'+pShareBucketLabels[pShareBucketLabels.length-1]+' — '
+    + 'Biggest gain: <b>'+pShareGainer.name+'</b> <span class="'+deltaClass(pShareGainer.delta)+'">('+(pShareGainer.delta>=0?'+':'')+pShareGainer.delta.toFixed(1)+'pp)</span>'
+    + ' · Biggest drop: <b>'+pShareLoser.name+'</b> <span class="'+deltaClass(pShareLoser.delta)+'">('+(pShareLoser.delta>=0?'+':'')+pShareLoser.delta.toFixed(1)+'pp)</span>';
+
+  /* === AOV by Platform — real period-averaged company-wide series
+     (ecomAOVSeries) times each platform's index, so the Period filter
+     actually changes this chart. === */
+  const periodAOVAvg = sumRange(ecomAOVSeries, s, e)/(e-s+1);
+  const aovItems = ecomChannels.map(c=>({ label:c.label, value: periodAOVAvg*ecomPlatformStats[c.key].aovIndex, color:c.color }));
+  // domainMin:0/domainMax (2026-08-14, direct feedback) — buildHBarCompareSVG's default padding
+  // pads BELOW rawMin unconditionally (rawMin - 15%), which pushed the axis into negative
+  // territory (e.g. "−฿200") even though rawMin itself was already 0 (AOV is never negative).
+  // Passing domainMin alone isn't quite enough though: when a caller sets an explicit domain,
+  // buildHBarCompareSVG's own tick-filter compares against the RAW domainMax, not the rounded
+  // niceAxisTicks max it computes internally — so the topmost "nice" tick (e.g. ฿600, when the
+  // real data maxes out at ฿587.6) silently gets filtered out as "past maxV" even though it's
+  // exactly the round number the axis should end on. Pre-computing the nice bounds here and
+  // passing BOTH domainMin/domainMax explicitly sidesteps that mismatch entirely (no more
+  // raw-vs-rounded gap for the filter to trip on) — a page-local workaround, not a shared.js edit.
+  const aovNice = niceAxisTicks(0, Math.max(...aovItems.map(it=>it.value), 1), 5);
+  buildHBarCompareSVG('aovByPlatformChart', aovItems, { referenceValue:0, domainMin:0, domainMax:aovNice.max, formatValue: fmtTHB, labelW:90, rowHeight:44 });
+  latestData.aovByPlatform = aovItems;
+
+  /* === Order Count Trend (NEW, Order Economics pill) — derived, not a new independent mock
+     series: monthly order count = that month's real platform revenue ÷ that month's platform AOV
+     (ecomAOVSeries[i] × the same aovIndex AOV by Platform uses), so Orders × AOV reconciles back
+     to Revenue exactly at the monthly grain (quarterly view sums the monthly counts, since a
+     count is additive — not sum-of-revenue ÷ sum-of-AOV, which would drift from the monthly
+     figures). Same PERIOD-scoped index/groups/labels as Sales by Platform Over Time above. === */
+  const orderCountSeries = ecomChannels.map(c=>{
+    // Full MONTHS_TOTAL-length array indexed by absolute month index (same convention as
+    // c.actual/ecomAOVSeries) — bucketSum's groups (from platformTrendGroups) hold absolute
+    // month indices, not 0-based positions within platformTrendIdx, so a plain .map() here
+    // would silently misalign and sum undefined into NaN.
+    const monthlyOrders = new Array(MONTHS_TOTAL).fill(0);
+    platformTrendIdx.forEach(i => {
+      const aovAtMonth = ecomAOVSeries[i] * ecomPlatformStats[c.key].aovIndex;
+      monthlyOrders[i] = aovAtMonth ? c.actual[i]/aovAtMonth : 0;
+    });
+    return {
+      data: bucketSum(monthlyOrders, platformTrendGroups), color: c.color, width:2.2, showLastLabel:true,
+      lastLabelFormatter: v => c.label+' '+Math.round(v).toLocaleString()
+    };
+  });
+  buildLineChartSVG('orderCountTrendChart', { labels: platformTrendLabels, yFormatter: v=>Math.round(v).toLocaleString(), series: orderCountSeries });
+  restaggerEndLabels('orderCountTrendChart', 16);
+  document.getElementById('orderCountTrendLegend').innerHTML = ecomChannels.map(c=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+c.color+'"></span>'+c.label+'</span>'
+  ).join('');
+  latestData.orderCountTrend = { labels: platformTrendLabels, platforms: ecomChannels.map((c,i)=>({name:c.label, values:orderCountSeries[i].data})) };
+}
+
+/* --- Toolbar --- */
+document.getElementById('cancelByPlatformDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Platform','Return/Cancellation Rate %']];
+  latestData.cancelByPlatform.forEach(p=> rows.push([p.label, p.value.toFixed(1)]));
+  downloadCSV(rows, 'ecom_return_cancellation_rate_by_platform.csv');
+});
+document.getElementById('cancelByPlatformExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('cancelByPlatformTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('cancelByPlatformTableWrap');
+  const bars = document.getElementById('cancelByPlatformBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  const d = latestData.cancelByPlatform;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Return/Cancellation Rate</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtPct(p.value,1)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+
+document.getElementById('platformShareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformShareChart','ecom_platform_share_over_time.svg'));
+document.getElementById('platformShareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('platformShareTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('platformShareTableWrap');
+  const canvasWrap = document.getElementById('platformShareCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.platformShare;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+s.values[i].toFixed(1)+'%</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('platformTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('platformTrendChart', 'ecom_sales_by_platform_over_time.svg'));
+document.getElementById('platformTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('platformTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('platformTrendTableWrap');
+  const canvasWrap = document.getElementById('platformTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.platformTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.platforms.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.platforms.map(p=>'<td>'+fmtTHB(p.values[i])+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('pgAttainDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('pgAttainChart', 'ecom_target_vs_actual_per_platform.svg'));
+document.getElementById('pgAttainExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('pgAttainTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('pgAttainTableWrap');
+  const canvasWrap = document.getElementById('pgAttainCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.pgAttain;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+fmtPct(p.attain,1)+'</td><td>'+(p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('pgGrowthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('pgGrowthChart', 'ecom_yoy_growth_by_platform.svg'));
+document.getElementById('pgGrowthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('pgGrowthTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('pgGrowthTableWrap');
+  const canvasWrap = document.getElementById('pgGrowthCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.pgGrowth;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>Growth YoY</th><th>Growth ฿</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+(p.growthYoY!==null?fmtSignedPct(p.growthYoY,1):'–')+'</td><td>'+(p.growthAmt!=null?(p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt)):'–')+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('aovByPlatformDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('aovByPlatformChart', 'ecom_aov_by_platform.svg'));
+document.getElementById('aovByPlatformExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('aovByPlatformTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('aovByPlatformTableWrap');
+  const canvasWrap = document.getElementById('aovByPlatformCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.aovByPlatform;
+  let html = '<table class="mini-table"><thead><tr><th>Platform</th><th>AOV</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.value)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('orderCountTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('orderCountTrendChart', 'ecom_order_count_trend.svg'));
+document.getElementById('orderCountTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('orderCountTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('orderCountTrendTableWrap');
+  const canvasWrap = document.getElementById('orderCountTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.orderCountTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.platforms.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.platforms.map(p=>'<td>'+Math.round(p.values[i]).toLocaleString()+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Init ---------- */
+renderAll();
+</script>
+</body>
+</html>

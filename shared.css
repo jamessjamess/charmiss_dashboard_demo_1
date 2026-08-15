@@ -8,6 +8,25 @@
   --hairline:#e1e0d9; --baseline:#c3c2b7;
   --border:rgba(11,11,11,.10); --border-2:rgba(11,11,11,.16); --wash:rgba(11,11,11,.035);
   --good-text:#006300; --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
+  /* critical-dark (2026-08-13) -- darker red for Cash Flow Waterfall's
+     subtotal bars, same "two shades of the same sign" pairing --good-text/
+     --good already give the green side (dark for the more emphatic tier,
+     brighter for line items). */
+  --critical-dark:#9A2B2B;
+  /* Cash Flow Waterfall section-band tints (2026-08-13, bumped after review
+     — .08 read as barely-there gray, not a recognizable hue) -- a distinct-
+     but-faint hue per activity group (same cat-1/cat-3/cat-4 hues used
+     elsewhere for categorical charts) so Operating/Investing/Financing read
+     apart at a glance without the bars themselves reverting to activity
+     coloring — bars stay green/red by sign; only this backdrop is tinted
+     per group. .12 alpha is the requested ceiling (8-12%) -- the top of
+     that range, since diluting 3 well-separated hues toward white
+     inherently compresses how distinct they read from EACH OTHER (not just
+     from white), so pushing to the ceiling is what buys the most separation
+     without breaking the "still clearly behind a solid bar" requirement —
+     see the divider lines at each band edge below as a backup cue on top
+     of this. */
+  --band-operating:rgba(76,111,165,.12); --band-investing:rgba(140,111,176,.12); --band-financing:rgba(201,123,99,.12);
   --brand:#b23368; --brand-wash:rgba(178,51,104,.08);
   --shadow:0 1px 2px rgba(11,11,11,.04),0 6px 20px -8px rgba(11,11,11,.12);
   --radius:10px;
@@ -19,6 +38,13 @@
   --hairline:#2c2c2a; --baseline:#383835;
   --border:rgba(255,255,255,.10); --border-2:rgba(255,255,255,.16); --wash:rgba(255,255,255,.045);
   --good-text:#0ca30c;
+  --critical-dark:#d03b3b;
+  /* Brighter + higher alpha than the light-theme tint (2026-08-13, bumped
+     alongside it) -- the same colored overlay reads far fainter against a
+     near-black page than against a light one, so dark mode needs a lighter
+     base hue and more alpha to stay equally visible (same reasoning as
+     --wash flipping its base color between themes above). */
+  --band-operating:rgba(151,172,203,.22); --band-investing:rgba(188,172,209,.22); --band-financing:rgba(224,178,165,.22);
   --brand:#e0699e; --brand-wash:rgba(224,105,158,.16);
 }
 *{box-sizing:border-box;}
@@ -253,7 +279,14 @@ button,select{font-family:inherit;}
 .chart-subtitle{font-size:11px;color:var(--ink-3);margin:2px 0 8px;}
 .rank-subgroup-title{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-3);margin-bottom:8px;}
 .chart-headline{font-size:19px;font-weight:700;margin:1px 0 8px;}
-.chart-legend{display:flex;gap:14px;margin-bottom:8px;flex-wrap:wrap;}
+/* align-content:flex-start (2026-08-13) -- only matters once a caller sets
+   min-height taller than the legend's own content (e.g. Balance Sheet's
+   Asset/Liabilities & Equity legend-height sync, see pnl_balance_sheet.html)
+   -- without it, a flex container's default cross-axis stretch would spread
+   a 1-line legend's row across the full padded box instead of leaving the
+   extra space below it. No effect on every other .chart-legend, which never
+   has spare height to distribute in the first place. */
+.chart-legend{display:flex;gap:14px;margin-bottom:8px;flex-wrap:wrap;align-content:flex-start;}
 .chart-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink-2);}
 .chart-legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
 .chart-legend-dash{width:12px;height:0;border-top:1.5px dashed var(--ink-1);flex-shrink:0;}
@@ -472,63 +505,6 @@ button,select{font-family:inherit;}
 /* ---------- "Channel Growth & Target Gap" — row-based (not scatter/matrix)
    replacement for the quadrant scatter, so there's no label-collision risk
    at all: each row is plain grid layout, not point-placement on a canvas. ---------- */
-/* .card stretches to match its .chart-grid sibling's height (grid default
-   align-items:stretch), which used to leave dead space below the insight
-   box. Scoped to just this card (not .card generically) so other cards'
-   layout is untouched — margin-top:auto on the insight box below absorbs
-   that extra space instead, pinning it to the card's bottom edge. */
-.chgap-card{display:flex;flex-direction:column;}
-.chgap-card #chGapAction{margin-top:auto;}
-.chgap-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;color:var(--ink-3);margin-bottom:8px;}
-.chgap-legend-item{display:flex;align-items:center;gap:5px;}
-.chgap-swatch{width:9px;height:9px;border-radius:2px;display:inline-block;flex:none;}
-.chgap-swatch.pos{background:var(--good-text);}
-.chgap-swatch.neg{background:var(--critical);}
-.chgap-col-labels{display:grid;grid-template-columns:112px 1fr 92px 1fr 92px;gap:12px;font-size:10.5px;color:var(--ink-3);padding:0 0 2px;}
-.chgap-axis{display:grid;grid-template-columns:112px 1fr 92px 1fr 92px;gap:12px;padding:0 0 4px;}
-.chgap-axis-track{position:relative;height:11px;}
-.chgap-axis-tick{position:absolute;transform:translateX(-50%);font-size:10px;color:var(--ink-3);white-space:nowrap;}
-.chgap-axis-tick.edge-left{transform:none;}
-.chgap-refline-swatch{width:12px;height:0;border-top:1.5px dashed var(--ink-2);display:inline-block;}
-.chgap-ref-line{position:absolute;top:-3px;bottom:-3px;width:0;border-left:1.5px dashed var(--ink-2);}
-.chgap-row{display:grid;grid-template-columns:112px 1fr 92px 1fr 92px;align-items:center;gap:12px;padding:6px 0;border-bottom:1px solid var(--hairline);}
-.chgap-row:last-child{border-bottom:none;}
-.chgap-row.total{border-top:2px solid var(--border-2);border-bottom:none;padding-top:9px;margin-top:1px;}
-.chgap-row.total .chgap-name{font-weight:750;}
-.chgap-name{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:650;color:var(--ink-1);}
-.chgap-dot{width:10px;height:10px;border-radius:2px;flex:none;}
-.chgap-badge{display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;justify-content:flex-end;white-space:nowrap;}
-.chgap-badge.pos{color:var(--good-text);}
-.chgap-badge.neg{color:var(--critical);}
-.chgap-bar-track{position:relative;height:20px;background:var(--wash);border-radius:4px;}
-.chgap-bar-zero{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--ink-3);}
-.chgap-bar-fill{position:absolute;top:2px;bottom:2px;border-radius:3px;min-width:2px;}
-.chgap-bar-fill.pos{background:var(--good-text);left:26%;}
-.chgap-bar-fill.neg{background:var(--critical);right:74%;}
-.chgap-value-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:1px;}
-.chgap-value{font-size:12.5px;font-weight:700;text-align:right;white-space:nowrap;}
-.chgap-value.pos{color:var(--good-text);}
-.chgap-value.neg{color:var(--critical);}
-.chgap-value-sub{font-size:10.5px;font-weight:500;white-space:nowrap;}
-.chgap-value-sub.pos{color:var(--good-text);}
-.chgap-value-sub.neg{color:var(--critical);}
-/* Per-row mobile labels ("YoY Growth"/"Target Attainment %") — the shared
-   .chgap-col-labels header row (which normally names these two bars) is
-   hidden below the 768px breakpoint since it's laid out for the desktop
-   5-column grid, so without this each row on mobile becomes two unlabeled
-   stacked bars with no way to tell which metric is which. Hidden on desktop
-   (display:none elements are skipped entirely by CSS Grid's auto-placement,
-   so this doesn't consume a column in the normal 5-column row there). */
-.chgap-mobile-label{display:none;}
-@media (max-width:768px){
-  .chgap-col-labels,.chgap-axis{display:none;}
-  .chgap-row{grid-template-columns:1fr;gap:6px;text-align:left;}
-  .chgap-row.total{padding-top:9px;}
-  .chgap-value{text-align:left;}
-  .chgap-value-wrap{align-items:flex-start;}
-  .chgap-mobile-label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-3);margin-top:4px;}
-}
-
 .section-label-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px;}
 .level-select-wrap{display:flex;align-items:center;gap:8px;}
 .level-select-note{font-size:10.5px;color:var(--ink-3);max-width:280px;line-height:1.4;}

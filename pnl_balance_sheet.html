@@ -404,6 +404,20 @@ function renderAll(){
   buildStackedBarSVG('liabChart', { labels: win.labels, series: liabSeries, valueFormatter: fmtTHB, showTotalLabels:true, lastBarExtraLines: lastBarComparisons(liabEquityTotalByQ) });
   document.getElementById('liabLegend').innerHTML = liabSeries.map(s=>'<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+s.color+'"></span>'+s.name+'</span>').join('');
   latestData.liab = { labels: win.labels, series: liabSeries };
+
+  /* Legend-height sync (2026-08-13, UI alignment only — no scale/value
+     change) -- Asset Breakdown's legend (8 categories) wraps to 2 lines
+     while Liabilities & Equity's (4 categories) fits on 1, so with each
+     card's canvas-wrap starting right after its own legend, the two plot
+     areas (baseline, gridlines, X-axis) landed at different Y offsets even
+     though canvas-wrap itself is the same height in both cards. Reset then
+     re-measure both legends' real rendered height (not a hand-guessed
+     number, so this stays correct if a category is ever added/removed)
+     and pad both up to the taller one, so both plots start at the same row. */
+  const assetLegendEl = document.getElementById('assetLegend'), liabLegendEl = document.getElementById('liabLegend');
+  assetLegendEl.style.minHeight = liabLegendEl.style.minHeight = '';
+  const legendH = Math.max(assetLegendEl.offsetHeight, liabLegendEl.offsetHeight);
+  assetLegendEl.style.minHeight = liabLegendEl.style.minHeight = legendH+'px';
 }
 
 /* --- Toolbar --- */

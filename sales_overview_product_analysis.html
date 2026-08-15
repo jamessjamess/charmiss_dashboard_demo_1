@@ -7,6 +7,22 @@
 <script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
 <link rel="stylesheet" href="shared.css">
 <link rel="stylesheet" href="nav-menu.css">
+<style>
+  /* Page-local styles (2026-08-14, feedback) — kept out of shared.css since
+     these are specific to this page's METRIC toggle + Top 10 drill rows,
+     not a pattern used elsewhere yet. */
+  #topProductsTable .metric-sort-col{font-weight:700;color:var(--ink-1);}
+  #topProductsTable .drill-row{cursor:pointer;transition:background-color .12s ease;}
+  #topProductsTable .drill-row:hover{background:var(--wash);}
+  #topProductsTable .drill-row:active{background:var(--border);}
+  #topProductsTable .drill-row:focus-visible{outline:2px solid var(--brand);outline-offset:-2px;}
+  /* Larger tap target (2026-08-14, mobile) — table-card td default padding
+     (11px 12px) is a bit tight for a tappable row on touch screens. */
+  #topProductsTable td{padding-top:13px;padding-bottom:13px;}
+  /* Breakdown drill select (2026-08-14, feedback) — .level-select's default
+     padding (6px 8px) is a bit small for a comfortable mobile tap target. */
+  #breakdownDrillSelect{padding:10px 10px;font-size:12.5px;min-height:40px;}
+</style>
 </head>
 <body>
 <div class="app">
@@ -32,8 +48,9 @@
 
     <div class="header-utility-row" id="headerUtilityRow">
     <nav class="section-nav">
-      <a href="#sec-zoneD">Performance Overview</a>
-      <a href="#sec-zoneB">Cross-Channel Analysis</a>
+      <a href="#sec-zoneD">Overview</a>
+      <a href="#sec-zoneP">Product ranking</a>
+      <a href="#sec-zoneB">Breakdown</a>
     </nav>
     <div class="nav-filter-divider"></div>
     <div class="filter-bar-group">
@@ -73,14 +90,23 @@
         </div>
 
         <div class="filter-item">
+          <span class="filter-label">Metric</span>
+          <div class="timeframe-toggle" id="metricToggle">
+            <div class="timeframe-thumb" id="metricThumb"></div>
+            <button class="timeframe-opt selected" data-metric="sales">Sales (฿)</button>
+            <button class="timeframe-opt" data-metric="units">Units</button>
+          </div>
+        </div>
+
+        <div class="filter-item">
           <span class="filter-label">Channel</span>
           <button class="period-btn" id="channelBtn">
-            <span id="channelBtnLabel">All Channels</span>
+            <span id="channelBtnLabel">MT</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </button>
           <div class="period-dropdown" id="channelDropdown" style="width:180px;">
-            <div class="period-opt selected" data-ch="All"><span class="chk">✓</span>All Channels</div>
-            <div class="period-opt" data-ch="MT"><span class="chk"></span>MT</div>
+            <div class="period-opt" data-ch="All"><span class="chk"></span>All Channels</div>
+            <div class="period-opt selected" data-ch="MT"><span class="chk">✓</span>MT</div>
             <div class="period-opt" data-ch="TT"><span class="chk"></span>TT</div>
             <div class="period-opt" data-ch="Ecom"><span class="chk"></span>Ecom</div>
           </div>
@@ -113,15 +139,20 @@
     </div>
   </div>
 
-  <!-- ===== Zone D: Performance Overview ===== -->
-  <div class="section-label" id="sec-zoneD">Performance Overview</div>
+  <!-- ===== Zone D: Overview (2026-08-14, feedback): Row 1 (1x3) pairs Sales
+       by Category with the merged Sales/Units YoY ranking and Return/
+       Cancellation Rate; Row 2 (1x2) is the two "over time" trend charts.
+       Every card here still flips ฿/units off the page-level METRIC
+       toggle. Top 10 Product Selling moved to its own "Product ranking"
+       pill below (goal: 1 pill = 1 story, less scrolling per pill). ===== -->
+  <div class="section-label" id="sec-zoneD">Overview</div>
 
   <div class="chart-grid chart-grid-3" style="margin-bottom:14px;">
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Sales by Category</span>
-          <button class="info-icon" data-info-title="Sales by Category" data-info-text="เลือกระดับได้ 4 ชั้น (Category → Sub-Category → Type → Series) แสดงแบบจัดอันดับ Top View ข้าม Category ทั้งหมด (ไม่ใช่ Breadcrumb Drill) — ชื่อ Category แม่กำกับใต้ชื่อด้วยตัวเล็กสีจาง">i</button>
+          <span class="chart-title" id="deepDiveTitle">Sales by Category</span>
+          <button class="info-icon" id="deepDiveInfoBtn" data-info-title="Sales by Category" data-info-text="เลือกระดับได้ 4 ชั้น (Category → Sub-Category → Type → Series) แสดงแบบจัดอันดับ Top View ข้าม Category ทั้งหมด (ไม่ใช่ Breadcrumb Drill) — ชื่อ Category แม่กำกับใต้ชื่อด้วยตัวเล็กสีจาง — ผูกกับ Filter Channel ด้านบน (เมื่อเลือก Channel เดียว ตัวเลข % และ ฿ จะ reconcile กับหน้า Product ของ Channel นั้น) — พลิกเป็น Units ได้จาก METRIC toggle ด้านบน">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="deepDiveTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -130,7 +161,6 @@
         </div>
       </div>
       <div class="cat-bars" id="deepDiveBars"></div>
-      <div class="callout-text" id="deepDiveCallout" style="margin-top:10px;">–</div>
       <div class="data-table-wrap" id="deepDiveTableWrap"></div>
       <a href="javascript:void(0)" class="see-all-link" id="seeAllLink" style="display:none;"></a>
     </div>
@@ -138,8 +168,8 @@
     <div class="card">
       <div class="chart-card-head">
         <div class="chart-title-wrap">
-          <span class="chart-title">Growth Ranking (YoY) — <span id="rankLevelLabel">Category</span></span>
-          <button class="info-icon" data-info-title="Growth Ranking" data-info-text="จัดอันดับตาม %Growth YoY (ไม่ใช่ขนาดยอดขายเหมือน Sales by Category ด้านซ้าย) แยกเป็น 2 กลุ่มทิศทางเดียวกัน (โตเร็วที่สุด / หดแรงที่สุด) แทนแกนเดียวที่มีทั้งบวกลบ เพื่อให้ความยาวแท่งอ่านง่าย ไม่ต้องตีความเครื่องหมาย">i</button>
+          <span class="chart-title"><span id="rankMetricLabel">Sales</span> YoY — <span id="rankLevelLabel">Category</span></span>
+          <button class="info-icon" id="rankInfoBtn" data-info-title="Sales/Units YoY" data-info-text="จัดอันดับตาม %Growth YoY ของ Sales(฿) หรือ Units ตาม METRIC toggle ด้านบน (ไม่ใช่ขนาดยอดขายเหมือน Sales by Category) — แท่งเขียว=โต แท่งแดง=หด เรียงจากมากไปน้อยในกราฟเดียว ความยาวแท่งเทียบกับ |Growth| สูงสุดในชุดข้อมูล">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="rankTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -147,10 +177,8 @@
           <button class="tool-btn" id="rankExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
         </div>
       </div>
-      <div class="rank-subgroup-title" id="rankGrowTitle">Fastest Growing</div>
-      <div class="cat-bars" id="rankGrowBars"></div>
-      <div class="rank-subgroup-title" id="rankDeclineTitle" style="margin-top:16px;">Declining</div>
-      <div class="cat-bars" id="rankDeclineBars"></div>
+      <div class="chart-subtitle" id="rankSubtitle">–</div>
+      <div class="cat-bars" id="rankBars"></div>
       <div class="data-table-wrap" id="rankTableWrap"></div>
       <a href="javascript:void(0)" class="see-all-link" id="rankSeeAllLink" style="display:none;"></a>
     </div>
@@ -168,9 +196,8 @@
         </div>
       </div>
       <div class="cat-bars" id="returnBars"></div>
-      <div class="callout-text" id="returnCallout" style="margin-top:10px;">–</div>
-      <div class="data-table-wrap" id="returnTableWrap"></div>
       <a href="javascript:void(0)" class="see-all-link" id="returnSeeAllLink" style="display:none;"></a>
+      <div class="data-table-wrap" id="returnTableWrap"></div>
     </div>
   </div>
 
@@ -178,8 +205,8 @@
     <div class="card">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title">Revenue Trend by <span id="revTrendLevelLabel">Category</span></span>
-        <button class="info-icon" data-info-title="Revenue Trend by Product Level" data-info-text="ยอดขายรวม (฿) แยกตาม Category/Sub-Category/Type/Series ตามระดับที่เลือก รายเดือน ย้อนหลัง 18 เดือน — พื้นที่ซ้อน (Stacked Area) ไม่ได้ Normalize เป็น 100% เหมือน Share of Sales ด้านล่าง จึงเห็นทั้งขนาดยอดขายรวมที่โตขึ้น/ลดลง และสัดส่วนของแต่ละรายการไปพร้อมกัน">i</button>
+        <span class="chart-title"><span id="trendMetricLabel">Revenue</span> Trend by <span id="revTrendLevelLabel">Category</span></span>
+        <button class="info-icon" id="trendInfoBtn" data-info-title="Trend by Product Level" data-info-text="ยอดขายรวม (฿) หรือปริมาณ (Units) แยกตาม Category/Sub-Category/Type/Series ตามระดับที่เลือก รายเดือน ย้อนหลัง 18 เดือน — พลิกด้วย METRIC toggle ด้านบน — พื้นที่ซ้อน (Stacked Area) ไม่ได้ Normalize เป็น 100% เหมือน Share of Sales ด้านล่าง จึงเห็นทั้งขนาดรวมที่โตขึ้น/ลดลง และสัดส่วนของแต่ละรายการไปพร้อมกัน">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="revTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -188,16 +215,18 @@
       </div>
     </div>
     <div class="chart-legend" id="revTrendLegend"></div>
-    <div class="canvas-wrap" id="revTrendCanvasWrap" style="height:280px;"><div id="revTrendChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="revTrendCallout" style="margin-top:10px;">–</div>
+    <div class="canvas-wrap" id="revTrendCanvasWrap" style="height:280px;display:flex;align-items:stretch;">
+      <div id="revTrendYAxis" style="position:relative;width:46px;flex-shrink:0;"></div>
+      <div id="revTrendChart" style="flex:1;height:100%;min-width:0;"></div>
+    </div>
     <div class="data-table-wrap" id="revTrendTableWrap"></div>
     </div>
 
     <div class="card">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
-        <span class="chart-title"><span id="shareLevelLabel">Category</span> Share of Sales Over Time</span>
-        <button class="info-icon" data-info-title="Category Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขายของแต่ละ Category ต่อยอดขายรวม รายเดือน ย้อนหลัง 18 เดือน — Design เดียวกับ Channel Mix Over Time (100%-Stacked Bar + ตัวเลข % และ ฿ บนแท่ง) แต่คงความถี่รายเดือนไว้ เพราะการดูภาพรวม Product มักต้องละเอียดกว่าระดับ Channel">i</button>
+        <span class="chart-title"><span id="shareLevelLabel">Category</span> Share of <span id="shareMetricLabel">Sales</span> Over Time</span>
+        <button class="info-icon" id="shareInfoBtn" data-info-title="Category Share of Sales/Units Over Time" data-info-text="สัดส่วน % ของแต่ละ Category ต่อยอดรวม (฿ หรือ Units ตาม METRIC toggle ด้านบน) รายเดือน ย้อนหลัง 18 เดือน — Design เดียวกับ Channel Mix Over Time (100%-Stacked Bar + ตัวเลข % และมูลค่าบนแท่ง) แต่คงความถี่รายเดือนไว้ เพราะการดูภาพรวม Product มักต้องละเอียดกว่าระดับ Channel">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="shareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -207,12 +236,16 @@
     </div>
     <div class="chart-legend" id="shareLegend"></div>
     <div class="canvas-wrap" id="shareCanvasWrap" style="height:280px;"><div id="shareChart" style="width:100%;height:100%;"></div></div>
-    <div class="callout-text" id="shareCallout" style="margin-top:10px;">–</div>
     <div class="data-table-wrap" id="shareTableWrap"></div>
     </div>
   </div>
 
-  <div class="card table-card" style="margin-top:14px;">
+  <!-- ===== Zone P: Product ranking (2026-08-14, feedback — split out on its
+       own so this pill is exactly one story: which individual products are
+       selling, not a mix of category-level views). ===== -->
+  <div class="section-label" id="sec-zoneP">Product ranking</div>
+
+  <div class="card table-card" style="margin-bottom:14px;">
     <div class="card-head">
       <span class="card-title">Top 10 Product Selling</span>
       <button class="info-icon" data-info-title="Top 10 Product Selling" data-info-text="จัดอันดับสินค้า (Series — ระดับสินค้าที่ละเอียดที่สุด) ตามยอดขายสุทธิ 10 อันดับแรก ไม่ผูกกับ Filter 'Product Level' ด้านบน — คอลัมน์ MT/TT/Ecom แยกยอดขายตาม Channel เสมอ (เหมือน Heatmap ที่ยึดหน่วยของตัวเองเสมอ, ไม่ผูกกับ Filter 'Channel' ด้านบน) — Category/Sub-Category ดูได้จาก CSV Download, Quantity ประมาณจากยอดขายสุทธิ ÷ ราคาขายเฉลี่ยต่อหน่วยของสินค้านั้น (ราคาสุ่มคงที่ต่อสินค้า ไม่เปลี่ยนตาม Filter)">i</button>
@@ -226,14 +259,35 @@
     <div class="callout-text" id="topProductsCallout" style="margin-top:10px;">–</div>
   </div>
 
-  <!-- ===== Zone B: Cross-Channel Analysis ===== -->
+  <!-- ===== Zone B: Breakdown (2026-08-14, feedback — renamed from
+       "Cross-Channel Analysis"; row dimension is now context-aware: MT/TT/Ecom
+       when All Channels is selected, or that channel's own sub-entity
+       (Partner/Platform/Customer Group/Store) when one channel is scoped) —
+       plus (2026-08-14) a "drill" select next to the By toggle, letting the
+       rows narrow to exactly 1 sub-entity so its own category trend/mix
+       reads cleanly without every other partner/platform/etc. cluttering
+       the table. ===== -->
   <div class="section-label-row">
-    <div class="section-label" id="sec-zoneB" style="margin:0;">Cross-Channel Analysis</div>
+    <div class="section-label" id="sec-zoneB" style="margin:0;">Breakdown</div>
+    <div style="margin-left:auto;display:flex;align-items:center;flex-wrap:wrap;gap:14px;">
+      <div class="filter-item" id="ttBreakdownByWrap" style="display:none;">
+        <span class="filter-label">By</span>
+        <div class="timeframe-toggle" id="ttBreakdownByToggle">
+          <div class="timeframe-thumb" id="ttBreakdownByThumb"></div>
+          <button class="timeframe-opt selected" data-by="customerGroup">Customer Group</button>
+          <button class="timeframe-opt" data-by="store">Store</button>
+        </div>
+      </div>
+      <div class="filter-item" id="breakdownDrillWrap" style="display:none;">
+        <span class="filter-label" id="breakdownDrillLabel">Partner</span>
+        <select class="level-select" id="breakdownDrillSelect"></select>
+      </div>
+    </div>
   </div>
   <div class="card" style="margin-bottom:14px;">
     <div class="card-head">
-      <span class="card-title">Channel × <span id="heatmapLevelLabel">Category</span> Heatmap</span>
-      <button class="info-icon" data-info-title="Channel × Category Heatmap" data-info-text="แถว = MT/TT/Ecom, คอลัมน์ = Category/Sub-Category/Type/Series ตามระดับที่เลือก (เรียงจากยอดขายมากไปน้อย, เลื่อนดูทางขวาได้ถ้ามีจำนวนคอลัมน์เยอะ), ค่าใน Cell = ยอดขาย + % ที่มาจาก Channel นั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
+      <span class="card-title"><span id="heatmapRowLabel">Channel</span> × <span id="heatmapLevelLabel">Category</span> Heatmap</span>
+      <button class="info-icon" id="heatmapInfoBtn" data-info-title="Channel × Category Heatmap" data-info-text="แถว = MT/TT/Ecom (หรือ Partner/Platform/Customer Group/Store เมื่อเลือก Channel เดียวจาก Filter ด้านบน — เลือกต่อได้อีก 1 sub-entity จาก dropdown ด้านขวา), คอลัมน์ = Category/Sub-Category/Type/Series ตามระดับที่เลือก (เรียงจากยอดขายมากไปน้อย, เลื่อนดูทางขวาได้ถ้ามีจำนวนคอลัมน์เยอะ), ค่าใน Cell = ยอดขาย + % ที่มาจากแถวนั้น (Row-normalized) — สีเข้มขึ้นตาม % ที่สูงขึ้น">i</button>
       <div class="toolbar" style="margin-left:auto;">
         <button class="tool-btn" id="heatmapDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="heatmapExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
@@ -242,13 +296,12 @@
     <div class="heatmap-scroll" style="overflow-x:auto;">
       <table class="heatmap-table heatmap-table-transposed" id="heatmapTable"></table>
     </div>
-    <div class="callout-text" id="heatmapCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
 
   <div class="card" style="margin-bottom:14px;">
     <div class="card-head">
-      <span class="card-title"><span id="growthHeatmapLevelLabel">Category</span> Growth by Channel</span>
-      <button class="info-icon" data-info-title="Category Growth by Channel" data-info-text="YoY Growth % ของแต่ละ Category/Sub-Category/Type/Series เฉพาะภายใน Channel นั้น (ไม่ใช่ Growth รวมบริษัท) — คำนวณจากยอดขายปีนี้เทียบปีก่อนในช่วงเวลาเดียวกัน สีแดง = หด, สีเขียว = โต, ใกล้เทา = ทรงตัว ดูตาม Scale bar ด้านล่าง">i</button>
+      <span class="card-title"><span id="growthHeatmapLevelLabel">Category</span> Growth by <span id="growthHeatmapRowLabel">Channel</span></span>
+      <button class="info-icon" id="growthHeatmapInfoBtn" data-info-title="Category Growth by Channel" data-info-text="YoY Growth % ของแต่ละ Category/Sub-Category/Type/Series เฉพาะภายในแถวนั้น (ไม่ใช่ Growth รวมบริษัท) — คำนวณจากยอดขายปีนี้เทียบปีก่อนในช่วงเวลาเดียวกัน สีแดง = หด, สีเขียว = โต, ใกล้เทา = ทรงตัว ดูตาม Scale bar ด้านล่าง">i</button>
       <div class="toolbar" style="margin-left:auto;">
         <button class="tool-btn" id="growthHeatmapDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
         <button class="tool-btn" id="growthHeatmapExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
@@ -262,7 +315,6 @@
       <div id="growthScaleBar" style="flex:1;height:8px;border-radius:4px;"></div>
       <span id="growthScaleMaxLabel">+20%</span>
     </div>
-    <div class="callout-text" id="growthHeatmapCallout" style="margin-top:10px;margin-bottom:0;">–</div>
   </div>
 
 
@@ -425,6 +477,143 @@ const CATEGORY_TREE = {
 const LEVEL_NAMES = ['Category','Sub-Category','Type','Series'];
 const LEVEL_NAMES_PLURAL = ['Categories','Sub-Categories','Types','Series'];
 
+/* ---------- Per-channel category-mix overrides (2026-08-14, feedback) —
+   when a single Channel is selected, Performance Overview widgets must
+   reconcile with that channel's OWN dedicated category-mix module (its
+   Product tab's own fixed authored % shares), not a generic
+   channelMix-ratio derivation off the company-wide CATEGORY_TREE. Byte-for-
+   byte copies of module_mt_product.html's mtCategoryShares (incl. its own
+   per-category growthYoY) and module_ecom_product.html's ecomCategoryShares
+   (same). TT has no equivalent per-category growthYoY authored anywhere
+   (tt-shared.js's own category growth is a window-comparison mechanism, not
+   a static number) — its CATEGORY_SHARE array (tt-shared.js) gives the %
+   split; company-wide CATEGORY_TREE.growthYoY is used as the best available
+   stand-in for TT's own per-category growth. ---------- */
+const CHANNEL_CATEGORY_SHARES = {
+  MT: [
+    {name:'Skin Care', pct:31.9, growth:9.2}, {name:'Personal Care', pct:23.2, growth:13.6}, {name:'Hair Care', pct:16.8, growth:4.1},
+    {name:'Color Cosmetics', pct:15.4, growth:6.8}, {name:'Accessories', pct:6.5, growth:-2.9}, {name:'Fragrance', pct:6.2, growth:18.3}
+  ],
+  TT: [
+    {name:'Skin Care', pct:28.0}, {name:'Color Cosmetics', pct:20.0}, {name:'Hair Care', pct:18.0},
+    {name:'Personal Care', pct:16.0}, {name:'Fragrance', pct:10.0}, {name:'Accessories', pct:8.0}
+  ].map(c => ({...c, growth: CATEGORY_TREE[c.name].growthYoY})),
+  Ecom: [
+    {name:'Color Cosmetics', pct:26.4, growth:15.2}, {name:'Skin Care', pct:24.8, growth:11.4}, {name:'Personal Care', pct:15.2, growth:8.6},
+    {name:'Hair Care', pct:14.0, growth:6.0}, {name:'Fragrance', pct:11.6, growth:22.5}, {name:'Accessories', pct:8.0, growth:-1.8}
+  ]
+};
+
+/* ---------- Breakdown pill sub-entities (2026-08-14, feedback) — the row
+   dimension of the Heatmap/Growth-by-Channel cards is context-aware: MT/TT/
+   Ecom when All Channels is selected (unchanged), or the scoped channel's
+   own sub-entity when one is. All skew tables below are byte-for-byte
+   copies of each channel's own Product tab (module_mt_product.html's
+   PARTNER_GROUP_PCT/partnerCategorySkew, module_ecom_product.html's
+   platformCategorySkew) or tt-shared.js's CUSTOMER_GROUPS/
+   CUSTOMER_CATEGORY_AFFINITY, so the same per-partner/platform/customer-
+   group category tilt already shown on each channel's own page reappears
+   here unchanged. ---------- */
+const PARTNER_IDS = ['WATSONS','EVEANDBOY',"Lotus's",'7-Eleven','KONVY','CJ Express','Beautrium','Tsuruha','Multy'];
+const PARTNER_GROUP_PCT = { WATSONS:22, EVEANDBOY:18, "Lotus's":16, '7-Eleven':14, KONVY:10, 'CJ Express':8, Beautrium:6, Tsuruha:4, Multy:2 };
+const partnerCategorySkew = {
+  'WATSONS':      { 'Skin Care':1.15, 'Personal Care':1.10, 'Hair Care':0.95, 'Color Cosmetics':0.85, 'Accessories':0.90, 'Fragrance':0.90 },
+  'EVEANDBOY':    { 'Skin Care':1.05, 'Personal Care':0.75, 'Hair Care':0.80, 'Color Cosmetics':1.55, 'Accessories':1.10, 'Fragrance':1.20 },
+  "Lotus's":      { 'Skin Care':0.90, 'Personal Care':1.25, 'Hair Care':1.20, 'Color Cosmetics':0.70, 'Accessories':0.85, 'Fragrance':0.60 },
+  '7-Eleven':     { 'Skin Care':0.70, 'Personal Care':1.35, 'Hair Care':1.05, 'Color Cosmetics':0.55, 'Accessories':1.40, 'Fragrance':0.50 },
+  'KONVY':        { 'Skin Care':1.10, 'Personal Care':0.70, 'Hair Care':0.75, 'Color Cosmetics':1.70, 'Accessories':1.00, 'Fragrance':1.30 },
+  'CJ Express':   { 'Skin Care':0.85, 'Personal Care':1.30, 'Hair Care':1.10, 'Color Cosmetics':0.65, 'Accessories':1.20, 'Fragrance':0.55 },
+  'Beautrium':    { 'Skin Care':1.20, 'Personal Care':0.70, 'Hair Care':0.70, 'Color Cosmetics':1.40, 'Accessories':1.05, 'Fragrance':1.35 },
+  'Tsuruha':      { 'Skin Care':1.25, 'Personal Care':1.05, 'Hair Care':1.00, 'Color Cosmetics':0.75, 'Accessories':0.80, 'Fragrance':0.65 },
+  'Multy':        { 'Skin Care':0.95, 'Personal Care':1.15, 'Hair Care':1.15, 'Color Cosmetics':0.70, 'Accessories':1.10, 'Fragrance':0.55 }
+};
+const PLATFORM_IDS = ['Lazada','Shopee','TikTok','LineShop'];
+const PLATFORM_LABELS = { Lazada:'Lazada', Shopee:'Shopee', TikTok:'TikTok', LineShop:'Line Shop' };
+const platformCategorySkew = {
+  Lazada:   { 'Color Cosmetics':0.95, 'Skin Care':1.10, 'Personal Care':1.05, 'Hair Care':1.00, 'Fragrance':0.90, 'Accessories':1.00 },
+  Shopee:   { 'Color Cosmetics':0.90, 'Skin Care':1.00, 'Personal Care':1.15, 'Hair Care':1.10, 'Fragrance':0.85, 'Accessories':1.05 },
+  TikTok:   { 'Color Cosmetics':1.55, 'Skin Care':0.95, 'Personal Care':0.65, 'Hair Care':0.60, 'Fragrance':1.35, 'Accessories':1.30 },
+  LineShop: { 'Color Cosmetics':0.70, 'Skin Care':1.30, 'Personal Care':1.25, 'Hair Care':1.15, 'Fragrance':0.75, 'Accessories':0.75 }
+};
+const channelDefsByKey = {}; channelDefs.forEach(c=>{ channelDefsByKey[c.key] = c; });
+
+const CUSTOMER_GROUPS = [
+  { name: "Wholesale", weight: 0.20 },
+  { name: "Wholesale - Beauty Store", weight: 0.15 },
+  { name: "Wholesale - Drug Store", weight: 0.15 },
+  { name: "Retail - Beauty Store", weight: 0.25 },
+  { name: "Retail - Drug Store", weight: 0.25 },
+];
+const CUSTOMER_CATEGORY_AFFINITY = {
+  "Wholesale":                  { 'Skin Care':1.15, 'Color Cosmetics':1.1, 'Hair Care':0.95, 'Personal Care':1.05, 'Fragrance':0.85, 'Accessories':0.9 },
+  "Wholesale - Beauty Store":   { 'Skin Care':1.3, 'Color Cosmetics':1.3, 'Hair Care':0.8, 'Personal Care':0.7, 'Fragrance':1.2, 'Accessories':0.9 },
+  "Wholesale - Drug Store":     { 'Skin Care':0.6, 'Color Cosmetics':0.5, 'Hair Care':1.2, 'Personal Care':1.6, 'Fragrance':0.5, 'Accessories':0.9 },
+  "Retail - Beauty Store":      { 'Skin Care':1.4, 'Color Cosmetics':1.4, 'Hair Care':0.7, 'Personal Care':0.6, 'Fragrance':1.3, 'Accessories':1.1 },
+  "Retail - Drug Store":        { 'Skin Care':0.6, 'Color Cosmetics':0.5, 'Hair Care':1.3, 'Personal Care':1.7, 'Fragrance':0.4, 'Accessories':0.8 },
+};
+/* TT "Store" sub-mode — tt-shared.js's own 42-store model has NO per-store
+   category breakdown (explicitly documented there: category is a
+   portfolio-wide construct, not tracked per physical store), so a store's
+   category mix is always its OWN customerGroup's CUSTOMER_CATEGORY_AFFINITY
+   tilt — same rule this file already uses for Customer Group rows, just
+   attributed to individual stores instead of whole groups. A dedicated PRNG
+   seed (never touches the page's main `rand` sequence) generates a stable
+   Top 10 representative store list — illustrative "top stores" concentration
+   (~30% of TT's own total), not literally all ~42 TT stores, so the
+   transposed heatmap stays a manageable width like every other row-mode. */
+const ttStoreRand = mulberry32(20260632);
+function pickCustomerGroupTT(){
+  let r = ttStoreRand(), acc = 0;
+  for(const g of CUSTOMER_GROUPS){ acc += g.weight; if(r<=acc) return g.name; }
+  return CUSTOMER_GROUPS[CUSTOMER_GROUPS.length-1].name;
+}
+const TT_TOP_STORES = [];
+for(let i=0;i<10;i++){
+  TT_TOP_STORES.push({ id:'TT-'+(1000+i), customerGroup: pickCustomerGroupTT(), rawWeight: Math.pow(ttStoreRand(),1.6)*90+10 });
+}
+TT_TOP_STORES.sort((a,b)=>b.rawWeight-a.rawWeight);
+(function normalizeTopStoreShares(){
+  const TOP10_SHARE_OF_TT = 0.30;
+  const sumW = TT_TOP_STORES.reduce((a,s)=>a+s.rawWeight,0) || 1;
+  TT_TOP_STORES.forEach(s=>{ s.pctOfTT = s.rawWeight/sumW*TOP10_SHARE_OF_TT*100; });
+})();
+
+/** Channel-aware version of enumerateLevel — used only by the Performance
+    Overview widgets that must reconcile with a scoped channel's own Product
+    tab (Sales by Category, Growth Ranking, Return Rate, Revenue Trend,
+    Category Share, Units by Category), via getSyncedNodes() below. The
+    plain enumerateLevel() above stays untouched and company-wide-only,
+    since Top 10 Product Selling and the Heatmap's own RAS reconciliation
+    still need their EXISTING (unchanged, per instruction) channelMix-based
+    figures. When a channel is scoped, each root Category's pct/growthYoY
+    come from CHANNEL_CATEGORY_SHARES instead of CATEGORY_TREE, and every
+    descendant's relative split (sub/type/series % of parent) is unchanged
+    — so the whole subtree still reconciles to the scoped channel's own
+    total. */
+function enumerateLevelForScope(depth){
+  const scoped = currentChannelFilter!=='All' ? CHANNEL_CATEGORY_SHARES[currentChannelFilter] : null;
+  const results = [];
+  Object.entries(CATEGORY_TREE).forEach(([catName,cat])=>{
+    const scopedEntry = scoped ? scoped.find(c=>c.name===catName) : null;
+    const rootPct = scopedEntry ? scopedEntry.pct : cat.pct;
+    const rootGrowth = scopedEntry ? scopedEntry.growth : cat.growthYoY;
+    if(depth===0){ results.push({name:catName, pct:rootPct, parent:null, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:rootGrowth, returnRate:cat.returnRate, rootCategory:catName}); return; }
+    Object.entries(cat.subs).forEach(([subName,sub])=>{
+      const subAbsPct = rootPct * sub.pct/100;
+      if(depth===1){ results.push({name:subName, pct:subAbsPct, parent:catName, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:rootGrowth, returnRate:cat.returnRate, rootCategory:catName}); return; }
+      Object.entries(sub.types).forEach(([typeName,type])=>{
+        const typeAbsPct = subAbsPct * type.pct/100;
+        if(depth===2){ results.push({name:typeName, pct:typeAbsPct, parent:subName, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:rootGrowth, returnRate:cat.returnRate, rootCategory:catName, subCategory:subName}); return; }
+        Object.entries(type.series).forEach(([seriesName,seriesPct])=>{
+          const seriesAbsPct = typeAbsPct * seriesPct/100;
+          if(depth===3){ results.push({name:seriesName, pct:seriesAbsPct, parent:typeName, color:CATEGORY_COLOR[catName], channelMix:cat.channelMix, growthYoY:rootGrowth, returnRate:cat.returnRate, rootCategory:catName, subCategory:subName}); }
+        });
+      });
+    });
+  });
+  return results.sort((a,b)=> b.pct-a.pct);
+}
+
 /** Flat "Top View" ranking at a given depth (0-3), each node carrying its
     absolute % of company-wide sales, parent-category color/channelMix/growth
     for inheritance, and a breadcrumb-ish parent label for the sub-caption. */
@@ -476,11 +665,44 @@ function resolveColor(cssColorOrVar){
 }
 function categoryChannelValue(node, ch, companyTotal){ return node.pct/100 * companyTotal * node.channelMix[ch]; }
 
-function getSyncedNodes(){
-  let nodes = enumerateLevel(currentLevel);
-  if(currentChannelFilter !== 'All'){
-    nodes = nodes.map(n => Object.assign({}, n, { pct: n.pct * n.channelMix[currentChannelFilter] }));
+/** Hand-built "nice round number" Y-axis for revTrendChart (2026-08-14,
+    feedback — buildStackedAreaSVG's own showAxis grid in shared.js just
+    splits maxTotal*1.12 into 4 raw fractions, e.g. 13,465/26,930/40,395/
+    53,861; shared.js can't be edited to add a tick-value hook). Renders
+    into a plain sibling column (see revTrendYAxis in the HTML) rather than
+    inside the SVG, so it works for any valueFormatter (฿ or units) without
+    touching the chart function itself. containerHeight/padT/padB/the *1.12
+    factor all mirror buildStackedAreaSVG's OWN showAxis:true constants
+    exactly (2026-08-14 fix — showAxis is left ON now so its *1.12 headroom
+    stays in effect; see the call site's comment for why turning it off
+    caused clipped/garbled showTopPoints labels), so labels land exactly on
+    the real (buffered) data scale, not a separately-guessed one. */
+function renderNiceYAxis(containerId, maxValue, containerHeight, valueFormatter){
+  const el = document.getElementById(containerId);
+  if(!el) return;
+  if(!(maxValue>0)){ el.innerHTML=''; return; }
+  const padT = 8, padB = 28; // buildStackedAreaSVG's showAxis:true padding
+  const plotH = containerHeight - padT - padB;
+  const bufferedMax = maxValue * 1.12; // matches showAxis:true's own niceMax
+  const rawStep = maxValue/4;
+  const magnitude = Math.pow(10, Math.floor(Math.log10(rawStep)));
+  const norm = rawStep/magnitude;
+  const niceStep = (norm<=1 ? 1 : norm<=2 ? 2 : norm<=5 ? 5 : 10) * magnitude;
+  // Ticks stop AT the buffered scale's own top (not an independently
+  // rounded-up ceiling) — any value beyond that maps to a negative pixel
+  // offset and floats up out of the chart box, so capping the loop here
+  // keeps every tick inside the visible plot no matter how the step rounds.
+  let html = '';
+  for(let v=0; v<=bufferedMax+1e-9; v+=niceStep){
+    const y = padT + (1 - v/bufferedMax) * plotH;
+    const pct = (y/containerHeight*100).toFixed(2);
+    html += '<div style="position:absolute;left:0;right:4px;top:'+pct+'%;transform:translateY(-50%);font-size:9px;line-height:1;color:var(--ink-3);text-align:right;white-space:nowrap;">'+valueFormatter(v)+'</div>';
   }
+  el.innerHTML = html;
+}
+
+function getSyncedNodes(){
+  let nodes = enumerateLevelForScope(currentLevel);
   nodes = applyFocusFilter(nodes);
   return nodes.sort((a,b)=>b.pct-a.pct);
 }
@@ -547,7 +769,9 @@ const focusBtnLabel = document.getElementById('focusBtnLabel');
 let currentPeriodKey = 'ytd';
 let currentCustom = [24, TODAY];
 let currentLevel = 0;
-let currentChannelFilter = 'All';
+let currentChannelFilter = 'MT'; // default (2026-08-14, feedback) — placeholder for a future role-based preset; user can switch to All/TT/Ecom
+let currentTTBreakdownBy = 'customerGroup'; // 'customerGroup' | 'store' — TT-only Breakdown row sub-mode
+let currentDrillEntity = ''; // '' = All (default/unchanged) — otherwise 1 partner/platform/customer-group/store id, scoping Breakdown's rows to just that entity
 let currentFocusSet = new Set(); // empty = no filter ("All"), otherwise the set of selected node names to restrict every chart to
 let topProductsExpanded = false; // Top 10 Product Selling's "See more" toggle — false = capped at 10, true = show every filtered product
 
@@ -642,12 +866,53 @@ function populateFocusDropdown(){
   });
   wireCheckboxes();
 }
+/* --- Drill "1 Series → Channel breakdown" (2026-08-14, feedback, goal 3):
+   tapping a Top 10 Product Selling row sets PRODUCT LEVEL=Series + FILTER=
+   that one series, then scrolls to the Breakdown pill, which already knows
+   how to render "1 node at the current level" broken down by whatever
+   Channel/sub-entity mode is active (breakdownMode) once a single Filter
+   selection narrows the Heatmap/Growth-by-Channel column list down to just
+   that node. Reuses populateFocusDropdown()/renderAll() rather than
+   duplicating their internals — just drives the same state those UI
+   controls already drive, then patches the checkbox/label DOM to match
+   (wireCheckboxes() inside populateFocusDropdown only fires on user *input*
+   events, not on a checkbox's .checked being set programmatically). --- */
+function drillIntoSeries(seriesName){
+  currentLevel = 3;
+  document.querySelectorAll('#levelDropdown .period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  const seriesOpt = document.querySelector('#levelDropdown .period-opt[data-level="3"]');
+  seriesOpt.classList.add('selected'); seriesOpt.querySelector('.chk').textContent='✓';
+  document.getElementById('levelBtnLabel').textContent = LEVEL_NAMES[3];
+  populateFocusDropdown(); // rebuilds the Filter checklist for Series level (also resets currentFocusSet — set it below)
+  currentFocusSet = new Set([seriesName]);
+  const cb = Array.from(document.querySelectorAll('#focusCheckList input[type="checkbox"]')).find(el=>el.dataset.focusCheck===seriesName);
+  if(cb) cb.checked = true;
+  const allOpt = document.getElementById('focusAllOpt');
+  if(allOpt){ allOpt.classList.remove('selected'); allOpt.querySelector('.chk').textContent=''; }
+  document.getElementById('focusBtnLabel').textContent = seriesName;
+  const clearBtn = document.getElementById('focusClearBtn');
+  if(clearBtn) clearBtn.style.display = 'block';
+  renderAll(currentPeriodKey, currentCustom);
+  document.getElementById('sec-zoneB').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function wireTopProductsDrillRows(){
+  document.querySelectorAll('#topProductsTable .drill-row').forEach(row=>{
+    row.addEventListener('click', ()=> drillIntoSeries(row.dataset.series));
+    row.addEventListener('keydown', (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); drillIntoSeries(row.dataset.series); } });
+  });
+}
 /** Restricts `nodes` (assumed to already be AT currentLevel, e.g. the result
     of enumerateLevel(currentLevel) or getSyncedNodes()) to the Filter's
     selection by direct name match. No-op ("show everything") when the
     filter is empty. */
 function applyFocusFilter(nodes){
   return currentFocusSet.size ? nodes.filter(n=>currentFocusSet.has(n.name)) : nodes;
+}
+/** Scope-aware period total, callable from toolbar click handlers outside
+    renderAll()'s own closure (which already has this as `scopeTotal`) — same
+    "whole company or the one scoped channel's real total" rule. */
+function currentScopeTotal(s,e){
+  return currentChannelFilter==='All' ? sumRange(companyActual,s,e) : sumRange(groupActual[currentChannelFilter],s,e);
 }
 /** Same idea, but for node lists that are NOT at currentLevel (e.g. Top 10
     Product Selling always operates at Series/depth-3 regardless of the
@@ -704,13 +969,41 @@ function positionTimeFrameThumb(){
 document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
   const btn = e.target.closest('.timeframe-opt');
   if(!btn || btn.classList.contains('selected')) return;
-  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  // Scoped to #timeFrameToggle (fix, 2026-08-14) — the old unscoped
+  // '.timeframe-opt' selector also matched the other same-class toggles on
+  // this page (ttBreakdownByToggle, and now metricToggle below), silently
+  // clearing THEIR "selected" button whenever View By was clicked.
+  document.querySelectorAll('#timeFrameToggle .timeframe-opt').forEach(o=>o.classList.remove('selected'));
   btn.classList.add('selected');
   positionTimeFrameThumb();
   currentTimeFrame = btn.dataset.key;
   renderAll(currentPeriodKey, currentCustom);
 });
 positionTimeFrameThumb();
+
+/* --- METRIC toggle (2026-08-14, feedback): page-level Sales(฿)/Units switch
+   — every card that used to ship as a ฿/units PAIR (Sales by Category,
+   Revenue/Units Trend, Share of Sales/Units Over Time, Fastest Growing/
+   Declining) now flips in place instead, keyed off currentMetric. Same
+   sliding segmented-control component as View By, just its own toggle. --- */
+let currentMetric = 'sales'; // 'sales' | 'units'
+function positionMetricThumb(){
+  const toggle = document.getElementById('metricToggle');
+  const thumb = document.getElementById('metricThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('metricToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('#metricToggle .timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionMetricThumb();
+  currentMetric = btn.dataset.metric;
+  renderAll(currentPeriodKey, currentCustom);
+});
+positionMetricThumb();
 function bucketMonths(idx, timeFrame){
   if(timeFrame!=='quarterly') return idx.map(i=>[i]);
   const groups = []; let curQ = null;
@@ -724,6 +1017,36 @@ function bucketMonths(idx, timeFrame){
 function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
 function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
 
+/* ---------- TT-only "By: Customer Group / Store" toggle (2026-08-14,
+   feedback) — governs the Breakdown pill's row sub-mode when Channel=TT is
+   scoped; hidden otherwise. Shares state (currentTTBreakdownBy) across both
+   Heatmap and Category Growth by Channel, same as the global Channel filter
+   governing both. ---------- */
+const ttBreakdownByWrap = document.getElementById('ttBreakdownByWrap');
+function updateTTBreakdownByVisibility(){
+  ttBreakdownByWrap.style.display = currentChannelFilter==='TT' ? 'flex' : 'none';
+}
+function positionTTBreakdownByThumb(){
+  const toggle = document.getElementById('ttBreakdownByToggle');
+  const thumb = document.getElementById('ttBreakdownByThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('ttBreakdownByToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('#ttBreakdownByToggle .timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTTBreakdownByThumb();
+  currentTTBreakdownBy = btn.dataset.by;
+  renderAll(currentPeriodKey, currentCustom);
+});
+document.getElementById('breakdownDrillSelect').addEventListener('change', (e)=>{
+  currentDrillEntity = e.target.value;
+  renderAll(currentPeriodKey, currentCustom);
+});
+
 document.querySelectorAll('#channelDropdown .period-opt').forEach(opt=>{
   opt.addEventListener('click', ()=>{
     document.querySelectorAll('#channelDropdown .period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
@@ -731,9 +1054,12 @@ document.querySelectorAll('#channelDropdown .period-opt').forEach(opt=>{
     currentChannelFilter = opt.dataset.ch;
     channelBtnLabel.textContent = currentChannelFilter==='All' ? 'All Channels' : currentChannelFilter;
     channelDropdown.classList.remove('open');
+    updateTTBreakdownByVisibility();
     renderAll(currentPeriodKey, currentCustom);
   });
 });
+updateTTBreakdownByVisibility();
+positionTTBreakdownByThumb();
 
 document.querySelectorAll('#levelDropdown .period-opt').forEach(opt=>{
   opt.addEventListener('click', ()=>{
@@ -788,6 +1114,59 @@ function renderAll(periodKey, custom){
      patched per-component. ========================================== */
   const channelActualTotal = {};
   groupKeys.forEach(ch=>{ channelActualTotal[ch] = sumRange(groupActual[ch], s, e); });
+
+  /* scopeTotal/scopeMonthlyArr (2026-08-14, feedback) — the real ฿ base every
+     Performance Overview widget's pct-derived value multiplies against: the
+     whole-company total when Channel=All (unchanged), or that channel's own
+     real reconciled total (channelActualTotal, same figure Executive
+     Outlook/each channel's own Product tab shows) when one is scoped —
+     together with enumerateLevelForScope's channel-specific pct above, this
+     is what makes Channel=MT reconcile exactly with module_mt_product.html. */
+  const scopeTotal = currentChannelFilter==='All' ? companyTotal : channelActualTotal[currentChannelFilter];
+  const scopeMonthlyArr = currentChannelFilter==='All' ? companyActual : groupActual[currentChannelFilter];
+
+  /* === Quantity (units) per node — computed early since it now feeds the
+     METRIC-flippable Sales/Units by Category card, Fastest Growing/Declining
+     (units mode), and Top 10 Product Selling's sort, not just the old
+     standalone "Units by Category" card. Quantity is deliberately NOT
+     derived from the CHANNEL_CATEGORY_SHARES-reconciled pct used by Sales by
+     Category itself — instead it reuses Top 10 Product Selling's own
+     EXISTING per-Series quantity formula (enumerateLevel(3) + the SAME
+     unnormalized channelMix scaling that widget already applies when a
+     Channel is scoped), rolled up to whatever Product Level is currently
+     selected, so totals always reconcile with Top 10 Product Selling's own
+     units by construction — "ใช้ Quantity ที่มีอยู่ ... ให้ผลรวม reconcile
+     กัน" per the original request. === */
+  function nodeQtyKey(n, depth){
+    if(depth===0) return n.name;
+    if(depth===1) return n.parent+'|'+n.name;
+    if(depth===2) return n.rootCategory+'|'+n.subCategory+'|'+n.name;
+    return n.rootCategory+'|'+n.subCategory+'|'+n.parent+'|'+n.name;
+  }
+  function computeQuantityByLevel(depth){
+    let allSeries = enumerateLevel(3);
+    if(currentChannelFilter !== 'All'){
+      allSeries = allSeries.map(n => Object.assign({}, n, { pct: n.pct * n.channelMix[currentChannelFilter] }));
+    }
+    const qtyByKey = {};
+    allSeries.forEach(n=>{
+      const qty = (n.pct/100*companyTotal) / SERIES_UNIT_PRICE[n.name];
+      const key = depth===3 ? (n.rootCategory+'|'+n.subCategory+'|'+n.parent+'|'+n.name)
+        : depth===2 ? (n.rootCategory+'|'+n.subCategory+'|'+n.parent)
+        : depth===1 ? (n.rootCategory+'|'+n.subCategory)
+        : n.rootCategory;
+      qtyByKey[key] = (qtyByKey[key]||0) + qty;
+    });
+    return qtyByKey;
+  }
+  const qtyByKey = computeQuantityByLevel(currentLevel);
+  function nodeQty(n){ return qtyByKey[nodeQtyKey(n,currentLevel)] || 0; }
+  // Moved up (2026-08-14) from the Sales-by-Category section below — the
+  // Breakdown pill's cellValue() now needs this earlier too (single-series
+  // column reconciliation), and a page Filter is a page-level concept
+  // anyway, not specific to any one widget.
+  const filterActive = currentFocusSet.size > 0;
+
   const allSeriesNodes = enumerateLevel(3);
   const seriesChannelMatrix = {};
   allSeriesNodes.forEach(n=>{
@@ -828,33 +1207,158 @@ function renderAll(periodKey, custom){
     return bucket ? bucket[ch] : categoryChannelValue(node, ch, companyTotal);
   }
 
-  /* === Zone B: Channel × Category Heatmap + Channel Index — both driven by
-     the page-level Product Level filter in the top filterbar (#levelBtn).
+  /* === Zone B: Breakdown pill — Heatmap + Growth by Channel, both driven by
+     the page-level Product Level filter AND now the page-level Channel
+     filter's own row dimension (2026-08-14, feedback):
+       - Channel = All: rows = MT/TT/Ecom, EXACT same reconciledChannelValue-
+         based computation as before (byte-for-byte unchanged — "ใช้ค่าเดิม").
+       - Channel = MT/Ecom/TT: rows = that channel's own sub-entity (Partner/
+         Platform/Customer Group/Store), each row's own category tilt
+         (partnerCategorySkew/platformCategorySkew/CUSTOMER_CATEGORY_AFFINITY)
+         applied to enumerateLevelForScope's already-channel-reconciled node
+         set, so columns still sum to that channel's own real total.
      Capped to Top 20 (Heatmap, scrolls horizontally) / Top 8 (Index chart)
      at deeper levels so the table/chart stays readable once there are
      12/24/48 nodes. === */
-  const levelNodesAll = applyFocusFilter(enumerateLevel(currentLevel));
+  const breakdownMode = currentChannelFilter==='All' ? 'channel'
+    : currentChannelFilter==='MT' ? 'partner'
+    : currentChannelFilter==='Ecom' ? 'platform'
+    : currentTTBreakdownBy; // TT scoped: 'customerGroup' | 'store'
+  const BREAKDOWN_ROW_LABELS = { channel:'Channel', partner:'Partner', platform:'Platform', customerGroup:'Customer Group', store:'Store' };
+  document.getElementById('heatmapRowLabel').textContent = BREAKDOWN_ROW_LABELS[breakdownMode];
+  document.getElementById('growthHeatmapRowLabel').textContent = BREAKDOWN_ROW_LABELS[breakdownMode];
+
+  function breakdownRows(){
+    if(breakdownMode==='partner') return PARTNER_IDS.map(id=>({id, label:id}));
+    if(breakdownMode==='platform') return PLATFORM_IDS.map(id=>({id, label:PLATFORM_LABELS[id]}));
+    if(breakdownMode==='customerGroup') return CUSTOMER_GROUPS.map(g=>({id:g.name, label:g.name}));
+    if(breakdownMode==='store') return TT_TOP_STORES.map(st=>({id:st.id, label:st.id}));
+    return groupKeys.map(k=>({id:k, label:k}));
+  }
+  function breakdownRowTotal(rowId){
+    if(breakdownMode==='partner') return scopeTotal * (PARTNER_GROUP_PCT[rowId]/100);
+    if(breakdownMode==='platform') return sumRange(channelDefsByKey[rowId].actual, s, e);
+    if(breakdownMode==='customerGroup') return scopeTotal * CUSTOMER_GROUPS.find(g=>g.name===rowId).weight;
+    if(breakdownMode==='store') return scopeTotal * (TT_TOP_STORES.find(st=>st.id===rowId).pctOfTT/100);
+    return channelActualTotal[rowId]; // 'channel' mode unused here — reconciledChannelValue path below handles it directly
+  }
+  function breakdownRowSkew(rowId){
+    if(breakdownMode==='partner') return partnerCategorySkew[rowId];
+    if(breakdownMode==='platform') return platformCategorySkew[rowId];
+    if(breakdownMode==='customerGroup') return CUSTOMER_CATEGORY_AFFINITY[rowId];
+    if(breakdownMode==='store') return CUSTOMER_CATEGORY_AFFINITY[TT_TOP_STORES.find(st=>st.id===rowId).customerGroup];
+    return null;
+  }
+  /* Renormalized row-share % across EVERY node at the current level (not
+     just the visible Top-20 heatmap columns), same convention as
+     enumeratePartnerCatLevel/enumeratePlatformCatShare on each channel's own
+     Product tab — cached per row per render since every column lookup for
+     a given row shares the same base computation. */
+  const rowNodePctCache = {};
+  function rowNodePct(rowId, allNodesAtLevel){
+    if(rowNodePctCache[rowId]) return rowNodePctCache[rowId];
+    const skew = breakdownRowSkew(rowId);
+    const weighted = allNodesAtLevel.map(n => ({ name:n.name, pct: n.pct * (skew[n.rootCategory]||1) }));
+    const sum = weighted.reduce((a,n)=>a+n.pct,0) || 1;
+    const map = {}; weighted.forEach(n=>{ map[n.name] = n.pct/sum*100; });
+    rowNodePctCache[rowId] = map;
+    return map;
+  }
+
+  // Fix (2026-08-14, single-series drill): rowNodePct's whole point is a
+  // renormalized % share across EVERY node at this level, INCLUDING ones the
+  // page Filter hides — with a Filter active (e.g. exactly 1 Series scoped
+  // for the "tap a Top 10 row" drill), passing the FILTERED list in as the
+  // denominator collapses every row's share to 100% (a set of 1 always
+  // normalizes to 100% of itself), which was inflating every cellValue() in
+  // non-'channel' breakdownMode to that row's FULL total instead of the
+  // scoped node's real slice of it. levelNodesAllUnfiltered is the
+  // reconciliation-correct denominator; levelNodesAll (Filter-applied) is
+  // still what's actually DISPLAYED as heatmap columns.
+  const levelNodesAllUnfiltered = breakdownMode==='channel' ? enumerateLevel(currentLevel) : enumerateLevelForScope(currentLevel);
+  const levelNodesAll = applyFocusFilter(levelNodesAllUnfiltered);
   const heatmapNodes = rankSlice(levelNodesAll, 20);
-  document.getElementById('heatmapLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+  // Exactly 1 item scoped (e.g. the Top 10 Product Selling row-tap drill) —
+  // name it directly ("Cleanser") instead of the generic level name
+  // ("Series"), since the heatmap/growth table only has 1 column either way.
+  const breakdownLevelLabel = (currentFocusSet.size===1) ? [...currentFocusSet][0] : LEVEL_NAMES[currentLevel];
+  document.getElementById('heatmapLevelLabel').textContent = breakdownLevelLabel;
 
-  const channelTotalsAtLevel = {};
-  groupKeys.forEach(ch=>{ channelTotalsAtLevel[ch] = levelNodesAll.reduce((sum,n)=> sum+reconciledChannelValue(n,currentLevel,ch), 0); });
+  // Sub-entity drill (2026-08-14, feedback) — narrows the Breakdown ROWS to
+  // exactly 1 entity when picked from the drill <select> (default '' = All,
+  // unchanged behavior). Only meaningful in non-'channel' modes (the select
+  // is hidden entirely when Channel=All — see populateBreakdownDrillSelect
+  // below), so 'channel' mode's own rows are never filtered here.
+  const breakdownRowsAll = breakdownRows();
+  const breakdownRowsList = (currentDrillEntity && breakdownMode!=='channel')
+    ? breakdownRowsAll.filter(r=>r.id===currentDrillEntity)
+    : breakdownRowsAll;
 
-  /* --- Transposed heatmap: Channel = rows, Category/Sub-Category/Type/Series
-     node = columns (sorted by sales, highest first). Lets deeper levels (Type
-     up to 24 nodes, Series up to 48) scroll horizontally instead of forcing
-     every node into a fixed-height vertical table. --- */
-  // Cell % (row-normalized within each node) now reads off the reconciled
-  // value / node's own total, instead of the raw fixed channelMix ratio, so
-  // the displayed % always matches the displayed ฿ in the same cell.
+  // Drill <select> (2026-08-14, feedback) — hidden entirely for Channel=All
+  // ('channel' mode already shows MT/TT/Ecom as rows, so "pick 1 sub-entity"
+  // doesn't apply); otherwise rebuilt every render from breakdownRowsAll (so
+  // it always matches whichever Channel/TT-By combination is active) with an
+  // "All <Entity>s" option plus one option per entity. Selection is kept
+  // across re-renders when still valid for the current mode (e.g. switching
+  // Period/Level while a partner is drilled-into), and reset to All when it
+  // isn't (e.g. switching Channel away from MT while WATSONS was selected).
+  const breakdownDrillWrap = document.getElementById('breakdownDrillWrap');
+  if(breakdownMode==='channel'){
+    breakdownDrillWrap.style.display = 'none';
+    currentDrillEntity = '';
+  } else {
+    breakdownDrillWrap.style.display = '';
+    const drillLabelText = BREAKDOWN_ROW_LABELS[breakdownMode];
+    document.getElementById('breakdownDrillLabel').textContent = drillLabelText;
+    if(currentDrillEntity && !breakdownRowsAll.some(r=>r.id===currentDrillEntity)) currentDrillEntity = '';
+    const drillSelect = document.getElementById('breakdownDrillSelect');
+    drillSelect.innerHTML = '<option value="">All '+drillLabelText+'s</option>' + breakdownRowsAll.map(r=>'<option value="'+r.id+'">'+r.label+'</option>').join('');
+    drillSelect.value = currentDrillEntity;
+  }
+
+  /* --- Transposed heatmap: row entity = rows, Category/Sub-Category/Type/
+     Series node = columns (sorted by sales, highest first). Lets deeper
+     levels (Type up to 24 nodes, Series up to 48) scroll horizontally
+     instead of forcing every node into a fixed-height vertical table. --- */
+  function rawCellValue(rowId, node){
+    return breakdownRowTotal(rowId) * (rowNodePct(rowId, levelNodesAllUnfiltered)[node.name]||0)/100;
+  }
+  // Column-reconciliation correction (2026-08-14, feedback, goal 3: "ผลรวม
+  // channel = ยอด series นั้น") — rowNodePct's category-skew tilt guarantees
+  // each ROW still sums to breakdownRowTotal(rowId) exactly (it always did,
+  // by construction — skew only redistributes a row's OWN total across
+  // columns), but never guaranteed a given COLUMN's sum across rows lands
+  // back on that node's real Sales-by-Category total (node.pct/100*
+  // scopeTotal) — skew is a per-row tilt, not a per-column constraint. That
+  // gap is usually small and easy to miss with 20 columns on screen, but
+  // becomes glaring once the page Filter narrows the Heatmap down to a
+  // single scoped node (e.g. the Top 10 "tap a row" drill) where it's the
+  // ONLY number visible. Fix: only when a Filter is active, rescale each
+  // FOCUSED node's per-row estimates by one constant factor so their column
+  // sum exactly matches its Sales-by-Category total — rows keep their own
+  // relative skew shape, and non-focused nodes (never displayed while a
+  // Filter narrows the columns) silently absorb the compensating remainder,
+  // so breakdownRowTotal(rowId) is never touched and the unfiltered default
+  // view (this whole branch is skipped) renders byte-identical to before. */
+  const columnCorrectionCache = {};
+  function cellValue(rowId, node){
+    if(breakdownMode==='channel') return reconciledChannelValue(node,currentLevel,rowId);
+    if(!filterActive) return rawCellValue(rowId, node);
+    if(columnCorrectionCache[node.name] === undefined){
+      const rawTotal = breakdownRowsList.reduce((sum,r)=> sum + rawCellValue(r.id, node), 0);
+      const trueTotal = node.pct/100 * scopeTotal;
+      columnCorrectionCache[node.name] = rawTotal>0 ? trueTotal/rawTotal : 1;
+    }
+    return rawCellValue(rowId, node) * columnCorrectionCache[node.name];
+  }
   const nodeChTotal = {};
-  heatmapNodes.forEach(n=>{ nodeChTotal[n.name] = groupKeys.reduce((sum,ch)=> sum+reconciledChannelValue(n,currentLevel,ch), 0); });
-  const maxShare = Math.max(...heatmapNodes.flatMap(n=>groupKeys.map(ch=> nodeChTotal[n.name] ? reconciledChannelValue(n,currentLevel,ch)/nodeChTotal[n.name] : 0)));
+  heatmapNodes.forEach(n=>{ nodeChTotal[n.name] = breakdownRowsList.reduce((sum,r)=> sum+cellValue(r.id,n), 0); });
+  const maxShare = Math.max(...heatmapNodes.flatMap(n=>breakdownRowsList.map(r=> nodeChTotal[n.name] ? cellValue(r.id,n)/nodeChTotal[n.name] : 0)));
   const rgbBrand = hexToRgb(resolveColor('var(--brand)'));
-  let heatHtml = '<thead><tr><th>Channel</th>' + heatmapNodes.map(n=>'<th>'+n.name+(n.parent?'<span class="sub-label" style="display:block;">'+n.parent+'</span>':'')+'</th>').join('') + '</tr></thead><tbody>';
-  groupKeys.forEach(ch=>{
-    heatHtml += '<tr><td>'+ch+'</td>' + heatmapNodes.map(n=>{
-      const val = reconciledChannelValue(n,currentLevel,ch);
+  let heatHtml = '<thead><tr><th>'+BREAKDOWN_ROW_LABELS[breakdownMode]+'</th>' + heatmapNodes.map(n=>'<th>'+n.name+(n.parent?'<span class="sub-label" style="display:block;">'+n.parent+'</span>':'')+'</th>').join('') + '</tr></thead><tbody>';
+  breakdownRowsList.forEach(row=>{
+    heatHtml += '<tr><td>'+row.label+'</td>' + heatmapNodes.map(n=>{
+      const val = cellValue(row.id,n);
       const share = nodeChTotal[n.name] ? val/nodeChTotal[n.name] : 0;
       const intensity = maxShare ? share/maxShare : 0;
       const bg = 'rgba('+rgbBrand[0]+','+rgbBrand[1]+','+rgbBrand[2]+','+(0.12+intensity*0.55).toFixed(2)+')';
@@ -863,70 +1367,108 @@ function renderAll(periodKey, custom){
   });
   heatHtml += '</tbody>';
   document.getElementById('heatmapTable').innerHTML = heatHtml;
+  latestData.heatmapRowLabels = breakdownRowsList.map(r=>r.label);
   latestData.heatmap = heatmapNodes.map(n=>{
     const row = { name: n.name };
-    groupKeys.forEach(ch=>{ row[ch+'_value'] = reconciledChannelValue(n,currentLevel,ch); row[ch+'_pct'] = nodeChTotal[n.name] ? reconciledChannelValue(n,currentLevel,ch)/nodeChTotal[n.name]*100 : 0; });
+    breakdownRowsList.forEach(r=>{ const val = cellValue(r.id,n); row[r.label+'_value'] = val; row[r.label+'_pct'] = nodeChTotal[n.name] ? val/nodeChTotal[n.name]*100 : 0; });
     return row;
   });
 
-  /* --- Insight: call out each channel's best-selling node at the current
-     level, so the heatmap's takeaway doesn't require scanning every cell.
-     bestVal/share both read off the reconciled matrix, so "X% within MT"
-     is always X% of the REAL MT total (channelTotalsAtLevel, itself now
-     reconciled above), not the uncalibrated channelMix-derived row sum. --- */
-  const heatmapBestPerChannel = {};
-  groupKeys.forEach(ch=>{
-    let best=heatmapNodes[0], bestVal=-1;
-    heatmapNodes.forEach(n=>{ const v=reconciledChannelValue(n,currentLevel,ch); if(v>bestVal){bestVal=v;best=n;} });
-    heatmapBestPerChannel[ch] = { node:best, value:bestVal, share: channelTotalsAtLevel[ch]? bestVal/channelTotalsAtLevel[ch]*100 : 0 };
-  });
-  document.getElementById('heatmapCallout').innerHTML = groupKeys.map(ch=>{
-    const b = heatmapBestPerChannel[ch];
-    return '<b>'+ch+'</b> top '+LEVEL_NAMES[currentLevel].toLowerCase()+': '+b.node.name+' <span class="pos">('+b.share.toFixed(0)+'% within '+ch+')</span>';
-  }).join(' · ');
-
-  /* === Category Growth by Channel — surface which Category×Channel combos
-     are actually growing/declining, a dimension none of Sales by Category,
-     Growth Ranking, or Return/Cancellation Rate cover (all company-wide, no
-     channel split). Each cell starts from the channel's own REAL aggregate
-     YoY growth (channelGrowthYoY[ch], from groupActual[ch] — the same time
-     series Revenue Trend/companyActual already use), then is re-centered per
-     node so its channelMix-weighted average across MT/TT/Ecom reconciles
-     EXACTLY to that node's own stated growthYoY (the same number Growth
-     Ranking displays). Data-integrity bug fix: the previous version was a
-     flat average — (node.growthYoY + channelGrowthYoY[ch]) / 2 — which had
-     no such guarantee, so a declining category (negative growthYoY) could
-     still show 3 all-positive channel cells if every channel's real growth
-     happened to be strongly positive that period (mathematically impossible
-     for a true weighted decomposition, since a weighted average of positive
-     numbers can never be negative). Re-centering makes that impossible by
-     construction while still varying genuinely by channel. === */
+  /* === Category Growth by Channel/Row — surface which node×row combos are
+     actually growing/declining, a dimension none of Sales by Category,
+     Growth Ranking, or Return/Cancellation Rate cover. 'channel' mode keeps
+     the EXACT existing re-centered weighted-decomposition math (unchanged —
+     "ใช้ค่าเดิม"). Sub-entity modes (partner/platform/customerGroup/store)
+     have no authentic per-entity historical growth series anywhere in this
+     mock model, so a per-(row,node) growth is instead derived the same way
+     as the 'channel' mode below: a deterministic hash-seeded tilt per row
+     (2026-08-14, feedback — was previously just node.growthYoY repeated
+     identically on every row, which read as broken/undifferentiated data),
+     re-centered so each COLUMN's own ฿-weighted average across every row
+     reconciles EXACTLY to that node's stated growthYoY — same
+     "column margin holds" guarantee the Heatmap's own RAS reconciliation
+     already provides for ฿ values, just applied to growth %. Hash-seeded
+     (never touches the page's main `rand` sequence) so re-rendering doesn't
+     reshuffle which entities appear to be growing/declining. */
   const priorPeriodAvailable = (s-12) >= 0;
   const channelGrowthYoY = {};
-  groupKeys.forEach(ch=>{
-    channelGrowthYoY[ch] = priorPeriodAvailable
-      ? pctChange(sumRange(groupActual[ch], s, e), sumRange(groupActual[ch], s-12, e-12))
-      : 0;
-  });
-  function cellGrowthYoY(node, ch){
-    if(!priorPeriodAvailable) return node.growthYoY;
-    let weightedAvg = 0;
-    groupKeys.forEach(c=>{ weightedAvg += node.channelMix[c]*channelGrowthYoY[c]; });
-    return node.growthYoY + (channelGrowthYoY[ch] - weightedAvg);
+  if(breakdownMode==='channel'){
+    groupKeys.forEach(ch=>{
+      channelGrowthYoY[ch] = priorPeriodAvailable
+        ? pctChange(sumRange(groupActual[ch], s, e), sumRange(groupActual[ch], s-12, e-12))
+        : 0;
+    });
+  }
+  function hashStrForTilt(str){
+    let h = 2166136261;
+    for(let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
+    return h >>> 0;
+  }
+  /* --- Units growth vs Sales (฿) growth divergence (2026-08-14, METRIC
+     toggle feedback) — node.growthYoY (from CHANNEL_CATEGORY_SHARES /
+     CATEGORY_TREE, untouched) is a REVENUE growth rate; genuinely flipping
+     "Fastest Growing/Declining" and the Trend chart to a Units metric needs
+     an independent Units growth number, decorrelated from ฿ growth by an
+     assumed price/ASP drift — Sales growth = price growth ⊕ volume growth
+     (compounded), so once a price-drift pp is assumed per node, units
+     growth falls out exactly, and the two metrics can genuinely disagree
+     (a node can show Sales up but Units down/flat, or vice versa). Hash-
+     seeded off the node's own name (never touches the page's main `rand`
+     sequence), so re-rendering never reshuffles which nodes look like
+     they're growing/declining on units vs ฿. --- */
+  function priceDriftPP(nodeName){
+    return (mulberry32(hashStrForTilt('priceDrift:'+nodeName))() - 0.5) * 16; // -8..+8 pp assumed ASP drift YoY
+  }
+  function unitsGrowthYoY(node){
+    const priceG = priceDriftPP(node.name);
+    return ((1+node.growthYoY/100) / (1+priceG/100) - 1) * 100;
+  }
+  function metricGrowthYoY(node){ return currentMetric==='sales' ? node.growthYoY : unitsGrowthYoY(node); }
+  /* Range roughly ±15pp around the node's own stated growth — wide enough
+     that some entities land negative on a category the company overall is
+     growing (and vice versa), matching "บาง entity โต บางเจ้าติดลบ" — but
+     bounded so it doesn't produce absurd triple-digit swings. */
+  function rowNodeTilt(rowId, nodeName){
+    return (mulberry32(hashStrForTilt('growthTilt:'+breakdownMode+':'+rowId+':'+nodeName))() - 0.5) * 30;
+  }
+  const rowNodeGrowthCache = {};
+  function cellGrowthYoY(node, rowId){
+    if(breakdownMode==='channel'){
+      if(!priorPeriodAvailable) return node.growthYoY;
+      let weightedAvg = 0;
+      groupKeys.forEach(c=>{ weightedAvg += node.channelMix[c]*channelGrowthYoY[c]; });
+      return node.growthYoY + (channelGrowthYoY[rowId] - weightedAvg);
+    }
+    // Sub-entity modes (partner/platform/customerGroup/store) — cached per
+    // node.name since every row's cell for the same node shares the same
+    // re-centering computation.
+    if(!rowNodeGrowthCache[node.name]){
+      let weightedTilt = 0, totalWeight = 0;
+      breakdownRowsList.forEach(r=>{
+        const w = cellValue(r.id, node);
+        const t = rowNodeTilt(r.id, node.name);
+        weightedTilt += w*t; totalWeight += w;
+      });
+      const avgTilt = totalWeight ? weightedTilt/totalWeight : 0;
+      const map = {};
+      breakdownRowsList.forEach(r=>{ map[r.id] = node.growthYoY + (rowNodeTilt(r.id, node.name) - avgTilt); });
+      rowNodeGrowthCache[node.name] = map;
+    }
+    return rowNodeGrowthCache[node.name][rowId];
   }
 
   /* --- Category Growth by Channel: same node set/layout as the Heatmap
      above (heatmapNodes), diverging red-gray-green instead of the Heatmap's
      sequential single-hue, since this one has genuine negative values. --- */
-  document.getElementById('growthHeatmapLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+  document.getElementById('growthHeatmapLevelLabel').textContent = breakdownLevelLabel;
   const goodRgb = hexToRgb(resolveColor('var(--good)'));
   const criticalRgb = hexToRgb(resolveColor('var(--critical)'));
-  const growthCells = heatmapNodes.map(n=> groupKeys.map(ch=> ({ node:n, ch, growth: cellGrowthYoY(n,ch) }))).flat();
+  const growthCells = heatmapNodes.map(n=> breakdownRowsList.map(row=> ({ node:n, row, growth: cellGrowthYoY(n,row.id) }))).flat();
   const maxAbsGrowth = Math.max(1, ...growthCells.map(c=>Math.abs(c.growth)));
-  let growthHeatHtml = '<thead><tr><th>Channel</th>' + heatmapNodes.map(n=>'<th>'+n.name+(n.parent?'<span class="sub-label" style="display:block;">'+n.parent+'</span>':'')+'</th>').join('') + '</tr></thead><tbody>';
-  groupKeys.forEach(ch=>{
-    growthHeatHtml += '<tr><td>'+ch+'</td>' + heatmapNodes.map(n=>{
-      const g = cellGrowthYoY(n,ch);
+  let growthHeatHtml = '<thead><tr><th>'+BREAKDOWN_ROW_LABELS[breakdownMode]+'</th>' + heatmapNodes.map(n=>'<th>'+n.name+(n.parent?'<span class="sub-label" style="display:block;">'+n.parent+'</span>':'')+'</th>').join('') + '</tr></thead><tbody>';
+  breakdownRowsList.forEach(row=>{
+    growthHeatHtml += '<tr><td>'+row.label+'</td>' + heatmapNodes.map(n=>{
+      const g = cellGrowthYoY(n,row.id);
       const t = g/maxAbsGrowth; // -1..1
       const rgb = t>=0 ? goodRgb : criticalRgb;
       const bg = 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+(0.10+Math.abs(t)*0.55).toFixed(2)+')';
@@ -935,9 +1477,10 @@ function renderAll(periodKey, custom){
   });
   growthHeatHtml += '</tbody>';
   document.getElementById('growthHeatmapTable').innerHTML = growthHeatHtml;
+  latestData.growthHeatmapRowLabels = breakdownRowsList.map(r=>r.label);
   latestData.growthHeatmap = heatmapNodes.map(n=>{
     const row = { name: n.name };
-    groupKeys.forEach(ch=>{ row[ch+'_growth'] = cellGrowthYoY(n,ch); });
+    breakdownRowsList.forEach(r=>{ row[r.label+'_growth'] = cellGrowthYoY(n,r.id); });
     return row;
   });
 
@@ -946,35 +1489,25 @@ function renderAll(periodKey, custom){
   document.getElementById('growthScaleMinLabel').textContent = fmtSignedPct(-maxAbsGrowth,0);
   document.getElementById('growthScaleMaxLabel').textContent = fmtSignedPct(maxAbsGrowth,0);
 
-  let bestGrowthCell=growthCells[0], worstGrowthCell=growthCells[0];
-  growthCells.forEach(c=>{
-    if(c.growth>bestGrowthCell.growth) bestGrowthCell=c;
-    if(c.growth<worstGrowthCell.growth) worstGrowthCell=c;
-  });
-  // Sign-aware wording (fix, 2026-08-06): with real per-channel growth
-  // rates this strong, it's entirely possible every combo is growing this
-  // period — "Steepest decline" would be a lie if the "worst" cell is still
-  // positive. Only call it a decline when it's actually negative; otherwise
-  // frame it as the slowest grower, and let deltaClass color it by its own
-  // real sign instead of a hardcoded neg/red.
-  const worstLabel = worstGrowthCell.growth < 0 ? 'Steepest decline' : 'Slowest growth';
-  document.getElementById('growthHeatmapCallout').innerHTML =
-    'Fastest-growing combo: <b>'+bestGrowthCell.node.name+'</b> in '+bestGrowthCell.ch+' <span class="'+deltaClass(bestGrowthCell.growth)+'">('+fmtSignedPct(bestGrowthCell.growth)+')</span>'
-    + ' · '+worstLabel+': <b>'+worstGrowthCell.node.name+'</b> in '+worstGrowthCell.ch+' <span class="'+deltaClass(worstGrowthCell.growth)+'">('+fmtSignedPct(worstGrowthCell.growth)+')</span>';
-
-  /* === Revenue Trend by Product Level + Category Share of Sales Over Time
-     (level & channel-filter synced with Zone D) — both driven from the same
-     raw per-node monthly values so the two "mix over time" charts always
-     reconcile (absolute ฿ vs. % of the same numbers), and so View By
-     (Monthly/Quarterly) only changes bucketing, not the underlying random
-     jitter draw order. === */
+  /* === Trend by Product Level + Share of Sales/Units Over Time (level &
+     channel-filter synced with Zone D) — both driven from the same raw
+     per-node monthly ฿ values (shareRawSeries) so the ฿ views always
+     reconcile, and so View By (Monthly/Quarterly) only changes bucketing,
+     not the underlying random jitter draw order. Units views are a SECOND,
+     genuinely different-shaped series (unitsRawSeries, below) rather than a
+     rescaled copy of shareRawSeries — a uniform rescale would make the
+     Units line's growth % always identical to the ฿ line's, which would
+     make the METRIC toggle pointless and the divergence-flag callout always
+     silent. === */
   const syncedAll = getSyncedNodes();
   const syncedTop6 = rankSlice(syncedAll, 6);
   document.getElementById('shareLevelLabel').textContent = LEVEL_NAMES[currentLevel];
   document.getElementById('revTrendLevelLabel').textContent = LEVEL_NAMES[currentLevel];
+  document.getElementById('trendMetricLabel').textContent = currentMetric==='sales' ? 'Revenue' : 'Units';
+  document.getElementById('shareMetricLabel').textContent = currentMetric==='sales' ? 'Sales' : 'Units';
 
-  /* --- Category Share of Sales Over Time: redesigned to match Channel Mix
-     Over Time's format (100%-Stacked Bar with % + ฿ labels via
+  /* --- Share of Sales/Units Over Time: redesigned to match Channel Mix
+     Over Time's format (100%-Stacked Bar with % + value labels via
      buildStacked100BarSVG) instead of a smooth Area chart, per feedback that
      the two "mix over time" charts on the dashboard should feel consistent.
      Spans Jan-of-the-period's-year through the period end (or TODAY if that
@@ -990,87 +1523,114 @@ function renderAll(periodKey, custom){
     const raw = new Array(MONTHS_TOTAL).fill(0);
     shareIdx.forEach(i=>{
       const jitter = 1 + (rand()-0.5)*0.1;
-      raw[i] = n.pct/100 * companyActual[i] * jitter;
+      raw[i] = n.pct/100 * scopeMonthlyArr[i] * jitter;
     });
     return { name: n.name, color: resolveColor(n.color), values: bucketSum(raw, shareGroups) };
   });
 
-  /* --- Revenue Trend by Product Level: absolute-฿ stacked bars of the same
-     nodes/values, so growth in the total (not just the mix) is visible. --- */
-  buildStackedAreaSVG('revTrendChart', { labels: shareBucketLabels, series: shareRawSeries, valueFormatter: fmtTHB, showAxis: true, showTopPoints: true, height: 280 });
+  /* --- Units shape: each node's ฿ shape tilted by an assumed smooth
+     price/ASP drift across the displayed window (ramping from -priceG/2 to
+     +priceG/2, where priceG is the SAME priceDriftPP used by
+     unitsGrowthYoY, so the ranking cards and this trend genuinely tell the
+     same price/volume story for a given node), then rescaled so the window
+     TOTAL exactly equals nodeQty(node) — the same quantity Units by
+     Category and Top 10 Product Selling already reconcile to, for any
+     Period/Channel/Product Level combination. --- */
+  const unitsRawSeries = shareRawSeries.map(s=>{
+    const node = syncedTop6.find(n=>n.name===s.name);
+    const totalQty = node ? nodeQty(node) : 0;
+    const priceG = node ? priceDriftPP(node.name) : 0;
+    const nPts = s.values.length;
+    const tilted = s.values.map((v,i)=>{
+      const t = nPts>1 ? i/(nPts-1) : 0;
+      const driftAtI = priceG * (t-0.5);
+      return v / (1 + driftAtI/100);
+    });
+    const shapeTotal = tilted.reduce((a,v)=>a+v,0) || 1;
+    return { name: s.name, color: s.color, values: tilted.map(v=> v/shapeTotal*totalQty) };
+  });
+
+  /* --- Trend by Product Level: absolute stacked bars (฿ or units per
+     METRIC) of the same nodes, so growth in the total (not just the mix) is
+     visible. Insight box removed (2026-08-14, feedback). Y-axis (2026-08-14,
+     feedback: raw ticks like 13,465/26,930/... looked "off") — shared.js's
+     buildStackedAreaSVG has no hook for custom tick values (its showAxis
+     grid is always maxTotal*1.12 split into 4 raw fractions).
+     showAxis:true is kept ON here (fix, 2026-08-14 — a follow-up report
+     that turning it off left the axis "broken": showAxis:false also drops
+     shared.js's *1.12 headroom, so whichever month is the actual company
+     max gets its showTopPoints value-label pinned exactly to the top pixel
+     of the chart, clipped/garbled against the title row above it) — its own
+     axis TEXT+LINES are then stripped from the rendered SVG by exact
+     coordinate (x=46=padL-8 for text, x1=54=padL for lines — the only two
+     x-positions shared.js's grid ever uses in showAxis:true mode) and
+     replaced with the hand-built nice-round-number axis below
+     (renderNiceYAxis), rendered into the revTrendYAxis column next to the
+     chart using the SAME padT=8/padB=28/*1.12 buffered scale shared.js uses
+     internally, so labels land exactly where the (now headroom-restored)
+     chart actually plots the data. --- */
+  const trendSeries = currentMetric==='sales' ? shareRawSeries : unitsRawSeries;
+  const trendValueFormatter = currentMetric==='sales' ? fmtTHB : (v=>Math.round(v).toLocaleString('en-US')+' units');
+  buildStackedAreaSVG('revTrendChart', { labels: shareBucketLabels, series: trendSeries, valueFormatter: trendValueFormatter, showAxis: true, showTopPoints: true, height: 280 });
+  const revTrendSvg = document.querySelector('#revTrendChart svg');
+  if(revTrendSvg){
+    revTrendSvg.querySelectorAll('text[x="46"]').forEach(t=>t.remove());
+    revTrendSvg.querySelectorAll('line[x1="54"]').forEach(l=>l.remove());
+  }
+  const trendMaxTotal = Math.max(...shareBucketLabels.map((lb,i)=> trendSeries.reduce((a,s)=>a+s.values[i],0))) || 1;
+  renderNiceYAxis('revTrendYAxis', trendMaxTotal, 280, trendValueFormatter);
   document.getElementById('revTrendLegend').innerHTML = syncedTop6.map(n=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+resolveColor(n.color)+'"></span>'+n.name+'</span>'
   ).join('');
-  latestData.revTrend = { labels: shareBucketLabels, series: shareRawSeries };
-  const revTrendFirstTotal = shareRawSeries.reduce((a,s)=>a+s.values[0],0);
-  const revTrendLastTotal = shareRawSeries.reduce((a,s)=>a+s.values[s.values.length-1],0);
-  const revTrendGrowthPct = revTrendFirstTotal ? (revTrendLastTotal-revTrendFirstTotal)/revTrendFirstTotal*100 : 0;
-  document.getElementById('revTrendCallout').innerHTML = 'Total revenue, '+shareBucketLabels[0]+' → '+shareBucketLabels[shareBucketLabels.length-1]+': '
-    + fmtTHB(revTrendFirstTotal)+' → '+fmtTHB(revTrendLastTotal)
-    + ' <span class="'+deltaClass(revTrendGrowthPct)+'">('+(revTrendGrowthPct>=0?'+':'')+revTrendGrowthPct.toFixed(0)+'%)</span>';
+  latestData.revTrend = { labels: shareBucketLabels, series: trendSeries };
 
-  buildStacked100BarSVG('shareChart', { labels: shareBucketLabels, series: shareRawSeries, valueFormatter: fmtTHB });
+  buildStacked100BarSVG('shareChart', { labels: shareBucketLabels, series: trendSeries, valueFormatter: trendValueFormatter });
   document.getElementById('shareLegend').innerHTML = syncedTop6.map(n=>
     '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+resolveColor(n.color)+'"></span>'+n.name+'</span>'
   ).join('');
-  latestData.share = { labels: shareBucketLabels, series: shareRawSeries };
+  latestData.share = { labels: shareBucketLabels, series: trendSeries };
 
-  /* --- Insight (2026-08-06 feedback): switched from "first bucket vs last
-     bucket of the displayed window" (mostly capturing per-month jitter
-     noise, not a real trend) to a genuine YoY mix-shift — each category's
-     last-year share derived from its own stated growthYoY, the same
-     "lastYear = thisYear/(1+g/100)" pattern already used by the Growth
-     Concentration chart above. Denominator uses syncedAll (every node at
-     the current level, not just the top 6 shown) so the % shares actually
-     sum to 100 both years, regardless of how deep the Product Level filter
-     goes. Trimmed to just the 2 biggest movers (gain + loss), not all 6. --- */
-  const shareLastYearTotal = syncedAll.reduce((sum,n)=> sum + (n.pct/100*companyTotal)/(1+n.growthYoY/100), 0);
-  const shareDeltas = syncedTop6.map(n=>{
-    const thisYearVal = n.pct/100*companyTotal;
-    const lastYearVal = thisYearVal/(1+n.growthYoY/100);
-    const thisYearPct = n.pct;
-    const lastYearPct = shareLastYearTotal ? lastYearVal/shareLastYearTotal*100 : 0;
-    return { name: n.name, firstPct: lastYearPct, lastPct: thisYearPct, delta: thisYearPct-lastYearPct };
-  });
-  const shareGainer = [...shareDeltas].sort((a,b)=>b.delta-a.delta)[0];
-  const shareLoser = [...shareDeltas].sort((a,b)=>a.delta-b.delta)[0];
-  function shareCalloutPart(s){
-    return '<b>'+s.name+'</b>: '+s.firstPct.toFixed(0)+'% → '+s.lastPct.toFixed(0)+'% <span class="'+deltaClass(s.delta)+'">('+(s.delta>=0?'+':'')+s.delta.toFixed(0)+'pp)</span>';
-  }
-  document.getElementById('shareCallout').innerHTML = 'Mix shift YoY ('+periodLabelText(currentPeriodKey,currentCustom)+') — Biggest gain: ' + shareCalloutPart(shareGainer) + ' · Biggest loss: ' + shareCalloutPart(shareLoser);
-
-  /* === Zone D: Sales by Category (Top View ranking, synced from the same
-     controls) — Top 5 + "Other" bucket when the level has more than 6 items
-     (2026-08-06 feedback), so deeper levels (Sub-Category=12, Type=24,
-     Series=48) stay compact instead of listing everything; Category itself
-     (6 items) is exactly at the threshold and never gets bucketed, since an
-     "Other" of just 1 item would be pointless and confusing. Only applies
-     with no page Filter active — a Filter is the user hand-picking exactly
-     what they want to see, so showing everything filtered (rankSlice's
-     existing behavior) wins over compacting into an Other bucket. === */
-  const filterActive = currentFocusSet.size > 0;
-  const useTop5Other = !filterActive && syncedAll.length > 6;
+  /* === Zone D: Sales by Category / Units by Category — merged into one
+     METRIC-driven card (2026-08-14, feedback: "1 pill 1 เรื่อง" collapsed the
+     ฿/units card PAIR back into a single card that flips in place off the
+     page-level METRIC toggle). Top 5 + "Other" bucket when the level has
+     more than 6 items (2026-08-06 feedback), so deeper levels (Sub-Category
+     =12, Type=24, Series=48) stay compact instead of listing everything;
+     Category itself (6 items) is exactly at the threshold and never gets
+     bucketed. Only applies with no page Filter active — a Filter is the
+     user hand-picking exactly what they want to see, so showing everything
+     filtered (rankSlice's existing behavior) wins over an Other bucket.
+     Units mode re-sorts by nodeQty instead of syncedAll's ฿-share order —
+     a low-price/high-volume category can rank differently by units than by
+     ฿, so "Top 5 by units" genuinely means top 5 by units. === */
+  function metricNodeValue(n){ return currentMetric==='sales' ? n.pct/100*scopeTotal : nodeQty(n); }
+  const metricSortedAll = currentMetric==='sales' ? syncedAll : [...syncedAll].sort((a,b)=> nodeQty(b)-nodeQty(a));
+  const useTop5Other = !filterActive && metricSortedAll.length > 6;
   let barsShown;
   if(useTop5Other){
-    const top5 = syncedAll.slice(0,5);
-    const rest = syncedAll.slice(5);
+    const top5 = metricSortedAll.slice(0,5);
+    const rest = metricSortedAll.slice(5);
     const otherPct = rest.reduce((a,n)=>a+n.pct,0);
-    barsShown = top5.concat([{ name:'Other ('+rest.length+')', parent:null, pct:otherPct, color:'var(--ink-3)', growthYoY:0 }]);
+    const otherValue = rest.reduce((a,n)=>a+metricNodeValue(n),0);
+    barsShown = top5.concat([{ name:'Other ('+rest.length+')', parent:null, pct:otherPct, color:'var(--ink-3)', growthYoY:0, __otherValue:otherValue }]);
   } else {
-    barsShown = rankSlice(syncedAll, 10);
+    barsShown = rankSlice(metricSortedAll, 10);
   }
-  const maxPct = Math.max(...barsShown.map(n=>n.pct));
+  document.getElementById('deepDiveTitle').textContent = currentMetric==='sales' ? 'Sales by Category' : 'Units by Category';
+  function barValue(n){ return n.__otherValue!=null ? n.__otherValue : metricNodeValue(n); }
+  const maxBarValue = Math.max(...barsShown.map(barValue)) || 1;
   document.getElementById('deepDiveBars').innerHTML = barsShown.map(n=>{
-    const val = n.pct/100*companyTotal;
-    const widthPct = maxPct ? (n.pct/maxPct*100).toFixed(1) : 0;
+    const val = barValue(n);
+    const widthPct = (val/maxBarValue*100).toFixed(1);
     const subLabel = n.parent ? '<span class="sub-label">'+n.parent+'</span>' : '';
+    const label = currentMetric==='sales' ? (fmtTHB(val)+' · '+n.pct.toFixed(1)+'%') : (Math.round(val).toLocaleString('en-US')+' units');
     return '<div class="cat-row"><span class="cat-label">'+n.name+subLabel+'</span>'
-      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+resolveColor(n.color)+';"><span class="cat-fill-label">'+fmtTHB(val)+' · '+n.pct.toFixed(1)+'%</span></div></div></div>';
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+resolveColor(n.color)+';"><span class="cat-fill-label">'+label+'</span></div></div></div>';
   }).join('');
   const seeAllLink = document.getElementById('seeAllLink');
-  if(syncedAll.length>10 || useTop5Other){
+  if(metricSortedAll.length>10 || useTop5Other){
     seeAllLink.style.display = 'inline-block';
-    seeAllLink.textContent = 'See all ' + syncedAll.length + ' ' + LEVEL_NAMES_PLURAL[currentLevel].toLowerCase() + ' →';
+    seeAllLink.textContent = 'See all ' + metricSortedAll.length + ' ' + LEVEL_NAMES_PLURAL[currentLevel].toLowerCase() + ' →';
   } else {
     seeAllLink.style.display = 'none';
   }
@@ -1078,93 +1638,65 @@ function renderAll(periodKey, custom){
   // Table view / CSV download always work off the FULL underlying list
   // (not the Top-5+Other summary the bars show), so "See all"/CSV genuinely
   // shows everything rather than just re-displaying the same capped set.
+  // Kept metric-agnostic (always syncedAll, ฿-share order) — the button
+  // handlers below read currentMetric at click-time to decide which value
+  // column to render, same "read live state at click-time" pattern already
+  // used elsewhere on this page (e.g. currentScopeTotal).
   latestData.deepDive = syncedAll;
-
-  /* --- Insight: top 3 by sales, paired with each one's %Growth YoY (already
-     on every node via CATEGORY_TREE) so this card doesn't need its own
-     "Growth Ranking" card open just to see whether its biggest sellers are
-     actually growing or coasting. Styled the same as every other callout
-     box on this page (bold name + colored delta), matching the "Mix shift"
-     insight convention used elsewhere on the dashboard. Always the real
-     top 3 nodes (never the Other bucket, which only ever appears at index
-     5+). --- */
-  // Shortened (2026-08-06 feedback): dropped the redundant "share"/"YoY"
-  // words — "28.7%" next to a name already reads as share, and the
-  // parenthetical sign already reads as a rate, so spelling either out
-  // added length without adding information.
-  // Dropped the share % here (2026-08-06 feedback) — it's already on the
-  // bar itself right above, so repeating it in the callout added length
-  // without adding information; the callout's own job is just the YoY angle
-  // the bars don't show.
-  const deepDiveCalloutParts = barsShown.slice(0,3).map(n=>
-    '<b>'+n.name+'</b> <span class="'+deltaClass(n.growthYoY)+'">('+fmtSignedPct(n.growthYoY)+')</span>'
-  );
-  document.getElementById('deepDiveCallout').innerHTML = 'Top 3 — ' + deepDiveCalloutParts.join(' · ');
+  latestData.units = { level: currentLevel, full: syncedAll.map(n=>({name:n.name, parent:n.parent, qty:nodeQty(n)})) };
 
   /* === Growth Ranking: same node set as Sales by Category above, but ranked
      by %Growth YoY instead of size — a complementary "who's moving" view.
-     Split into two same-direction sub-lists (Fastest Growing / Declining)
-     rather than one list with a shared pos/neg axis — every bar's WIDTH is
-     then a plain, unambiguous magnitude within its own group, and the sign
-     only needs to live in the text label, not the bar length itself.
+     Merged (2026-08-14, feedback) back into ONE diverging ranked bar list
+     (green=growing, red=declining, single list sorted high-to-low) rather
+     than two standalone cards — every bar's WIDTH is still a plain,
+     unambiguous magnitude (sign only lives in the text label/color), scaled
+     against the single biggest |growth| across the WHOLE ranked set (not
+     just the ones shown), so length is an honest, comparable magnitude.
      Category-level growthYoY is inherited by all descendants, so at deeper
-     levels this effectively ranks by which parent Category is driving it. === */
-  const rankSorted = [...syncedAll].sort((a,b)=> b.growthYoY - a.growthYoY);
-  const growersAll = rankSorted.filter(n=>n.growthYoY>=0);
-  const declinersAll = rankSorted.filter(n=>n.growthYoY<0).sort((a,b)=>a.growthYoY-b.growthYoY);
-  // Capped to Top 3 each way (2026-08-06 feedback, was Top 5) — rankSlice
-  // already no-ops (shows everything) when a page Filter is active, and
-  // slice(0,3) on a shorter array just returns everything anyway, so no
-  // separate "≤3 items" branch is needed for the SLICING itself — only for
-  // the label text below (whether anything was actually cut).
-  const growers = rankSlice(growersAll, 3);
-  const decliners = rankSlice(declinersAll, 3);
+     levels this effectively ranks by which parent Category is driving it.
+     METRIC toggle flips both the title and the ranking basis via
+     metricGrowthYoY (node.growthYoY for Sales, unitsGrowthYoY(node) for
+     Units — see the helper defined earlier in this function; this also
+     fixes the earlier bug where the title stayed "Sales YoY" under
+     METRIC=Units). === */
+  const rankSorted = [...syncedAll].sort((a,b)=> metricGrowthYoY(b) - metricGrowthYoY(a));
+  // Top 5 + bottom 5 (10 total) when the level has more to show — rankSlice-
+  // style: a page Filter (or a short list) means "show everything the user
+  // is already looking at" rather than cutting it further.
+  const RANK_TOP_N = 5;
+  const rankShown = (filterActive || rankSorted.length <= RANK_TOP_N*2)
+    ? rankSorted
+    : rankSorted.slice(0, RANK_TOP_N).concat(rankSorted.slice(-RANK_TOP_N));
 
   document.getElementById('rankLevelLabel').textContent = LEVEL_NAMES[currentLevel];
-  // Label wording fix (2026-08-06): the old "(N)" in the title used to be
-  // the TRUE total count (no capping happened at Top 5 for any level seen
-  // so far). Now that it's capped to Top 3, showing "(3)" when the real
-  // total is e.g. 7 would misleadingly look like "3 total" rather than
-  // "top 3 of 7" — so the parenthetical count is now ONLY used when nothing
-  // was actually cut (≤3 total, or a page Filter is active so rankSlice
-  // already shows everything); otherwise it's replaced with an explicit
-  // "Top 3 of N" caption.
-  function rankGroupTitle(label, verb, totalCount){
-    if(filterActive || totalCount<=3) return label+' ('+totalCount+')';
-    return label+' <span class="sub-label" style="display:inline;font-size:10.5px;font-weight:500;">Top 3 of '+totalCount+' '+verb+'</span>';
-  }
-  document.getElementById('rankGrowTitle').innerHTML = rankGroupTitle('Fastest Growing', 'growing', growersAll.length);
-  document.getElementById('rankDeclineTitle').innerHTML = rankGroupTitle('Declining', 'declining', declinersAll.length);
+  document.getElementById('rankMetricLabel').textContent = currentMetric==='sales' ? 'Sales' : 'Units';
+  // Subtitle caption: only shown when the Top-5-each-way cap actually cut
+  // something (a plain "N categories" restates what the bars already show).
+  const rankSubtitleEl = document.getElementById('rankSubtitle');
+  const rankCaption = (filterActive || rankSorted.length<=RANK_TOP_N*2) ? '' : 'Top '+RANK_TOP_N+' + Bottom '+RANK_TOP_N+' of '+rankSorted.length;
+  rankSubtitleEl.textContent = rankCaption;
+  rankSubtitleEl.style.display = rankCaption ? '' : 'none';
 
-  // Fix: bar width must come from ONE shared scale across both groups, not a
-  // max computed separately per group — otherwise the single largest grower
-  // and the single largest decliner both stretch to "100% of their own
-  // group," making e.g. +22.6% and -4.2% look like equally large moves. Every
-  // bar's width is now that node's share of the single biggest |growth| in
-  // the whole ranked set (across every node at this level, not just the ones
-  // shown), so length is an honest, comparable magnitude everywhere on the card.
-  const maxAbsShared = Math.max(...rankSorted.map(n=>Math.abs(n.growthYoY))) || 1;
-  function renderRankGroup(nodes, colorVar){
-    return nodes.map(n=>{
-      const rank = rankSorted.indexOf(n)+1;
-      const widthPct = (Math.abs(n.growthYoY)/maxAbsShared*100).toFixed(1);
-      const subLabel = n.parent ? '<span class="sub-label">'+n.parent+'</span>' : '';
-      return '<div class="cat-row"><span class="cat-label">#'+rank+' '+n.name+subLabel+'</span>'
-        + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+resolveColor(colorVar)+';"><span class="cat-fill-label">'+fmtSignedPct(n.growthYoY)+'</span></div></div></div>';
-    }).join('');
-  }
-  document.getElementById('rankGrowBars').innerHTML = growers.length ? renderRankGroup(growers, 'var(--good)') : '<div class="chart-subtitle">No growing nodes at this level.</div>';
-  document.getElementById('rankDeclineBars').innerHTML = decliners.length ? renderRankGroup(decliners, 'var(--critical)') : '<div class="chart-subtitle">No declining nodes at this level.</div>';
+  const maxAbsShared = Math.max(...rankSorted.map(n=>Math.abs(metricGrowthYoY(n)))) || 1;
+  document.getElementById('rankBars').innerHTML = rankShown.length ? rankShown.map(n=>{
+    const rank = rankSorted.indexOf(n)+1;
+    const g = metricGrowthYoY(n);
+    const widthPct = (Math.abs(g)/maxAbsShared*100).toFixed(1);
+    const colorVar = g>=0 ? 'var(--good)' : 'var(--critical)';
+    const subLabel = n.parent ? '<span class="sub-label">'+n.parent+'</span>' : '';
+    return '<div class="cat-row"><span class="cat-label">#'+rank+' '+n.name+subLabel+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+resolveColor(colorVar)+';"><span class="cat-fill-label">'+fmtSignedPct(g)+'</span></div></div></div>';
+  }).join('') : '<div class="chart-subtitle">No data at this level.</div>';
 
-  // Table view / CSV / "See all" always work off the FULL growers+decliners
-  // list (not just the Top-3-each-way the bars show) — same "capped display,
+  // Table view / CSV / "See all" always work off the FULL ranked list (not
+  // just the Top 5 + Bottom 5 the bars show) — same "capped display,
   // uncapped detail view" split as Sales by Category above.
-  latestData.rank = growersAll.concat(declinersAll).map(n=>({name:n.name, parent:n.parent, growthYoY:n.growthYoY, rank: rankSorted.indexOf(n)+1}));
+  latestData.rank = rankSorted.map(n=>({name:n.name, parent:n.parent, growthYoY:metricGrowthYoY(n), rank: rankSorted.indexOf(n)+1}));
   const rankSeeAllLink = document.getElementById('rankSeeAllLink');
-  const rankCapped = !filterActive && (growersAll.length>3 || declinersAll.length>3);
-  if(rankCapped){
+  if(!filterActive && rankSorted.length>RANK_TOP_N*2){
     rankSeeAllLink.style.display = 'inline-block';
-    rankSeeAllLink.textContent = 'See all ' + syncedAll.length + ' ' + LEVEL_NAMES_PLURAL[currentLevel].toLowerCase() + ' →';
+    rankSeeAllLink.textContent = 'See all ' + rankSorted.length + ' ' + LEVEL_NAMES_PLURAL[currentLevel].toLowerCase() + ' →';
   } else {
     rankSeeAllLink.style.display = 'none';
   }
@@ -1186,7 +1718,7 @@ function renderAll(periodKey, custom){
   document.getElementById('returnBars').innerHTML = returnShown.map(n=>{
     const rank = returnSorted.indexOf(n)+1;
     const widthPct = (n.returnRate/returnMaxRate*100).toFixed(1);
-    const val = n.pct/100*companyTotal * n.returnRate/100;
+    const val = n.pct/100*scopeTotal * n.returnRate/100;
     const subLabel = n.parent ? '<span class="sub-label">'+n.parent+'</span>' : '';
     return '<div class="cat-row"><span class="cat-label">#'+rank+' '+n.name+subLabel+'</span>'
       + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%;background:'+resolveColor('var(--brand)')+';"><span class="cat-fill-label">'+n.returnRate.toFixed(1)+'% · '+fmtTHB(val)+'</span></div></div></div>';
@@ -1196,7 +1728,7 @@ function renderAll(periodKey, custom){
   // bucket for this one (per feedback): averaging several return RATES into
   // one "Other" figure would obscure which specific item is the actual
   // problem, unlike Sales by Category's ฿ amounts which sum meaningfully.
-  latestData.returnRate = returnSorted.map(n=>({name:n.name, parent:n.parent, returnRate:n.returnRate, value: n.pct/100*companyTotal*n.returnRate/100, rank: returnSorted.indexOf(n)+1}));
+  latestData.returnRate = returnSorted.map(n=>({name:n.name, parent:n.parent, returnRate:n.returnRate, value: n.pct/100*scopeTotal*n.returnRate/100, rank: returnSorted.indexOf(n)+1}));
   const returnSeeAllLink = document.getElementById('returnSeeAllLink');
   if(!filterActive && returnSorted.length>5){
     returnSeeAllLink.style.display = 'inline-block';
@@ -1204,18 +1736,16 @@ function renderAll(periodKey, custom){
   } else {
     returnSeeAllLink.style.display = 'none';
   }
-  const returnWorst = returnSorted[0];
-  const returnAvg = returnSorted.reduce((a,n)=>a+n.returnRate,0) / (returnSorted.length||1);
-  document.getElementById('returnCallout').innerHTML =
-    'Highest: <b>'+returnWorst.name+'</b> <span class="'+(returnWorst.returnRate>5?'neg':'pos')+'">('+returnWorst.returnRate.toFixed(1)+'%)</span>'
-    + ' · Average across ' + LEVEL_NAMES_PLURAL[currentLevel].toLowerCase() + ': ' + returnAvg.toFixed(1) + '%';
 
   /* === Top 10 Product Selling: always at Series (product) granularity —
      a "product" is always the finest-grained leaf, regardless of the page's
      Product Level filter (same reasoning as the Heatmap ignoring the
      Channel filter: it needs its own fixed unit of comparison). Still
      respects the Channel filter (like Sales by Category/Growth Ranking do
-     via getSyncedNodes), just forced to depth 3 instead of currentLevel. === */
+     via getSyncedNodes), just forced to depth 3 instead of currentLevel.
+     Sort order (2026-08-14, METRIC toggle) flips between Net Sales and
+     Quantity — table columns/channel split are unchanged either way, only
+     which column drives ranking + gets bold-highlighted changes. === */
   const productNodesRaw = applyFocusFilterByAncestor(enumerateLevel(3));
   let productNodes = productNodesRaw;
   if(currentChannelFilter !== 'All'){
@@ -1231,25 +1761,37 @@ function renderAll(periodKey, custom){
      summing to the Net Sales total. Category/Sub-Category columns were
      dropped to make room — still available via CSV Download. Product/Series
      is split into 2 columns (Product = Type, Series = the item itself). */
-  const productSorted = [...productNodes].sort((a,b)=>b.pct-a.pct);
+  const productWithQty = productNodes.map(n=>{
+    const netSales = n.pct/100 * companyTotal;
+    return Object.assign({}, n, { netSales, qty: netSales / SERIES_UNIT_PRICE[n.name] });
+  });
+  const productSorted = currentMetric==='sales'
+    ? [...productWithQty].sort((a,b)=>b.netSales-a.netSales)
+    : [...productWithQty].sort((a,b)=>b.qty-a.qty);
   const topProductsShownCount = topProductsExpanded ? productSorted.length : Math.min(10, productSorted.length);
   const topProducts = productSorted.slice(0, topProductsShownCount).map(n=>{
-    const netSales = n.pct/100 * companyTotal;
     const rawNode = productNodesRaw.find(r=>r.name===n.name) || n;
     const channelNetSales = {};
     groupKeys.forEach(ch=>{ channelNetSales[ch] = reconciledChannelValue(rawNode, 3, ch); });
-    return { name:n.name, type:n.parent, subCategory:n.subCategory, rootCategory:n.rootCategory, netSales, channelNetSales, qty: netSales / SERIES_UNIT_PRICE[n.name] };
+    return { name:n.name, type:n.parent, subCategory:n.subCategory, rootCategory:n.rootCategory, netSales:n.netSales, channelNetSales, qty:n.qty };
   });
+  const qtyHeader = currentMetric==='units' ? '<th class="metric-sort-col">Quantity</th>' : '<th>Quantity</th>';
+  const salesHeader = currentMetric==='sales' ? '<th class="metric-sort-col">Net Sales</th>' : '<th>Net Sales</th>';
   document.getElementById('topProductsTable').innerHTML =
-    '<thead><tr><th>Product</th><th>Series</th><th>Quantity</th><th>Net Sales</th>' + groupKeys.map(ch=>'<th>'+ch+'</th>').join('') + '</tr></thead><tbody>'
-    + topProducts.map(p=> '<tr><td>'+p.type+'</td><td>'+p.name+'</td><td>'+Math.round(p.qty).toLocaleString('en-US')+' units</td><td>'+fmtTHB(p.netSales)+'</td>'
-        + groupKeys.map(ch=>'<td>'+fmtTHB(p.channelNetSales[ch])+'</td>').join('')
-        + '</tr>').join('')
+    '<thead><tr><th>Product</th><th>Series</th>'+qtyHeader+salesHeader + groupKeys.map(ch=>'<th>'+ch+'</th>').join('') + '</tr></thead><tbody>'
+    + topProducts.map(p=>{
+        const qtyCell = '<td'+(currentMetric==='units'?' class="metric-sort-col"':'')+'>'+Math.round(p.qty).toLocaleString('en-US')+' units</td>';
+        const salesCell = '<td'+(currentMetric==='sales'?' class="metric-sort-col"':'')+'>'+fmtTHB(p.netSales)+'</td>';
+        return '<tr class="drill-row" data-series="'+p.name.replace(/"/g,'&quot;')+'" tabindex="0" role="button" aria-label="View '+p.name+' broken down by channel">'
+          + '<td>'+p.type+'</td><td>'+p.name+'</td>'+qtyCell+salesCell
+          + groupKeys.map(ch=>'<td>'+fmtTHB(p.channelNetSales[ch])+'</td>').join('')
+          + '</tr>';
+      }).join('')
     + '</tbody>';
   latestData.topProducts = topProducts;
   const topProductsShare = companyTotal ? topProducts.reduce((a,p)=>a+p.netSales,0)/companyTotal*100 : 0;
   document.getElementById('topProductsCallout').innerHTML =
-    'Top '+topProducts.length+' products make up <b>'+topProductsShare.toFixed(0)+'%</b> of total net sales · Best seller: <b>'+topProducts[0].name+'</b> ('+fmtTHB(topProducts[0].netSales)+', '+Math.round(topProducts[0].qty).toLocaleString('en-US')+' units)';
+    'Top '+topProducts.length+' products make up <b>'+topProductsShare.toFixed(0)+'%</b> of total net sales · Best seller: <b>'+topProducts[0].name+'</b> ('+fmtTHB(topProducts[0].netSales)+', '+Math.round(topProducts[0].qty).toLocaleString('en-US')+' units) · Tap a row to see it broken down by Channel in Breakdown';
   const topProductsSeeMoreBtn = document.getElementById('topProductsSeeMoreBtn');
   if(productSorted.length>10){
     topProductsSeeMoreBtn.style.display = 'inline-block';
@@ -1257,6 +1799,7 @@ function renderAll(periodKey, custom){
   } else {
     topProductsSeeMoreBtn.style.display = 'none';
   }
+  wireTopProductsDrillRows();
 }
 
 /* --- Toolbar --- */
@@ -1264,12 +1807,13 @@ document.getElementById('heatmapExpandBtn').addEventListener('click', (e)=> togg
 
 document.getElementById('growthHeatmapExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('growthHeatmapDownloadBtn').addEventListener('click', ()=>{
-  const rows = [[LEVEL_NAMES[currentLevel], ...groupKeys.map(ch=>ch+' Growth YoY (%)')]];
-  latestData.growthHeatmap.forEach(r=> rows.push([r.name, ...groupKeys.map(ch=>r[ch+'_growth'].toFixed(1))]));
+  const rows = [[LEVEL_NAMES[currentLevel], ...latestData.growthHeatmapRowLabels.map(lb=>lb+' Growth YoY (%)')]];
+  latestData.growthHeatmap.forEach(r=> rows.push([r.name, ...latestData.growthHeatmapRowLabels.map(lb=>r[lb+'_growth'].toFixed(1))]));
   downloadCSV(rows, 'category_growth_by_channel.csv');
 });
 
-document.getElementById('revTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('revTrendChart','revenue_trend_by_product_level.svg'));
+function metricCellFormatter(v){ return currentMetric==='sales' ? fmtTHB(v) : Math.round(v).toLocaleString('en-US')+' units'; }
+document.getElementById('revTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('revTrendChart', (currentMetric==='sales'?'revenue':'units')+'_trend_by_product_level.svg'));
 document.getElementById('revTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('revTrendTableBtn').addEventListener('click', ()=>{
   const wrap = document.getElementById('revTrendTableWrap');
@@ -1278,12 +1822,12 @@ document.getElementById('revTrendTableBtn').addEventListener('click', ()=>{
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.revTrend;
   let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+metricCellFormatter(s.values[i])+'</td>').join('') + '</tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 
-document.getElementById('shareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('shareChart','category_share_over_time.svg'));
+document.getElementById('shareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('shareChart', 'category_share_of_'+currentMetric+'_over_time.svg'));
 document.getElementById('shareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('shareTableBtn').addEventListener('click', ()=>{
   const wrap = document.getElementById('shareTableWrap');
@@ -1292,13 +1836,13 @@ document.getElementById('shareTableBtn').addEventListener('click', ()=>{
   if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
   const d = latestData.share;
   let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
-  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+metricCellFormatter(s.values[i])+'</td>').join('') + '</tr>'; });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
 });
 document.getElementById('heatmapDownloadBtn').addEventListener('click', ()=>{
-  const rows = [[LEVEL_NAMES[currentLevel], ...groupKeys.flatMap(ch=>[ch+' (฿)', ch+' (%)'])]];
-  latestData.heatmap.forEach(r=> rows.push([r.name, ...groupKeys.flatMap(ch=>[Math.round(r[ch+'_value']), r[ch+'_pct'].toFixed(1)])]));
+  const rows = [[LEVEL_NAMES[currentLevel], ...latestData.heatmapRowLabels.flatMap(lb=>[lb+' (฿)', lb+' (%)'])]];
+  latestData.heatmap.forEach(r=> rows.push([r.name, ...latestData.heatmapRowLabels.flatMap(lb=>[Math.round(r[lb+'_value']), r[lb+'_pct'].toFixed(1)])]));
   downloadCSV(rows, 'category_channel_heatmap.csv');
 });
 document.getElementById('deepDiveTableBtn').addEventListener('click', ()=>{
@@ -1307,47 +1851,51 @@ document.getElementById('deepDiveTableBtn').addEventListener('click', ()=>{
   const showing = wrap.classList.contains('visible');
   if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
   const d = latestData.deepDive;
-  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentLevel]+'</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
+  const qtyByName = {}; latestData.units.full.forEach(n=> qtyByName[n.name]=n.qty);
+  const valueHeader = currentMetric==='sales' ? '<th>Net Sales</th><th>Share %</th>' : '<th>Quantity</th>';
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentLevel]+'</th>'+valueHeader+'</tr></thead><tbody>';
   d.forEach(n=>{
-    const value = Math.round(n.pct/100 * sumRange(companyActual,...getPeriodRange(currentPeriodKey,currentCustom)));
-    html += '<tr><td>'+n.name+(n.parent?' <span class="sub-label" style="display:inline;">('+n.parent+')</span>':'')+'</td><td>'+fmtTHB(value)+'</td><td>'+n.pct.toFixed(1)+'%</td></tr>';
+    const nameCell = n.name+(n.parent?' <span class="sub-label" style="display:inline;">('+n.parent+')</span>':'');
+    if(currentMetric==='sales'){
+      const value = Math.round(n.pct/100 * currentScopeTotal(...getPeriodRange(currentPeriodKey,currentCustom)));
+      html += '<tr><td>'+nameCell+'</td><td>'+fmtTHB(value)+'</td><td>'+n.pct.toFixed(1)+'%</td></tr>';
+    } else {
+      html += '<tr><td>'+nameCell+'</td><td>'+Math.round(qtyByName[n.name]||0).toLocaleString('en-US')+' units</td></tr>';
+    }
   });
   html += '</tbody></table>';
   wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
 });
 document.getElementById('deepDiveExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('deepDiveDownloadBtn').addEventListener('click', ()=>{
-  const rows = [['Name','Parent','Share %','Value (THB)']];
-  latestData.deepDive.forEach(n=> rows.push([n.name, n.parent||'', n.pct.toFixed(2), Math.round(n.pct/100* sumRange(companyActual,...getPeriodRange(currentPeriodKey,currentCustom)))]));
-  downloadCSV(rows, 'sales_by_category.csv');
+  const qtyByName = {}; latestData.units.full.forEach(n=> qtyByName[n.name]=n.qty);
+  if(currentMetric==='sales'){
+    const rows = [['Name','Parent','Share %','Value (THB)']];
+    latestData.deepDive.forEach(n=> rows.push([n.name, n.parent||'', n.pct.toFixed(2), Math.round(n.pct/100* currentScopeTotal(...getPeriodRange(currentPeriodKey,currentCustom)))]));
+    downloadCSV(rows, 'sales_by_category.csv');
+  } else {
+    const rows = [['Name','Parent','Quantity (units)']];
+    latestData.deepDive.forEach(n=> rows.push([n.name, n.parent||'', Math.round(qtyByName[n.name]||0)]));
+    downloadCSV(rows, 'units_by_category.csv');
+  }
 });
 
 document.getElementById('rankTableBtn').addEventListener('click', ()=>{
   const wrap = document.getElementById('rankTableWrap');
-  const growBars = document.getElementById('rankGrowBars');
-  const declineBars = document.getElementById('rankDeclineBars');
-  const growTitle = document.getElementById('rankGrowTitle');
-  const declineTitle = document.getElementById('rankDeclineTitle');
+  const bars = document.getElementById('rankBars');
   const showing = wrap.classList.contains('visible');
-  if(showing){
-    wrap.classList.remove('visible');
-    growBars.style.display=''; declineBars.style.display='';
-    growTitle.style.display=''; declineTitle.style.display='';
-    return;
-  }
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
   const d = latestData.rank;
   let html = '<table class="mini-table"><thead><tr><th>Rank</th><th>'+LEVEL_NAMES[currentLevel]+'</th><th>Growth YoY</th></tr></thead><tbody>';
   d.forEach(n=>{ html += '<tr><td>#'+n.rank+'</td><td>'+n.name+(n.parent?' <span class="sub-label" style="display:inline;">('+n.parent+')</span>':'')+'</td><td>'+fmtSignedPct(n.growthYoY)+'</td></tr>'; });
   html += '</tbody></table>';
-  wrap.innerHTML = html; wrap.classList.add('visible');
-  growBars.style.display='none'; declineBars.style.display='none';
-  growTitle.style.display='none'; declineTitle.style.display='none';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
 });
 document.getElementById('rankExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
 document.getElementById('rankDownloadBtn').addEventListener('click', ()=>{
   const rows = [['Rank','Name','Parent','Growth YoY %']];
   latestData.rank.forEach(n=> rows.push([n.rank, n.name, n.parent||'', n.growthYoY.toFixed(2)]));
-  downloadCSV(rows, 'growth_ranking.csv');
+  downloadCSV(rows, currentMetric+'_yoy_by_category.csv');
 });
 
 document.getElementById('returnTableBtn').addEventListener('click', ()=>{

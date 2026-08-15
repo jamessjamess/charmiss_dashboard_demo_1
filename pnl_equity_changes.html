@@ -41,8 +41,7 @@
   <div class="header-utility-row" id="headerUtilityRow">
     <nav class="section-nav">
       <a href="#sec-equity-statement">Statement of Changes in Equity</a>
-      <a href="#sec-equity-trend">Equity &amp; Retained Earnings Trend</a>
-      <a href="#sec-dividend">Dividend &amp; Payout</a>
+      <a href="#sec-equity-dividend-trend">Equity &amp; Dividend Trend</a>
     </nav>
     <div class="nav-filter-divider"></div>
     <!-- Filter bar (2026-08-11 unification) -- same View By + As of model as
@@ -87,17 +86,26 @@
         <button class="tool-btn" id="eqWaterfallExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
       </div>
     </div>
+    <div class="chart-legend" id="eqWaterfallLegend"></div>
     <div class="canvas-wrap" id="eqWaterfallCanvasWrap" style="height:260px;"><div id="eqWaterfallChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="eqWaterfallTableWrap"></div>
   </div>
 
-  <!-- ===== EQUITY & RETAINED EARNINGS TREND ===== -->
-  <div class="section-label" id="sec-equity-trend">Equity &amp; Retained Earnings Trend</div>
-  <div class="card" style="margin-bottom:14px;">
+  <!-- ===== EQUITY & RETAINED EARNINGS TREND / DIVIDEND & PAYOUT (2-up,
+       2026-08-13 layout restructure) -- Row 2, matching the sibling
+       Financial Statement tabs' hero-then-grid convention (see Financial
+       Analysis's "Financial Ratios" chart-grid-3). Pill = section rule
+       (2026-08-14 fix): the nav-anchor id now lives on this ONE section
+       label (matching its own text exactly), not on the 2 individual cards
+       below -- they used to each carry their own id/nav pill, which left 2
+       pills pointing into what's visually a single 2-up row. ===== -->
+  <div class="section-label" id="sec-equity-dividend-trend">Equity &amp; Dividend Trend</div>
+  <div class="chart-grid">
+  <div class="card" style="margin-bottom:0;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Total Equity &amp; Retained Earnings</span>
-        <button class="info-icon" data-info-title="Total Equity & Retained Earnings" data-info-text="Total Equity ราย Quarter (ชุดเดียวกับที่ Financial Analysis's DuPont ใช้คิด Equity Multiplier — ไม่สร้างเลขใหม่) — Retained Earnings = Total Equity − ทุนที่ออกและชำระแล้ว (100) − สำรองตามกฎหมาย (10) เพราะ 2 องค์ประกอบนี้คงที่ทุกไตรมาส — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Total Equity & Retained Earnings" data-info-text="Total Equity ราย Quarter (ชุดเดียวกับที่ Financial Analysis's DuPont ใช้คิด Equity Multiplier — ไม่สร้างเลขใหม่) — Retained Earnings = Total Equity − ทุนที่ออกและชำระแล้ว (100) − สำรองตามกฎหมาย (10) เพราะ 2 องค์ประกอบนี้คงที่ทุกไตรมาส — Annual แสดง FY2024/FY2025/2026 YTD (2026 YTD เป็นแท่ง partial/dashed เพราะยังไม่ปิดปี) — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="eqTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -113,13 +121,11 @@
     <div class="data-table-wrap" id="eqTrendTableWrap"></div>
   </div>
 
-  <!-- ===== DIVIDEND & PAYOUT ===== -->
-  <div class="section-label" id="sec-dividend">Dividend &amp; Payout</div>
-  <div class="card" style="margin-bottom:6px;">
+  <div class="card" style="margin-bottom:0;">
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Dividends Paid &amp; Payout Ratio</span>
-        <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'25 ไม่มี Retained Earnings งวดก่อนหน้าให้ roll-forward จึงไม่มีข้อมูล — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'25 คำนวณย้อนกลับด้วยวิธีเดียวกัน โดยใช้ Retained Earnings ณ สิ้น Q1'25 (backfill จาก EBIT ชุดเดียวกับที่ Cash Flow ใช้) เป็นจุดตั้งต้น — Annual แสดง FY2024/FY2025/2026 YTD — Mock Data 100%">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="dividendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -133,6 +139,7 @@
     </div>
     <div class="canvas-wrap" id="dividendCanvasWrap"><div id="dividendChart" style="width:100%;height:100%;"></div></div>
     <div class="data-table-wrap" id="dividendTableWrap"></div>
+  </div>
   </div>
 
   <!-- ===== REFERENCE: Statement of Changes in Equity (by component), demoted
@@ -208,23 +215,58 @@ const netProfitQAll = ebitQAll.map(v=>v*0.8);
 const dividendsQAll = [1,2,3,4].map(i => retainedEarningsQ[i-1] + netProfitQAll[i] - retainedEarningsQ[i]);
 const payoutQAll = dividendsQAll.map((v,i)=> netProfitQAll[i+1] ? v/netProfitQAll[i+1]*100 : 0);
 
+/* ---------- Annual backfill (2026-08-14, same technique as Cash Flow's own
+   MASTER_EBIT_BACK/MASTER_EQUITY_BACK block) -- extends the Retained
+   Earnings roll-forward back through Q1'24 using the SAME canonical
+   MASTER_EBIT/MASTER_EQUITY slices Cash Flow already reuses (Financial
+   Analysis's MASTER_EBIT[0..4]/MASTER_EQUITY[0..5]), so FY2024/FY2025 are
+   built from the same underlying company facts, not new mock numbers. The
+   existing Q2'25-Q2'26 chain (totalEquityQ/retainedEarningsQ/dividendsQAll)
+   is never recomputed -- only stitched to at MASTER_EQUITY_BACK[5], which
+   equals totalEquityQ's own Q1'25-end predecessor exactly. */
+const MASTER_EBIT_BACK   = [18480000, 18840000, 18880000, 22200000, 20776000]; // Q1'24-Q1'25
+const MASTER_EQUITY_BACK = [149e6, 153e6, 157e6, 161e6, 165e6, 170e6]; // Q4'23-end..Q1'25-end
+const backRE = MASTER_EQUITY_BACK.map(v => v - SHARE_CAPITAL - LEGAL_RESERVE);
+const backNP = MASTER_EBIT_BACK.map(v => v*0.8);
+const backDiv = [0,1,2,3,4].map(i => backRE[i] + backNP[i] - backRE[i+1]); // Q1'24-Q1'25 dividends
+// Q2'25's own dividend (idx0, previously a gap -- see Dividend & Payout's
+// former leading null) is now computable via the same RE roll-forward, using
+// the newly-backfilled Q1'25-end Retained Earnings (backRE[5]) as its prior.
+const div_Q225 = backRE[5] + netProfitQAll[0] - retainedEarningsQ[0];
+const payout_Q225 = div_Q225 / netProfitQAll[0] * 100;
+const FY2024 = {
+  label:'FY2024', priorLabel:'FY2023',
+  opening: MASTER_EQUITY_BACK[0], closing: MASTER_EQUITY_BACK[4],
+  np: backNP[0]+backNP[1]+backNP[2]+backNP[3],
+  div: -(backDiv[0]+backDiv[1]+backDiv[2]+backDiv[3])
+};
+const FY2025 = {
+  label:'FY2025', priorLabel:'FY2024',
+  opening: MASTER_EQUITY_BACK[4], closing: totalEquityQ[2],
+  np: backNP[4]+netProfitQAll[0]+netProfitQAll[1]+netProfitQAll[2],
+  div: -(backDiv[4]+div_Q225+dividendsQAll[0]+dividendsQAll[1])
+};
+const ANNUAL_LABEL_EQ = { fy2024:'FY2024', fy2025:'FY2025', current:'2026 (Current)' };
+
 /* ---------- Filter bar (2026-08-11 unification): View By + As of ----------
    Every quarter's Total Equity/Retained Earnings already exists (totalEquityQ/
    retainedEarningsQ, 5 quarters) -- no backfilling needed here, unlike Cash
    Flow/Balance Sheet. As of only offers quarters 1-4 (Q3'25-Q2'26): rolling
    forward needs a PRIOR quarter's Retained Earnings, which Q2'25 (idx0)
-   doesn't have in this dataset. Annual is scoped to "2026 (Current)" only
-   (Q1'26+Q2'26 combined roll-forward) for the same reason Cash Flow/Balance
-   Sheet's Annual is scoped that way -- no FY2025-end snapshot exists
-   separately from a quarter-end one. */
+   doesn't have in THIS dataset's own 5Q window (its prior lives only in the
+   FY2024/FY2025 backfill above, not exposed as a selectable single-quarter
+   anchor). Annual now offers FY2024/FY2025/2026 (Current), same 3-bucket
+   pattern as Cash Flow's pnlAnnualAnchor. */
 let pnlQuarterAnchor = 4; // default Q2'26 (idx4, the last)
+let pnlAnnualAnchor = 'current';
 let currentViewBy = 'quarterly';
-function currentAsOfLabel(){ return currentViewBy==='annual' ? '2026 (Current)' : quarterLabels[pnlQuarterAnchor]; }
+function currentAsOfLabel(){ return currentViewBy==='annual' ? ANNUAL_LABEL_EQ[pnlAnnualAnchor] : quarterLabels[pnlQuarterAnchor]; }
 // Returns the Waterfall/Statement's active roll-forward period -- a single
-// quarter (View By Quarterly) or 2026 YTD = Q1'26+Q2'26 combined (View By
-// Annual).
+// quarter (View By Quarterly) or a full year / YTD bucket (View By Annual).
 function getActiveEquityData(){
   if(currentViewBy==='annual'){
+    if(pnlAnnualAnchor==='fy2024') return FY2024;
+    if(pnlAnnualAnchor==='fy2025') return FY2025;
     return { label:'2026 YTD', priorLabel:'FY2025', opening: totalEquityQ[2], np: netProfitQAll[3]+netProfitQAll[4], div: -(dividendsQAll[2]+dividendsQAll[3]), closing: totalEquityQ[4] };
   }
   const i = pnlQuarterAnchor;
@@ -277,6 +319,17 @@ function renderAll(){
   ];
   buildWaterfallSVG('eqWaterfallChart', waterfallSteps, { yFormatter: fmtTHB, height:260 });
   latestData.waterfall = waterfallSteps;
+  // Legend (2026-08-14, ค้างจากรอบก่อน) -- same Increase/Decrease/Cash
+  // position pattern as Cash Flow's own waterfall legend; no Subtotal chip
+  // here since this waterfall has no subtotal bars. buildWaterfallSVG's
+  // default color heuristic already colors +Net Profit green/−Dividends red/
+  // Opening+Closing gray with no overrides needed, so only the legend markup
+  // itself was missing.
+  const eqGoodLight = cssVar('--good')||'#0ca30c', eqBadLight = cssVar('--critical')||'#d03b3b';
+  document.getElementById('eqWaterfallLegend').innerHTML =
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+eqGoodLight+'"></span>Increase</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+eqBadLight+'"></span>Decrease</span>'
+    + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:var(--ink-2)"></span>Cash position</span>';
 
   /* === Statement of Changes in Equity (by component) === Share Capital/
      Legal Reserve never move (no capital raise/reserve appropriation
@@ -303,29 +356,42 @@ function renderAll(){
   latestData.statement = rows;
   latestData.labels = { label: active.label, priorLabel: active.priorLabel };
 
-  /* === Total Equity & Retained Earnings Trend === */
+  /* === Total Equity & Retained Earnings Trend === View By response
+     (2026-08-14): Annual shows FY2024/FY2025/2026 YTD (last bucket partial/
+     dashed, unclosed year, same convention as Cash Flow's own trend charts);
+     Quarterly keeps the unconditional 5Q window unchanged. */
+  const eqTrendLabels = currentViewBy==='annual' ? ['FY2024','FY2025','2026 YTD'] : quarterLabels;
+  const eqTrendEquityValues = currentViewBy==='annual' ? [FY2024.closing, FY2025.closing, totalEquityQ[4]] : totalEquityQ;
+  const eqTrendRetainedValues = eqTrendEquityValues.map(v => v - SHARE_CAPITAL - LEGAL_RESERVE);
   buildGroupedBarSVG('eqTrendChart', {
-    labels: quarterLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true,
-    series: [ {name:'Total Equity', color: cssVar('--ink-3')||'#898781', values: totalEquityQ}, {name:'Retained Earnings', color: cssVar('--brand')||'#8E1E4D', values: retainedEarningsQ} ]
+    labels: eqTrendLabels, yFormatter: fmtTHB, referenceValue:0, showValueLabels:true,
+    series: [ {name:'Total Equity', color: cssVar('--ink-3')||'#898781', values: eqTrendEquityValues}, {name:'Retained Earnings', color: cssVar('--brand')||'#8E1E4D', values: eqTrendRetainedValues} ],
+    partialLastBar: currentViewBy==='annual'
   });
-  latestData.eqTrend = quarterLabels.map((q,i)=>({quarter:q, equity:totalEquityQ[i], retained:retainedEarningsQ[i]}));
+  latestData.eqTrend = eqTrendLabels.map((q,i)=>({quarter:q, equity:eqTrendEquityValues[i], retained:eqTrendRetainedValues[i]}));
 
   /* === Dividend & Payout Ratio === Payout Ratio % is a real 2nd series
      (right-axis line), so buildGroupedBarSVG (bar-only) is swapped for
-     buildComboBarLineSVG (bar+line, shared.js). Window widened from 4Q to
-     5Q (2026-08-12) to match the Equity Trend chart's window above --
-     divValuesFull/payoutValuesFull lead with a null for Q2'25 (no prior
-     Retained Earnings to roll forward from in this dataset, same reason
-     Q2'25 is excluded from the As of dropdown), which buildComboBarLineSVG
-     renders as a "–" placeholder bar instead of a fabricated ฿0. */
-  const divValuesFull = [null, ...dividendsQAll];
-  const payoutValuesFull = [null, ...payoutQAll];
+     buildComboBarLineSVG (bar+line, shared.js). View By response + gap fix
+     (2026-08-14): Quarterly's leading Q2'25 slot is no longer a null
+     placeholder -- div_Q225/payout_Q225 (see the Annual backfill block
+     above) are real RE-rollforward figures derived the same way as every
+     other quarter, using the newly-backfilled Q1'25-end Retained Earnings as
+     Q2'25's prior. Annual shows FY2024/FY2025/2026 YTD, last bucket partial. */
+  const divLabels = currentViewBy==='annual' ? ['FY2024','FY2025','2026 YTD'] : quarterLabels;
+  const divValuesFull = currentViewBy==='annual'
+    ? [-FY2024.div, -FY2025.div, dividendsQAll[2]+dividendsQAll[3]]
+    : [div_Q225, ...dividendsQAll];
+  const payoutValuesFull = currentViewBy==='annual'
+    ? [ -FY2024.div/FY2024.np*100, -FY2025.div/FY2025.np*100, (dividendsQAll[2]+dividendsQAll[3])/(netProfitQAll[3]+netProfitQAll[4])*100 ]
+    : [payout_Q225, ...payoutQAll];
   buildComboBarLineSVG('dividendChart', {
-    labels: quarterLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
+    labels: divLabels, barYFormatter: fmtTHB, lineYFormatter: v=>fmtPct(v,0),
     bar: {name:'Dividends Paid', color: cssVar('--brand')||'#8E1E4D', values: divValuesFull},
-    line: {name:'Payout Ratio %', color:'#4C6FA5', values: payoutValuesFull}
+    line: {name:'Payout Ratio %', color:'#4C6FA5', values: payoutValuesFull},
+    partialLastBar: currentViewBy==='annual', partialLastPoint: currentViewBy==='annual'
   });
-  latestData.dividend = quarterLabels.map((q,i)=>({quarter:q, dividend:divValuesFull[i], payout:payoutValuesFull[i]}));
+  latestData.dividend = divLabels.map((q,i)=>({quarter:q, dividend:divValuesFull[i], payout:payoutValuesFull[i]}));
 }
 
 /* --- Toolbar --- */
@@ -399,7 +465,10 @@ function positionViewByThumb(){
 function buildAsOfDropdown(){
   let html = '';
   if(currentViewBy==='annual'){
-    html += '<div class="period-opt selected" data-annual="current"><span class="chk">✓</span>2026 (Current)</div>';
+    [['current','2026 (Current)'],['fy2025','FY2025'],['fy2024','FY2024']].forEach(([key,label])=>{
+      const sel = pnlAnnualAnchor===key;
+      html += '<div class="period-opt'+(sel?' selected':'')+'" data-annual="'+key+'"><span class="chk">'+(sel?'✓':'')+'</span>'+label+'</div>';
+    });
   } else {
     for(let i=quarterLabels.length-1; i>=1; i--){
       const sel = pnlQuarterAnchor===i;
@@ -430,6 +499,7 @@ document.getElementById('periodDropdown').addEventListener('click', (e)=>{
   const opt = e.target.closest('.period-opt');
   if(!opt) return;
   if(opt.dataset.quarter) pnlQuarterAnchor = parseInt(opt.dataset.quarter,10);
+  if(opt.dataset.annual) pnlAnnualAnchor = opt.dataset.annual;
   document.getElementById('periodDropdown').classList.remove('open');
   updateAsOfControl();
   renderAll();

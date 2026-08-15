@@ -33,13 +33,6 @@
 .fhs-rag-dot.amber{background:var(--warning);}
 .fhs-rag-dot.red{background:var(--critical);}
 .fhs-chip-companion{background:var(--card);}
-/* Factor-box sparklines (2026-08-11) -- a tiny trend glance under each of
-   the 3 DuPont factor legs (Profit Margin/Asset Turnover/Financial
-   Leverage), so the Scorecard doubles as a map into this factor's own full
-   chart on the Financial Ratios pill, not just a single point-in-time
-   number. Intentionally axis-less/label-less -- the big chip value above it
-   already carries the exact figure. */
-.fhs-chip-sparkline{margin-top:4px;height:22px;width:100%;min-width:70px;}
 /* CCC combined chart (2026-08-11) -- Days/Times unit toggle (compact variant
    of the existing View By pill-toggle, sized down to sit inline in a chart's
    own toolbar) + a clickable legend (dims + excludes a series from the chart
@@ -202,7 +195,6 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <button class="info-icon fhs-chip-icon" id="fhsMarginInfoBtn" title="รายละเอียด">i</button>
         </div>
         <div class="fhs-chip-sub" id="fhsMarginSub">–</div>
-        <div class="fhs-chip-sparkline" id="fhsMarginSparkline"></div>
       </div>
       <div class="fhs-op">×</div>
       <div class="fhs-chip" id="fhsBoxTurnover">
@@ -212,7 +204,6 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <span class="fhs-dir" id="fhsTurnoverDir">–</span>
         </div>
         <div class="fhs-chip-sub" id="fhsTurnoverSub">–</div>
-        <div class="fhs-chip-sparkline" id="fhsTurnoverSparkline"></div>
       </div>
       <div class="fhs-op">×</div>
       <div class="fhs-chip" id="fhsBoxLeverage">
@@ -222,7 +213,6 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
           <span class="fhs-dir" id="fhsLeverageDir">–</span>
         </div>
         <div class="fhs-chip-sub" id="fhsLeverageSub">–</div>
-        <div class="fhs-chip-sparkline" id="fhsLeverageSparkline"></div>
       </div>
     </div>
 
@@ -1038,14 +1028,11 @@ function renderAll(){
   const winLabels = windowLabels();
   const winCurrentRatio = windowSlice(MASTER_CURRENT_RATIO, QTD_Q3_26.currentRatio);
   const winQuickRatio = windowSlice(MASTER_QUICK_RATIO, QTD_Q3_26.quickRatio);
-  // winGM/winEbitM/winEbitdaM (Margins Trend's windowed data) removed with
-  // the chart itself (PART D) -- winNM stays, it still feeds the DuPont
-  // Scorecard's profit-margin sparkline (sparkNM below).
-  const winNM = windowSlice(MASTER_NM, QTD_Q3_26.profitMargin);
+  // winGM/winEbitM/winEbitdaM (Margins Trend's windowed data) and winNM/
+  // winAt/winFL (the DuPont Scorecard's factor-box sparklines) removed with
+  // their charts (PART D chart, and the sparklines respectively).
   const winRoe = windowSlice(MASTER_ROE, QTD_Q3_26.roe);
   const winRoa = windowSlice(MASTER_ROA, QTD_Q3_26.roa);
-  const winAt = windowSlice(MASTER_AT, QTD_Q3_26.assetTurnover);
-  const winFL = windowSlice(MASTER_FL, QTD_Q3_26.financialLeverage);
   const winDe = windowSlice(MASTER_DE_RATIO, QTD_Q3_26.deRatio);
   const winIbde = windowSlice(MASTER_IBDE_RATIO, QTD_Q3_26.ibdeRatio);
   const winArTurnover = windowSlice(MASTER_AR_TURNOVER, QTD_Q3_26.arTurnover);
@@ -1342,22 +1329,6 @@ function renderAll(){
   const fhsLeverage = { value: dupontCurrent.financialLeverage, prior: dupontPrevious.financialLeverage, fmt:v=>v.toFixed(2)+'x', rag:'green',
     note:'Low / declining interest-bearing debt', higherIsBetter:false };
   applyChip('fhsBoxLeverage','fhsLeverageDir','fhsLeverageSub', fhsLeverage);
-
-  // Factor-box sparklines (2026-08-11) -- a "map" glance into each factor's
-  // own full trend chart on Financial Ratios (Net Margin/Asset Turnover) or
-  // Financial Scorecard's own Leverage trend; deliberately the plain
-  // single-quarter/single-year basis (matching the OTHER trend charts these
-  // same series feed, e.g. Margins Trend), NOT dupontCurrent's TTM/YTD-
-  // annualized basis above -- the two are complementary, expected to differ
-  // slightly (see PART C note: intentional cross-pill duplication, map vs
-  // detail), not a reconciliation target.
-  const sparkNM = isAnnual ? (showYtdPoint ? [FY2024.profitMargin, FY2025.profitMargin, YTD2026.profitMargin] : [FY2024.profitMargin, FY2025.profitMargin]) : winNM;
-  const sparkAT = isAnnual ? (showYtdPoint ? [FY2024.assetTurnover, FY2025.assetTurnover, dupontFromYTD2026.assetTurnover] : [FY2024.assetTurnover, FY2025.assetTurnover]) : winAt;
-  const sparkFL = isAnnual ? (showYtdPoint ? [FY2024.financialLeverage, FY2025.financialLeverage, dupontFromYTD2026.financialLeverage] : [FY2024.financialLeverage, FY2025.financialLeverage]) : winFL;
-  const sparkDashFrom = (isAnnual && showYtdPoint) ? sparkNM.length-1 : undefined;
-  buildSparklineSVG('fhsMarginSparkline', sparkNM, { color:cssVar('--good')||'#0ca30c', dashFromIndex:sparkDashFrom });
-  buildSparklineSVG('fhsTurnoverSparkline', sparkAT, { color:cssVar('--warning')||'#fab219', dashFromIndex:sparkDashFrom });
-  buildSparklineSVG('fhsLeverageSparkline', sparkFL, { color:cssVar('--brand')||'#8E1E4D', dashFromIndex:sparkDashFrom });
 
   // Companion chips -- Liquidity (Current Ratio) closes the tile DuPont
   // doesn't cover; Cash Conversion Cycle closes the working-capital tile.

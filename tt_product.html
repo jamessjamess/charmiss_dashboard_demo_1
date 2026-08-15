@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — TT Overview · Product</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<link rel="stylesheet" href="tt-shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="shell">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <div class="topbar">
+      <div class="brand-block">
+        <div class="brand-mark">C</div>
+        <div>
+          <div class="brand-name">Charmiss</div>
+        </div>
+        <div id="navMenuMount"></div>
+        <nav class="header-topbar-tabs">
+          <a class="page-tab tab-link" href="tt_executive_summary.html">Executive Summary</a>
+          <a class="page-tab tab-link" href="tt_customer.html">Customer</a>
+          <a class="page-tab active tab-link" href="tt_product.html">Product</a>
+          <a class="page-tab tab-link" href="tt_sales_person.html">Sales Person</a>
+        </nav>
+      </div>
+      <div class="topbar-right">
+        <div class="user-info-row">
+          <a class="user-avatar-circle" href="account_management.html" title="Account Management">NV</a>
+          <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <div class="l2-mini-nav" id="l2MiniNav">
+        <a href="#sec-product-mix" class="l2-mini-nav-item">Product Mix</a>
+        <a href="#sec-customer-x-category" class="l2-mini-nav-item">Customer Group × Category</a>
+      </div>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
+      <button class="mobile-filter-trigger" id="mobileFilterTrigger" type="button">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h12M4.5 8h7M7 12h2"/></svg>
+        <span>Filters</span>
+        <span class="mobile-filter-badge" id="mobileFilterBadge" style="display:none;">0</span>
+      </button>
+      <div class="mobile-filter-backdrop" id="mobileFilterBackdrop"></div>
+
+      <div class="filter-row" id="filterRow">
+        <div class="mobile-filter-sheet-head">
+          <span>Filters</span>
+          <button type="button" id="mobileFilterCloseBtn" aria-label="Close filters">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg>
+          </button>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">Period</span>
+          <button class="date-trigger" id="dateTrigger" type="button" aria-haspopup="true" aria-expanded="false">
+            <span id="dateTriggerLabel">Year to Date</span><span class="caret">▾</span>
+          </button>
+          <div class="date-panel" id="datePanel" role="menu">
+            <div id="datePresetList"></div>
+            <div class="date-custom">
+              <div class="date-custom-label">Custom range</div>
+              <div class="date-custom-row">
+                <select id="customFrom"></select>
+                <span style="color:var(--ink-3);font-size:12px;">to</span>
+                <select id="customTo"></select>
+              </div>
+              <button class="date-apply" id="dateApply" type="button">Apply</button>
+            </div>
+          </div>
+        </div>
+        <div class="filter-group">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" type="button" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" type="button" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
+        <div class="filter-group" id="filterGroupRegion">
+          <span class="filter-label">Region</span>
+          <select class="filter-input" id="regionFilter"></select>
+        </div>
+        <div class="filter-group" id="filterGroupCategory">
+          <span class="filter-label">Category</span>
+          <select class="filter-input" id="categoryFilter"></select>
+        </div>
+        <div class="filter-group" id="filterGroupPerson">
+          <span class="filter-label">Sales Person</span>
+          <select class="filter-input" id="repFilter"></select>
+        </div>
+        <div class="filter-spacer"></div>
+        <button type="button" class="mobile-filter-apply-btn" id="mobileFilterApplyBtn">Show Results</button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pageBreakdown" class="page-view">
+  <!-- ============ HIDDEN STUBS — render() also writes to these ids as part of the other TT
+       pages' own cards (Executive Summary/Customer/Sales Person are computed together by design,
+       see tt-shared.js's header comment). Kept empty and display:none; never shown, just here so
+       render() has a valid target and does not throw. ============ -->
+  <div class="card" style="display:none;" aria-hidden="true">
+    <div id="customerGroupChart"></div>
+    <div id="customerGroupTable"></div>
+    <div id="growthYoyChart"></div>
+    <div id="growthYoyTable"></div>
+    <div id="growthYoyTopline"></div>
+    <div id="kpiActiveStores"></div>
+    <span id="kpiActiveStoresMoM"></span>
+    <span id="kpiActiveStoresMoMCompare"></span>
+    <div id="kpiActiveStoresSpark"></div>
+    <span id="kpiActiveStoresYoY"></span>
+    <span id="kpiActiveStoresYoYCompare"></span>
+    <span id="kpiArMoM"></span>
+    <span id="kpiArMoMCompare"></span>
+    <div id="kpiArPct"></div>
+    <div id="kpiArSpark"></div>
+    <span id="kpiArYoY"></span>
+    <span id="kpiArYoYCompare"></span>
+    <span id="kpiMoM"></span>
+    <span id="kpiMoMCompare"></span>
+    <div id="kpiRetention"></div>
+    <span id="kpiRetentionMoM"></span>
+    <span id="kpiRetentionMoMCompare"></span>
+    <div id="kpiRetentionSpark"></div>
+    <span id="kpiRetentionYoY"></span>
+    <span id="kpiRetentionYoYCompare"></span>
+    <div id="kpiReturnAmountNote"></div>
+    <span id="kpiReturnMoM"></span>
+    <span id="kpiReturnMoMCompare"></span>
+    <div id="kpiReturnRateQuick"></div>
+    <div id="kpiReturnRateQuickSpark"></div>
+    <span id="kpiReturnYoY"></span>
+    <span id="kpiReturnYoYCompare"></span>
+    <div id="kpiRevenue"></div>
+    <div id="kpiRevenueSpark"></div>
+    <div id="kpiTarget"></div>
+    <span id="kpiTargetMoM"></span>
+    <span id="kpiTargetMoMCompare"></span>
+    <div id="kpiTargetSpark"></div>
+    <span id="kpiTargetYoY"></span>
+    <span id="kpiTargetYoYCompare"></span>
+    <span id="kpiYoY"></span>
+    <span id="kpiYoYCompare"></span>
+    <div id="overviewCategoryChart"></div>
+    <div id="overviewCategoryTable"></div>
+    <div id="overviewRankingTable"></div>
+    <div id="riskAlertBanner"></div>
+    <div id="trendChart"></div>
+    <div id="trendTable"></div>
+    <div id="trendTopline"></div>
+    <!-- Target vs Actual (per rep) + Active Reps vs Avg Sales/Rep + Visit Compliance Trend moved
+         to tt_executive_summary.html's Sales Team pill (2026-08-14, Team pill relocation). -->
+    <div id="repBulletChart"></div>
+    <div id="repBulletSub"></div>
+    <div id="repBulletTable"></div>
+    <div id="repCoverageChart"></div>
+    <div id="repCoverageTable"></div>
+    <div id="repCoverageTopline"></div>
+    <div id="visitTrendChart"></div>
+    <div id="visitTrendTable"></div>
+    <!-- Store Performance/Geography/Customer Mix/Credit & Returns moved to tt_customer.html
+         (2026-08-14, Breakdown split into Customer/Product). -->
+    <div id="storesSub"></div>
+    <div class="store-split" id="storesChart"></div>
+    <div id="storesTable"></div>
+    <div id="activeStoresChart"></div>
+    <div id="activeStoresTable"></div>
+    <div id="activeStoresTopline"></div>
+    <div id="storeFlowChart"></div>
+    <div id="storeFlowPeriodNote"></div>
+    <div id="storeFlowTable"></div>
+    <div id="storeFlowTopline"></div>
+    <div id="regionChart"></div>
+    <select id="regionLevelSelect"><option value="1">1</option></select>
+    <div id="regionTable"></div>
+    <div id="provinceMapChart"></div>
+    <div id="provinceMapTable"></div>
+    <div id="execMonthlyCustGroupChart"></div>
+    <div id="execMonthlyCustGroupTable"></div>
+    <div id="elevatedRiskChart"></div>
+    <div id="elevatedRiskTable"></div>
+    <div id="arAgingTableMount"></div>
+    <div id="arAgingTopline"></div>
+  </div>
+
+  <!-- ============ PRODUCT MIX (2026-08-14, Breakdown split) — Sales by Category (level toggle),
+       Category Portfolio Matrix, Category Share of Sales Over Time. Same ids, same render() code
+       path (tt-shared.js) as before this file existed. ============ -->
+  <div class="section-label" id="sec-product-mix">Product Mix</div>
+  <div class="grid">
+    <div class="col-6 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Sales by Category
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">จัดอันดับสินค้าที่ระดับที่เลือก (Category / Sub-Category / Type / Series) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown</div>
+            </span>
+          </div>
+        </div>
+        <div class="icon-toolbar" data-chart="category">
+          <div class="toggle-group" id="categoryLevelToggle">
+            <button class="toggle-btn active" type="button" data-level="1">Category</button>
+            <button class="toggle-btn" type="button" data-level="2">Sub-Category</button>
+            <button class="toggle-btn" type="button" data-level="3">Type</button>
+            <button class="toggle-btn" type="button" data-level="4">Series</button>
+          </div>
+        </div>
+      </div>
+      <div class="cat-bars" id="categoryChart"></div>
+      <div id="categoryTable" class="table-scroll" style="display:none;"></div>
+    </div>
+    <div class="col-6 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title"><span id="categoryGrowthLevelLabel" class="title-prefix">Category</span>Portfolio Matrix
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">Adapted BCG Matrix ที่ระดับสินค้าเดียวกับที่กำลังดูอยู่ในการ์ด Sales by Category ทางซ้าย (Top View เลือกระดับ) — แกนนอน (X) คือยอดขาย, แกนตั้ง (Y) คือการเติบโตเทียบกับช่วงเวลาก่อนหน้าตามตัวกรอง Period ด้านบน เส้นประคือค่ามัธยฐาน (Median) ที่ใช้แบ่งเป็น 4 กลุ่ม: Stars (ขายดี+โตเร็ว), Cash Cows (ขายดีแต่โตช้า/หด), Question Marks (ขายน้อยแต่โตเร็ว), Dogs (ขายน้อย+โตช้า/หด)</div>
+            </span>
+          </div>
+          <div class="card-sub"><span id="categoryGrowthPeriodNote">Comparing —</span> · <span id="categoryGrowthContext">All Categories</span></div>
+        </div>
+        <div class="icon-toolbar" data-chart="categoryGrowth"></div>
+      </div>
+      <div class="legend axis-y-label">
+        <span class="legend-item"><span id="growthAxisLabel">Growth (%)</span>
+          <span class="info-wrap"><button class="info-btn" type="button">i</button>
+            <div class="info-pop" id="growthAxisInfoPop">—</div>
+          </span>
+        </span>
+      </div>
+      <div id="categoryGrowthChart"></div>
+      <div class="axis-x-label">Sales Volume (฿)</div>
+      <div id="categoryGrowthTable" class="table-scroll" style="display:none;"></div>
+    </div>
+  </div>
+  <div class="grid row-gap">
+    <div class="col-12 card trend-compact" id="productRankingCard">
+      <div class="card-head">
+        <div>
+          <div class="card-title"><span id="productRankingLevelLabel" class="title-prefix">Category</span>Share of Sales Over Time
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">สัดส่วนยอดขาย (% share) ของ Top 10 ที่ระดับเดียวกับการ์ด Sales by Category ด้านบน (เปลี่ยนตาม dropdown ของการ์ดนั้นโดยอัตโนมัติ) ย้อนหลังเต็ม 18 เดือน (ไม่ขึ้นกับตัวกรอง Period ด้านบนสุด เพราะกราฟนี้ต้องการดู trend ระยะยาว) % คำนวณเฉพาะภายใน Top 10 ชุดปัจจุบันเท่านั้น (รวมกันได้ 100% เสมอ) ไม่เทียบกับสินค้าทั้งหมดในพอร์ต — วางเมาส์บนกราฟเพื่อดูตัวเลขที่แท้จริงเป็นบาท</div>
+            </span>
+          </div>
+          <div class="card-sub" id="productRankingSub">Top 10, full 18-month history</div>
+        </div>
+        <div class="icon-toolbar" data-chart="productRanking"></div>
+      </div>
+      <div id="productRankingChart"></div>
+      <div id="productRankingTable" class="table-scroll" style="display:none;"></div>
+    </div>
+  </div>
+
+  <!-- ============ CUSTOMER GROUP × CATEGORY (2026-08-14, Breakdown split) ============ -->
+  <div class="section-label" id="sec-customer-x-category" style="margin-top:24px;">Customer Group &times; Category</div>
+  <div class="grid row-gap">
+    <div class="col-12 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Customer Group × <span id="customerCategoryHeatmapLevelLabel">Category</span>
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">ยอดขายสุทธิไขว้ระหว่างกลุ่มลูกค้า (Customer Group, แถว) กับระดับสินค้าที่เลือกจาก dropdown (คอลัมน์) ในช่วงเวลาที่เลือก — สีเข้มขึ้นตามยอดขาย ใช้ดูว่ากลุ่มลูกค้าไหนซื้อหมวด/ประเภทไหนเยอะเป็นพิเศษ บริษัทรวมทั้งหมดเสมอ ไม่ scope ตาม Region/Sales Person ที่ระดับลึกกว่า Category จะแสดงเฉพาะ Top 10 คอลัมน์ (จัดอันดับจากยอดขายรวมทั้งพอร์ต) ดูรายการเต็มได้จาก Table view</div>
+            </span>
+          </div>
+          <div class="card-sub" id="customerCategoryHeatmapSub">Net Sales, this period · company-wide</div>
+        </div>
+        <div class="icon-toolbar" data-chart="customerCategoryHeatmap">
+          <select class="toolbar-select" id="customerCategoryHeatmapLevelSelect">
+            <option value="1" selected>Category</option>
+            <option value="2">Sub-Category</option>
+            <option value="3">Type</option>
+            <option value="4">Series</option>
+          </select>
+        </div>
+      </div>
+      <div id="customerCategoryHeatmapChart"></div>
+      <div id="customerCategoryHeatmapTable" class="table-scroll" style="display:none;"></div>
+    </div>
+  </div>
+
+  </div>
+  <!-- ============ /pageBreakdown (container id kept as "pageBreakdown" for JS continuity) ============ -->
+
+</div>
+<!-- ============ /.shell ============ -->
+<div class="focus-backdrop" id="focusBackdrop"></div>
+
+<script src="tt-shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+(function(){
+  "use strict";
+  if (typeof renderNavMenu === "function") {
+    try { renderNavMenu("tt-product", "TT Overview · Product"); } catch(e) { console.error("Nav menu render failed:", e); }
+  }
+
+  /* ---- Info popovers ---- */
+  document.querySelectorAll(".info-btn").forEach(btn => {
+    const pop = btn.nextElementSibling;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const willOpen = !pop.classList.contains("open");
+      document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open"));
+      if (willOpen) pop.classList.add("open");
+    });
+  });
+
+  /* ---- Date filter popover ---- */
+  const dateTrigger = document.getElementById("dateTrigger");
+  const datePanel = document.getElementById("datePanel");
+  const datePresetList = document.getElementById("datePresetList");
+  const customFrom = document.getElementById("customFrom");
+  const customTo = document.getElementById("customTo");
+
+  PRESET_ORDER.forEach(key => {
+    const row = document.createElement("button");
+    row.type = "button"; row.className = "date-preset"; row.setAttribute("role","menuitemradio");
+    row.setAttribute("aria-selected", state.dateRange.mode==="preset" && state.dateRange.key===key ? "true":"false");
+    row.innerHTML = `<span class="check">✓</span><span>${PRESETS[key].label}</span>`;
+    row.addEventListener("click", () => {
+      state.dateRange = { mode:"preset", key };
+      datePresetList.querySelectorAll(".date-preset").forEach(r => r.setAttribute("aria-selected", r===row ? "true":"false"));
+      closeDatePanel();
+      render();
+    });
+    datePresetList.appendChild(row);
+  });
+  actualMonths.forEach(m => {
+    const o1 = document.createElement("option"); o1.value=m.idx; o1.textContent=m.key; customFrom.appendChild(o1);
+    const o2 = document.createElement("option"); o2.value=m.idx; o2.textContent=m.key; customTo.appendChild(o2);
+  });
+  customFrom.value = 6; customTo.value = 17;
+  function syncCustomRangeFields(){
+    const w = windowMonths();
+    if (w.length){ customFrom.value = w[0].idx; customTo.value = w[w.length-1].idx; }
+  }
+  function openDatePanel(){ syncCustomRangeFields(); datePanel.classList.add("open"); dateTrigger.setAttribute("aria-expanded","true"); }
+  function closeDatePanel(){ datePanel.classList.remove("open"); dateTrigger.setAttribute("aria-expanded","false"); }
+  dateTrigger.addEventListener("click", (e) => {
+    e.stopPropagation();
+    datePanel.classList.contains("open") ? closeDatePanel() : openDatePanel();
+  });
+  document.getElementById("dateApply").addEventListener("click", () => {
+    state.dateRange = { mode:"custom", from:parseInt(customFrom.value,10), to:parseInt(customTo.value,10) };
+    datePresetList.querySelectorAll(".date-preset").forEach(r => r.setAttribute("aria-selected","false"));
+    closeDatePanel();
+    render();
+  });
+
+  /* ---- View By (Monthly/Quarterly) toggle ---- */
+  const timeFrameToggle = document.getElementById("timeFrameToggle");
+  if (timeFrameToggle){
+    timeFrameToggle.addEventListener("click", (e) => {
+      const btn = e.target.closest(".timeframe-opt");
+      if (!btn || btn.classList.contains("selected")) return;
+      timeFrameToggle.querySelectorAll(".timeframe-opt").forEach(o => o.classList.remove("selected"));
+      btn.classList.add("selected");
+      positionTimeFrameThumb();
+      currentTimeFrame = btn.dataset.key;
+      render();
+    });
+    positionTimeFrameThumb();
+  }
+
+  /* ---- Mobile filter sheet ---- */
+  const mobileFilterTrigger = document.getElementById("mobileFilterTrigger");
+  const mobileFilterBackdrop = document.getElementById("mobileFilterBackdrop");
+  const filterRowEl = document.getElementById("filterRow");
+  function openMobileFilters(){ filterRowEl.classList.add("mobile-open"); mobileFilterBackdrop.classList.add("open"); }
+  function closeMobileFilters(){ filterRowEl.classList.remove("mobile-open"); mobileFilterBackdrop.classList.remove("open"); }
+  function updateMobileFilterBadge(){
+    const badge = document.getElementById("mobileFilterBadge");
+    const n = [state.region, state.category, state.rep].filter(v => v!=="all").length;
+    badge.textContent = String(n);
+    badge.style.display = n>0 ? "inline-flex" : "none";
+  }
+  mobileFilterTrigger.addEventListener("click", openMobileFilters);
+  document.getElementById("mobileFilterCloseBtn").addEventListener("click", closeMobileFilters);
+  document.getElementById("mobileFilterApplyBtn").addEventListener("click", closeMobileFilters);
+  mobileFilterBackdrop.addEventListener("click", closeMobileFilters);
+
+  /* ---- Region / Category / Sales Person filters ---- */
+  function syncFromSelects(){
+    state.region = document.getElementById("regionFilter").value;
+    state.category = document.getElementById("categoryFilter").value;
+    state.rep = document.getElementById("repFilter").value;
+    updateMobileFilterBadge();
+    render();
+  }
+  const regionSel = document.getElementById("regionFilter");
+  const catSel = document.getElementById("categoryFilter");
+  const repSel = document.getElementById("repFilter");
+  [["all","All Regions"]].concat(REGIONS.map(r=>[r,r])).forEach(([v,t]) => {
+    const o = document.createElement("option"); o.value=v; o.textContent=t; regionSel.appendChild(o);
+  });
+  [["all","All Categories"]].concat(CATEGORIES.map(c=>[c,c])).forEach(([v,t]) => {
+    const o = document.createElement("option"); o.value=v; o.textContent=t; catSel.appendChild(o);
+  });
+  [["all","All Reps"]].concat(reps.map(r=>[r.repId,r.name])).forEach(([v,t]) => {
+    const o = document.createElement("option"); o.value=v; o.textContent=t; repSel.appendChild(o);
+  });
+  regionSel.addEventListener("change", syncFromSelects);
+  catSel.addEventListener("change", syncFromSelects);
+  repSel.addEventListener("change", syncFromSelects);
+
+  /* ---- This page's own standalone toolbar buttons ---- */
+  document.querySelectorAll("#categoryLevelToggle .toggle-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#categoryLevelToggle .toggle-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.categoryLevel = parseInt(btn.dataset.level, 10);
+      render();
+    });
+  });
+  document.getElementById("customerCategoryHeatmapLevelSelect").addEventListener("change", render);
+
+/* ---- Menu bar collapse (same mechanism as sales_overview.html / shared.css pages) ---- */
+  (function initMenubarCollapse(){
+    const wrap = document.getElementById("pageHeaderSticky");
+    const btn = document.getElementById("menubarCollapseBtn");
+    if(!wrap || !btn) return;
+    const STORAGE_KEY = "charmiss_menubar_collapsed";
+    function updateScrollPadding(){
+      requestAnimationFrame(()=>{
+        document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + "px";
+      });
+    }
+    function setCollapsed(collapsed){
+      wrap.classList.toggle("menubar-collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      btn.title = collapsed ? "ขยาย Menu Bar" : "พับ Menu Bar";
+      try{ localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0"); }catch(e){}
+      updateScrollPadding();
+    }
+    let initial = false;
+    try{ initial = localStorage.getItem(STORAGE_KEY) === "1"; }catch(e){}
+    setCollapsed(initial);
+    btn.addEventListener("click", ()=> setCollapsed(!wrap.classList.contains("menubar-collapsed")));
+    window.addEventListener("resize", updateScrollPadding);
+  })();
+  initSectionScrollSpy();
+
+  document.addEventListener("click", (e) => {
+    if (!datePanel.contains(e.target) && e.target!==dateTrigger && !dateTrigger.contains(e.target)) closeDatePanel();
+    document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open"));
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key==="Escape"){ closeDatePanel(); document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open")); exitFocus(); closeMobileFilters(); }
+  });
+
+  updateMobileFilterBadge();
+  render();
+})();
+</script>
+</body>
+</html>

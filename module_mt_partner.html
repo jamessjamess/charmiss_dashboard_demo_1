@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — MT Overview · Partner</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="module_mt_executive_summary.html">Executive Summary</a>
+          <a class="tab active tab-link" href="module_mt_partner.html">Partner</a>
+          <a class="tab tab-link" href="module_mt_store.html">Store</a>
+        </nav>
+      </div>
+      <div class="user-area">
+        <a class="avatar" href="account_management.html" title="Account Management">NV</a>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <div class="filter-bar-group">
+        <div class="filter-left">
+          <span class="filter-label">Period</span>
+          <button class="period-btn" id="periodBtn">
+            <span id="periodBtnLabel">Year to Date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="periodDropdown">
+            <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+            <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+            <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+            <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+            <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+            <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+            <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+            <div class="period-divider"></div>
+            <div class="custom-range-label">Custom Range</div>
+            <div class="custom-range-row">
+              <select id="customFrom"></select>
+              <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+              <select id="customTo"></select>
+            </div>
+            <button class="apply-btn" id="applyCustom">Apply</button>
+          </div>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">Partner</span>
+          <select class="level-select" id="partnerFilterSelect">
+            <option value="all">All Partners</option>
+            <option value="WATSONS">WATSONS</option>
+            <option value="EVEANDBOY">EVEANDBOY</option>
+            <option value="Lotus's">Lotus's</option>
+            <option value="7-Eleven">7-Eleven</option>
+            <option value="KONVY">KONVY</option>
+            <option value="CJ Express">CJ Express</option>
+            <option value="Beautrium">Beautrium</option>
+            <option value="Tsuruha">Tsuruha</option>
+            <option value="Multy">Multy</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ROW 1: Sales by Partner Over Time | Return Rate (CN) by Partner ===== -->
+  <div class="chart-grid">
+    <div class="card" style="margin-bottom:0;">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Partner Over Time</span>
+          <button class="info-icon" data-info-title="Sales by Partner Over Time" data-info-text="ยอดขายของแต่ละคู่ค้า (Key Account) ในช่วงเวลาที่เลือกจาก Filter ด้านบน (Period) — Company-wide MT เสมอ, ไม่ plot เดือน/ไตรมาสที่ยังไม่ปิดงบ — แกน x สลับ Monthly/Quarterly ตาม View By — เน้น Label ปลายเส้นเฉพาะ Top 5 คู่ค้าตามยอดขายล่าสุดเพื่อให้อ่านง่าย (หรือคู่ค้าที่เลือกจาก Filter Partner ด้านบน ถ้าเลือกไว้) ส่วนที่เหลือยังวาดอยู่แต่จางสีลง ดูตัวเลขทุกคู่ค้าแบบเต็มได้ผ่านปุ่ม 'ดูเป็นตาราง'">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="partnerTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="partnerTrendDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="partnerTrendExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="partnerTrendCanvasWrap" style="height:280px;"><div id="partnerTrendChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="partnerTrendTableWrap"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Return Rate (CN) by Partner</span>
+          <button class="info-icon" data-info-title="Return Rate (CN) by Partner" data-info-text="Return Rate (CN) ของทุก Key Account เรียงจากสูงไปต่ำ (Company-wide MT เสมอ ไม่ scope ตาม Filter Period ด้านบน) — เส้นประแนวตั้งคือ Threshold 4.0% (เกณฑ์เดียวกับ Return Rate (CN) Trend ใน Executive Summary) แท่งสีแดงคือคู่ค้าที่แตะหรือเกิน Threshold แท่งสีเขียวคือยังต่ำกว่า ป้ายแต่ละแท่งโชว์ทั้ง % และมูลค่า CN เป็นบาท (Amount = Return% × Net Sales ของคู่ค้านั้น ในช่วงเวลาที่เลือก) — เลือกคู่ค้าจาก Filter Partner ด้านบนเพื่อไฮไลท์แถวนั้น">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="highReturnTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="highReturnDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="highReturnExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="cat-bars" id="highReturnBars"></div>
+      <div class="data-table-wrap" id="highReturnTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== ROW 2: Target vs Actual per Partner + YoY Growth by Partner ===== -->
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Target vs Actual per Partner</span>
+          <button class="info-icon" data-info-title="Target vs Actual per Partner" data-info-text="Target Attainment % รายคู่ค้า (Key Account) เรียงตามยอดขาย เส้นอ้างอิงที่ 100% — เลือกคู่ค้าจาก Filter Partner ด้านบนเพื่อไฮไลท์แถวนั้น">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="kgAttainTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="kgAttainDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="kgAttainExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="kgAttainCanvasWrap" style="height:306px;"><div id="kgAttainChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="kgAttainCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="kgAttainTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">YoY Growth by Partner</span>
+          <button class="info-icon" data-info-title="YoY Growth by Partner" data-info-text="%Growth ยอดขายเทียบปีก่อน รายคู่ค้า (Key Account) — เรียงลำดับเดียวกับ Target vs Actual per Partner ทางซ้าย (ตามยอดขาย) เส้นอ้างอิงที่ 0% — เลือกคู่ค้าจาก Filter Partner ด้านบนเพื่อไฮไลท์แถวนั้น">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="kgGrowthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="kgGrowthDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="kgGrowthExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="kgGrowthCanvasWrap" style="height:306px;"><div id="kgGrowthChart" style="width:100%;height:100%;"></div></div>
+      <div class="callout-text" id="kgGrowthCallout" style="margin-top:10px;">–</div>
+      <div class="data-table-wrap" id="kgGrowthTableWrap"></div>
+    </div>
+  </div>
+
+  <!-- ===== Partner Share of Sales Over Time ===== -->
+  <div class="card">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Partner Share of Sales Over Time</span>
+        <button class="info-icon" data-info-title="Partner Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขาย MT แยกตามคู่ค้า (Key Account) ย้อนหลัง 18 เดือน — Company-wide MT เสมอ ไม่ขึ้นกับ Filter Period ด้านบน — เลื่อนเมาส์ชี้บนกราฟเพื่อดูตัวเลข %/฿ ที่แม่นยำของแต่ละเดือน — เลือกคู่ค้าจาก Filter Partner ด้านบนเพื่อไฮไลท์ชื่อคู่ค้านั้นใน Legend">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="partnerShareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="partnerShareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="partnerShareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="partnerShareLegend"></div>
+    <div class="canvas-wrap" id="partnerShareCanvasWrap" style="height:280px;"><div id="partnerShareChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="partnerShareCallout" style="margin-top:10px;">–</div>
+    <div class="data-table-wrap" id="partnerShareTableWrap"></div>
+  </div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — identical to module_mt_executive_summary.html's shared
+   block (same seed, same order). Keep the two in sync; see the comment there.
+   This exact block (including the parts this file doesn't itself display,
+   e.g. mtARSeries/mtPartnersSeries) must stay byte-for-byte so every later
+   rand() draw in this file lands on the same sequence position it always
+   has — dropping an "unused" block here would silently reshuffle every
+   number computed after it.
+   ============================================================================ */
+const rand = mulberry32(20260630);
+const MONTHS_TOTAL = 36;
+const TODAY = 29;
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
+
+function genSeries(base, growthPerMonth, targetBoostFn){
+  const actual = [], target = [];
+  let level = base;
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const moy = i % 12;
+    let seasonal = 1;
+    if([9,10,11].includes(moy)) seasonal = 1.13;
+    if(moy === 1) seasonal = 0.9;
+    if(moy === 6 || moy === 7) seasonal = 0.96;
+    const noiseA = 0.94 + rand()*0.12;
+    const noiseT = 0.97 + rand()*0.05;
+    actual.push(Math.round(level * seasonal * noiseA));
+    target.push(Math.round(level * seasonal * noiseT * (targetBoostFn ? targetBoostFn(i) : 1)));
+    level = level * (1 + growthPerMonth);
+  }
+  return {actual, target};
+}
+const channelDefs = [
+  {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT', targetBoostFn: i=>i>=24?1.25:1},
+  {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:1800000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1550000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok', color:'#7A5A2E', base:850000, growth:0.0270, group:'Ecom'},
+  {key:'LineShop', label:'Line Shop', color:'#4C8C5C', base:400000, growth:0.0120, group:'Ecom'}
+];
+channelDefs.forEach(c => { const s = genSeries(c.base, c.growth, c.targetBoostFn); c.actual = s.actual; c.target = s.target; });
+const groupKeys = ['MT','TT','Ecom'];
+function groupSeries(groupKey, field){
+  const arr = new Array(MONTHS_TOTAL).fill(0);
+  channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });
+  return arr;
+}
+const groupActual = {}, groupTarget = {};
+groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
+for(let i=0;i<MONTHS_TOTAL;i++){
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
+  ecomCancelRate.push(0.065 + rand()*0.02);
+}
+const mtARSeries = [];
+{ let level = 86; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.5)*1.2; level = Math.max(78, Math.min(94, level)); mtARSeries.push(level); } }
+const mtPartnersSeries = [];
+{ let level = 34; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.35; mtPartnersSeries.push(Math.round(level)); } }
+
+/* -------------------- Part 2: Partner-only mock data --------------------
+   Same 9 named Key Accounts as Executive Summary's keyAccounts (same
+   pct/growthYoY/attain/cnRate figures, kept in sync by manual copy — this
+   file has no shared JS module to import from), so every widget below
+   reconciles with Executive Summary exactly. */
+const keyAccounts = [
+  {name:'WATSONS', pct:22, growthYoY:9.5},
+  {name:'EVEANDBOY', pct:18, growthYoY:24.0},
+  {name:"Lotus's", pct:16, growthYoY:4.0},
+  {name:'7-Eleven', pct:14, growthYoY:11.0},
+  {name:'KONVY', pct:10, growthYoY:32.0},
+  {name:'CJ Express', pct:8, growthYoY:18.0},
+  {name:'Beautrium', pct:6, growthYoY:14.0},
+  {name:'Tsuruha', pct:4, growthYoY:21.0},
+  {name:'Multy', pct:2, growthYoY:-6.0}
+];
+const keyAccountColors = ['#4C6FA5','#6E9B6E','#8C6FB0','#C97B63','#C4A22E','#75798C','#B23368','#3B7A7A','#A87C3F'];
+const keyAccountStats = [
+  {attain:103, ret:3.0, ar:90},
+  {attain:108, ret:2.4, ar:93},
+  {attain:97,  ret:3.6, ar:86},
+  {attain:101, ret:2.9, ar:92},
+  {attain:112, ret:2.1, ar:95},
+  {attain:99,  ret:3.3, ar:88},
+  {attain:105, ret:2.6, ar:91},
+  {attain:94,  ret:4.0, ar:84},
+  {attain:90,  ret:4.5, ar:80}
+];
+/* Same threshold constant as Executive Summary's RETURN_RATE_CEILING_PCT
+   (Return Rate (CN) Trend) — kept numerically tied so both pages agree on
+   what counts as "high" return. */
+const RETURN_RATE_CEILING_PCT = 4.0;
+/* keyAccountCnRate — byte-for-byte copy of the values previously shown on
+   this same "Return Rate (CN) by Partner" widget (kept identical through
+   every reshuffle of this content between Executive Summary and this tab).
+   NOT the same as keyAccountStats[].ret above (that's a separate, smaller
+   mock figure used only by Executive Summary's own Return Rate (CN) Trend
+   callout) — the two have always been two independently mocked figures for
+   the same accounts, kept as separate arrays since merging them would
+   violate "ห้ามแก้ตัวเลข mock". */
+const keyAccountCnRate = [3.8, 3.0, 4.5, 3.6, 2.6, 4.2, 3.3, 5.0, 5.7];
+
+function getPeriodRange(key, custom){
+  switch(key){
+    case 'thisMonth': return [TODAY, TODAY];
+    case 'lastMonth': return [TODAY-1, TODAY-1];
+    case 'thisQuarter': return [TODAY-2, TODAY];
+    case 'lastQuarter': return [TODAY-5, TODAY-3];
+    case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
+    case 'custom': return custom;
+    case 'ytd': default: return [24, TODAY];
+  }
+}
+function periodLabelText(key, custom){
+  switch(key){
+    case 'thisMonth': return 'Jun 2026';
+    case 'lastMonth': return 'May 2026';
+    case 'thisQuarter': return 'Q2 2026';
+    case 'lastQuarter': return 'Q1 2026';
+    case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
+    case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
+    case 'ytd': default: return 'Year to Date';
+  }
+}
+
+/* ---------- Nav menu / popovers ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('mt-partner', 'MT Overview · Partner'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+
+/* ---------- Menu bar collapse (same mechanism as sales_overview.html). ---------- */
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+initSectionScrollSpy();
+
+/* ---------- Custom range selects ---------- */
+const customFromSel = document.getElementById('customFrom');
+const customToSel = document.getElementById('customTo');
+for(let i=0;i<=TODAY;i++){
+  const optF = document.createElement('option'); optF.value=i; optF.textContent=monthLabels[i]; customFromSel.appendChild(optF);
+  const optT = document.createElement('option'); optT.value=i; optT.textContent=monthLabels[i]; customToSel.appendChild(optT);
+}
+customFromSel.value = 24; customToSel.value = TODAY;
+
+/* ---------- Period dropdown ---------- */
+const periodBtn = document.getElementById('periodBtn');
+const periodDropdown = document.getElementById('periodDropdown');
+const periodBtnLabel = document.getElementById('periodBtnLabel');
+let currentPeriodKey = 'ytd';
+let currentCustom = [24, TODAY];
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderAll();
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderAll();
+});
+/* ---------- Partner filter ---------- */
+let currentPartnerFilter = 'all';
+document.getElementById('partnerFilterSelect').addEventListener('change', (e)=>{
+  currentPartnerFilter = e.target.value;
+  renderAll();
+});
+
+/* Byte-for-byte copy of the hexToRgb helper used elsewhere in this codebase
+   (e.g. module_ecom_product.html), extended to return an rgba() string
+   directly — used to fade non-selected partners' bars in the two
+   buildHBarCompareSVG charts below when a specific Partner filter is
+   active, without touching shared.js (which every module shares). */
+function hexToRgbaFade(hex, alpha){
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16);
+  return 'rgba('+((num>>16)&255)+','+((num>>8)&255)+','+(num&255)+','+alpha+')';
+}
+
+/* ---------- Time Frame (Monthly/Quarterly) toggle ---------- */
+let currentTimeFrame = 'monthly';
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll();
+});
+positionTimeFrameThumb();
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
+
+// buildStackedBarPctSVG (2026-08-14, direct feedback — Partner Share of Sales Over Time
+// switched from a stream area to a 100% stacked bar, one full column per period, so every
+// "Share of Sales" chart on the dashboard reads the same way; module_ecom_platform.html carries
+// an identical copy of this function for its own Platform Share of Sales Over Time). Page-local
+// (not added to shared.js) — same opts shape as buildStreamAreaSVG so call sites are a
+// near drop-in swap: {labels, series:[{name,color,values:[absolute per period]}], valueFormatter}.
+function buildStackedBarPctSVG(containerId, opts){
+  const container = document.getElementById(containerId);
+  const width = opts.width || (container ? container.clientWidth : 0) || 700;
+  const height = opts.height || (container ? container.clientHeight : 0) || 260;
+  const labels = opts.labels, series = opts.series;
+  const valueFormatter = opts.valueFormatter || (v=>v);
+  const n = labels.length;
+  const padL=30, padR=8, padT=10, padB=22;
+  const plotW = width-padL-padR, plotH = height-padT-padB;
+  const hairline = cssVar('--hairline')||'#e1e0d9', inkTertiary = cssVar('--ink-3')||'#898781';
+
+  const totals = labels.map((lb,m)=> series.reduce((a,s)=>a+s.values[m],0) || 1);
+  const pctByMonth = series.map(s => s.values.map((v,m)=> v/totals[m]*100));
+
+  const barGroupW = plotW/Math.max(1,n);
+  const xCenter = m => padL + barGroupW*(m+0.5);
+  const barW = Math.max(4, Math.min(56, barGroupW*0.55));
+  const y = v => padT + (1 - v/100) * plotH;
+
+  let svg = '';
+  [0,50,100].forEach(v=>{
+    const yy = y(v);
+    svg += '<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(width-padR)+'" y2="'+yy.toFixed(1)+'" stroke="'+hairline+'" stroke-width="1"/>';
+    svg += '<text x="'+(padL-6)+'" y="'+(yy+3).toFixed(1)+'" font-size="9" text-anchor="end" fill="'+inkTertiary+'">'+v+'%</text>';
+  });
+
+  for(let m=0;m<n;m++){
+    let acc = 0;
+    series.forEach((s,i)=>{
+      const pct = pctByMonth[i][m];
+      const y0 = y(acc), y1 = y(acc+pct);
+      const segH = y0-y1;
+      svg += '<rect x="'+(xCenter(m)-barW/2).toFixed(1)+'" y="'+y1.toFixed(1)+'" width="'+barW.toFixed(1)+'" height="'+Math.max(0,segH).toFixed(1)+'" fill="'+s.color+'" opacity="0.92"/>';
+      if(segH >= 13){
+        svg += '<text x="'+xCenter(m).toFixed(1)+'" y="'+((y0+y1)/2+3.5).toFixed(1)+'" text-anchor="middle" font-size="9.5" font-weight="700" fill="#fff">'+pct.toFixed(0)+'%</text>';
+      }
+      acc += pct;
+    });
+  }
+
+  const showEvery = n>12 ? 3 : 1;
+  labels.forEach((lb,m)=>{
+    if(m%showEvery!==0 && m!==n-1) return;
+    svg += '<text x="'+xCenter(m).toFixed(1)+'" y="'+(height-6)+'" font-size="9.5" text-anchor="middle" fill="'+inkTertiary+'">'+lb+'</text>';
+  });
+
+  container.innerHTML = '<svg viewBox="0 0 '+width+' '+height+'" width="100%" height="100%" preserveAspectRatio="none">'+svg+'</svg>';
+
+  /* Hover tooltip: nearest-column lookup, same shared tooltip buildStreamAreaSVG uses, showing
+     every series' real %/value at that period. */
+  const tooltip = ensureChartTooltip();
+  container.onmousemove = (e)=>{
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const scaleX = rect.width ? width/rect.width : 1;
+    const svgX = mouseX*scaleX;
+    let m = Math.round((svgX-padL-barGroupW/2)/(barGroupW||1));
+    m = Math.max(0, Math.min(n-1, m));
+    const rows = series.map((s,i)=>({ name:s.name, color:s.color, pct: pctByMonth[i][m], value: s.values[m] }))
+      .sort((a,b)=>b.value-a.value);
+    tooltip.innerHTML = '<div class="chart-tooltip-title">'+labels[m]+'</div>'
+      + rows.map(r=>'<div class="chart-tooltip-row"><span class="chart-tooltip-dot" style="background:'+r.color+';"></span><span class="chart-tooltip-name">'+r.name+'</span><span class="chart-tooltip-value">'+valueFormatter(r.value)+' · '+r.pct.toFixed(0)+'%</span></div>').join('');
+    const pw = 240;
+    let left = e.clientX + 14;
+    if(left + pw > window.innerWidth - 12) left = e.clientX - pw - 14;
+    let top = e.clientY + 14;
+    if(top + 140 > window.innerHeight - 12) top = e.clientY - 150;
+    tooltip.style.left = Math.max(12,left) + 'px';
+    tooltip.style.top = Math.max(12,top) + 'px';
+    tooltip.classList.add('show');
+  };
+  container.onmouseleave = ()=>{ tooltip.classList.remove('show'); };
+}
+
+/* ---------- Render ---------- */
+let latestData = {};
+
+function renderAll(){
+  const [s,e] = getPeriodRange(currentPeriodKey, currentCustom);
+  const totalActual = sumRange(groupActual.MT, s, e);
+
+  /* === Sales by Partner Over Time — static title (Monthly/Quarterly no
+     longer swaps it, per direct feedback), still scoped to [s,e] clamped to
+     TODAY (no unclosed period ever plotted) and the x-axis granularity
+     still follows View By. === */
+  const partnerTrendIdx = []; for(let i=s; i<=Math.min(e,TODAY); i++) partnerTrendIdx.push(i);
+  const partnerTrendGroups = bucketMonths(partnerTrendIdx, currentTimeFrame);
+  const partnerTrendLabels = currentTimeFrame==='quarterly'
+    ? partnerTrendGroups.map(g => quarterLabel(g)+' '+String(2024+Math.floor(g[0]/12)).slice(2))
+    : partnerTrendIdx.map(i=>monthLabels[i]);
+  /* Partner filter (2026-08-14, feedback) — when a specific partner is
+     selected, that partner's line replaces the "Top 5 by share" set as the
+     sole highlighted line (full opacity/width/label), and every other
+     partner dims further than the old "not top 5" treatment (0.15 instead
+     of 0.35) so the selection reads clearly. "All Partners" keeps the
+     original Top 5 behavior unchanged. */
+  const partnerTrendTop5Names = new Set([...keyAccounts].sort((a,b)=>b.pct-a.pct).slice(0,5).map(a=>a.name));
+  const partnerTrendSeries = keyAccounts.map((a,i)=>{
+    const data = bucketSum(groupActual.MT.map(v => v*a.pct/100), partnerTrendGroups);
+    const isSelected = currentPartnerFilter !== 'all' && a.name === currentPartnerFilter;
+    const isHighlighted = currentPartnerFilter === 'all' ? partnerTrendTop5Names.has(a.name) : isSelected;
+    const isFiltering = currentPartnerFilter !== 'all';
+    return { data, color: keyAccountColors[i], width: isHighlighted?2.2:(isFiltering?1:1.3), opacity: isHighlighted?1:(isFiltering?0.15:0.35), showLastLabel:isHighlighted, lastLabelFormatter: v => a.name+' '+fmtTHB(v) };
+  });
+  buildLineChartSVG('partnerTrendChart', { labels: partnerTrendLabels, yFormatter: v=>fmtTHB(v), series: partnerTrendSeries });
+  latestData.partnerTrend = { labels: partnerTrendLabels, partners: keyAccounts.map((a,i)=>({name:a.name, values: partnerTrendSeries[i].data})) };
+
+  /* === Return Rate (CN) by Partner — bar length by % (ranked, sorted
+     desc), bar label also states the ฿ CN amount for that partner (% ×
+     that partner's own Net Sales for the selected period). === */
+  const cnRanked = keyAccounts.map((a,i)=>{
+    const net = totalActual*a.pct/100;
+    return { id:a.name, cnRate:keyAccountCnRate[i], cnAmount: net*keyAccountCnRate[i]/100 };
+  }).sort((a,b)=>b.cnRate-a.cnRate);
+  const maxCnRate = Math.max(RETURN_RATE_CEILING_PCT, ...cnRanked.map(p=>p.cnRate));
+  const cnRefPct = (RETURN_RATE_CEILING_PCT/maxCnRate*100).toFixed(1);
+  document.getElementById('highReturnBars').innerHTML = cnRanked.map(p=>{
+    const widthPct = (p.cnRate/maxCnRate*100).toFixed(1);
+    const color = p.cnRate>=RETURN_RATE_CEILING_PCT ? 'var(--critical)' : 'var(--good-text)';
+    const isSelected = currentPartnerFilter !== 'all' && p.id === currentPartnerFilter;
+    const isDimmed = currentPartnerFilter !== 'all' && !isSelected;
+    const rowStyle = isSelected ? 'outline:2px solid var(--brand);border-radius:6px;padding:2px 4px;margin:-2px -4px;' : (isDimmed ? 'opacity:0.45;' : '');
+    const labelStyle = isSelected ? 'font-weight:800;' : '';
+    return '<div class="cat-row" style="'+rowStyle+'"><span class="cat-label" style="'+labelStyle+'">'+p.id+'</span>'
+      + '<div class="cat-track"><div class="cat-ref-line" style="left:'+cnRefPct+'%;"></div><div class="cat-fill" style="width:'+widthPct+'%;background:'+color+';"><span class="cat-fill-label">'+fmtPct(p.cnRate,1)+' · '+fmtTHB(p.cnAmount)+'</span></div></div></div>';
+  }).join('');
+  latestData.highReturn = cnRanked;
+
+  /* === Target vs Actual per Partner + YoY Growth by Partner — same 9 Key
+     Accounts, same growthYoY/attain figures and ฿ deltas as Executive
+     Summary always showed, already sorted by net sales share (keyAccounts'
+     natural order). === */
+  const good = cssVar('--good') || '#0ca30c';
+  const critical = cssVar('--critical') || '#d03b3b';
+  const kgList = keyAccounts.map((a,i)=>{
+    const net = totalActual*a.pct/100;
+    const target = net/(keyAccountStats[i].attain/100);
+    const lastYearVal = net/(1+a.growthYoY/100);
+    return { name:a.name, attain:keyAccountStats[i].attain, diff: net-target, growthYoY:a.growthYoY, growthAmt: net-lastYearVal };
+  });
+
+  buildHBarCompareSVG('kgAttainChart', kgList.map(p=>{
+    const isSelected = currentPartnerFilter !== 'all' && p.name === currentPartnerFilter;
+    const isDimmed = currentPartnerFilter !== 'all' && !isSelected;
+    const baseColor = p.attain>=100 ? good : critical;
+    return {
+      label: p.name, value: p.attain, color: isDimmed ? hexToRgbaFade(baseColor, 0.35) : baseColor,
+      subLabel: (p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff)), subLabelColor: p.diff>=0 ? good : critical,
+      bold: isSelected
+    };
+  }), { referenceValue:100, formatValue: v=>fmtPct(v,0), labelW:80, rowHeight:30 });
+  latestData.kgAttain = kgList;
+  const kgBelowTarget = kgList.filter(p=>p.attain<100);
+  document.getElementById('kgAttainCallout').innerHTML = kgBelowTarget.length
+    ? kgBelowTarget.length+' of '+kgList.length+' accounts below target · Furthest below: <b>'+kgBelowTarget.reduce((a,b)=>a.attain<b.attain?a:b).name+'</b> ('+fmtPct(kgBelowTarget.reduce((a,b)=>a.attain<b.attain?a:b).attain,0)+')'
+    : 'All '+kgList.length+' accounts at or above target';
+
+  buildHBarCompareSVG('kgGrowthChart', kgList.map(p=>{
+    const isSelected = currentPartnerFilter !== 'all' && p.name === currentPartnerFilter;
+    const isDimmed = currentPartnerFilter !== 'all' && !isSelected;
+    const baseColor = p.growthYoY>=0 ? good : critical;
+    return {
+      label: p.name, value: p.growthYoY, color: isDimmed ? hexToRgbaFade(baseColor, 0.35) : baseColor,
+      subLabel: (p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt)), subLabelColor: p.growthAmt>=0 ? good : critical,
+      bold: isSelected
+    };
+  }), { referenceValue:0, formatValue: v=>fmtSignedPct(v,1), labelW:80, rowHeight:30 });
+  latestData.kgGrowth = kgList;
+  const kgShrinking = kgList.filter(p=>p.growthYoY<0);
+  document.getElementById('kgGrowthCallout').innerHTML = kgShrinking.length
+    ? kgShrinking.length+' of '+kgList.length+' account'+(kgShrinking.length===1?'':'s')+' shrinking YoY · Steepest decline: <b>'+kgShrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).name+'</b> ('+fmtSignedPct(kgShrinking.reduce((a,b)=>a.growthYoY<b.growthYoY?a:b).growthYoY,1)+')'
+    : 'All '+kgList.length+' accounts growing YoY';
+
+  /* === Partner Share of Sales Over Time — 18-month lookback, jitter-based
+     mix. This is the first and only rand()-consuming code in this file's
+     render pass (nothing else in renderAll() calls rand()), so its values
+     on first load land on the exact same rand() sequence position as every
+     prior home this widget has had, byte-for-byte identical output. === */
+  const partnerShareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) partnerShareIdx.push(i);
+  const partnerShareGroups = bucketMonths(partnerShareIdx, currentTimeFrame);
+  const partnerShareLabels = currentTimeFrame==='quarterly' ? partnerShareGroups.map(quarterLabel) : partnerShareIdx.map(i=>monthLabels[i]);
+  const partnerShareSeries = keyAccounts.map((a,i)=>{
+    const raw = new Array(MONTHS_TOTAL).fill(0);
+    partnerShareIdx.forEach(idx=>{
+      const jitter = 1 + (rand()-0.5)*0.1;
+      raw[idx] = a.pct/100 * groupActual.MT[idx] * jitter;
+    });
+    return { name:a.name, color: keyAccountColors[i], values: bucketSum(raw, partnerShareGroups) };
+  });
+  buildStackedBarPctSVG('partnerShareChart', { labels: partnerShareLabels, series: partnerShareSeries, valueFormatter: fmtTHB });
+  document.getElementById('partnerShareLegend').innerHTML = keyAccounts.map((a,i)=>{
+    const isSelected = currentPartnerFilter !== 'all' && a.name === currentPartnerFilter;
+    const isDimmed = currentPartnerFilter !== 'all' && !isSelected;
+    return '<span class="chart-legend-item" style="'+(isSelected?'font-weight:800;':'')+(isDimmed?'opacity:0.45;':'')+'"><span class="chart-legend-dot" style="background:'+keyAccountColors[i]+'"></span>'+a.name+'</span>';
+  }).join('');
+  latestData.partnerShare = { labels: partnerShareLabels, series: partnerShareSeries };
+  const pShareFirstTotal = partnerShareSeries.reduce((a,ser)=>a+ser.values[0],0);
+  const pShareLastTotal = partnerShareSeries.reduce((a,ser)=>a+ser.values[ser.values.length-1],0);
+  const pShareDeltas = partnerShareSeries.map(ser=>{
+    const firstPct = pShareFirstTotal ? ser.values[0]/pShareFirstTotal*100 : 0;
+    const lastPct = pShareLastTotal ? ser.values[ser.values.length-1]/pShareLastTotal*100 : 0;
+    return { name:ser.name, delta: lastPct-firstPct };
+  });
+  const pShareGainer = pShareDeltas.reduce((a,b)=>b.delta>a.delta?b:a);
+  const pShareLoser = pShareDeltas.reduce((a,b)=>b.delta<a.delta?b:a);
+  document.getElementById('partnerShareCallout').innerHTML = 'Mix shift, '+partnerShareLabels[0]+'→'+partnerShareLabels[partnerShareLabels.length-1]+' — '
+    + 'Biggest gain: <b>'+pShareGainer.name+'</b> <span class="'+deltaClass(pShareGainer.delta)+'">('+(pShareGainer.delta>=0?'+':'')+pShareGainer.delta.toFixed(1)+'pp)</span>'
+    + ' · Biggest drop: <b>'+pShareLoser.name+'</b> <span class="'+deltaClass(pShareLoser.delta)+'">('+(pShareLoser.delta>=0?'+':'')+pShareLoser.delta.toFixed(1)+'pp)</span>';
+}
+
+/* --- Toolbar --- */
+document.getElementById('partnerTrendDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerTrendChart', 'mt_sales_by_partner_over_time.svg'));
+document.getElementById('partnerTrendExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('partnerTrendTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('partnerTrendTableWrap');
+  const canvasWrap = document.getElementById('partnerTrendCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.partnerTrend;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.partners.map(p=>'<th>'+p.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.partners.map(p=>'<td>'+fmtTHB(p.values[i])+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('highReturnDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Key Account','Return Rate (CN) %','CN Amount (THB)']];
+  latestData.highReturn.forEach(p=> rows.push([p.id, p.cnRate.toFixed(1), Math.round(p.cnAmount)]));
+  downloadCSV(rows, 'mt_return_rate_cn_by_partner.csv');
+});
+document.getElementById('highReturnExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('highReturnTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('highReturnTableWrap');
+  const bars = document.getElementById('highReturnBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Return Rate (CN)</th><th>CN Amount</th></tr></thead><tbody>';
+  latestData.highReturn.forEach(p=>{ html += '<tr><td>'+p.id+'</td><td>'+fmtPct(p.cnRate,1)+'</td><td>'+fmtTHB(p.cnAmount)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+
+document.getElementById('kgAttainDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('kgAttainChart', 'mt_target_vs_actual_per_partner.svg'));
+document.getElementById('kgAttainExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('kgAttainTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('kgAttainTableWrap');
+  const canvasWrap = document.getElementById('kgAttainCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.kgAttain;
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Attainment %</th><th>Diff from Target</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+fmtPct(p.attain,1)+'</td><td>'+(p.diff>=0?'+':'−')+fmtTHB(Math.abs(p.diff))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('kgGrowthDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('kgGrowthChart', 'mt_yoy_growth_by_partner.svg'));
+document.getElementById('kgGrowthExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('kgGrowthTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('kgGrowthTableWrap');
+  const canvasWrap = document.getElementById('kgGrowthCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.kgGrowth;
+  let html = '<table class="mini-table"><thead><tr><th>Key Account</th><th>Growth YoY</th><th>Growth ฿</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.name+'</td><td>'+fmtSignedPct(p.growthYoY,1)+'</td><td>'+(p.growthAmt>=0?'+':'−')+fmtTHB(Math.abs(p.growthAmt))+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('partnerShareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('partnerShareChart','mt_partner_share_over_time.svg'));
+document.getElementById('partnerShareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('partnerShareTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('partnerShareTableWrap');
+  const canvasWrap = document.getElementById('partnerShareCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.partnerShare;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Init ---------- */
+renderAll();
+</script>
+</body>
+</html>

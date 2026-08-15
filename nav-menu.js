@@ -31,7 +31,7 @@ const MODULE_MAP = [
     ready: true,
     items: [
       { key:'mt-exec',      label:'Executive Summary', href:'module_mt_executive_summary.html' },
-      { key:'mt-breakdown', label:'Breakdown',          href:'module_mt_breakdown.html' },
+      { key:'mt-partner',   label:'Partner',            href:'module_mt_partner.html' },
       { key:'mt-store',     label:'Store',              href:'module_mt_store.html' },
     ],
   },
@@ -40,7 +40,7 @@ const MODULE_MAP = [
     ready: true,
     items: [
       { key:'tt-exec',      label:'Executive Summary', href:'tt_executive_summary.html' },
-      { key:'tt-breakdown', label:'Breakdown',          href:'tt_breakdown.html' },
+      { key:'tt-customer',  label:'Shop',               href:'tt_customer.html' },
       { key:'tt-person',    label:'Sales Person',       href:'tt_sales_person.html' },
     ],
   },
@@ -48,8 +48,8 @@ const MODULE_MAP = [
     group: 'ECOM Overview',
     ready: true,
     items: [
-      { key:'ecom-exec',      label:'Executive Summary', href:'module_ecom_executive_summary.html' },
-      { key:'ecom-breakdown', label:'Breakdown',          href:'module_ecom_breakdown.html' },
+      { key:'ecom-exec',     label:'Executive Summary', href:'module_ecom_executive_summary.html' },
+      { key:'ecom-platform', label:'Platform',           href:'module_ecom_platform.html' },
     ],
   },
 ];

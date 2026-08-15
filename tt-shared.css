@@ -388,7 +388,15 @@
      box, so there's nothing "on the same line" for the space to collapse with), which silently
      swallowed the gap and produced "CategoryPortfolio Matrix". */
   .title-prefix{ margin-right:4px; }
+  /* Mirror of .title-prefix for a dynamic span that comes AFTER loose title text instead of
+     before it (e.g. "My Sales by <span>Category</span>") — same flex-gap-collapse bug, same fix,
+     just margin-left since the gap that needs restoring sits on the other side of the span. */
+  .title-suffix{ margin-left:4px; }
   .card-sub{ font-size:12px; color:var(--ink-3); margin-top:2px; }
+  /* Ported from shared.css (2026-08-14, Executive Summary's Target Attainment & Full Year
+     Outlook caption) — same secondary-annotation-below-a-chart role, TT had no equivalent class. */
+  .callout-text{ background:var(--wash); border-radius:8px; padding:10px 14px; font-size:12.5px; color:var(--ink-2); margin-bottom:14px; line-height:1.6; }
+  .callout-text b{ color:var(--ink-1); }
   .card-topline{ font-size:20px; font-weight:650; margin:2px 0 10px; font-variant-numeric: proportional-nums; }
   .card-topline .unit{ font-size:12px; font-weight:550; color:var(--ink-3); margin-left:4px; }
   .fixed-period-note{
@@ -610,11 +618,29 @@
   table.data-table th{ color:var(--ink-3); font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:0.03em; }
   table.data-table tbody tr:hover{ background:var(--wash); }
   table.data-table tbody tr.row-highlight{ background:var(--brand-wash); }
+  /* Grand Total row (2026-08-14, direct feedback — CN Record) — a stronger top border plus bold
+     text separates the summary row from the regular data rows above it without needing a whole
+     second table styling variant. */
+  table.data-table tbody tr.total-row{ font-weight:700; border-top:1.5px solid var(--ink-2); }
+  table.data-table tbody tr.total-row:hover{ background:transparent; }
   /* Round 31 (AR Aging's grouped-header table) — Status row's colspan cells centered over their
      spanned Duration columns, matching the reference layout; row-label (first) column of each
      metric row stays left-aligned like every other table's first column. */
   table.data-table-grouped thead tr:first-child th:not(:first-child){ text-align:center; }
   table.data-table-grouped tbody th{ text-align:left; color:var(--ink-2); font-weight:650; font-size:12.5px; text-transform:none; letter-spacing:normal; }
+  /* Round 33 direct feedback: vertical column dividers so AR Aging's duration columns are easy to
+     tell apart at a glance — a light divider between every column, a heavier one specifically at
+     the Within Due / Overdue boundary (.col-group-start, set in renderStatusGroupedTable). */
+  table.data-table-grouped th:not(:first-child), table.data-table-grouped td:not(:first-child){
+    border-left: 1px solid var(--hairline);
+  }
+  /* Round 34 direct feedback: green/red header tint so Within Due vs. Overdue reads at a glance —
+     header rows only (Status + Duration), data rows below stay neutral. */
+  table.data-table-grouped thead th.status-within-due{ background:rgba(12,163,12,0.12); color:var(--good-text); }
+  table.data-table-grouped thead th.status-overdue{ background:rgba(208,59,59,0.12); color:var(--critical); }
+  table.data-table-grouped th.col-group-start, table.data-table-grouped td.col-group-start{
+    border-left: 2px solid var(--ink-3);
+  }
   .table-scroll{ overflow-x:auto; }
 
   /* ---------- Bullet (Target vs Actual) ---------- */
@@ -694,23 +720,22 @@
   .store-col{ flex:1 1 280px; min-width:260px; }
   .store-col-title{ font-size:12px; font-weight:650; color:var(--ink-2); margin-bottom:6px; }
   .store-list{ display:flex; flex-direction:column; }
-  /* Round 31 (Task 10): row height trimmed ~20%. Round 32 direct feedback (Task 4): trimmed a
-     further ~30% on top of that — padding, bar-track, and gap cut hardest since those don't hurt
-     legibility; font sizes only nudged slightly further so text stays readable. */
-  .store-row{ padding:4px 4px; border-radius:6px; border-bottom:1px solid var(--hairline); }
+  /* Round 34 direct feedback: restyled per-row to match "Target vs Actual (per rep)" (same
+     component convention as .bullet-row) — one flex row per store: fixed-width rank+name column,
+     a single compact bar starting at the same x on every row, value+MoM/YoY at the far right
+     instead of floating above a full-width bar underneath. */
+  .store-row{ display:flex; align-items:center; gap:8px; padding:5px 4px; border-radius:6px; border-bottom:1px solid var(--hairline); }
   .store-row:last-child{ border-bottom:none; }
   .store-row:hover{ background:var(--wash); }
-  .store-row-main{ display:flex; align-items:center; gap:7px; }
-  .store-bar-track{ height:2px; background:var(--wash); border-radius:2px; margin-top:2px; overflow:hidden; }
-  .store-bar-fill{ height:100%; background:var(--brand); border-radius:2px; }
+  .store-bar-track{ flex:1 1 auto; height:14px; background:var(--wash); border-radius:4px; overflow:hidden; }
+  .store-bar-fill{ height:100%; background:var(--brand); border-radius:4px; }
   .store-rank{ width:15px; flex:none; font-size:10.5px; color:var(--ink-3); font-weight:650; }
-  .store-main{ flex:1 1 auto; min-width:0; }
-  .store-id{ font-size:11.5px; font-weight:600; display:flex; align-items:center; gap:5px; }
-  .store-risk-flag{ color:var(--critical); font-size:10.5px; }
-  .store-region{ font-size:9.5px; color:var(--ink-3); font-weight:550; }
-  .store-value{ text-align:right; flex:none; }
+  .store-main{ width:128px; flex:none; min-width:0; }
+  .store-id{ font-size:11.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .store-region{ font-size:9.5px; color:var(--ink-3); font-weight:550; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .store-value{ width:92px; text-align:right; flex:none; }
   .store-rev{ font-size:11px; font-weight:650; font-variant-numeric:tabular-nums; }
-  .store-trend-wrap{ display:flex; flex-direction:column; align-items:flex-end; gap:0; margin-top:0; }
+  .store-trend-wrap{ display:flex; flex-direction:column; align-items:flex-end; gap:0; margin-top:1px; }
   .store-trend{ font-size:9px; font-weight:650; line-height:1.25; }
 
   /* ---------- Page switcher (2026-07-25, new; expanded to 3 tabs 2026-07-26) — Sales Overview

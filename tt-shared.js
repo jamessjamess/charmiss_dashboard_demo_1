@@ -2,11 +2,12 @@
    tt-shared.js — TT Overview shared engine (data generation, store/rep
    aggregation, chart-rendering primitives, and the render()/renderSalesPersonPage()
    orchestrators). Extracted verbatim from module_tt.html (2026-07-31 split into
-   3 pages) — render() populates BOTH Executive Summary and Breakdown DOM elements
-   in one pass by design (see design-system Sec.5 aggregation-not-parallel-economy
-   rule), so tt_executive_summary.html and tt_breakdown.html both call the exact
-   same render() and must each provide every element id it touches — pages that
-   do not visually show a given card still include a hidden stub element for it.
+   3 pages, later re-split 2026-08-14 when Breakdown itself became Customer +
+   Product) — render() populates Executive Summary/Customer/Product/Sales Person
+   DOM elements in one pass by design (see design-system Sec.5
+   aggregation-not-parallel-economy rule), so all 4 pages call the exact same
+   render() and must each provide every element id it touches — pages that do not
+   visually show a given card still include a hidden stub element for it.
    Do not modify render()/renderSalesPersonPage()/renderStores() logic when editing
    a single page — edit here once, all pages pick it up.
    ============================================================================ */
@@ -995,6 +996,29 @@
     return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || "#b23368";
   }
 
+  // Nice-tick step chooser (2026-08-14, direct feedback) — the old tick loop always split
+  // [minLeft,maxLeft] into exactly 4 raw equal fractions regardless of whether that landed on a
+  // round number (0-450 in 4 steps prints "113/225/338"; 0-5 prints "1.3/2.5/3.8"). Candidate
+  // family covers the classic 1/2/5/10 decade sequence plus 2.5/3, since several of this
+  // dashboard's own fixed axes read best in 25s (0-100 AR%) or 30s (0-120 Retention) rather than
+  // 20s/50s. opts.tickStep on a renderLineChart call pins the exact step (guarantees a specific
+  // enumerated tick set); without it, this auto-picks whichever candidate is closest to
+  // range/targetTicks, in log-space so e.g. 112 doesn't get rounded toward 10 over 100.
+  const NICE_STEP_BASES = [1, 2, 2.5, 3, 5, 10];
+  function niceTickStep(range, targetTicks){
+    const raw = range / Math.max(1, targetTicks);
+    if (!(raw > 0)) return 1;
+    const exponent = Math.floor(Math.log10(raw));
+    const mag = Math.pow(10, exponent);
+    const fraction = raw / mag;
+    let best = NICE_STEP_BASES[0], bestDist = Infinity;
+    NICE_STEP_BASES.forEach(b => {
+      const dist = Math.abs(Math.log(b) - Math.log(fraction));
+      if (dist < bestDist){ bestDist = dist; best = b; }
+    });
+    return best * mag;
+  }
+
   /* ---- Line chart (emphasis form: primary hue + de-emphasis gray) ---- */
   function renderLineChart(mount, opts){
     mount.innerHTML = "";
@@ -1007,14 +1031,23 @@
     // would flatten one of them to a near-flat line.
     const hasRightAxis = opts.series.some(s=>s.axis==="right");
     const hasAxisTitles = !compact && (opts.yAxisLabel || opts.yAxisLabelRight);
-    const W = 640, H = opts.height || 220;
+    // opts.width (2026-08-14, same convention as renderStackedBarChart's own opts.width) — the
+    // SVG below uses width:100%/height:auto, so it scales the WHOLE viewBox (including this
+    // fixed-H-in-user-units plot area) by renderedWidth/W; a caller whose real container is much
+    // narrower than 640 (e.g. a col-4 card in a 1x3 row, ~390-420px) gets its "taller" opts.height
+    // scaled right back down unless it also pins W close to its own real width.
+    const W = opts.width || 640, H = opts.height || 220;
     // padB shrinks to 4 in compact mode now that month labels aren't drawn there (they used to
     // need 18px of bottom padding) — the freed space goes to the actual plotted line instead.
     const padL = compact ? 4 : 44, padR = compact ? 4 : (hasRightAxis ? 46 : 16), padT = compact ? 8 : (hasAxisTitles ? 24 : 10), padB = compact ? 4 : 26;
     const plotW = W - padL - padR, plotH = H - padT - padB;
     const wrap = document.createElement("div"); wrap.className = "chart-wrap";
 
-    if (!compact){
+    // opts.hideLegend (2026-08-14, direct feedback): a single-series chart's own title already
+    // states what the line is — an inline "this same 1 word" legend row under it is pure
+    // redundancy. Opt-in per call so multi-series charts (Target Attainment, Revenue Trend) keep
+    // their legend unchanged.
+    if (!compact && !opts.hideLegend){
       const legend = document.createElement("div"); legend.className = "legend";
       opts.series.forEach(s => {
         const item = document.createElement("div"); item.className = "legend-item";
@@ -1045,8 +1078,15 @@
     const zeroBaseline = opts.zeroBaseline !== false;
     const leftDataMax = Math.max(...leftVals, 1);
     const leftDataMin = Math.min(...leftVals, 0);
-    const maxLeft = niceMax(leftDataMax * 1.08);
-    const minLeft = zeroBaseline ? 0 : Math.max(0, leftDataMin - Math.max(leftDataMax-leftDataMin, leftDataMax*0.1)*0.25);
+    // domainMin/domainMax (2026-08-14, same convention as MT's own buildLineChartSVG) — explicit
+    // override for a caller that already computed its own tight/banded axis (e.g. a narrow
+    // 70-120% attainment band, or a fixed 0-5% rate ceiling) — bypasses niceMax/zeroBaseline
+    // entirely, since niceMax's coarse 1/2/5/10-at-decade rounding was ballooning small-range
+    // data (e.g. a 90-100% band rounding its own +8% headroom up to a 200 ceiling) into an
+    // unreadably flat line. Unset callers keep the exact original auto-fit behavior below.
+    const hasExplicitDomain = opts.domainMin!=null && opts.domainMax!=null;
+    const maxLeft = hasExplicitDomain ? opts.domainMax : niceMax(leftDataMax * 1.08);
+    const minLeft = hasExplicitDomain ? opts.domainMin : (zeroBaseline ? 0 : Math.max(0, leftDataMin - Math.max(leftDataMax-leftDataMin, leftDataMax*0.1)*0.25));
     const leftRange = maxLeft - minLeft || 1;
     const maxRight = rightSeries.length ? niceMax(Math.max(...rightVals, 1) * 1.08) : maxLeft;
     const n = opts.labels.length;
@@ -1067,21 +1107,28 @@
     svg.style.width = "100%"; svg.style.height = "auto"; svg.style.display = "block";
 
     if (!compact){
-      const ticks = 4;
-      for (let t=0;t<=ticks;t++){
-        const v = minLeft + leftRange*t/ticks;
+      // Tick VALUES now come from a nice round step (opts.tickStep, or an auto-picked one via
+      // niceTickStep) instead of always splitting [minLeft,maxLeft] into exactly 4 raw fractions
+      // — see niceTickStep's own comment above for why that broke on several of this dashboard's
+      // own fixed axes (0-450, 0-5, 0-100, 0-120).
+      const tickStep = opts.tickStep || niceTickStep(leftRange, 5);
+      const tickVals = [];
+      for (let v = minLeft; v <= maxLeft + tickStep*0.001; v += tickStep) tickVals.push(Math.round(v/tickStep)*tickStep);
+      tickVals.forEach(v => {
         const yy = yLeft(v);
         svg.appendChild(el("line",{class:"grid-line", x1:padL, x2:W-padR, y1:yy, y2:yy}));
         const lab = el("text",{class:"tick-label", x:padL-8, y:yy+3, "text-anchor":"end"});
-        lab.textContent = (t===0 && v===0) ? "0" : opts.formatValue(v);
+        lab.textContent = v===0 ? "0" : opts.formatValue(v);
         svg.appendChild(lab);
         if (hasRightAxis){
-          const vr = maxRight*t/ticks;
+          // Right axis stays proportional to the same tick's position on the left scale (same
+          // convention the old t/ticks version used) — just generalized to any tick count.
+          const vr = maxRight * (v-minLeft)/leftRange;
           const labR = el("text",{class:"tick-label", x:W-padR+8, y:yy+3, "text-anchor":"start"});
-          labR.textContent = t===0 ? "0" : (opts.formatValueRight||opts.formatValue)(vr);
+          labR.textContent = v===minLeft ? "0" : (opts.formatValueRight||opts.formatValue)(vr);
           svg.appendChild(labR);
         }
-      }
+      });
       svg.appendChild(el("line",{class:"axis-line", x1:padL, x2:W-padR, y1:padT+plotH, y2:padT+plotH}));
     }
 
@@ -1119,7 +1166,14 @@
     // hard to read" bug reported live). The MoM/YoY captions above already give month context;
     // hover/focus still exposes exact per-month values via the tooltip.
     if (!compact){
-      const labelEvery = n>12?2:1;
+      // Skip interval now derives from the actual plot width (2026-08-14, direct feedback: a
+      // fixed n>12 threshold didn't know this chart might be a narrow ~400px col-4 card — 12
+      // "Mon 26" labels crammed into that width just overlapped into an unreadable smear) — same
+      // estLabelW/showEvery convention already used elsewhere on this dashboard (e.g. shared.js's
+      // buildLineChartSVG) for the same reason.
+      const estLabelW = 32;
+      const maxLabels = Math.max(2, Math.floor(plotW/estLabelW));
+      const labelEvery = Math.max(1, Math.ceil(n/maxLabels));
       opts.labels.forEach((lb,i) => {
         if (i%labelEvery!==0 && i!==n-1) return;
         const t = el("text",{class:"tick-label", x:x(i), y:H-8, "text-anchor":"middle"});
@@ -1144,6 +1198,13 @@
       svg.appendChild(el("path",{d:d+"Z", fill:opts.bandColor||"var(--brand)", opacity:0.10, stroke:"none"}));
     }
 
+    // endLabel (2026-08-14, MT Partner-style multi-line trend port — see Shop Group Over Time)
+    // — a full "name value" caption per series, collected here and dodged in one pass after every
+    // series is drawn, the same collision-avoidance shared.js's buildLineChartSVG already does for
+    // MT's own partner-trend labels. Kept entirely separate from the existing s.directLabel path
+    // (single value, no dodge, rendered immediately below) so no current caller's output changes —
+    // endLabelInfos only ever collects entries for a caller that opts in via s.endLabel.
+    const endLabelInfos = [];
     opts.series.forEach(s => {
       const ys = yFor(s);
       const pts = s.values.map((v,i) => v==null ? null : [x(i), ys(v)]);
@@ -1171,7 +1232,23 @@
           t.textContent = opts.formatValue(s.values[lastIdx]);
           svg.appendChild(t);
         }
+        if (s.endLabel){
+          const anchor = ex > W-padR-64 ? "end" : "start";
+          endLabelInfos.push({ x: anchor==="end" ? ex-6 : ex+6, y: ey-8, anchor, color: s.color, text: s.endLabel });
+        }
       }
+    });
+    // Round 34 direct feedback: gap widened from 13 to 16 — with 5 lines' end labels active at
+    // once (Sales by Shop Group Over Time), two pairs landing especially close together
+    // (e.g. ฿2.6M/฿2.4M, ฿1.5M/฿1.4M) were still visually touching at the old, tighter gap.
+    endLabelInfos.sort((a,b) => a.y-b.y);
+    for (let i=1;i<endLabelInfos.length;i++){
+      if (endLabelInfos[i].y < endLabelInfos[i-1].y + 16) endLabelInfos[i].y = endLabelInfos[i-1].y + 16;
+    }
+    endLabelInfos.forEach(info => {
+      const t = el("text",{x:info.x, y:info.y, "text-anchor":info.anchor, fill:info.color, "font-size":"10.5px", "font-weight":"700"});
+      t.textContent = info.text;
+      svg.appendChild(t);
     });
 
     const crosshair = el("line",{class:"crosshair", x1:padL, x2:padL, y1:padT, y2:padT+plotH});
@@ -1225,6 +1302,9 @@
     // opts: {items:[{label,value,key,clickable,tooltipLabel,sublabel}], color, formatValue,
     //        emphasizeKey, onSelect, labelWidth, rowHeight, diverging, fillHeight}
     mount.innerHTML = "";
+    // Real computed font family (not the CSS keyword "inherit") — ttMeasureTextWidth's canvas
+    // needs an actual family name to measure against, same as renderScatterMatrix already does.
+    const hbarFontFamily = getComputedStyle(mount).fontFamily || 'sans-serif';
     const items = [...opts.items].sort((a,b)=>b.value-a.value);
     const padL = opts.labelWidth || 128;
     let rowH = opts.rowHeight || 34;
@@ -1319,7 +1399,17 @@
         fill: barColor, opacity: emph ? 1 : 0.28, tabindex: clickable ? "0" : "-1"});
       svg.appendChild(bar);
 
-      const canFitInside = bw > 46;
+      // Round 34 direct feedback: canFitInside now checks the label's REAL measured width
+      // instead of a fixed bw>46 threshold — that fixed threshold didn't know how long the
+      // formatted text actually was, so a longer label (e.g. Sales by Region's "฿9.4M · 16.2%",
+      // value + percentage combined) could get placed "inside" a bar just barely over 46px wide,
+      // spilling its white fill past the bar's own edge onto the light track background where it
+      // turned invisible — reading as a truncated/missing label ("North" showing "4M" instead of
+      // the full string) even though the correct full text was there in the DOM all along.
+      const valueText = opts.formatValue(d.value);
+      const valueFontSize = opts.compactLabels ? 10 : 11.5;
+      const valueTextWidth = ttMeasureTextWidth(valueText, valueFontSize, "650", hbarFontFamily);
+      const canFitInside = bw > valueTextWidth + 16;
       const negative = diverging && d.value<0;
       const val = el("text",{
         x: canFitInside ? (negative ? barX+8 : barX+bw-8) : (negative ? barX-8 : barX+bw+8),
@@ -1329,9 +1419,9 @@
         fill: canFitInside ? "#fff" : "var(--ink-2)",
         // Round 32 direct feedback (Task 5): opts.compactLabels (opt-in) shrinks this card's own
         // labels/value text without touching every other renderHBarChart caller.
-        "font-size": opts.compactLabels ? "10px" : "11.5px", "font-weight":"650"
+        "font-size": valueFontSize+"px", "font-weight":"650"
       });
-      val.textContent = opts.formatValue(d.value);
+      val.textContent = valueText;
       svg.appendChild(val);
 
       const tt = makeTooltip(wrap);
@@ -1857,15 +1947,20 @@
     const tKey = document.createElement("span"); tKey.className = "legend-key"; tKey.style.background = target.color;
     const tT = document.createElement("span"); tT.textContent = target.name + " (tick)";
     tItem.appendChild(tKey); tItem.appendChild(tT); legend.appendChild(tItem);
-    if (opts.diff){
-      const dItem = document.createElement("div"); dItem.className = "legend-item";
-      const dT = document.createElement("span"); dT.textContent = `Number below month = ${opts.diff.name}`;
-      dItem.appendChild(dT); legend.appendChild(dItem);
-    }
+    // "Number below month = Target Diff" legend line removed (2026-08-14, direct feedback) — the
+    // diff number itself is still rendered below each month (see opts.diff usage further down),
+    // just no longer called out in the legend text.
     wrap.appendChild(legend);
 
     const allVals = [...actual.values, ...target.values].filter(v=>v!=null);
-    const range = niceMaxFine(Math.max(0, ...allVals, 1) * 1.15) || 1;
+    const dataMax = Math.max(0, ...allVals, 1) * 1.15;
+    // Round 34 direct feedback: ticks now come from a nice round step (niceTickStep, same helper
+    // renderLineChart uses for its own axis) instead of splitting the raw range into 4 even
+    // fractions — the old approach produced ticks like ฿1.9M/฿2.0M landing close enough together
+    // (and rounding to visually-similar labels) that adjacent tick text overlapped into an
+    // unreadable smear, and long labels near the axis got clipped against the left edge.
+    const tickStep = niceTickStep(dataMax, 4);
+    const range = Math.ceil(dataMax/tickStep) * tickStep || 1;
     const n = opts.labels.length;
     const x = i => padL + (n===1?0:i/(n-1))*plotW;
     const y = v => padT + plotH - (v/range)*plotH;
@@ -1873,13 +1968,12 @@
 
     const svg = el("svg",{class:"viz", viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label": opts.ariaLabel||""});
 
-    const ticks = 4;
-    for (let t=0;t<=ticks;t++){
-      const v = range*t/ticks;
-      const yy = y(v);
+    for (let v=0; v<=range+tickStep*0.001; v+=tickStep){
+      const vr = Math.round(v/tickStep)*tickStep;
+      const yy = y(vr);
       svg.appendChild(el("line",{class:"grid-line", x1:padL, x2:W-padR, y1:yy, y2:yy}));
       const lab = el("text",{class:"tick-label", x:padL-8, y:yy+3, "text-anchor":"end"});
-      lab.textContent = opts.formatValue(v);
+      lab.textContent = vr===0 ? "0" : opts.formatValue(vr);
       svg.appendChild(lab);
     }
     svg.appendChild(el("line",{class:"axis-line", x1:padL, x2:W-padR, y1:zeroY, y2:zeroY}));
@@ -1977,6 +2071,18 @@
   // Simple relative-luminance check (same decision renderHeatmap already makes for its cell text)
   // so the inline % label picks white or dark ink automatically per slice color, rather than
   // hardcoding white and risking low contrast on lighter palette entries (e.g. the gold slice).
+  // Sequential single-hue ramp (2026-08-14, direct feedback) — Sales by Sales Person is a
+  // RANKING (by net sales), not an unordered category breakdown like Sales by Customer Group;
+  // reusing the same categorical DONUT_PALETTE on both donuts let a color mean two different
+  // things depending which chart you were looking at. ratio=1 returns the brand color as-is;
+  // ratio→0 blends it toward white, so rank 1 (ratio 1) reads darkest and the lowest rank reads
+  // lightest, in one consistent hue instead of 5 unrelated ones.
+  function blendHexWithWhite(hex, ratio){
+    const h = (hex||"#8E1E4D").replace("#","");
+    const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
+    const mix = c => Math.round(c*ratio + 255*(1-ratio));
+    return "#" + [mix(r),mix(g),mix(b)].map(v => v.toString(16).padStart(2,"0")).join("");
+  }
   function donutLabelInk(hex){
     const h = (hex||"#888").replace("#","");
     const r = parseInt(h.substring(0,2),16), g = parseInt(h.substring(2,4),16), b = parseInt(h.substring(4,6),16);
@@ -2046,7 +2152,21 @@
       const valText = document.createElementNS(ns, "text");
       valText.setAttribute("x", cx); valText.setAttribute("y", cy-3);
       valText.setAttribute("text-anchor", "middle"); valText.setAttribute("class", "donut-center-value");
-      valText.textContent = centerValue || "";
+      // ฿ symbol glyph visually overlapped the next digit in this SVG text element (2026-08-14,
+      // direct feedback: "฿58M" read as "Ḅ58M") — splitting it into its own <tspan> with a small
+      // dx gives it breathing room without touching fmtTHBFull itself (which is used everywhere
+      // else in plain HTML text, where this overlap doesn't happen).
+      if (centerValue && centerValue.charAt(0)==="฿"){
+        const symbolSpan = document.createElementNS(ns, "tspan");
+        symbolSpan.textContent = "฿";
+        const restSpan = document.createElementNS(ns, "tspan");
+        restSpan.setAttribute("dx", "1.5");
+        restSpan.textContent = centerValue.slice(1);
+        valText.appendChild(symbolSpan);
+        valText.appendChild(restSpan);
+      } else {
+        valText.textContent = centerValue || "";
+      }
       svg.appendChild(valText);
       const lblText = document.createElementNS(ns, "text");
       lblText.setAttribute("x", cx); lblText.setAttribute("y", cy+15);
@@ -2240,7 +2360,7 @@
   }
 
   /* ---- Table renderer ---- */
-  function renderTable(mount, columns, rows){
+  function renderTable(mount, columns, rows, totalRow){
     mount.innerHTML = "";
     const table = document.createElement("table"); table.className = "data-table";
     const thead = document.createElement("thead"); const trh = document.createElement("tr");
@@ -2252,6 +2372,14 @@
       r.forEach(cell => { const td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); });
       tbody.appendChild(tr);
     });
+    // totalRow (2026-08-14, direct feedback — CN Record's Grand Total row): optional 4th arg,
+    // rendered as an extra bold/bordered row below the regular data rows. Purely additive — every
+    // existing 3-arg call site is unaffected.
+    if (totalRow){
+      const tr = document.createElement("tr"); tr.className = "total-row";
+      totalRow.forEach(cell => { const td = document.createElement("td"); td.textContent = cell; tr.appendChild(td); });
+      tbody.appendChild(tr);
+    }
     table.appendChild(tbody);
     mount.appendChild(table);
   }
@@ -2266,6 +2394,16 @@
     const table = document.createElement("table"); table.className = "data-table data-table-grouped";
     const thead = document.createElement("thead");
 
+    // groupStart[i] (2026-08-14, Round 33 direct feedback): true where column i begins a new
+    // Status group (i.e. cols[i].status differs from the previous column's) — used below to draw
+    // a stronger divider at the Within Due / Overdue boundary specifically, on top of the lighter
+    // per-column divider every column gets.
+    const groupStart = cols.map((c,ci) => ci>0 && c.status !== cols[ci-1].status);
+
+    // statusClass (2026-08-14, direct feedback): a green/red tint on the header only, so Within
+    // Due vs. Overdue reads at a glance without recoloring every data cell underneath it.
+    const statusClass = s => "status-" + s.toLowerCase().replace(/\s+/g,"-");
+
     // Row 1: Status — consecutive same-status columns merge into one colspan cell.
     const trStatus = document.createElement("tr");
     const th0 = document.createElement("th"); th0.textContent = "Status"; trStatus.appendChild(th0);
@@ -2274,6 +2412,8 @@
       let span = 1;
       while (i+span < cols.length && cols[i+span].status === cols[i].status) span++;
       const th = document.createElement("th"); th.textContent = cols[i].status; th.colSpan = span;
+      th.classList.add(statusClass(cols[i].status));
+      if (i>0) th.classList.add("col-group-start");
       trStatus.appendChild(th);
       i += span;
     }
@@ -2282,7 +2422,7 @@
     // Row 2: Duration — one column per bucket.
     const trDur = document.createElement("tr");
     const thD = document.createElement("th"); thD.textContent = "Duration"; trDur.appendChild(thD);
-    cols.forEach(c => { const th = document.createElement("th"); th.textContent = c.duration; trDur.appendChild(th); });
+    cols.forEach((c,ci) => { const th = document.createElement("th"); th.textContent = c.duration; th.classList.add(statusClass(c.status)); if (groupStart[ci]) th.classList.add("col-group-start"); trDur.appendChild(th); });
     thead.appendChild(trDur);
     table.appendChild(thead);
 
@@ -2290,7 +2430,7 @@
     const metricRow = (label, getVal) => {
       const tr = document.createElement("tr");
       const th = document.createElement("th"); th.textContent = label; tr.appendChild(th);
-      cols.forEach(c => { const td = document.createElement("td"); td.textContent = getVal(c); tr.appendChild(td); });
+      cols.forEach((c,ci) => { const td = document.createElement("td"); td.textContent = getVal(c); if (groupStart[ci]) td.classList.add("col-group-start"); tr.appendChild(td); });
       tbody.appendChild(tr);
     };
     metricRow("Stores", c => String(c.count));
@@ -2726,21 +2866,9 @@
     const poolAvgRate = riskRevTotal>0 ? riskRates.reduce((a,r)=>a+r.rate*r.rev,0)/riskRevTotal : 0;
     const outlierSet = new Set(riskRates.filter(r=>r.rate>poolAvgRate*1.5).map(r=>r.store.id));
 
-    document.getElementById("returnRateTopline").innerHTML = returnRatePct.toFixed(1) + `<span class="unit">% average CN rate · ${rangeLabel}</span>`;
-    // View By (Monthly/Quarterly, 2026-08-06): Return Rate is a %, so quarterly buckets recompute
-    // it from the SUMMED gross/net totals of the group (never average the pre-computed monthly
-    // m.cnRate values) — same "ratio of sums, not average of ratios" rule ttBucketRatio encodes.
-    const returnRateGroups = bucketTTMonths(win, currentTimeFrame);
-    const returnRateLabels = returnRateGroups.map(g => ttBucketLabel(g, currentTimeFrame));
-    const returnRateVals = ttBucketRatio(returnRateGroups, m => m.grossTotal-m.total, "grossTotal").map(v=>v*100);
-    renderLineChart(document.getElementById("returnRateChart"), {
-      labels: returnRateLabels, ariaLabel: "Return rate (CN) trend",
-      series: [{ name:"Return Rate (CN)", color:getVar("--brand"), values: returnRateVals, area:true, directLabel:true }],
-      refLine: { value:RETURN_RATE_CEILING_PCT, label:RETURN_RATE_CEILING_PCT+"% ceiling", color:getVar("--critical") },
-      formatValue: v => v.toFixed(1)+"%"
-    });
-    renderTable(document.getElementById("returnRateTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Return Rate (CN)"],
-      returnRateLabels.map((lb,i)=>[lb, returnRateVals[i].toFixed(1)+"%"]));
+    // Return Rate (CN) Trend line chart removed from this page (2026-08-14, direct feedback —
+    // duplicated Executive Summary's own Return Rate (CN) Trend). High Return Rate Stores below
+    // still uses riskPool/riskRates/flaggedStores computed just above.
 
     // High Return Rate Stores: a concrete, ranked list of stores over the shared 2% ceiling —
     // easier to read and directly actionable than an abstract month-by-month count. Threshold
@@ -2814,7 +2942,10 @@
       .filter(x => x.laterDue > 0);
     const dueLaterTotal = dueLaterRows.reduce((a,x)=>a+x.laterDue,0);
     const withinDueTotal = dueSoonTotal + dueLaterTotal;
-    document.getElementById("arAgingTopline").innerHTML = fmtTHBFull(arTotal) + `<span class="unit">overdue (+ ${fmtTHBFull(withinDueTotal)} within due) · ${last.key}</span>`;
+    // Round 33 direct feedback: was a bare .card-topline (big bold number, no box) reading like a
+    // floating header — now a proper insight box, same "label: <b>value</b>" convention every
+    // other summary-strip callout on this dashboard already uses.
+    document.getElementById("arAgingTopline").innerHTML = "Overdue: <b>" + fmtTHBFull(arTotal) + "</b> · Within Due: <b>" + fmtTHBFull(withinDueTotal) + "</b> · as of " + last.key;
     // bucketStats computed once — single source of truth for both dimensions (count + value)
     // instead of re-filtering arRows repeatedly. Per-store detail (the old ranked list here) was
     // cut per direct feedback: a store-by-store list isn't a company-level view, it's an action
@@ -2842,7 +2973,7 @@
     const arGrandTotal = withinDueTotal + arTotal;
     renderStatusGroupedTable(document.getElementById("arAgingTableMount"), bucketStats, arGrandTotal, fmtTHBFull);
 
-    // ---- Sales Overview (Level 1) charts: Revenue Trend, Sales by Customer Group (donut), and
+    // ---- Sales Overview (Level 1) charts: Revenue Trend, Sales by Shop Group (donut), and
     // Sales by Category (full drill-down) — ALWAYS company-wide, ignoring Region/Category/Sales
     // Person state (those filters are hidden on this page; see the filter-row visibility rule in
     // switchPage()). Every helper called in here (scopedTotal, windowValueForPath, etc.) already
@@ -2909,6 +3040,7 @@
         ariaLabel: "Year-over-year growth percentage",
         height: 204,
         zeroBaseline: false,
+        hideLegend: true,
         refLine: { value: 0, label: "0%", color: getVar("--ink-3") },
         series: [
           { name:"YoY Growth %", color: getVar("--brand"), values: yoyGrowth, area:true, directLabel:true }
@@ -2918,9 +3050,10 @@
       renderTable(document.getElementById("growthYoyTable"), [trendColLabel,"YoY Growth %"],
         trendLabels.map((lb,i)=>[lb, yoyGrowth[i]!=null ? (yoyGrowth[i]>=0?"+":"")+yoyGrowth[i].toFixed(1)+"%" : "—"]));
 
-      // ---- Sales by Customer Group (donut, replaces old Sales by Region on this page) —
-      // aggregates windowStoreRevenue (store+window only, doesn't read state) across ALL stores
-      // grouped by the customerGroup dimension, for the selected Period window. ----
+      // ---- Sales by Shop Group (donut, replaces old Sales by Region on this page; renamed from
+      // "Sales by Customer Group" 2026-08-14 direct feedback) — aggregates windowStoreRevenue
+      // (store+window only, doesn't read state) across ALL stores grouped by the customerGroup
+      // dimension, for the selected Period window. ----
       const cgTotals = {};
       CUSTOMER_GROUPS.forEach(g => { cgTotals[g.name] = 0; });
       stores.forEach(s => { cgTotals[s.customerGroup] += windowStoreRevenue(s, win); });
@@ -2935,10 +3068,80 @@
         // together doubled the percentage ("27.0% · 27.0%"). formatValue now returns just the
         // THB amount, letting the renderer's own % calc be the single source.
         formatValue: fmtTHBFull,
-        ariaLabel: "Sales by Customer Group"
+        ariaLabel: "Sales by Shop Group"
       });
-      renderTable(document.getElementById("customerGroupTable"), ["Customer Group","Net Sales","Share %"],
+      renderTable(document.getElementById("customerGroupTable"), ["Shop Group","Net Sales","Share %"],
         cgItems.map(it=>[it.label, fmtTHBFull(it.value), cgTotal ? (it.value/cgTotal*100).toFixed(1)+"%" : "0.0%"]));
+
+      // ---- Monthly Sales by Shop Group (2026-08-14, moved from Executive Summary's
+      // Performance Overview into Breakdown's mix/breakdown section) — reuses cgItems' own
+      // sorted order above (same DONUT_PALETTE-by-index convention) so the two never disagree;
+      // summing this chart's own bars back across the whole window reproduces the donut's own
+      // per-group totals exactly, since windowStoreRevenue(s,win) is itself just a linear sum of
+      // store.monthlyRevenue over win. Executive Summary now only stubs these ids (hidden-stubs
+      // block); Breakdown shows the real card — same "render() unconditional, page without the
+      // card just stubs it" rule every other cross-page id on this file already follows. ----
+      const cgGroups = bucketTTMonths(win, currentTimeFrame);
+      const cgBucketLabels = cgGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+      const cgBucketColLabel = currentTimeFrame==="quarterly" ? "Quarter" : "Month";
+      const cgStoresByGroupName = {};
+      CUSTOMER_GROUPS.forEach(g => { cgStoresByGroupName[g.name] = stores.filter(s=>s.customerGroup===g.name); });
+      const cgMonthlySeries = cgItems.map((it,i) => ({
+        name: it.label, color: DONUT_PALETTE[i % DONUT_PALETTE.length],
+        values: ttBucketSum(cgGroups, m => cgStoresByGroupName[it.label].reduce((sum,s)=>sum+s.monthlyRevenue[m.idx],0))
+      }));
+      // ---- Sales by Shop Group Over Time (2026-08-14, MT Partner-style port — was a stacked
+      // column chart, "Monthly Sales by Shop Group") — same cgMonthlySeries values as the
+      // donut/table above, just drawn as a multi-line trend with each line's own latest value
+      // labeled at its end, the same look MT's "Sales by Partner Over Time" uses. Round 3 direct
+      // feedback: end label is value-only now (name dropped) — with all 5 lines labeled at once
+      // (vs. MT's top-5-only subset out of 9) the "name + value" text was long enough to visually
+      // overlap between adjacent lines; the legend above already names every line, so the value
+      // alone is enough at the endpoint.
+      renderLineChart(document.getElementById("execMonthlyCustGroupChart"), {
+        labels: cgBucketLabels,
+        series: cgMonthlySeries.map(s => ({
+          name: s.name, color: s.color, values: s.values,
+          endLabel: fmtTHBFull(s.values[s.values.length-1])
+        })),
+        formatValue: fmtTHBFull, height: 240,
+        ariaLabel: "Sales by shop group over time"
+      });
+      renderTable(document.getElementById("execMonthlyCustGroupTable"), [cgBucketColLabel, ...cgItems.map(it=>it.label)],
+        cgBucketLabels.map((lb,i) => [lb, ...cgMonthlySeries.map(s=>fmtTHBFull(s.values[i]))]));
+
+      // ---- Shop Group Share of Sales Over Time (2026-08-14, MT Partner Share-style port, new
+      // widget paired 1x2 with the trend above; Round 2 direct feedback switched this from a
+      // stacked area to a 100% stacked BAR — one full column per month) — same cgMonthlySeries
+      // monthly ฿ values as the trend widget, via renderStackedBarChart's opt-in percent100 mode
+      // (each month's bar normalized to its own 100%), so this widget's shares and the trend
+      // widget's ฿ figures always reconcile against one identical source. ----
+      renderStackedBarChart(document.getElementById("shopGroupShareChart"), {
+        labels: cgBucketLabels, series: cgMonthlySeries, formatValue: fmtTHBFull, height: 240,
+        percent100: true, showSegmentLabels: true,
+        ariaLabel: "Shop group share of sales over time"
+      });
+      renderTable(document.getElementById("shopGroupShareTable"), [cgBucketColLabel, ...cgItems.map(it=>it.label)],
+        cgBucketLabels.map((lb,i) => {
+          const monthTotal = cgMonthlySeries.reduce((a,s)=>a+s.values[i], 0);
+          return [lb, ...cgMonthlySeries.map(s => monthTotal>0 ? (s.values[i]/monthTotal*100).toFixed(1)+"%" : "0.0%")];
+        }));
+      // Mix shift (first bucket -> last bucket, same "biggest gain/biggest drop" framing MT's
+      // Partner Share callout uses) — computed from cgMonthlySeries directly rather than reading
+      // back out of the chart, so it can't drift from what's plotted.
+      const sgFirstTotal = cgMonthlySeries.reduce((a,s)=>a+s.values[0], 0);
+      const sgLastTotal = cgMonthlySeries.reduce((a,s)=>a+s.values[s.values.length-1], 0);
+      const sgDeltas = cgMonthlySeries.map(s => {
+        const firstPct = sgFirstTotal ? s.values[0]/sgFirstTotal*100 : 0;
+        const lastPct = sgLastTotal ? s.values[s.values.length-1]/sgLastTotal*100 : 0;
+        return { name: s.name, delta: lastPct-firstPct };
+      });
+      const sgGainer = sgDeltas.reduce((a,b)=>b.delta>a.delta?b:a);
+      const sgLoser = sgDeltas.reduce((a,b)=>b.delta<a.delta?b:a);
+      document.getElementById("shopGroupShareCallout").innerHTML =
+        "Mix shift, " + cgBucketLabels[0] + " → " + cgBucketLabels[cgBucketLabels.length-1] + " — "
+        + "Biggest gain: <b>" + sgGainer.name + "</b> <span class=\"" + (sgGainer.delta>=0?"text-good":"text-critical") + "\">(" + (sgGainer.delta>=0?"+":"") + sgGainer.delta.toFixed(1) + "pp)</span>"
+        + " · Biggest drop: <b>" + sgLoser.name + "</b> <span class=\"" + (sgLoser.delta>=0?"text-good":"text-critical") + "\">(" + (sgLoser.delta>=0?"+":"") + sgLoser.delta.toFixed(1) + "pp)</span>";
 
       // ---- Sales by Category — same full 4-level drill-down component as Sales Breakdown's
       // Sales by Category card, mounted into its own ids so the two stay independent (this one
@@ -2997,19 +3200,19 @@
       const chips = [];
       if (ceilingStreak >= 2){
         chips.push({
-          icon: "⚠", jump: "l2Quality",
-          html: `<b>Return Rate above ${RETURN_RATE_CEILING_PCT}% ceiling</b> for ${ceilingStreak} months straight<span class="risk-banner-sub">Through ${last.key} · see Portfolio Quality</span>`
+          icon: "⚠", jump: "execReturnTrendChart",
+          html: `<b>Return Rate above ${RETURN_RATE_CEILING_PCT}% ceiling</b> for ${ceilingStreak} months straight<span class="risk-banner-sub">Through ${last.key} · see Return Rate (CN) Trend</span>`
         });
       }
       if (bannerAr30Count > 0){
         chips.push({
-          icon: "⏱", jump: "l2Quality",
+          icon: "⏱", jumpPage: "tt_customer.html", jump: "sec-credit-returns",
           html: `<b>${fmtTHBFull(bannerAr30Amount)}</b> overdue 30+ days across ${bannerAr30Count} store${bannerAr30Count===1?"":"s"}<span class="risk-banner-sub">As of ${last.key} · see AR Aging</span>`
         });
       }
       if (bannerHighReturnCount > 0){
         chips.push({
-          icon: "🚩", jump: "l2Quality",
+          icon: "🚩", jumpPage: "tt_customer.html", jump: "sec-credit-returns",
           html: `<b>${bannerHighReturnCount} store${bannerHighReturnCount===1?"":"s"} flagged</b> for elevated return rate (> ${RETURN_RATE_CEILING_PCT}%)<span class="risk-banner-sub">${rangeLabel} · see High Return Rate Stores</span>`
         });
       }
@@ -3020,9 +3223,14 @@
           const btn = document.createElement("button");
           btn.type = "button"; btn.className = "risk-banner-chip";
           btn.innerHTML = `<span class="risk-banner-icon">${c.icon}</span><span class="risk-banner-text">${c.html}</span>`;
+          // 2026-08-14: TT moved from a single multi-tab page to separate files a while back —
+          // this chip's own click handler still called the old switchPage("breakdown"), which no
+          // longer exists on any page (dormant bug, never surfaced since
+          // SHOW_RISK_ALERT_BANNER is false). c.jumpPage (cross-page, when the target moved off
+          // this page in the Breakdown→Customer/Product split) vs same-page scroll otherwise.
           btn.addEventListener("click", () => {
-            switchPage("breakdown");
-            requestAnimationFrame(() => document.getElementById(c.jump).scrollIntoView({behavior:"smooth", block:"start"}));
+            if (c.jumpPage) window.location.href = c.jumpPage + "#" + c.jump;
+            else document.getElementById(c.jump).scrollIntoView({behavior:"smooth", block:"start"});
           });
           bannerEl.appendChild(btn);
         });
@@ -3054,50 +3262,10 @@
     // otherwise) — actual/target are summed per group (additive ฿ amounts), MoM/YoY recomputed
     // from the group's own summed total against the matching prior-quarter/prior-year-quarter
     // group via ttGroupMoM/ttGroupYoY (never averaged from the underlying monthly %s).
-    const winGroups = bucketTTMonths(win, currentTimeFrame);
-    const winBulletData = winGroups.map((g,gi) => ({
-      label: ttBucketLabel(g, currentTimeFrame),
-      actual: g.reduce((s,m)=>s+m.total,0),
-      target: g.reduce((s,m)=>s+monthlyTargets[m.idx],0),
-      mom: ttGroupMoM(winGroups, gi, "total"),
-      yoy: ttGroupYoY(winGroups, gi, "total"),
-    }));
-    const totalActual = winBulletData.reduce((a,d)=>a+d.actual,0);
-    const totalTarget = winBulletData.reduce((a,d)=>a+d.target,0);
-    document.getElementById("bulletTopline").innerHTML = (totalTarget>0 ? (totalActual/totalTarget*100).toFixed(0) : "0") + `<span class="unit">% of target, ${rangeLabel}</span>`;
-    document.getElementById("bulletSub").textContent = `${currentTimeFrame==="quarterly"?"Quarterly":"Monthly"} · ${rangeLabel}`;
-    // Round 29 direct feedback (Task 3): switched from renderBullet's horizontal bullet-rows to
-    // renderBulletBarChart — the same vertical bar (Actual, brand pink) + horizontal tick
-    // (Target, ink) chart already built for Task 8.1 on Sales Person's "Target vs Actual vs
-    // Diff" card, just fed this card's data instead. Diff shown is Actual−Target (same meaning
-    // as that card). This also naturally resolves Task 7's old special case: this card's height
-    // was the one thing allowed to grow with month count (being a stack of row divs) — now it's
-    // a fixed-height chart like every other card, no special-casing needed at all.
-    // Round 30 direct feedback: chart felt too tall — height reduced (280→200). Round 31 direct
-    // feedback: MoM/YoY brought back as ALWAYS-VISIBLE text under the diff line (not just
-    // tooltip), font sizes reduced further via the new dedicated .bullet-compact class (replaces
-    // .trend-compact on this card), and colorByHit added so each Actual bar is green/red by
-    // hit-or-miss instead of a flat brand color.
-    renderBulletBarChart(document.getElementById("bulletChart"), {
-      labels: winBulletData.map(d=>d.label),
-      actual: { name:"Actual", values: winBulletData.map(d=>d.actual), color:"var(--brand)" },
-      target: { name:"Target", values: winBulletData.map(d=>d.target), color:"var(--ink-1)" },
-      diff: { name:"vs Target", values: winBulletData.map(d=>d.actual-d.target), formatValue: fmtTHBFull },
-      mom: winBulletData.map(d=>d.mom),
-      yoy: winBulletData.map(d=>d.yoy),
-      colorByHit: true,
-      formatValue: fmtTHBFull,
-      ariaLabel: "Target vs Actual by month, " + rangeLabel,
-      height: 200,
-    });
-    renderTable(document.getElementById("bulletTable"), [currentTimeFrame==="quarterly"?"Quarter":"Month","Actual (THB)","Target (THB)","Attainment","MoM","YoY"],
-      winBulletData.map(d=>[d.label, fmtTHBFull(d.actual), fmtTHBFull(d.target),
-        (d.target>0?(d.actual/d.target*100).toFixed(0):"0")+"%",
-        d.mom!=null ? (d.mom>=0?"+":"")+d.mom.toFixed(1)+"%" : "—",
-        d.yoy!=null ? (d.yoy>=0?"+":"")+d.yoy.toFixed(1)+"%" : "—"]));
-
-    // Avg Sales / Customer / Month Trend card removed Round 26 — see Portfolio Quality HTML
-    // comment above for why (duplicated the Active Stores card's own right-axis line).
+    // Target vs Actual (company-wide monthly bullet bar) removed from this page (2026-08-14,
+    // direct feedback — duplicated Executive Summary's Target Attainment & Full Year Outlook +
+    // Revenue Trend). winGroups/winBulletData/totalActual/totalTarget were only ever consumed by
+    // that one card, so this whole block goes with it.
 
     // ---- Sales by Region (Region -> Province -> Store explorer) + Sales by Province (map)
     // — two separate full-width cards (was a lopsided side-by-side pairing: a short bar chart
@@ -3239,6 +3407,292 @@
     // computation. Nothing of it stays on Level 2's Team Performance anymore.
   }
 
+  /* ---- Stacked vertical bar chart (absolute values, N series stacked per category) — new
+     2026-08-14 for Executive Summary's "Monthly Sales by Shop Group" (needs each group's own
+     ฿ amount per period, not a 100%-normalized share like renderStackedAreaChart already does).
+     opts: {labels, series:[{name,color,values}], formatValue, ariaLabel, height}. Hover shows
+     every series' own value for that period plus the bar's Total.
+     percent100 (2026-08-14, Round 2 direct feedback — Shop Group Share of Sales Over Time wanted
+     a "100% stacked bar" instead of renderStackedAreaChart's smoothed area) — opt-in flag that
+     normalizes each month's own bar to its own 100% (share of THAT month's total, not a shared ฿
+     axis), fixes the y-axis to 0-100%, and shows both the % and the original ฿ value in the
+     tooltip. Every existing caller that doesn't set it keeps the original absolute-฿ behavior
+     unchanged. */
+  function renderStackedBarChart(mount, opts){
+    mount.innerHTML = "";
+    // opts.width lets a full-width (col-12) caller pass a viewBox width close to its own real
+    // rendered pixel width — width:100%/height:auto below otherwise scales the WHOLE viewBox
+    // (font-size included, since SVG text is sized in the same user-unit space) by
+    // renderedWidth/W, so a col-12 mount (roughly 2x a normal col-6 card) blows up tick-label
+    // text and doubles the chart's own height along with it. Default 640 unchanged for every
+    // other (col-6/col-4-width) caller.
+    const W = opts.width || 640, H = opts.height || 240, padL = 50, padR = 16, padT = 10, padB = 26;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const wrap = document.createElement("div"); wrap.className = "chart-wrap";
+
+    const legend = document.createElement("div"); legend.className = "legend";
+    opts.series.forEach(s => {
+      const item = document.createElement("div"); item.className = "legend-item";
+      const key = document.createElement("span"); key.className = "legend-key"; key.style.background = s.color;
+      const t = document.createElement("span"); t.textContent = s.name;
+      item.appendChild(key); item.appendChild(t); legend.appendChild(item);
+    });
+    wrap.appendChild(legend);
+
+    const n = opts.labels.length;
+    const totals = opts.labels.map((_,i) => opts.series.reduce((sum,s)=>sum+(s.values[i]||0),0));
+    const maxV = opts.percent100 ? 100 : niceMax(Math.max(...totals, 1) * 1.1);
+    const barGroupW = plotW/Math.max(1,n);
+    const xCenter = i => padL + barGroupW*(i+0.5);
+    const barW = Math.max(6, Math.min(48, barGroupW*0.55));
+    const y = v => padT + plotH - (maxV ? (v/maxV)*plotH : 0);
+
+    const svg = el("svg",{class:"viz", viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label": opts.ariaLabel||""});
+    svg.style.width = "100%"; svg.style.height = "auto"; svg.style.display = "block";
+
+    const tickVals = opts.percent100 ? [0,25,50,75,100] : [0, maxV/4, maxV/2, maxV*3/4, maxV];
+    tickVals.forEach(v => {
+      const yy = y(v);
+      svg.appendChild(el("line",{class:"grid-line", x1:padL, x2:W-padR, y1:yy, y2:yy}));
+      const lab = el("text",{class:"tick-label", x:padL-8, y:yy+3, "text-anchor":"end"});
+      lab.textContent = opts.percent100 ? v+"%" : (v===0 ? "0" : opts.formatValue(v));
+      svg.appendChild(lab);
+    });
+    svg.appendChild(el("line",{class:"axis-line", x1:padL, x2:W-padR, y1:padT+plotH, y2:padT+plotH}));
+
+    const labelEvery = n>12?2:1;
+    opts.labels.forEach((lb,i) => {
+      if (i%labelEvery!==0 && i!==n-1) return;
+      const t = el("text",{class:"tick-label", x:xCenter(i), y:H-8, "text-anchor":"middle"});
+      t.textContent = lb;
+      svg.appendChild(t);
+    });
+
+    const tt = makeTooltip(wrap);
+    opts.labels.forEach((lb,i) => {
+      let acc = 0;
+      let rowsHtml = `<div class="tt-date">${lb}</div>`;
+      const monthTotal = totals[i] || 0;
+      opts.series.forEach(s => {
+        const raw = s.values[i]||0;
+        const v = opts.percent100 ? (monthTotal ? raw/monthTotal*100 : 0) : raw;
+        const y0 = y(acc), y1 = y(acc+v);
+        const segH = Math.max(0,y0-y1);
+        svg.appendChild(el("rect",{x:xCenter(i)-barW/2, y:y1, width:barW, height:segH, fill:s.color, class:"hover-bar"}));
+        // showSegmentLabels (2026-08-14, direct feedback — Shop Group Share of Sales Over Time
+        // wanted on-bar data labels): only drawn when the segment is tall enough to hold the text
+        // without the label spilling into its neighbor (mirrors renderHBarChart's own
+        // canFitInside check for the same reason).
+        if (opts.showSegmentLabels && segH >= 14){
+          const segLabel = el("text",{x:xCenter(i), y:(y0+y1)/2+4, "text-anchor":"middle", fill:"#fff", "font-size":"10.5px", "font-weight":"650"});
+          segLabel.textContent = opts.percent100 ? v.toFixed(0)+"%" : opts.formatValue(v);
+          svg.appendChild(segLabel);
+        }
+        rowsHtml += `<div class="tt-row"><span class="tt-key"><span class="tt-swatch" style="background:${s.color}"></span>${s.name}</span><span class="tt-val">${opts.percent100 ? v.toFixed(1)+"% ("+opts.formatValue(raw)+")" : opts.formatValue(v)}</span></div>`;
+        acc += v;
+      });
+      if (!opts.percent100) rowsHtml += `<div class="tt-row"><span class="tt-key">Total</span><span class="tt-val">${opts.formatValue(acc)}</span></div>`;
+      const hit = el("rect",{x:xCenter(i)-barGroupW/2, y:padT, width:barGroupW, height:plotH, fill:"transparent"});
+      hit.style.cursor = "crosshair";
+      hit.addEventListener("pointerenter", () => {
+        tt.innerHTML = rowsHtml; tt.style.opacity = 1;
+        tt.style.left = (xCenter(i)/W*100)+"%"; tt.style.top = (padT/H*100)+"%";
+      });
+      hit.addEventListener("pointerleave", () => { tt.style.opacity = 0; });
+      svg.appendChild(hit);
+    });
+
+    wrap.appendChild(svg);
+    mount.appendChild(wrap);
+  }
+
+  /* ============ EXECUTIVE SUMMARY — extra pills (2026-08-14 4-pill restructure) ============
+     Called ONLY from tt_executive_summary.html, right after render() — deliberately NOT folded
+     into render() itself, so Customer/Product/Sales Person need no new stub ids for any of this
+     (render()'s own "every page stubs what it doesn't show" rule only applies to what's
+     actually inside render()). This page never exposes a Region/Category/Sales Person filter
+     (state.region/state.category/state.rep always stay "all" here), so every formula below is
+     the same plain company-wide one render()'s own KPI tiles already use with those same
+     defaults — each chart's latest/aggregate point is therefore guaranteed to reconcile exactly
+     to its matching KPI tile, by construction, not by coincidence. */
+  // Tight auto-fit y-axis band for narrow-range trend lines (AR%/Active Stores/Store Retention)
+  // — niceMax's coarse 1/2/5/10-at-decade rounding was ballooning small-range data (e.g. Store
+  // Retention's 90-100% band, +8% headroom rounding up to a 200 ceiling) into an unreadably flat
+  // line; this rounds to a much finer, caller-chosen step instead, with a modest fixed padding
+  // fraction of the data's own span — same spirit as MT's own domainMin/domainMax convention.
+  function tightBand(values, step){
+    const vals = values.filter(v=>v!=null);
+    const lo = Math.min(...vals), hi = Math.max(...vals);
+    const span = (hi-lo) || Math.max(1, Math.abs(hi||1)*0.1);
+    const pad = span*0.25;
+    const st = step || 5;
+    return { domainMin: Math.floor((lo-pad)/st)*st, domainMax: Math.ceil((hi+pad)/st)*st };
+  }
+
+  function renderExecSummaryPills(){
+    const win = windowMonths();
+    const rangeLabel = currentRangeLabel();
+    const groups = bucketTTMonths(win, currentTimeFrame);
+    const bucketLabels = groups.map(g => ttBucketLabel(g, currentTimeFrame));
+    const bucketColLabel = currentTimeFrame==="quarterly" ? "Quarter" : "Month";
+
+    /* ---- Pill 1: Target Attainment & Full Year Outlook ---- Calendar YTD 2026 (Jan-Jun) always
+       — same explicit exception MT's own identically-named card already makes ("Calendar YTD
+       always... not scoped to the Period filter above"), which is exactly what "แบบเดียวกับ MT"
+       asked for; View By (Monthly/Quarterly) still re-buckets the line. Cumulative-to-date actual/
+       target so the solid line's own last point equals the Target Attainment KPI tile exactly
+       (91% YTD). Full Year Outlook extends the remaining months at the LATEST closed month's own
+       pace (not a flat re-average of H1) — TT's mock calendar has no real H2 2026 targets to sum
+       against (unlike MT's), and re-averaging H1 for both actual and target would cancel out to
+       the exact same %, always, making the projection meaningless; anchoring the remainder to the
+       latest month's own attainment rate is what actually lets the projection diverge from the
+       YTD figure when recent performance is running hot/cold vs. the H1 average. */
+    const ytdWin = actualMonths.slice(12, 18); // Jan-Jun 2026, TODAY-anchored — see MT's own precedent above
+    const ytdGroups = bucketTTMonths(ytdWin, currentTimeFrame);
+    const ytdBucketLabels = ytdGroups.map(g => ttBucketLabel(g, currentTimeFrame));
+    let cumA = 0, cumT = 0;
+    const attainCum = ytdWin.map(m => { cumA += m.total; cumT += monthlyTargets[m.idx]; return cumT ? cumA/cumT*100 : 0; });
+    const winAttainPct = attainCum.length ? attainCum[attainCum.length-1] : 0;
+    const attainByBucket = ytdGroups.map(g => { const gi = ytdWin.indexOf(g[g.length-1]); return gi>=0 ? attainCum[gi] : null; });
+    const lastYtdMonth = ytdWin[ytdWin.length-1];
+    const remainingMonths = 12 - ytdWin.length; // Jul-Dec 2026
+    const fullYearActual = cumA + lastYtdMonth.total*remainingMonths;
+    const fullYearTarget = cumT + monthlyTargets[lastYtdMonth.idx]*remainingMonths;
+    const projectedAttainPct = fullYearTarget ? fullYearActual/fullYearTarget*100 : 0;
+    const gapValue = cumA - cumT;
+    document.getElementById("execAttainOutlookCaption").innerHTML =
+      "<b>"+winAttainPct.toFixed(0)+"%</b> 2026 YTD &rarr; <b style=\"color:var(--brand);\">"+projectedAttainPct.toFixed(0)+"%</b> Projected Full Year"
+      + " &middot; Gap to Target (YTD): <span class=\""+(gapValue>=0?"text-good":"text-critical")+"\">"+(gapValue>=0?"+":"−")+fmtTHBFull(Math.abs(gapValue))+"</span>";
+    // Full 12-month x-axis (2026-08-14, direct feedback: was a single lumped "Full Year (Proj.)"
+    // point after Jun) — TT's mock calendar has no real H2 2026 actual/target data to sum
+    // against (unlike MT's own 36-month grid, see this block's own header comment), so the
+    // dashed continuation is a straight-line interpolation from the last real cumulative point
+    // to the same run-rate projectedAttainPct this card's caption already states, spread evenly
+    // across the remaining months/quarters instead of collapsed into one bucket.
+    const remainingLabels = currentTimeFrame==="quarterly"
+      ? ["Q3 26","Q4 26"]
+      : MONTH_LABELS.slice(ytdWin.length).map(m => m+" 26");
+    const outlookLabels = [...ytdBucketLabels, ...remainingLabels];
+    const outlookActual = [...attainByBucket, ...remainingLabels.map(()=>null)];
+    const lastAttainPct = attainByBucket[attainByBucket.length-1];
+    const preLen = ytdBucketLabels.length;
+    const outlookProjected = outlookLabels.map((_,i) => {
+      if (i < preLen-1) return null;
+      if (i === preLen-1) return lastAttainPct; // connects the dashed line to the solid line's last point
+      const frac = (i-(preLen-1)) / remainingLabels.length;
+      return lastAttainPct + (projectedAttainPct-lastAttainPct)*frac;
+    });
+    // Band ~70-120% (same convention as MT's own attainOutlookChart) instead of an
+    // auto-0-anchored axis — keeps the line's real month-to-month movement visible instead of
+    // flattening it against a 0-200% scale. Only "Cumulative Attainment" gets a direct label
+    // (91%) — the Projected series' own value is already stated in the caption strip below, and
+    // the refLine is left unlabeled — 2 more overlapping numbers crammed into the same top-right
+    // corner (91/95/100, all within a few px of each other at this band's scale) was the exact
+    // illegible-label collision this request asked to fix.
+    const outlookDomainVals = [...outlookActual.filter(v=>v!=null), ...outlookProjected.filter(v=>v!=null)];
+    const outlookBand = tightBand(outlookDomainVals, 5);
+    renderLineChart(document.getElementById("execAttainOutlookChart"), {
+      labels: outlookLabels, height: 210, width: 400, hideLegend: true,
+      domainMin: Math.min(70, outlookBand.domainMin), domainMax: Math.max(120, outlookBand.domainMax), tickStep: 10,
+      formatValue: v => v.toFixed(0)+"%",
+      refLine: { value:100, color:getVar("--ink-3") },
+      series: [
+        { name:"Cumulative Attainment", color:getVar("--brand"), values: outlookActual, directLabel:true },
+        { name:"Projected (Full Year)", color:getVar("--brand"), dashed:true, values: outlookProjected }
+      ]
+    });
+    renderTable(document.getElementById("execAttainOutlookTable"), ["2026", "Cumulative Attainment %"],
+      outlookLabels.map((lb,i) => [lb, outlookActual[i]!=null ? outlookActual[i].toFixed(0)+"%" : (outlookProjected[i]!=null ? outlookProjected[i].toFixed(0)+"% (Projected)" : "—")]));
+
+    /* ---- Return Rate (CN) Trend — Performance Overview Row 1 (3rd column). Fixed 0-5% band
+       (per direct request, not auto-fit) with the RETURN_RATE_CEILING_PCT threshold as an
+       unlabeled dashed refLine (the caption below states the number in words, MT-style, instead
+       of a 2nd on-chart label crowding the same corner). Same win/groups as every other
+       filter-reactive widget on this page (unlike Target Attainment & Outlook's own deliberate
+       MT-style Period-filter exception above). ---- */
+    const returnSeries = ttBucketRatio(groups, m => m.grossTotal-m.total, m => m.grossTotal).map(v=>v*100);
+    renderLineChart(document.getElementById("execReturnTrendChart"), {
+      labels: bucketLabels, height: 210, width: 400, domainMin: 0, domainMax: 5, tickStep: 1, hideLegend: true,
+      series: [ { name:"Return Rate (CN)", color:getVar("--brand"), values: returnSeries, directLabel:true } ],
+      formatValue: v => v.toFixed(1)+"%",
+      refLine: { value: RETURN_RATE_CEILING_PCT, color:getVar("--critical") }
+    });
+    const lastReturnIdx = returnSeries.length-1;
+    const lastReturnAmt = ttBucketSum(groups, m => m.grossTotal-m.total)[lastReturnIdx];
+    document.getElementById("execReturnTrendCaption").innerHTML =
+      "Latest &mdash; <b>"+bucketLabels[lastReturnIdx]+"</b>: "+returnSeries[lastReturnIdx].toFixed(1)+"% ("+fmtTHBFull(lastReturnAmt)+")"
+      + (returnSeries[lastReturnIdx]>=RETURN_RATE_CEILING_PCT
+          ? " &middot; at/above the "+RETURN_RATE_CEILING_PCT.toFixed(1)+"% threshold"
+          : " &middot; within the "+RETURN_RATE_CEILING_PCT.toFixed(1)+"% threshold");
+    renderTable(document.getElementById("execReturnTrendTable"), [bucketColLabel,"Return Rate (CN)"],
+      bucketLabels.map((lb,i)=>[lb, returnSeries[i].toFixed(1)+"%"]));
+
+    /* ---- Customer & Credit Health Row 1 (1x3): AR% / Active Stores / Store Retention trends —
+       same per-month primitives (m.total/monthlyTargets, m.activeStores, retentionPctForMonth)
+       and the same ttBucketRatio/ttBucketSample helpers every other trend chart on this engine
+       already uses for View By; each series' latest point equals its KPI tile's own sparkline
+       point exactly. Fixed 0-anchored domains with round-number headroom (2026-08-14, direct
+       feedback: an auto-fit band starting near 80 made small month-to-month moves look far more
+       dramatic than they are, and Store Retention's own peak was clipping past its old auto
+       ceiling) — all 3 share the same plain-line style (no area fill) and no legend (title
+       already states the one series being plotted). ---- */
+    const arSeries = ttBucketRatio(groups,
+      m => { let collected=0; stores.forEach(s=>{ const g=storeGrossAtMonth(s,m.idx); collected += g - g*storeArRateForMonth(s,m); }); return collected; },
+      m => { let g=0; stores.forEach(s=>{ g+=storeGrossAtMonth(s,m.idx); }); return g; }
+    ).map(v=>v*100);
+    renderLineChart(document.getElementById("execArTrendChart"), {
+      labels: bucketLabels, height: 210, width: 400, domainMin: 0, domainMax: 100, tickStep: 25, hideLegend: true,
+      series: [ { name:"AR% (Collection Rate)", color:getVar("--brand"), values: arSeries, directLabel:true } ],
+      formatValue: v => v.toFixed(0)+"%"
+    });
+    renderTable(document.getElementById("execArTrendTable"), [bucketColLabel,"AR%"],
+      bucketLabels.map((lb,i)=>[lb, arSeries[i].toFixed(0)+"%"]));
+
+    const activeStoresSeries = ttBucketSample(groups, m => m.activeStores);
+    renderLineChart(document.getElementById("execActiveStoresTrendChart"), {
+      labels: bucketLabels, height: 210, width: 400, domainMin: 0, domainMax: 500, tickStep: 100, hideLegend: true,
+      series: [ { name:"Active Stores", color:getVar("--brand"), values: activeStoresSeries, directLabel:true } ],
+      formatValue: v => fmtInt(v)
+    });
+    renderTable(document.getElementById("execActiveStoresTrendTable"), [bucketColLabel,"Active Stores"],
+      bucketLabels.map((lb,i)=>[lb, fmtInt(activeStoresSeries[i])]));
+
+    const retentionSeries = ttBucketSample(groups, m => retentionPctForMonth(m));
+    renderLineChart(document.getElementById("execRetentionTrendChart"), {
+      labels: bucketLabels, height: 210, width: 400, domainMin: 0, domainMax: 120, tickStep: 30, hideLegend: true,
+      series: [ { name:"Store Retention", color:getVar("--brand"), values: retentionSeries, directLabel:true } ],
+      formatValue: v => v.toFixed(1)+"%"
+    });
+    renderTable(document.getElementById("execRetentionTrendTable"), [bucketColLabel,"Store Retention"],
+      bucketLabels.map((lb,i)=>[lb, retentionSeries[i]!=null ? retentionSeries[i].toFixed(1)+"%" : "—"]));
+
+    /* ---- Pill 4: Sales by Sales Person (donut) + Sales Ranking (table) — recomputes the exact
+       same per-rep aggregation (windowRepNet/repAttainmentPct/windowRepReturnRatePct/
+       windowRepVisitCompliance/windowRepArPct over `win`) Sales Person's own leaderboard and
+       Executive Summary's own overviewRankingTable already use, so all 3 tables agree by
+       construction. There are exactly 5 reps company-wide (REP_NAMES), so the donut's 5 slices
+       sum to the exact same company-wide total already shown everywhere else on this page. ---- */
+    const rankRows = reps.map(r => ({
+      rep: r,
+      net: windowRepNet(r, win),
+      attain: repAttainmentPct(r, win),
+      returnRate: windowRepReturnRatePct(r, win),
+      compliance: windowRepVisitCompliance(r, win),
+      arPct: windowRepArPct(r, win),
+    })).sort((a,b) => b.net-a.net);
+    const repItems = rankRows.map((x,i) => ({ label:x.rep.name, value:x.net, color: blendHexWithWhite(getVar("--brand"), 1 - i*0.16) }));
+    const repTotal = repItems.reduce((a,it)=>a+it.value,0);
+    renderDonutChart(document.getElementById("execSalesByRepChart"), {
+      items: repItems, centerLabel: rangeLabel, centerValue: fmtTHBFull(repTotal),
+      formatValue: fmtTHBFull, ariaLabel: "Sales by Sales Person"
+    });
+    renderTable(document.getElementById("execSalesByRepTable"), ["Sales Person","Net Sales","Share %"],
+      repItems.map(it => [it.label, fmtTHBFull(it.value), repTotal ? (it.value/repTotal*100).toFixed(1)+"%" : "0.0%"]));
+    renderTable(document.getElementById("execRankingTable"),
+      ["#","Rep","Net Sales","Target Attainment","Return Rate","Visit Compliance","AR%"],
+      rankRows.map((x,i) => [String(i+1), x.rep.name, fmtTHBFull(x.net), x.attain.toFixed(0)+"%", x.returnRate.toFixed(1)+"%", x.compliance.toFixed(0)+"%", x.arPct.toFixed(0)+"%"]));
+  }
+
   /* ============ SALES PERSON ANALYSIS — render (new, 2026-07-25) ============
      spState.repId is an IDENTITY (which person is "logged in"), not a filter among several —
      this function always renders exactly one rep's data for exactly one month (spState.monthIdx,
@@ -3295,7 +3749,6 @@
     const actual = repNetForMonth(rep, mIdx);
     const pct = target>0 ? actual/target*100 : 0;
     const remaining = target - actual;
-    document.getElementById("spHeroSub").textContent = rep.name + " · " + m.key;
     const heroPctEl = document.getElementById("spHeroPct");
     heroPctEl.textContent = pct.toFixed(0) + "%";
     heroPctEl.classList.toggle("good", pct>=100);
@@ -3454,7 +3907,7 @@
     // ---- CN Record (Round 31 direct feedback, Task 7) — redesigned from a flat list of
     // individual CN transactions into a 6-month trailing, per-store matrix: one row per store,
     // one column per trailing month (same sparkIdxs window Monthly Performance already uses),
-    // plus Customer Type (store.customerGroup, the same dimension the Customer Group Mix donut
+    // plus Customer Type (store.customerGroup, the same dimension the Shop Group Mix donut
     // uses) and a 6-month Return Rate (storeCnRateForWindow, same formula as everywhere else).
     // Per-store/month CN amount = storeGrossAtMonth − monthlyRevenue (gross minus net), the same
     // decomposition repCNForMonth already uses at the rep-aggregate level. Sorted by total CN
@@ -3469,8 +3922,9 @@
     }).filter(r => r.totalCn > 0.5)
       .sort((a,b) => b.totalCn-a.totalCn);
     const cnGrandTotal = cnStoreRows.reduce((a,r)=>a+r.totalCn,0);
-    document.getElementById("cnSummary").textContent =
-      `Total CN, trailing ${cnWinMonths.length} month${cnWinMonths.length===1?"":"s"}: ${fmtTHBFull(cnGrandTotal)} · ${cnStoreRows.length} store${cnStoreRows.length===1?"":"s"}`;
+    // cnSummary subtitle removed (2026-08-14, direct feedback) — that same total now lives as a
+    // Grand Total row at the bottom of the table itself (see cnTotalRow below) instead of a
+    // separate line of text above it.
     function renderCnTable(showAll){
       const oldSeeMore = document.getElementById("cnSeeMore");
       if (oldSeeMore) oldSeeMore.remove();
@@ -3479,10 +3933,16 @@
         return;
       }
       const visible = showAll ? cnStoreRows : cnStoreRows.slice(0, CN_SEE_MORE_CAP);
+      // Grand Total row (2026-08-14) — always sums ALL stores in the window (cnStoreRows), not
+      // just the visible/capped slice, so it stays correct whether "See all" has been clicked or
+      // not (same total the old subtitle used to report).
+      const cnMonthlyGrandTotals = cnWinMonths.map((m,mi) => cnStoreRows.reduce((a,r)=>a+r.monthlyCn[mi],0));
+      const cnTotalRow = ["Grand Total", "—", "—", ...cnMonthlyGrandTotals.map(v=>fmtTHBFull(v)), fmtTHBFull(cnGrandTotal)];
       renderTable(document.getElementById("cnTable"),
         ["Store","Customer Type","Return Rate", ...cnWinMonths.map(m=>m.key), "Total CN (THB)"],
         visible.map(r => [r.store.id, r.store.customerGroup, r.returnRate.toFixed(1)+"%",
-          ...r.monthlyCn.map(v=>fmtTHBFull(v)), fmtTHBFull(r.totalCn)]));
+          ...r.monthlyCn.map(v=>fmtTHBFull(v)), fmtTHBFull(r.totalCn)]),
+        cnTotalRow);
       if (!showAll && cnStoreRows.length > CN_SEE_MORE_CAP){
         const wrap = document.createElement("div");
         wrap.id = "cnSeeMore"; wrap.style.cssText = "margin-top:8px;text-align:center;";
@@ -3505,15 +3965,18 @@
     // "See More" toggle — was a plain renderStoreList text list with a fixed 6-row cap and no
     // way to see the rest.
     const ATTENTION_CAP = 6;
+    // Round 34 direct feedback: dropped the >RETURN_RATE_CEILING_PCT cutoff this card used to
+    // apply — now every one of the rep's own stores is ranked by CN rate, highest first, so "See
+    // all" always reaches the full roster instead of stopping at whichever stores happened to
+    // cross the 2% line that month.
     const attentionStoresFull = myStores
       .map(s => ({ s, cnRatePct: storeCnRateForMonth(s, m)*100 }))
-      .filter(x => x.cnRatePct > RETURN_RATE_CEILING_PCT)
       .sort((a,b) => b.cnRatePct-a.cnRatePct);
     function renderAttentionList(showAll){
       const oldSeeMore = document.getElementById("attentionSeeMore");
       if (oldSeeMore) oldSeeMore.remove();
       if (!attentionStoresFull.length){
-        document.getElementById("attentionList").innerHTML = '<div class="card-sub" style="padding:20px 0;text-align:center;">No stores over the ' + RETURN_RATE_CEILING_PCT + '% CN threshold this month.</div>';
+        document.getElementById("attentionList").innerHTML = '<div class="card-sub" style="padding:20px 0;text-align:center;">No stores assigned this month.</div>';
         return;
       }
       const visible = showAll ? attentionStoresFull : attentionStoresFull.slice(0, ATTENTION_CAP);
@@ -3558,10 +4021,6 @@
     if (spState.arView === "withinDue"){
       // ---- Within Due branch ----
       const withinDueVisible = withinDueStoresFull.slice(0,6);
-      const withinDueGrandTotal = withinDueStoresFull.reduce((a,x)=>a+x.total,0);
-      document.getElementById("collectionsSummary").textContent = withinDueStoresFull.length
-        ? withinDueStoresFull.length + " accounts within due · " + fmtTHBFull(withinDueGrandTotal)
-        : "Within-due AR, not yet overdue";
       if (withinDueVisible.length){
         renderHBarChart(document.getElementById("collectionsList"), {
           items: withinDueVisible.map(x => ({ key:x.s.id, label:x.s.id, sublabel:x.s.region, value:x.total })),
@@ -3593,10 +4052,6 @@
     } else {
       // ---- Overdue branch (existing behavior) ----
       const collectionStores = overdueStoresFull.slice(0,6);
-      const over30Full = overdueStoresFull.filter(x=>x.days>30).length;
-      document.getElementById("collectionsSummary").textContent = overdueStoresFull.length
-        ? overdueStoresFull.length + " accounts overdue" + (over30Full ? " · " + over30Full + " at 30+ days" : "")
-        : "Overdue AR, by days past due";
       // Round 31 direct feedback (Task 9): bar visualization (renderHBarChart, was renderStoreList)
       // plus a "See all N accounts" affordance — the Table view toggle already showed the complete
       // invoice-level detail (see below), it just had no visible prompt inviting the click; reuses
@@ -3700,7 +4155,7 @@
 
     // My Sales by Category — category revenue has no real per-store breakdown in this data model
     // (see CUSTOMER_CATEGORY_AFFINITY's own comment), so this blends the SAME shared affinity
-    // table by this rep's own store mix across Customer Groups, weighted by each group's real
+    // table by this rep's own store mix across Shop Groups, weighted by each group's real
     // revenue among the rep's stores — sums exactly to the rep's real total, same assumption the
     // Level 2 heatmap uses, just aggregated one level down (by rep instead of company-wide).
     const myGroupTotals = {};
@@ -3724,6 +4179,11 @@
     const myCatDepth = spState.categoryLevel;
     const myCatLevelName = HIERARCHY_LEVELS[myCatDepth-1];
     document.getElementById("myCategoryLevelLabel").textContent = myCatLevelName;
+    // sublabel (2026-08-14, direct feedback): one level up only, not the full ancestor breadcrumb
+    // — Category has no context at all, Sub-Category/Type show just their immediate parent's
+    // name, and Series (the deepest level, no children of its own to disambiguate against) drops
+    // context entirely too. tooltipLabel keeps the full breadcrumb for the table/CSV export,
+    // where the extra context is still useful and there's no per-row space constraint.
     const myCatRowsAll = (myCatDepth===1
       ? CATEGORIES.map((c,i) => ({ key:c, label:c, sublabel:null, tooltipLabel:c, value:myCatTotals[i] }))
       : enumerateLevel(myCatDepth).map(p => {
@@ -3731,22 +4191,43 @@
           const catTotalCompanyWide = windowValueForPath(spWin, [p[0]]);
           const nodeValueCompanyWide = windowValueForPath(spWin, p);
           const share = catTotalCompanyWide>0 ? nodeValueCompanyWide/catTotalCompanyWide : 0;
-          return { key:p.join("/"), label:p[p.length-1], sublabel:p.slice(0,-1).join(" › "), tooltipLabel:p.join(" › "), value: myCatTotals[catIdx]*share };
+          const sublabel = myCatDepth===HIERARCHY_LEVELS.length ? null : p[p.length-2];
+          return { key:p.join("/"), label:p[p.length-1], sublabel, tooltipLabel:p.join(" › "), value: myCatTotals[catIdx]*share };
         })
     ).sort((a,b)=>b.value-a.value);
-    const myCatOverflow = myCatRowsAll.length > 10;
-    const myCatRows = myCatOverflow ? myCatRowsAll.slice(0, 10) : myCatRowsAll;
-    document.getElementById("myCategorySub").textContent =
-      "This month, your stores only" + (myCatOverflow ? ` · Top 10 shown (see Table for all)` : "");
+    // Cap 5 (2026-08-14, direct feedback — was 10, Series used to show Top 10) + a "See more"
+    // button reusing this card's own table+focus toolbar (tableBtnMap.myCategory/
+    // focusBtnMap.myCategory, wired automatically by the generic icon-toolbar loop below since
+    // this card already has <div class="icon-toolbar" data-chart="myCategory">) — same pattern as
+    // Sales by Region's/Top & Bottom Performing Stores' own "See all" affordances, instead of the
+    // old subtitle-only "see Table for all" hint.
+    const MY_CAT_CAP = 5;
+    const myCatOverflow = myCatRowsAll.length > MY_CAT_CAP;
+    const myCatRows = myCatOverflow ? myCatRowsAll.slice(0, MY_CAT_CAP) : myCatRowsAll;
+    const prevMyCatSeeMore = document.getElementById("myCategorySeeMore");
+    if (prevMyCatSeeMore) prevMyCatSeeMore.remove();
     renderCategoryBars(document.getElementById("myCategoryChart"), {
       items: myCatRows,
       formatValue: v => fmtTHBFull(v) + " · " + (myCatTotal>0 ? (v/myCatTotal*100).toFixed(1) : "0.0") + "%"
     });
+    if (myCatOverflow){
+      const wrap = document.createElement("div");
+      wrap.id = "myCategorySeeMore"; wrap.style.cssText = "margin-top:8px;text-align:center;";
+      const btn = document.createElement("button");
+      btn.type = "button"; btn.className = "crumb-btn"; btn.style.fontSize = "12.5px";
+      btn.textContent = `See all ${myCatRowsAll.length} →`;
+      btn.addEventListener("click", () => {
+        if (tableBtnMap.myCategory.getAttribute("aria-pressed") !== "true") tableBtnMap.myCategory.click();
+        focusBtnMap.myCategory.click();
+      });
+      wrap.appendChild(btn);
+      document.getElementById("myCategoryChart").after(wrap);
+    }
     renderTable(document.getElementById("myCategoryTable"), [myCatLevelName, "Revenue (THB)", "% of Total"],
       myCatRowsAll.map(r=>[r.tooltipLabel, fmtTHBFull(r.value), myCatTotal>0 ? (r.value/myCatTotal*100).toFixed(1)+"%" : "0.0%"]));
 
-    // My Customer Group Mix — donut, reuses renderDonutChart (same component as Sales Overview's
-    // Customer Group card) scoped to this rep's own stores. Groups with zero stores/revenue are
+    // My Shop Group Mix — donut, reuses renderDonutChart (same component as Sales Overview's
+    // Shop Group card) scoped to this rep's own stores. Groups with zero stores/revenue are
     // filtered out rather than shown as empty slices, since a rep's small store count often
     // doesn't touch every group.
     const myGroupItems = CUSTOMER_GROUPS
@@ -3758,10 +4239,10 @@
       items: myGroupItems,
       centerLabel: m.key,
       centerValue: fmtTHBFull(myGroupTotal),
-      // Round 26: same double-% bug as the Sales Overview Customer Group donut — renderDonutChart
+      // Round 26: same double-% bug as the Sales Overview Shop Group donut — renderDonutChart
       // already appends "· {frac}%" itself, formatValue should only return the THB amount.
       formatValue: fmtTHBFull,
-      ariaLabel: "My Customer Group Mix"
+      ariaLabel: "My Shop Group Mix"
     });
   }
 
@@ -4360,8 +4841,10 @@
     const chartId = opts.chartId || "storesChart";
     const tableId = opts.tableId || "storesTable";
     const subId = opts.subId || "storesSub";
+    // Subtitle default no longer mentions "⚠ = high return rate vs. peers" (2026-08-14, direct
+    // feedback — the elevated-risk flag itself was removed from buildList() below).
     document.getElementById(subId).textContent = opts.subText ||
-      `${currentRangeLabel()}${state.region!=="all"?" · "+state.region:""} · ⚠ = high return rate vs. peers`;
+      `${currentRangeLabel()}${state.region!=="all"?" · "+state.region:""}`;
     let pool = opts.pool || stores;
     if (!opts.pool && state.region!=="all") pool = stores.filter(s=>s.regionIdx===REGIONS.indexOf(state.region));
     const ranked = pool.map(s => ({
@@ -4378,30 +4861,36 @@
     const seeMoreIdEarly = chartId.replace(/Chart$/, "") + "StoresSeeMore";
     const oldWrapEarly = document.getElementById(seeMoreIdEarly);
     if (oldWrapEarly) oldWrapEarly.remove();
-    // Bars share one scale (the largest store in the current pool) so Top bars read
-    // long/full and Bottom bars read visibly short — the length itself signals which is which.
-    const globalMax = ranked.length ? ranked[0].value : 1;
 
-    function buildList(title, list){
+    // buildList (2026-08-14, Round 34 direct feedback — restyled per-row to match "Target vs
+    // Actual (per rep)": fixed-width name column, one compact bar starting at the same x on every
+    // row, value+MoM/YoY moved to the far right instead of floating above a full-width bar).
+    // sharedMax (2026-08-14, Round 35 direct feedback): Top 5 and Bottom 5 now scale against the
+    // SAME max (passed in by the caller below) instead of each column's own localMax — the
+    // previous per-column scaling made a ฿240K Bottom-5 bar render just as long as a ฿4.1M Top-5
+    // bar, which reads as actively misleading rather than merely "using the space within its own
+    // column." Falls back to the list's own max when no sharedMax is given (the <=8-store single-
+    // list branch below, where there's only one column and no cross-column comparison to make).
+    function buildList(title, list, sharedMax){
       const col = document.createElement("div"); col.className = "store-col";
       const h = document.createElement("div"); h.className = "store-col-title"; h.textContent = title;
       col.appendChild(h);
       const ul = document.createElement("div"); ul.className = "store-list";
+      const localMax = sharedMax || (list.length ? Math.max(...list.map(s=>s.value)) : 1);
       list.forEach((s,i) => {
         const row = document.createElement("div"); row.className = "store-row";
-        const main = document.createElement("div"); main.className = "store-row-main";
         const rank = document.createElement("div"); rank.className = "store-rank"; rank.textContent = (i+1)+".";
         const info = document.createElement("div"); info.className = "store-main";
-        const id = document.createElement("div"); id.className = "store-id";
-        const idText = document.createElement("span"); idText.textContent = s.id;
-        id.appendChild(idText);
-        if (s.elevated){
-          const flag = document.createElement("span"); flag.className="store-risk-flag"; flag.textContent="⚠";
-          flag.title = "Elevated return risk";
-          id.appendChild(flag);
-        }
+        const id = document.createElement("div"); id.className = "store-id"; id.textContent = s.id;
+        // Elevated-risk (⚠) flag removed from this list (2026-08-14, direct feedback) — s.elevated
+        // is still computed above (harmless, just unused here) so outlierSet/opts.pool callers
+        // don't need to change.
         const reg = document.createElement("div"); reg.className = "store-region"; reg.textContent = s.region;
         info.appendChild(id); info.appendChild(reg);
+        const barTrack = document.createElement("div"); barTrack.className = "store-bar-track";
+        const barFill = document.createElement("div"); barFill.className = "store-bar-fill";
+        barFill.style.width = Math.max(2, s.value/localMax*100) + "%";
+        barTrack.appendChild(barFill);
         const val = document.createElement("div"); val.className = "store-value";
         const rev = document.createElement("div"); rev.className = "store-rev"; rev.textContent = fmtTHBFull(s.value);
         const trendWrap = document.createElement("div"); trendWrap.className = "store-trend-wrap";
@@ -4413,12 +4902,7 @@
         else { yoyEl.textContent = fmtPct(s.yoy) + " YoY"; yoyEl.style.color = s.yoy>=0 ? "var(--good-text)" : "var(--critical)"; }
         trendWrap.appendChild(mom); trendWrap.appendChild(yoyEl);
         val.appendChild(rev); val.appendChild(trendWrap);
-        main.appendChild(rank); main.appendChild(info); main.appendChild(val);
-        const barTrack = document.createElement("div"); barTrack.className = "store-bar-track";
-        const barFill = document.createElement("div"); barFill.className = "store-bar-fill";
-        barFill.style.width = Math.max(2, s.value/globalMax*100) + "%";
-        barTrack.appendChild(barFill);
-        row.appendChild(main); row.appendChild(barTrack);
+        row.appendChild(rank); row.appendChild(info); row.appendChild(barTrack); row.appendChild(val);
         ul.appendChild(row);
       });
       col.appendChild(ul);
@@ -4433,8 +4917,9 @@
     } else {
       const top5 = ranked.slice(0,5);
       const bottom5 = ranked.slice(-5).reverse();
-      container.appendChild(buildList("▲ Top 5 by Revenue", top5));
-      container.appendChild(buildList("▼ Bottom 5 by Revenue", bottom5));
+      const sharedMax = ranked.length ? Math.max(...ranked.map(s=>s.value)) : 1;
+      container.appendChild(buildList("▲ Top 5 by Revenue", top5, sharedMax));
+      container.appendChild(buildList("▼ Bottom 5 by Revenue", bottom5, sharedMax));
       tableRows = [...top5, ...bottom5];
       // Round 32 direct feedback (Task 4): "See More" affordance for the stores between the
       // shown Top 5 / Bottom 5 — reuses this card's existing table+focus toolbar (same pattern as
@@ -4505,8 +4990,20 @@
   }
   focusBackdrop.addEventListener("click", exitFocus);
 
-  const chartMap = { trend:"trendChart", growthYoy:"growthYoyChart", bullet:"bulletChart", region:"regionChart", category:"categoryChart", categoryGrowth:"categoryGrowthChart", stores:"storesChart", returnRate:"returnRateChart", elevatedRisk:"elevatedRiskChart", activeStores:"activeStoresChart", storeFlow:"storeFlowChart", provinceMap:"provinceMapChart", repCoverage:"repCoverageChart", repBullet:"repBulletChart", visitTrend:"visitTrendChart", dailySales:"dailySalesChart", spMonthly:"spMonthlyChart", overviewCategory:"overviewCategoryChart", collections:"collectionsList", productRanking:"productRankingChart", customerCategoryHeatmap:"customerCategoryHeatmapChart", myStores:"myStoresChart", myCategory:"myCategoryChart", customerGroup:"customerGroupChart" };
-  const tableMap = { trend:"trendTable", growthYoy:"growthYoyTable", bullet:"bulletTable", region:"regionTable", category:"categoryTable", categoryGrowth:"categoryGrowthTable", stores:"storesTable", returnRate:"returnRateTable", elevatedRisk:"elevatedRiskTable", activeStores:"activeStoresTable", storeFlow:"storeFlowTable", provinceMap:"provinceMapTable", repCoverage:"repCoverageTable", repBullet:"repBulletTable", visitTrend:"visitTrendTable", dailySales:"dailySalesTable", spMonthly:"spMonthlyTable", overviewCategory:"overviewCategoryTable", collections:"collectionsTable", productRanking:"productRankingTable", customerCategoryHeatmap:"customerCategoryHeatmapTable", myStores:"myStoresTable", myCategory:"myCategoryTable", customerGroup:"customerGroupTable" };
+  const chartMap = { trend:"trendChart", growthYoy:"growthYoyChart", region:"regionChart", category:"categoryChart", categoryGrowth:"categoryGrowthChart", stores:"storesChart", elevatedRisk:"elevatedRiskChart", activeStores:"activeStoresChart", storeFlow:"storeFlowChart", provinceMap:"provinceMapChart", repCoverage:"repCoverageChart", repBullet:"repBulletChart", visitTrend:"visitTrendChart", dailySales:"dailySalesChart", spMonthly:"spMonthlyChart", overviewCategory:"overviewCategoryChart", collections:"collectionsList", productRanking:"productRankingChart", customerCategoryHeatmap:"customerCategoryHeatmapChart", myStores:"myStoresChart", myCategory:"myCategoryChart", customerGroup:"customerGroupChart",
+    // Executive Summary's 4-pill restructure (2026-08-14) — these 7 keys only ever match a
+    // .icon-toolbar on tt_executive_summary.html (the ids don't exist on Breakdown/Sales Person),
+    // so they're harmless additions here: chartMap/tableMap are just lookup tables, this loop
+    // only ever wires up whatever [data-chart] elements actually exist in the current page's DOM.
+    execAttainOutlook:"execAttainOutlookChart", execArTrend:"execArTrendChart", execReturnTrend:"execReturnTrendChart",
+    execActiveStoresTrend:"execActiveStoresTrendChart", execRetentionTrend:"execRetentionTrendChart",
+    execMonthlyCustGroup:"execMonthlyCustGroupChart", execSalesByRep:"execSalesByRepChart",
+    shopGroupShare:"shopGroupShareChart" };
+  const tableMap = { trend:"trendTable", growthYoy:"growthYoyTable", region:"regionTable", category:"categoryTable", categoryGrowth:"categoryGrowthTable", stores:"storesTable", elevatedRisk:"elevatedRiskTable", activeStores:"activeStoresTable", storeFlow:"storeFlowTable", provinceMap:"provinceMapTable", repCoverage:"repCoverageTable", repBullet:"repBulletTable", visitTrend:"visitTrendTable", dailySales:"dailySalesTable", spMonthly:"spMonthlyTable", overviewCategory:"overviewCategoryTable", collections:"collectionsTable", productRanking:"productRankingTable", customerCategoryHeatmap:"customerCategoryHeatmapTable", myStores:"myStoresTable", myCategory:"myCategoryTable", customerGroup:"customerGroupTable",
+    execAttainOutlook:"execAttainOutlookTable", execArTrend:"execArTrendTable", execReturnTrend:"execReturnTrendTable",
+    execActiveStoresTrend:"execActiveStoresTrendTable", execRetentionTrend:"execRetentionTrendTable",
+    execMonthlyCustGroup:"execMonthlyCustGroupTable", execSalesByRep:"execSalesByRepTable",
+    shopGroupShare:"shopGroupShareTable" };
   // Keyed refs to each card's own toolbar buttons — lets other UI (e.g. the Elevated Return
   // Risk "See all" affordance) drive an existing card's table/focus toggle programmatically
   // instead of building a second, parallel expand mechanism.
@@ -4547,7 +5044,7 @@
 /* ---------- Section-nav / mini-nav scroll-spy (2026-08-06) — same mechanism as
    shared.js's initSectionScrollSpy(), ported here since tt-shared.js is a fully
    separate engine. Targets both .section-nav a (tt_executive_summary.html) and
-   .l2-mini-nav-item (#l2MiniNav on tt_breakdown.html, #l3MiniNav on
+   .l2-mini-nav-item (#l2MiniNav on tt_customer.html/tt_product.html, #l3MiniNav on
    tt_sales_person.html) so one function covers every TT page's pill nav. Safe
    no-op if the page has neither. ---------- */
 function initSectionScrollSpy(){

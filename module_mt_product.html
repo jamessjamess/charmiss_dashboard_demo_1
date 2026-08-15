@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charmiss — MT Overview · Product</title>
+<script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
+<link rel="stylesheet" href="shared.css">
+<link rel="stylesheet" href="nav-menu.css">
+</head>
+<body>
+<div class="app">
+
+  <div class="page-header-sticky" id="pageHeaderSticky">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">C</div>
+        <div class="brand-name">Charmiss</div>
+        <div id="navMenuMount"></div>
+        <nav class="tabs header-topbar-tabs">
+          <a class="tab tab-link" href="module_mt_executive_summary.html">Executive Summary</a>
+          <a class="tab tab-link" href="module_mt_partner.html">Partner</a>
+          <a class="tab active tab-link" href="module_mt_product.html">Product</a>
+          <a class="tab tab-link" href="module_mt_store.html">Store</a>
+        </nav>
+      </div>
+      <div class="user-area">
+        <a class="avatar" href="account_management.html" title="Account Management">NV</a>
+        <button class="collapse-toggle-btn" id="menubarCollapseBtn" title="พับ Menu Bar" aria-expanded="true">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="header-utility-row" id="headerUtilityRow">
+      <nav class="section-nav">
+        <a href="#sec-product-mix">Product Mix</a>
+        <a href="#sec-partner-x-category">Partner × Category</a>
+      </nav>
+      <div class="nav-filter-divider"></div>
+      <div class="filter-bar-group">
+        <div class="filter-left">
+          <span class="filter-label">Period</span>
+          <button class="period-btn" id="periodBtn">
+            <span id="periodBtnLabel">Year to Date</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="periodDropdown">
+            <div class="period-opt" data-key="thisMonth"><span class="chk"></span>This Month</div>
+            <div class="period-opt" data-key="lastMonth"><span class="chk"></span>Last Month</div>
+            <div class="period-opt" data-key="thisQuarter"><span class="chk"></span>This Quarter (Q2 2026)</div>
+            <div class="period-opt" data-key="lastQuarter"><span class="chk"></span>Last Quarter (Q1 2026)</div>
+            <div class="period-opt selected" data-key="ytd"><span class="chk">✓</span>Year to Date</div>
+            <div class="period-opt" data-key="lastYear"><span class="chk"></span>Last Year (2025)</div>
+            <div class="period-opt" data-key="trailing12"><span class="chk"></span>Trailing 12 Months</div>
+            <div class="period-divider"></div>
+            <div class="custom-range-label">Custom Range</div>
+            <div class="custom-range-row">
+              <select id="customFrom"></select>
+              <span style="color:var(--ink-3);font-size:11.5px;">to</span>
+              <select id="customTo"></select>
+            </div>
+            <button class="apply-btn" id="applyCustom">Apply</button>
+          </div>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">View By</span>
+          <div class="timeframe-toggle" id="timeFrameToggle">
+            <div class="timeframe-thumb" id="timeFrameThumb"></div>
+            <button class="timeframe-opt selected" data-key="monthly">Monthly</button>
+            <button class="timeframe-opt" data-key="quarterly">Quarterly</button>
+          </div>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">Product Level</span>
+          <button class="period-btn" id="levelBtn">
+            <span id="levelBtnLabel">Category</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="levelDropdown" style="width:180px;">
+            <div class="period-opt selected" data-level="0"><span class="chk">✓</span>Category</div>
+            <div class="period-opt" data-level="1"><span class="chk"></span>Sub-Category</div>
+            <div class="period-opt" data-level="2"><span class="chk"></span>Type</div>
+            <div class="period-opt" data-level="3"><span class="chk"></span>Series</div>
+          </div>
+        </div>
+        <div class="filter-item">
+          <span class="filter-label">Filter</span>
+          <button class="period-btn" id="focusBtn">
+            <span id="focusBtnLabel">All Categories</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+          </button>
+          <div class="period-dropdown" id="focusDropdown" style="width:250px;max-height:380px;overflow-y:auto;"></div>
+        </div>
+        <div class="filter-scope" id="filterScopeNote">Scopes the KPIs and charts below</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PILL 1: PRODUCT MIX ===== -->
+  <div class="section-label" id="sec-product-mix">Product Mix</div>
+  <div class="chart-grid">
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Sales by Category</span>
+          <button class="info-icon" data-info-title="Sales by Category" data-info-text="สัดส่วน % ยอดขาย MT แยกตามหมวดหมู่สินค้า — Company-wide MT เสมอ สลับ Product Level ได้จาก Filter ด้านบน (Category/Sub-Category/Type/Series) — Level เดียวกับที่ใช้ใน Category Share of Sales Over Time และ Partner × Category ด้านล่าง — ใช้ Filter (Filter dropdown) เพื่อจำกัดรายการเฉพาะรายการที่เลือก">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="catTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="catDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="catExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="cat-bars" id="catBars"></div>
+      <div class="kpi-caption" id="catMoreCaption" style="margin-top:6px;"></div>
+      <div class="data-table-wrap" id="catTableWrap"></div>
+    </div>
+
+    <div class="card">
+      <div class="chart-card-head">
+        <div class="chart-title-wrap">
+          <span class="chart-title">Category Portfolio Matrix</span>
+          <button class="info-icon" data-info-title="Category Portfolio Matrix" data-info-text="Adapted BCG Matrix: แกนนอน (X) = ยอดขาย, แกนตั้ง (Y) = %Growth YoY เส้นประคือค่ามัธยฐาน แบ่งเป็น 4 กลุ่ม Stars/Cash Cows/Question Marks/Dogs">i</button>
+        </div>
+        <div class="toolbar">
+          <button class="tool-btn" id="matrixTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+          <button class="tool-btn" id="matrixDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+          <button class="tool-btn" id="matrixExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+        </div>
+      </div>
+      <div class="canvas-wrap" id="matrixCanvasWrap" style="height:280px;"><div id="matrixChart" style="width:100%;height:100%;"></div></div>
+      <div class="data-table-wrap" id="matrixTableWrap"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:14px;">
+    <div class="chart-card-head">
+      <div class="chart-title-wrap">
+        <span class="chart-title">Category Share of Sales Over Time</span>
+        <button class="info-icon" data-info-title="Category Share of Sales Over Time" data-info-text="สัดส่วน % ยอดขาย MT ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน) ที่ Product Level เดียวกับ Sales by Category ด้านบน (Top 6 Node ตามยอดขาย เมื่อเลือกระดับลึกกว่า Category) — เลื่อนเมาส์ชี้บนกราฟเพื่อดูตัวเลข %/฿ ที่แม่นยำของแต่ละเดือน">i</button>
+      </div>
+      <div class="toolbar">
+        <button class="tool-btn" id="shareTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
+        <button class="tool-btn" id="shareDownloadBtn" title="ดาวน์โหลด (SVG)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="shareExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="chart-legend" id="shareLegend"></div>
+    <div class="canvas-wrap" id="shareCanvasWrap" style="height:280px;"><div id="shareChart" style="width:100%;height:100%;"></div></div>
+    <div class="callout-text" id="shareCallout" style="margin-top:10px;">–</div>
+    <div class="data-table-wrap" id="shareTableWrap"></div>
+  </div>
+
+  <!-- ===== PILL 2: PARTNER × CATEGORY ===== -->
+  <div class="section-label" id="sec-partner-x-category" style="margin-top:24px;">Partner &times; Category</div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Partner × Category</span>
+      <button class="info-icon" data-info-title="Partner × Category" data-info-text="แถว = 9 Key Account, คอลัมน์ = Top 8 Category/Sub-Category/Type/Series (ตาม Product Level ที่เลือกใน Sales by Category ด้านบน — ทั้งหมดใช้ Level เดียวกัน) ค่าใน Cell = % ยอดขายของคู่ค้ารายนั้นที่มาจาก Category นั้น (Row-normalized ต่อคู่ค้า) สีเข้มขึ้นตาม % ที่สูงขึ้น — Mix ต่อคู่ค้าเป็น Mock จากสมมติฐาน Format เช่น Convenience Store เอียงไปทาง Personal Care/Accessories ไม่ใช่ข้อมูลจริง">i</button>
+      <div class="toolbar" style="margin-left:auto;">
+        <button class="tool-btn" id="crossTabDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
+        <button class="tool-btn" id="crossTabExpandBtn" title="ขยายเต็มจอ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
+      </div>
+    </div>
+    <div class="heatmap-scroll" style="overflow-x:auto;">
+      <table class="heatmap-table heatmap-table-transposed" id="crossTabTable"></table>
+    </div>
+  </div>
+
+</div>
+
+<div class="popover" id="popover">
+  <div class="popover-title" id="popoverTitle"></div>
+  <div id="popoverText"></div>
+</div>
+
+<script src="shared.js"></script>
+<script src="nav-menu.js"></script>
+<script>
+/* ============================================================================
+   Mock data Part 1 — identical to module_mt_executive_summary.html's shared
+   block (same seed, same order). Keep the two in sync; see the comment there.
+   Kept byte-for-byte even though this file doesn't display every value it
+   produces (mtARSeries/mtPartnersSeries/ttCNRate/ecomCancelRate) — dropping
+   any of it would shift every later rand() draw in this file to a different
+   sequence position, silently changing the Category Share numbers below.
+   ============================================================================ */
+const rand = mulberry32(20260630);
+const MONTHS_TOTAL = 36;
+const TODAY = 29;
+const monthNames = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const monthLabels = [];
+for(let i=0;i<MONTHS_TOTAL;i++){ const year = 2024 + Math.floor(i/12); monthLabels.push(monthNames[i%12] + ' ' + String(year).slice(2)); }
+
+function genSeries(base, growthPerMonth, targetBoostFn){
+  const actual = [], target = [];
+  let level = base;
+  for(let i=0;i<MONTHS_TOTAL;i++){
+    const moy = i % 12;
+    let seasonal = 1;
+    if([9,10,11].includes(moy)) seasonal = 1.13;
+    if(moy === 1) seasonal = 0.9;
+    if(moy === 6 || moy === 7) seasonal = 0.96;
+    const noiseA = 0.94 + rand()*0.12;
+    const noiseT = 0.97 + rand()*0.05;
+    actual.push(Math.round(level * seasonal * noiseA));
+    target.push(Math.round(level * seasonal * noiseT * (targetBoostFn ? targetBoostFn(i) : 1)));
+    level = level * (1 + growthPerMonth);
+  }
+  return {actual, target};
+}
+const channelDefs = [
+  {key:'MT', label:'Modern Trade (MT)', color:'#8E1E4D', base:8200000, growth:0.0090, group:'MT', targetBoostFn: i=>i>=24?1.25:1},
+  {key:'TT', label:'Traditional Trade (TT)', color:'#3B7A7A', base:8600000, growth:0.0060, group:'TT'},
+  {key:'Lazada', label:'Lazada', color:'#C99A5C', base:1800000, growth:0.0175, group:'Ecom'},
+  {key:'Shopee', label:'Shopee', color:'#A87C3F', base:1550000, growth:0.0165, group:'Ecom'},
+  {key:'TikTok', label:'TikTok', color:'#7A5A2E', base:850000, growth:0.0270, group:'Ecom'},
+  {key:'LineShop', label:'Line Shop', color:'#4C8C5C', base:400000, growth:0.0120, group:'Ecom'}
+];
+channelDefs.forEach(c => { const s = genSeries(c.base, c.growth, c.targetBoostFn); c.actual = s.actual; c.target = s.target; });
+const groupKeys = ['MT','TT','Ecom'];
+function groupSeries(groupKey, field){
+  const arr = new Array(MONTHS_TOTAL).fill(0);
+  channelDefs.filter(c=>c.group===groupKey).forEach(c=>{ for(let i=0;i<MONTHS_TOTAL;i++) arr[i]+=c[field][i]; });
+  return arr;
+}
+const groupActual = {}, groupTarget = {};
+groupKeys.forEach(g => { groupActual[g]=groupSeries(g,'actual'); groupTarget[g]=groupSeries(g,'target'); });
+const mtCNRate = []; const ttCNRate = []; const ecomCancelRate = [];
+for(let i=0;i<MONTHS_TOTAL;i++){
+  mtCNRate.push(0.028 + rand()*0.014);
+  ttCNRate.push(0.034 + rand()*0.016);
+  ecomCancelRate.push(0.065 + rand()*0.02);
+}
+const mtARSeries = [];
+{ let level = 86; for(let i=0;i<MONTHS_TOTAL;i++){ level += (rand()-0.5)*1.2; level = Math.max(78, Math.min(94, level)); mtARSeries.push(level); } }
+const mtPartnersSeries = [];
+{ let level = 34; for(let i=0;i<MONTHS_TOTAL;i++){ level += rand()*0.35; mtPartnersSeries.push(Math.round(level)); } }
+
+/* -------------------- Part 2: Product-only mock data -------------------- */
+const PARTNER_IDS = ['WATSONS','EVEANDBOY',"Lotus's",'7-Eleven','KONVY','CJ Express','Beautrium','Tsuruha','Multy'];
+/* groupPct is the same per-partner net-sales share as Partner tab's own
+   `partners` array (same 9 Key Accounts, same shares as Executive
+   Summary's keyAccounts) — needed here only to weight the sequence
+   placeholder below, not displayed on this page. */
+const PARTNER_GROUP_PCT = { WATSONS:22, EVEANDBOY:18, "Lotus's":16, '7-Eleven':14, KONVY:10, 'CJ Express':8, Beautrium:6, Tsuruha:4, Multy:2 };
+
+const mtCategoryShares = [
+  {name:'Skin Care', pct:31.9, growth:9.2}, {name:'Personal Care', pct:23.2, growth:13.6}, {name:'Hair Care', pct:16.8, growth:4.1},
+  {name:'Color Cosmetics', pct:15.4, growth:6.8}, {name:'Accessories', pct:6.5, growth:-2.9}, {name:'Fragrance', pct:6.2, growth:18.3}
+];
+
+const CATEGORY_TREE = {
+  'Skin Care': { pct:28.7, growthYoY:12.4, returnRate:3.4, channelMix:{MT:.35,TT:.40,Ecom:.25}, subs:{
+    'Facial Care': { pct:60, types:{
+      'Cleanser': { pct:55, series:{'Foam Cleanser':60,'Micellar Water':40} },
+      'Moisturizer': { pct:45, series:{'Day Cream':55,'Night Cream':45} }
+    }},
+    'Body Care': { pct:40, types:{
+      'Lotion': { pct:60, series:{'Body Lotion':65,'Hand Cream':35} },
+      'Sunscreen': { pct:40, series:{'SPF30':50,'SPF50':50} }
+    }}
+  }},
+  'Color Cosmetics': { pct:19.5, growthYoY:8.1, returnRate:5.6, channelMix:{MT:.25,TT:.30,Ecom:.45}, subs:{
+    'Face Makeup': { pct:55, types:{
+      'Foundation': { pct:60, series:{'Liquid Foundation':70,'Cushion':30} },
+      'Powder': { pct:40, series:{'Loose Powder':50,'Pressed Powder':50} }
+    }},
+    'Eye & Lip': { pct:45, types:{
+      'Lipstick': { pct:55, series:{'Matte':60,'Glossy':40} },
+      'Eyeliner': { pct:45, series:{'Pencil':50,'Liquid':50} }
+    }}
+  }},
+  'Hair Care': { pct:17.6, growthYoY:2.3, returnRate:2.8, channelMix:{MT:.30,TT:.55,Ecom:.15}, subs:{
+    'Cleansing': { pct:65, types:{
+      'Shampoo': { pct:60, series:{'Anti-Dandruff':55,'Everyday':45} },
+      'Conditioner': { pct:40, series:{'Deep Repair':50,'Daily':50} }
+    }},
+    'Styling': { pct:35, types:{
+      'Serum': { pct:55, series:{'Anti-Frizz':60,'Heat Protect':40} },
+      'Spray': { pct:45, series:{'Hold Spray':50,'Shine Spray':50} }
+    }}
+  }},
+  'Personal Care': { pct:16.3, growthYoY:-1.5, returnRate:4.2, channelMix:{MT:.45,TT:.40,Ecom:.15}, subs:{
+    'Oral Care': { pct:55, types:{
+      'Toothpaste': { pct:60, series:{'Whitening':55,'Sensitive':45} },
+      'Mouthwash': { pct:40, series:{'Fresh Mint':50,'Alcohol-Free':50} }
+    }},
+    'Bath': { pct:45, types:{
+      'Soap': { pct:50, series:{'Bar Soap':55,'Liquid Soap':45} },
+      'Shower Gel': { pct:50, series:{'Moisturizing':55,'Refreshing':45} }
+    }}
+  }},
+  'Fragrance': { pct:9.8, growthYoY:22.6, returnRate:6.5, channelMix:{MT:.20,TT:.20,Ecom:.60}, subs:{
+    'Personal Fragrance': { pct:70, types:{
+      'Eau de Toilette': { pct:60, series:{'Floral':55,'Woody':45} },
+      'Body Mist': { pct:40, series:{'Citrus':50,'Fruity':50} }
+    }},
+    'Home Fragrance': { pct:30, types:{
+      'Diffuser': { pct:60, series:{'Reed Diffuser':55,'Electric Diffuser':45} },
+      'Spray': { pct:40, series:{'Room Spray':50,'Linen Spray':50} }
+    }}
+  }},
+  'Accessories': { pct:8.1, growthYoY:-4.2, returnRate:7.8, channelMix:{MT:.25,TT:.25,Ecom:.50}, subs:{
+    'Application Tools': { pct:55, types:{
+      'Brush': { pct:60, series:{'Foundation Brush':55,'Powder Brush':45} },
+      'Sponge': { pct:40, series:{'Beauty Sponge':60,'Puff':40} }
+    }},
+    'Storage': { pct:45, types:{
+      'Pouch': { pct:55, series:{'Travel Pouch':55,'Everyday Pouch':45} },
+      'Organizer': { pct:45, series:{'Drawer Organizer':50,'Vanity Tray':50} }
+    }}
+  }}
+};
+const LEVEL_NAMES = ['Category','Sub-Category','Type','Series'];
+const LEVEL_NAMES_PLURAL = ['Categories','Sub-Categories','Types','Series'];
+let currentCatLevel = 0;
+
+function enumerateMTCatLevel(depth){
+  const results = [];
+  mtCategoryShares.forEach(cat=>{
+    if(depth===0){ results.push({name:cat.name, pct:cat.pct, parent:null, rootCategory:cat.name}); return; }
+    const tree = CATEGORY_TREE[cat.name];
+    if(!tree){ return; }
+    Object.entries(tree.subs).forEach(([subName,sub])=>{
+      const subPct = cat.pct * sub.pct/100;
+      if(depth===1){ results.push({name:subName, pct:subPct, parent:cat.name, rootCategory:cat.name}); return; }
+      Object.entries(sub.types).forEach(([typeName,type])=>{
+        const typePct = subPct * type.pct/100;
+        if(depth===2){ results.push({name:typeName, pct:typePct, parent:subName, rootCategory:cat.name}); return; }
+        Object.entries(type.series).forEach(([seriesName,seriesPct])=>{
+          const seriesAbsPct = typePct * seriesPct/100;
+          if(depth===3){ results.push({name:seriesName, pct:seriesAbsPct, parent:typeName, rootCategory:cat.name}); }
+        });
+      });
+    });
+  });
+  return results.sort((a,b)=>b.pct-a.pct);
+}
+
+/* Each Key Account's category mix deviates from the company-wide MT mix
+   above by a fixed per-account skew (hardcode, not rand()-generated, so it
+   stays stable across re-renders/filters). Renormalized per account so
+   each row still sums to 100%. */
+const partnerCategorySkew = {
+  'WATSONS':      { 'Skin Care':1.15, 'Personal Care':1.10, 'Hair Care':0.95, 'Color Cosmetics':0.85, 'Accessories':0.90, 'Fragrance':0.90 },
+  'EVEANDBOY':    { 'Skin Care':1.05, 'Personal Care':0.75, 'Hair Care':0.80, 'Color Cosmetics':1.55, 'Accessories':1.10, 'Fragrance':1.20 },
+  "Lotus's":      { 'Skin Care':0.90, 'Personal Care':1.25, 'Hair Care':1.20, 'Color Cosmetics':0.70, 'Accessories':0.85, 'Fragrance':0.60 },
+  '7-Eleven':     { 'Skin Care':0.70, 'Personal Care':1.35, 'Hair Care':1.05, 'Color Cosmetics':0.55, 'Accessories':1.40, 'Fragrance':0.50 },
+  'KONVY':        { 'Skin Care':1.10, 'Personal Care':0.70, 'Hair Care':0.75, 'Color Cosmetics':1.70, 'Accessories':1.00, 'Fragrance':1.30 },
+  'CJ Express':   { 'Skin Care':0.85, 'Personal Care':1.30, 'Hair Care':1.10, 'Color Cosmetics':0.65, 'Accessories':1.20, 'Fragrance':0.55 },
+  'Beautrium':    { 'Skin Care':1.20, 'Personal Care':0.70, 'Hair Care':0.70, 'Color Cosmetics':1.40, 'Accessories':1.05, 'Fragrance':1.35 },
+  'Tsuruha':      { 'Skin Care':1.25, 'Personal Care':1.05, 'Hair Care':1.00, 'Color Cosmetics':0.75, 'Accessories':0.80, 'Fragrance':0.65 },
+  'Multy':        { 'Skin Care':0.95, 'Personal Care':1.15, 'Hair Care':1.15, 'Color Cosmetics':0.70, 'Accessories':1.10, 'Fragrance':0.55 }
+};
+function enumeratePartnerCatLevel(partnerId, depth){
+  const base = enumerateMTCatLevel(depth);
+  const skew = partnerCategorySkew[partnerId] || {};
+  const weighted = base.map(n => ({ ...n, pct: n.pct * (skew[n.rootCategory] || 1) }));
+  const sum = weighted.reduce((a,n)=>a+n.pct,0) || 1;
+  return weighted.map(n => ({ ...n, pct: n.pct/sum*100 })).sort((a,b)=>b.pct-a.pct);
+}
+
+function resolveColor(cssColorOrVar){
+  const m = /var\((--[a-z0-9-]+)\)/i.exec(cssColorOrVar);
+  return m ? (cssVar(m[1]) || '#999') : cssColorOrVar;
+}
+function hexToRgb(hex){
+  hex = hex.replace('#','');
+  if(hex.length===3) hex = hex.split('').map(c=>c+c).join('');
+  const num = parseInt(hex,16);
+  return [(num>>16)&255, (num>>8)&255, num&255];
+}
+
+function getPeriodRange(key, custom){
+  switch(key){
+    case 'thisMonth': return [TODAY, TODAY];
+    case 'lastMonth': return [TODAY-1, TODAY-1];
+    case 'thisQuarter': return [TODAY-2, TODAY];
+    case 'lastQuarter': return [TODAY-5, TODAY-3];
+    case 'trailing12': return [TODAY-11, TODAY];
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return [cys-12, cys-1]; }
+    case 'custom': return custom;
+    case 'ytd': default: return [24, TODAY];
+  }
+}
+function periodLabelText(key, custom){
+  switch(key){
+    case 'thisMonth': return 'Jun 2026';
+    case 'lastMonth': return 'May 2026';
+    case 'thisQuarter': return 'Q2 2026';
+    case 'lastQuarter': return 'Q1 2026';
+    case 'trailing12': return 'Trailing 12 Months';
+    case 'lastYear': { const cys = Math.floor(TODAY/12)*12; return 'Last Year ('+(2024+(cys-12)/12)+')'; }
+    case 'custom': return monthLabels[custom[0]] + ' – ' + monthLabels[custom[1]];
+    case 'ytd': default: return 'Year to Date';
+  }
+}
+
+/* ---------- Nav menu / popovers ---------- */
+if (typeof renderNavMenu === 'function') {
+  try { renderNavMenu('mt-product', 'MT Overview · Product'); } catch(e) { console.error('Nav menu render failed:', e); }
+}
+initInfoPopovers();
+
+/* ---------- Menu bar collapse (same mechanism as sales_overview.html). ---------- */
+(function initMenubarCollapse(){
+  const wrap = document.getElementById('pageHeaderSticky');
+  const btn = document.getElementById('menubarCollapseBtn');
+  if(!wrap || !btn) return;
+  const STORAGE_KEY = 'charmiss_menubar_collapsed';
+  function updateScrollPadding(){
+    requestAnimationFrame(()=>{
+      document.documentElement.style.scrollPaddingTop = (wrap.getBoundingClientRect().height + 12) + 'px';
+    });
+  }
+  function setCollapsed(collapsed){
+    wrap.classList.toggle('menubar-collapsed', collapsed);
+    btn.setAttribute('aria-expanded', String(!collapsed));
+    btn.title = collapsed ? 'ขยาย Menu Bar' : 'พับ Menu Bar';
+    try{ localStorage.setItem(STORAGE_KEY, collapsed ? '1' : '0'); }catch(e){}
+    updateScrollPadding();
+  }
+  let initial = false;
+  try{ initial = localStorage.getItem(STORAGE_KEY) === '1'; }catch(e){}
+  setCollapsed(initial);
+  btn.addEventListener('click', ()=> setCollapsed(!wrap.classList.contains('menubar-collapsed')));
+  window.addEventListener('resize', updateScrollPadding);
+})();
+initSectionScrollSpy();
+
+/* ---------- Custom range selects ---------- */
+const customFromSel = document.getElementById('customFrom');
+const customToSel = document.getElementById('customTo');
+for(let i=0;i<=TODAY;i++){
+  const optF = document.createElement('option'); optF.value=i; optF.textContent=monthLabels[i]; customFromSel.appendChild(optF);
+  const optT = document.createElement('option'); optT.value=i; optT.textContent=monthLabels[i]; customToSel.appendChild(optT);
+}
+customFromSel.value = 24; customToSel.value = TODAY;
+
+/* ---------- Period dropdown ---------- */
+const periodBtn = document.getElementById('periodBtn');
+const periodDropdown = document.getElementById('periodDropdown');
+const periodBtnLabel = document.getElementById('periodBtnLabel');
+let currentPeriodKey = 'ytd';
+let currentCustom = [24, TODAY];
+periodBtn.addEventListener('click', (e)=>{ e.stopPropagation(); periodDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!periodDropdown.contains(e.target) && e.target!==periodBtn) periodDropdown.classList.remove('open'); });
+document.querySelectorAll('.period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentPeriodKey = opt.dataset.key;
+    periodBtnLabel.textContent = periodLabelText(currentPeriodKey);
+    periodDropdown.classList.remove('open');
+    renderAll();
+  });
+});
+document.getElementById('applyCustom').addEventListener('click', ()=>{
+  let f = parseInt(customFromSel.value,10), t = parseInt(customToSel.value,10);
+  if(f>t){ const tmp=f; f=t; t=tmp; }
+  currentCustom = [f,t];
+  currentPeriodKey = 'custom';
+  document.querySelectorAll('.period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+  periodBtnLabel.textContent = periodLabelText('custom', currentCustom);
+  periodDropdown.classList.remove('open');
+  renderAll();
+});
+
+/* ---------- Time Frame (Monthly/Quarterly) toggle ---------- */
+let currentTimeFrame = 'monthly';
+function positionTimeFrameThumb(){
+  const toggle = document.getElementById('timeFrameToggle');
+  const thumb = document.getElementById('timeFrameThumb');
+  const selected = toggle.querySelector('.timeframe-opt.selected');
+  thumb.style.width = selected.offsetWidth + 'px';
+  thumb.style.transform = 'translateX(' + (selected.offsetLeft - 2) + 'px)';
+}
+document.getElementById('timeFrameToggle').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.timeframe-opt');
+  if(!btn || btn.classList.contains('selected')) return;
+  document.querySelectorAll('.timeframe-opt').forEach(o=>o.classList.remove('selected'));
+  btn.classList.add('selected');
+  positionTimeFrameThumb();
+  currentTimeFrame = btn.dataset.key;
+  renderAll();
+});
+positionTimeFrameThumb();
+function bucketMonths(idx, timeFrame){
+  if(timeFrame!=='quarterly') return idx.map(i=>[i]);
+  const groups = []; let curQ = null;
+  idx.forEach(i=>{
+    const q = Math.floor(i/3);
+    if(q!==curQ){ curQ=q; groups.push([]); }
+    groups[groups.length-1].push(i);
+  });
+  return groups;
+}
+function bucketSum(arr, groups){ return groups.map(g=> g.reduce((s,i)=>s+arr[i],0)); }
+function quarterLabel(group){ return 'Q'+((Math.floor(group[0]/3)%4)+1); }
+
+/* ---------- Product Level dropdown (2026-08-14, feedback — replaces the
+   Category filter-select and the in-card Category/Sub-Category/Type/Series
+   toggle-group, both retired). Single-select, same .period-opt pattern as
+   Period above. ---------- */
+const levelBtn = document.getElementById('levelBtn');
+const levelDropdown = document.getElementById('levelDropdown');
+const levelBtnLabel = document.getElementById('levelBtnLabel');
+levelBtn.addEventListener('click', (e)=>{ e.stopPropagation(); levelDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!levelDropdown.contains(e.target) && e.target!==levelBtn) levelDropdown.classList.remove('open'); });
+document.querySelectorAll('#levelDropdown .period-opt').forEach(opt=>{
+  opt.addEventListener('click', ()=>{
+    document.querySelectorAll('#levelDropdown .period-opt').forEach(o=>{ o.classList.remove('selected'); o.querySelector('.chk').textContent=''; });
+    opt.classList.add('selected'); opt.querySelector('.chk').textContent = '✓';
+    currentCatLevel = parseInt(opt.dataset.level,10);
+    levelBtnLabel.textContent = LEVEL_NAMES[currentCatLevel];
+    levelDropdown.classList.remove('open');
+    document.getElementById('catTableWrap').classList.remove('visible');
+    document.getElementById('catBars').style.display='';
+    populateFocusDropdown();
+    renderCategoryAndCrossTab();
+  });
+});
+
+/* ---------- Filter dropdown (2026-08-14, feedback) — multi-select checkbox
+   list, same pattern as sales_overview_product_analysis.html's own "Filter"
+   dropdown. Options are the nodes at the currently selected Product Level;
+   repopulated every time Product Level changes (see levelDropdown's click
+   handler above). Empty set = "All" (no restriction, existing Top-N caps
+   apply); a non-empty set restricts every level-aware widget below to just
+   the chosen nodes and skips those Top-N caps (truncating the user's own
+   hand-picked selection would silently hide items they explicitly chose to
+   see). ---------- */
+const focusBtn = document.getElementById('focusBtn');
+const focusDropdown = document.getElementById('focusDropdown');
+const focusBtnLabel = document.getElementById('focusBtnLabel');
+focusBtn.addEventListener('click', (e)=>{ e.stopPropagation(); focusDropdown.classList.toggle('open'); });
+document.addEventListener('click', (e)=>{ if(!focusDropdown.contains(e.target) && e.target!==focusBtn) focusDropdown.classList.remove('open'); });
+let currentFocusSet = new Set();
+function populateFocusDropdown(){
+  const nodes = enumerateMTCatLevel(currentCatLevel);
+  currentFocusSet = new Set();
+
+  function renderCheckList(query){
+    const q = (query||'').trim().toLowerCase();
+    const visible = q ? nodes.filter(n=> n.name.toLowerCase().includes(q) || (n.parent&&n.parent.toLowerCase().includes(q))) : nodes;
+    if(!visible.length) return '<div class="filter-check-empty">No matches</div>';
+    return visible.map(n=>
+      '<label class="filter-check-opt"><input type="checkbox" data-focus-check="'+n.name+'"'+(currentFocusSet.has(n.name)?' checked':'')+'>'
+      + '<span>'+n.name+(n.parent?' <span class="sub-label" style="display:inline;">('+n.parent+')</span>':'')+'</span></label>'
+    ).join('');
+  }
+  function updateFocusUI(){
+    const allOpt = document.getElementById('focusAllOpt');
+    if(currentFocusSet.size===0){
+      allOpt.classList.add('selected'); allOpt.querySelector('.chk').textContent = '✓';
+      focusBtnLabel.textContent = 'All ' + LEVEL_NAMES_PLURAL[currentCatLevel];
+    } else {
+      allOpt.classList.remove('selected'); allOpt.querySelector('.chk').textContent = '';
+      focusBtnLabel.textContent = currentFocusSet.size===1 ? [...currentFocusSet][0] : currentFocusSet.size + ' selected';
+    }
+    const clearBtn = document.getElementById('focusClearBtn');
+    if(clearBtn) clearBtn.style.display = currentFocusSet.size ? 'block' : 'none';
+  }
+  function wireCheckboxes(){
+    document.querySelectorAll('#focusCheckList input[type="checkbox"]').forEach(cb=>{
+      cb.addEventListener('change', ()=>{
+        if(cb.checked) currentFocusSet.add(cb.dataset.focusCheck); else currentFocusSet.delete(cb.dataset.focusCheck);
+        updateFocusUI();
+        renderCategoryAndCrossTab();
+      });
+    });
+  }
+
+  focusDropdown.innerHTML =
+    '<div class="filter-search-wrap"><input type="text" class="filter-search-input" id="focusSearchInput" placeholder="Search '+LEVEL_NAMES_PLURAL[currentCatLevel].toLowerCase()+'…"></div>'
+    + '<div class="period-opt selected" id="focusAllOpt"><span class="chk">✓</span>All '+LEVEL_NAMES_PLURAL[currentCatLevel]+'</div>'
+    + '<div class="period-divider"></div>'
+    + '<div class="filter-check-list" id="focusCheckList">' + renderCheckList('') + '</div>'
+    + '<button type="button" class="filter-clear-btn" id="focusClearBtn" style="display:none;">Clear all</button>';
+  focusBtnLabel.textContent = 'All ' + LEVEL_NAMES_PLURAL[currentCatLevel];
+
+  document.getElementById('focusSearchInput').addEventListener('input', (e)=>{
+    document.getElementById('focusCheckList').innerHTML = renderCheckList(e.target.value);
+    wireCheckboxes();
+  });
+  document.getElementById('focusAllOpt').addEventListener('click', ()=>{
+    currentFocusSet.clear();
+    document.getElementById('focusSearchInput').value = '';
+    document.getElementById('focusCheckList').innerHTML = renderCheckList('');
+    wireCheckboxes();
+    updateFocusUI();
+    renderCategoryAndCrossTab();
+  });
+  document.getElementById('focusClearBtn').addEventListener('click', ()=>{
+    currentFocusSet.clear();
+    document.querySelectorAll('#focusCheckList input[type="checkbox"]').forEach(cb=> cb.checked=false);
+    updateFocusUI();
+    renderCategoryAndCrossTab();
+  });
+  wireCheckboxes();
+}
+function applyFocusFilter(nodes){
+  return currentFocusSet.size ? nodes.filter(n=>currentFocusSet.has(n.name)) : nodes;
+}
+
+/* ---------- Render ---------- */
+let latestData = {};
+
+function renderCategoryAndCrossTab(){
+  const totalPeriod = latestData.mtTotalPeriod || 0;
+  const allNodes = applyFocusFilter(enumerateMTCatLevel(currentCatLevel));
+  const isFiltering = currentFocusSet.size > 0;
+  const items = isFiltering ? allNodes : allNodes.slice(0,10);
+  const maxCatShare = Math.max(...items.map(c=>c.pct)) || 1;
+  document.getElementById('catBars').innerHTML = items.map(c=>{
+    const val = totalPeriod*c.pct/100;
+    const widthPct = (c.pct/maxCatShare*100).toFixed(1);
+    const subLabel = c.parent ? '<span class="sub-label">'+c.parent+'</span>' : '';
+    return '<div class="cat-row"><span class="cat-label">'+c.name+subLabel+'</span>'
+      + '<div class="cat-track"><div class="cat-fill" style="width:'+widthPct+'%"><span class="cat-fill-label">'+fmtTHB(val)+' · '+c.pct.toFixed(1)+'%</span></div></div></div>';
+  }).join('');
+  latestData.catShares = items.map(c=>({name:c.name, value: totalPeriod*c.pct/100, pct:c.pct}));
+  document.getElementById('catMoreCaption').textContent = (!isFiltering && allNodes.length>10)
+    ? 'Top 10 of '+allNodes.length+' '+LEVEL_NAMES_PLURAL[currentCatLevel].toLowerCase()+' shown'
+    : '';
+
+  /* --- Partner × Category cross-tab: capped to Top 8 nodes (by
+     company-wide sales) as columns so the table stays a manageable width
+     even at Series level (48 nodes total) — skipped while a Filter
+     selection is active, same "don't truncate the user's own pick"
+     convention as Sales by Category above. --- */
+  const topNodes = isFiltering ? allNodes : allNodes.slice(0,8);
+  const rgbBrand = hexToRgb(resolveColor('var(--brand)'));
+  const partnerRows = PARTNER_IDS.map(id=>{
+    const partnerNodes = enumeratePartnerCatLevel(id, currentCatLevel);
+    const byName = {}; partnerNodes.forEach(n=>{ byName[n.name]=n.pct; });
+    return { id, cells: topNodes.map(tn => byName[tn.name] || 0) };
+  });
+  const maxCellPct = Math.max(...partnerRows.flatMap(r=>r.cells)) || 1;
+  let crossHtml = '<thead><tr><th>Partner</th>' + topNodes.map(n=>'<th>'+n.name+(n.parent?'<span class="sub-label" style="display:block;">'+n.parent+'</span>':'')+'</th>').join('') + '</tr></thead><tbody>';
+  partnerRows.forEach(row=>{
+    crossHtml += '<tr><td>'+row.id+'</td>' + row.cells.map(v=>{
+      const intensity = v/maxCellPct;
+      const bg = 'rgba('+rgbBrand[0]+','+rgbBrand[1]+','+rgbBrand[2]+','+(0.10+intensity*0.55).toFixed(2)+')';
+      return '<td><div class="heatmap-cell" style="background:'+bg+';">'+v.toFixed(1)+'%</div></td>';
+    }).join('') + '</tr>';
+  });
+  crossHtml += '</tbody>';
+  document.getElementById('crossTabTable').innerHTML = crossHtml;
+  latestData.crossTab = { nodes: topNodes.map(n=>n.name), rows: partnerRows };
+
+  /* --- Category Share of Sales Over Time — always capped to Top 6 nodes
+     regardless of Filter selection (unlike Sales by Category/Partner ×
+     Category above): this is a fixed palette/density limit (var(--cat-1)
+     through var(--cat-6)), not a "don't truncate the user's pick"
+     truncation, so it stays even while filtering. --- */
+  const shareNodes = allNodes.slice(0,6);
+  const shareIdx = []; for(let i=TODAY-17;i<=TODAY;i++) shareIdx.push(i);
+  // Sequence placeholder (2026-08-14) — in the original combined Breakdown
+  // page, this chart's rand() draws always came right after Partner Share
+  // of Sales Over Time's own 9-partner x 18-month jitter loop (same
+  // renderAll() pass). That widget now lives on the Partner tab instead,
+  // but this file's OWN rand() sequence still needs to "use up" the same
+  // 162 draws first, in the same nested order, or every number below would
+  // silently draw from a different position in the sequence than the
+  // figures currently on screen. Thrown away on purpose — never rendered.
+  PARTNER_IDS.forEach(id=>{
+    for(let i=TODAY-17;i<=TODAY;i++){ const jitter = 1 + (rand()-0.5)*0.1; void jitter; }
+  });
+  const shareGroups = bucketMonths(shareIdx, currentTimeFrame);
+  const shareLabels = currentTimeFrame==='quarterly' ? shareGroups.map(quarterLabel) : shareIdx.map(i=>monthLabels[i]);
+  const shareSeries = shareNodes.map((c,i)=>{
+    const raw = new Array(MONTHS_TOTAL).fill(0);
+    shareIdx.forEach(idx=>{
+      const jitter = 1 + (rand()-0.5)*0.1;
+      raw[idx] = c.pct/100 * groupActual.MT[idx] * jitter;
+    });
+    return { name:c.name, color: resolveColor('var(--cat-'+(i+1)+')'), values: bucketSum(raw, shareGroups) };
+  });
+  buildStreamAreaSVG('shareChart', { labels: shareLabels, series: shareSeries, valueFormatter: fmtTHB });
+  document.getElementById('shareLegend').innerHTML = shareNodes.map((c,i)=>
+    '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:'+resolveColor('var(--cat-'+(i+1)+')')+'"></span>'+c.name+'</span>'
+  ).join('');
+  latestData.share = { labels: shareLabels, series: shareSeries };
+
+  const shareFirstTotal = shareSeries.reduce((a,s)=>a+s.values[0],0);
+  const shareLastTotal = shareSeries.reduce((a,s)=>a+s.values[s.values.length-1],0);
+  const shareCalloutParts = shareSeries.map(s=>{
+    const firstPct = shareFirstTotal ? s.values[0]/shareFirstTotal*100 : 0;
+    const lastPct = shareLastTotal ? s.values[s.values.length-1]/shareLastTotal*100 : 0;
+    const delta = lastPct-firstPct;
+    return '<b>'+s.name+'</b>: '+firstPct.toFixed(0)+'% → '+lastPct.toFixed(0)+'% <span class="'+deltaClass(delta)+'">('+(delta>=0?'+':'')+delta.toFixed(0)+'pp)</span>';
+  });
+  document.getElementById('shareCallout').innerHTML = (allNodes.length>6 ? 'Top 6 of '+allNodes.length+' '+LEVEL_NAMES_PLURAL[currentCatLevel].toLowerCase()+' · ' : '') + 'Mix shift, '+shareLabels[0]+'→'+shareLabels[shareLabels.length-1]+' — ' + shareCalloutParts.join(' · ');
+}
+
+function renderAll(){
+  const [s,e] = getPeriodRange(currentPeriodKey, currentCustom);
+  const mtTotalPeriod = sumRange(groupActual.MT, s, e);
+  latestData.mtTotalPeriod = mtTotalPeriod;
+  renderCategoryAndCrossTab();
+
+  const matrixPoints = mtCategoryShares.map((c,i)=>({
+    x: mtTotalPeriod*c.pct/100, y: c.growth, label: c.name, color: resolveColor('var(--cat-'+(i+1)+')')
+  }));
+  buildScatterSVG('matrixChart', matrixPoints, {
+    xFormatter: fmtTHB, yFormatter: v=>fmtSignedPct(v),
+    xAxisTitle: 'Net Sales (฿)', yAxisTitle: 'Growth YoY (%)',
+    quadrantLabels: { topRight:'Stars', topLeft:'Question Marks', bottomRight:'Cash Cows', bottomLeft:'Dogs' }
+  });
+  latestData.matrix = matrixPoints;
+}
+
+/* --- Toolbar --- */
+document.getElementById('catDownloadBtn').addEventListener('click', ()=>{
+  const rows = [[LEVEL_NAMES[currentCatLevel],'Share %','Value (THB)']];
+  latestData.catShares.forEach(c=> rows.push([c.name, c.pct.toFixed(1), Math.round(c.value)]));
+  downloadCSV(rows, 'mt_sales_by_category_'+LEVEL_NAMES[currentCatLevel].toLowerCase().replace(/[^a-z]+/g,'_')+'.csv');
+});
+document.getElementById('catExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('catTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('catTableWrap');
+  const bars = document.getElementById('catBars');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); bars.style.display=''; return; }
+  let html = '<table class="mini-table"><thead><tr><th>'+LEVEL_NAMES[currentCatLevel]+'</th><th>Net Sales</th><th>Share %</th></tr></thead><tbody>';
+  latestData.catShares.forEach(c=>{ html += '<tr><td>'+c.name+'</td><td>'+fmtTHB(c.value)+'</td><td>'+c.pct.toFixed(1)+'%</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); bars.style.display='none';
+});
+document.getElementById('crossTabDownloadBtn').addEventListener('click', ()=>{
+  const rows = [['Partner', ...latestData.crossTab.nodes]];
+  latestData.crossTab.rows.forEach(r=> rows.push([r.id, ...r.cells.map(v=>v.toFixed(1))]));
+  downloadCSV(rows, 'mt_partner_x_category_'+LEVEL_NAMES[currentCatLevel].toLowerCase().replace(/[^a-z]+/g,'_')+'.csv');
+});
+document.getElementById('crossTabExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+
+document.getElementById('matrixDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('matrixChart', 'mt_category_portfolio_matrix.svg'));
+document.getElementById('matrixExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('matrixTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('matrixTableWrap');
+  const canvasWrap = document.getElementById('matrixCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.matrix;
+  let html = '<table class="mini-table"><thead><tr><th>Category</th><th>Sales</th><th>Growth YoY</th></tr></thead><tbody>';
+  d.forEach(p=>{ html += '<tr><td>'+p.label+'</td><td>'+fmtTHB(p.x)+'</td><td>'+fmtSignedPct(p.y)+'</td></tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+document.getElementById('shareDownloadBtn').addEventListener('click', ()=> downloadSVGFromContainer('shareChart','mt_category_share_over_time.svg'));
+document.getElementById('shareExpandBtn').addEventListener('click', (e)=> toggleFullscreen(e.currentTarget.closest('.card')));
+document.getElementById('shareTableBtn').addEventListener('click', ()=>{
+  const wrap = document.getElementById('shareTableWrap');
+  const canvasWrap = document.getElementById('shareCanvasWrap');
+  const showing = wrap.classList.contains('visible');
+  if(showing){ wrap.classList.remove('visible'); canvasWrap.classList.remove('hidden'); return; }
+  const d = latestData.share;
+  let html = '<table class="mini-table"><thead><tr><th>Month</th>' + d.series.map(s=>'<th>'+s.name+'</th>').join('') + '</tr></thead><tbody>';
+  d.labels.forEach((lb,i)=>{ html += '<tr><td>'+lb+'</td>' + d.series.map(s=>'<td>'+fmtTHB(s.values[i])+'</td>').join('') + '</tr>'; });
+  html += '</tbody></table>';
+  wrap.innerHTML = html; wrap.classList.add('visible'); canvasWrap.classList.add('hidden');
+});
+
+/* ---------- Init ---------- */
+populateFocusDropdown();
+renderAll();
+</script>
+</body>
+</html>

@@ -5,8 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Charmiss — TT Overview · Sales Person</title>
 <script>(function(){try{if(localStorage.getItem('charmiss-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();</script>
-<link rel="stylesheet" href="tt-shared.css">
+<link rel="stylesheet" href="tt-shared.css?v=20260814h">
 <link rel="stylesheet" href="nav-menu.css">
+<style>
+/* My Priority Actions: bump renderHBarChart's row label/value text and the 3 cards' own titles to
+   match the rest of this page's widgets (page-local override — chart defaults live in
+   tt-shared.js and stay untouched). Round 2 direct feedback: bumped again, another step up from
+   the first pass, to read clearly at a glance next to the page's main charts. */
+#attentionList text, #collectionsList text, #inactiveList text{ font-size:15px; }
+#attentionList text.tick-label, #collectionsList text.tick-label, #inactiveList text.tick-label{ font-size:13px; }
+.priority-card-title{ font-size:15px; }
+/* Top & Bottom Performing Stores (rep-scoped "myStoresChart"): renderStores() always renders a
+   .store-col-title heading above the list — hidden here when there's a single combined list
+   (:only-child, i.e. this rep's store count didn't need the Top 5/Bottom 5 split), per direct
+   feedback to drop "Your Stores (N)" and go straight from the card title into the list. The
+   Top 5/Bottom 5 case (two .store-col siblings) keeps its own headings, since those distinguish
+   two lists that would otherwise look identical. */
+#myStoresChart .store-col:only-child .store-col-title{ display:none; }
+</style>
 </head>
 <body>
 <div class="shell">
@@ -21,7 +37,7 @@
         <div id="navMenuMount"></div>
         <nav class="header-topbar-tabs">
           <a class="page-tab tab-link" href="tt_executive_summary.html">Executive Summary</a>
-          <a class="page-tab tab-link" href="tt_breakdown.html">Breakdown</a>
+          <a class="page-tab tab-link" href="tt_customer.html">Shop</a>
           <a class="page-tab active tab-link" href="tt_sales_person.html">Sales Person</a>
         </nav>
       </div>
@@ -76,6 +92,128 @@
 
   <div id="pageSalesPerson" class="page-view">
 
+  <!-- ============ HIDDEN STUBS — render() also writes to these ids as part of Executive
+       Summary/Breakdown's own cards (Executive Summary and Breakdown are computed together by
+       design, see tt-shared.js's header comment). This page now also calls render() (2026-08-14)
+       so its own 2 relocated cards below (Sales Ranking, Sales by Category) populate — every
+       OTHER id render() touches still needs a valid target so it does not throw. Kept empty and
+       display:none; never shown. ============ -->
+  <div class="card" style="display:none;" aria-hidden="true">
+    <div id="activeStoresChart"></div>
+    <div id="activeStoresTable"></div>
+    <div id="activeStoresTopline"></div>
+    <div id="arAgingTableMount"></div>
+    <div id="arAgingTopline"></div>
+    <div id="categoryChart"></div>
+    <div id="categoryTable"></div>
+    <div id="categoryGrowthChart"></div>
+    <span id="categoryGrowthContext"></span>
+    <span id="categoryGrowthLevelLabel"></span>
+    <span id="categoryGrowthPeriodNote"></span>
+    <div id="categoryGrowthTable"></div>
+    <div id="customerCategoryHeatmapChart"></div>
+    <span id="customerCategoryHeatmapLevelLabel"></span>
+    <select id="customerCategoryHeatmapLevelSelect"><option value="1">1</option></select>
+    <div id="customerCategoryHeatmapSub"></div>
+    <div id="customerCategoryHeatmapTable"></div>
+    <div id="customerGroupChart"></div>
+    <div id="customerGroupTable"></div>
+    <!-- Monthly Sales by Shop Group moved to tt_customer.html (2026-08-14, Breakdown split
+         into Customer/Product) -- stubbed here so render()'s unconditional write to these ids
+         still has a valid target. -->
+    <div id="execMonthlyCustGroupChart"></div>
+    <div id="execMonthlyCustGroupTable"></div>
+    <!-- Shop Group Share of Sales Over Time lives only on tt_customer.html's Shop Mix pill
+         (2026-08-14) -- stubbed here for the same reason as the pair above. -->
+    <div id="shopGroupShareChart"></div>
+    <div id="shopGroupShareTable"></div>
+    <div id="shopGroupShareCallout"></div>
+    <span id="dateTriggerLabel"></span>
+    <div id="elevatedRiskChart"></div>
+    <div id="elevatedRiskTable"></div>
+    <div id="growthAxisInfoPop"></div>
+    <span id="growthAxisLabel"></span>
+    <div id="growthYoyChart"></div>
+    <div id="growthYoyTable"></div>
+    <div id="growthYoyTopline"></div>
+    <div id="kpiActiveStores"></div>
+    <span id="kpiActiveStoresMoM"></span>
+    <span id="kpiActiveStoresMoMCompare"></span>
+    <div id="kpiActiveStoresSpark"></div>
+    <span id="kpiActiveStoresYoY"></span>
+    <span id="kpiActiveStoresYoYCompare"></span>
+    <span id="kpiArMoM"></span>
+    <span id="kpiArMoMCompare"></span>
+    <div id="kpiArPct"></div>
+    <div id="kpiArSpark"></div>
+    <span id="kpiArYoY"></span>
+    <span id="kpiArYoYCompare"></span>
+    <span id="kpiMoM"></span>
+    <span id="kpiMoMCompare"></span>
+    <div id="kpiRetention"></div>
+    <span id="kpiRetentionMoM"></span>
+    <span id="kpiRetentionMoMCompare"></span>
+    <div id="kpiRetentionSpark"></div>
+    <span id="kpiRetentionYoY"></span>
+    <span id="kpiRetentionYoYCompare"></span>
+    <div id="kpiReturnAmountNote"></div>
+    <span id="kpiReturnMoM"></span>
+    <span id="kpiReturnMoMCompare"></span>
+    <div id="kpiReturnRateQuick"></div>
+    <div id="kpiReturnRateQuickSpark"></div>
+    <span id="kpiReturnYoY"></span>
+    <span id="kpiReturnYoYCompare"></span>
+    <div id="kpiRevenue"></div>
+    <div id="kpiRevenueSpark"></div>
+    <div id="kpiTarget"></div>
+    <span id="kpiTargetMoM"></span>
+    <span id="kpiTargetMoMCompare"></span>
+    <div id="kpiTargetSpark"></div>
+    <span id="kpiTargetYoY"></span>
+    <span id="kpiTargetYoYCompare"></span>
+    <span id="kpiYoY"></span>
+    <span id="kpiYoYCompare"></span>
+    <div id="productRankingChart"></div>
+    <span id="productRankingLevelLabel"></span>
+    <div id="productRankingSub"></div>
+    <div id="productRankingTable"></div>
+    <div id="provinceMapChart"></div>
+    <div id="provinceMapTable"></div>
+    <!-- Sales Ranking removed from this page (2026-08-14, direct feedback) -- Executive
+         Summary's own Sales Team pill already shows the same ranking. Stubbed here so
+         render()'s unconditional write to this id still has a valid target. -->
+    <div id="overviewRankingTable"></div>
+    <!-- "Sales by Category" (company-wide bar snapshot) removed from this page (2026-08-14,
+         direct feedback) -- duplicated "My Sales by Category" below, which already covers this
+         rep's own view of the same drill-down. Stubbed here so render()'s unconditional write to
+         these ids still has a valid target. -->
+    <div class="cat-bars" id="overviewCategoryChart"></div>
+    <div id="overviewCategoryTable"></div>
+    <div id="regionChart"></div>
+    <select id="regionFilter"><option value="1">1</option></select>
+    <select id="regionLevelSelect"><option value="1">1</option></select>
+    <div id="regionTable"></div>
+    <div id="repBulletChart"></div>
+    <div id="repBulletSub"></div>
+    <div id="repBulletTable"></div>
+    <div id="repCoverageChart"></div>
+    <div id="repCoverageTable"></div>
+    <div id="repCoverageTopline"></div>
+    <div id="riskAlertBanner"></div>
+    <div id="storeFlowChart"></div>
+    <div id="storeFlowPeriodNote"></div>
+    <div id="storeFlowTable"></div>
+    <div id="storeFlowTopline"></div>
+    <div id="storesChart"></div>
+    <div id="storesSub"></div>
+    <div id="storesTable"></div>
+    <div id="trendChart"></div>
+    <div id="trendTable"></div>
+    <div id="trendTopline"></div>
+    <div id="visitTrendChart"></div>
+    <div id="visitTrendTable"></div>
+  </div>
+
     <div class="grid">
       <!-- Round 31 direct feedback (Task 6): rebalanced from col-8/col-4 to col-6/col-6 now that
            This Month at a Glance carries 6 metrics (was 3) — paired 2-per-row below keeps it 3
@@ -88,7 +226,6 @@
                 <div class="info-pop">ยอดขายสุทธิของเดือนที่เลือก เทียบเป้าหมายที่จัดสรรให้ Sales Person คนนี้ (ตามสัดส่วนขนาดร้านค้าที่ดูแล ระบบเดียวกับ Target vs Actual (per rep) ใน Sales Breakdown) — แถบและตัวเลข % คือความคืบหน้าเทียบเป้าของเดือนนั้น ถ้าเกิน 100% แถบจะเต็มและตัวเลขขึ้นสีเขียว เส้นดำแนวตั้งบนแถบ = จำนวนวันที่ผ่านไปแล้วของเดือนนี้ (เทียบสัดส่วน) ใช้ดูว่าทำได้ทันเวลาหรือไม่</div>
               </span>
             </div>
-            <div class="card-sub" id="spHeroSub">—</div>
           </div>
         </div>
         <div class="hero-pct" id="spHeroPct">—</div>
@@ -185,12 +322,11 @@
       <div class="col-4 card">
         <div class="card-head">
           <div>
-            <div class="card-title">Stores Needing Attention
+            <div class="card-title priority-card-title">Stores Needing Attention
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ร้านค้าที่ดูแลซึ่งมีอัตราคืนสินค้า (CN) สูงผิดปกติ (เกิน 2% — เกณฑ์เดียวกับ High Return Rate Stores ในแท็บ Sales Breakdown) เรียงจากสูงไปต่ำ อาจสะท้อนปัญหาสต็อกล้นหรือสินค้าใกล้หมดอายุที่ควรเข้าไปพูดคุยกับร้าน</div>
+                <div class="info-pop">ร้านค้าที่ดูแลซึ่งเรียงตามอัตราคืนสินค้า (CN) จากสูงไปต่ำ (ไม่ตัดที่เกณฑ์ 2% อีกต่อไป — แสดงครบทุกร้าน กด "See all" เพื่อดูทั้งหมด) อาจสะท้อนปัญหาสต็อกล้นหรือสินค้าใกล้หมดอายุที่ควรเข้าไปพูดคุยกับร้าน</div>
               </span>
             </div>
-            <div class="card-sub">Elevated CN rate (&gt;2%), this month</div>
           </div>
         </div>
         <div id="attentionList" class="store-list"></div>
@@ -198,12 +334,11 @@
       <div class="col-4 card">
         <div class="card-head">
           <div>
-            <div class="card-title">AR By Due Date
+            <div class="card-title priority-card-title">AR By Due Date
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
                 <div class="info-pop">ยอดลูกหนี้ของร้านค้าที่ดูแล สลับดูได้ 2 มุมมอง: "Overdue" คือยอดที่เกินกำหนดชำระแล้ว จัดกลุ่มตามจำนวนวันที่เลยกำหนด (เรียงจากเกินกำหนดนานสุดไปน้อยสุด) กับ "Within Due" คือยอดที่ยังไม่เกินกำหนด แบ่งเป็นใกล้ถึงกำหนด (≤7 วัน) และยังมีเวลาอีกพอสมควร (นิยามเดียวกับตาราง AR Aging ใน Sales Breakdown) — บัญชี Overdue ที่เกิน 30 วันควรได้รับความสำคัญก่อนระหว่างรอบเยี่ยมร้านถัดไป</div>
               </span>
             </div>
-            <div class="card-sub" id="collectionsSummary">Overdue AR, by days past due</div>
           </div>
           <div class="icon-toolbar" data-chart="collections"></div>
         </div>
@@ -219,12 +354,11 @@
       <div class="col-4 card">
         <div class="card-head">
           <div>
-            <div class="card-title">Inactive Customers
+            <div class="card-title priority-card-title">Inactive Customers
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
                 <div class="info-pop">ร้านค้าที่ดูแลซึ่งมีคำสั่งซื้อในเดือนก่อน แต่ยังไม่มีคำสั่งซื้อในเดือนที่เลือก — จุดที่ควรแวะเยี่ยมเพื่อสอบถามสาเหตุก่อนที่ร้านจะหายไปถาวร</div>
               </span>
             </div>
-            <div class="card-sub">Ordered last month, quiet this month</div>
           </div>
         </div>
         <div id="inactiveList" class="store-list"></div>
@@ -253,7 +387,7 @@
         <div id="dailySalesChart" class="chart-mount-fill"></div>
         <div id="dailySalesTable" class="table-scroll" style="display:none;"></div>
       </div>
-      <div class="col-6 card card-fill bullet-compact">
+      <div class="col-6 card card-fill">
         <div class="card-head">
           <div>
             <div class="card-title">Target vs Actual vs Diff
@@ -261,7 +395,6 @@
                 <div class="info-pop">เป้าหมาย ยอดขายจริง และส่วนต่าง (Actual − Target) ของ 6 เดือนล่าสุดจนถึงเดือนที่เลือก ส่วนต่างสีเขียว = เกินเป้า สีแดง = ต่ำกว่าเป้า แท่งสีเขียว = เดือนนั้นทำได้ถึงเป้า แท่งสีแดง = ต่ำกว่าเป้า ตัวเลขบรรทัดล่างสุดคือ MoM/YoY ของยอดขายเดือนนั้น</div>
               </span>
             </div>
-            <div class="card-sub">Trailing 6 months ending at the selected month</div>
           </div>
           <div class="icon-toolbar" data-chart="spMonthly"></div>
         </div>
@@ -285,7 +418,11 @@
                 <div class="info-pop">ร้านค้าที่ดูแลซึ่งทำยอดขายสุทธิสูงสุด/ต่ำสุดในเดือนที่เลือก — เวอร์ชันเดียวกับการ์ดชื่อเดียวกันใน Sales Breakdown แต่ scope เฉพาะร้านที่ดูแลเอง ใช้ดูทั้งลูกค้าหลักที่ควรรักษาความสัมพันธ์ไว้ และร้านที่อาจต้องการความสนใจเพิ่ม (แทนที่ "Top Customers This Month" เดิม — ตัดออกจาก My Priority Actions เพราะเป็นมุมมอง analysis ไม่ใช่ action list)</div>
               </span>
             </div>
-            <div class="card-sub" id="myStoresSub">Ranked by net sales, this month</div>
+            <!-- myStoresSub kept in the DOM (hidden) — renderStores() in tt-shared.js writes to
+                 this id unconditionally (shared with tt_customer.html's Store Performance card);
+                 removing the element outright would throw there. See design-system's "do not
+                 modify renderStores() logic" rule. -->
+            <div class="card-sub" id="myStoresSub" style="display:none;"></div>
           </div>
           <div class="icon-toolbar" data-chart="myStores"></div>
         </div>
@@ -294,17 +431,16 @@
       </div>
     </div>
     <div class="grid row-gap">
-      <!-- Round 31 direct feedback: swapped order — My Customer Group Mix now first, My Sales by
+      <!-- Round 31 direct feedback: swapped order — My Shop Group Mix now first, My Sales by
            Category second (was reverse). -->
       <div class="col-4 card">
         <div class="card-head">
           <div>
-            <div class="card-title">My Customer Group Mix
+            <div class="card-title">My Shop Group Mix
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">สัดส่วนยอดขายสุทธิของร้านที่ดูแลเอง ตามกลุ่มลูกค้า (Customer Group) เดือนที่เลือก — เวอร์ชันย่อของการ์ด Sales by Customer Group ใน Sales Overview scope เฉพาะร้านที่ดูแลเอง</div>
+                <div class="info-pop">สัดส่วนยอดขายสุทธิของร้านที่ดูแลเอง ตามกลุ่มร้านค้า (Shop Group) เดือนที่เลือก — เวอร์ชันย่อของการ์ด Sales by Shop Group ใน Sales Overview scope เฉพาะร้านที่ดูแลเอง</div>
               </span>
             </div>
-            <div class="card-sub">This month, your stores only</div>
           </div>
         </div>
         <div id="myCustomerGroupChart"></div>
@@ -312,12 +448,11 @@
       <div class="col-8 card">
         <div class="card-head">
           <div>
-            <div class="card-title">My Sales by <span id="myCategoryLevelLabel">Category</span>
+            <div class="card-title">My Sales by<span id="myCategoryLevelLabel" class="title-suffix">Category</span>
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดขายสุทธิของร้านที่ดูแลเอง แยกตามระดับสินค้าที่เลือกจาก dropdown เดือนที่เลือก — ประมาณการจากสัดส่วน Customer Group ของร้านที่ดูแล (ตารางเดียวกับที่ใช้ใน Customer Group × Category heatmap ของ Sales Breakdown) ผสมกับสัดส่วนจริงของแต่ละ node ภายใน Category ทั้งบริษัท เนื่องจากข้อมูลจริงไม่มี breakdown หมวดสินค้ารายร้าน ที่ระดับลึกกว่า Category จะแสดงเฉพาะ Top 10</div>
+                <div class="info-pop">ยอดขายสุทธิของร้านที่ดูแลเอง แยกตามระดับสินค้าที่เลือกจาก dropdown เดือนที่เลือก — ประมาณการจากสัดส่วน Shop Group ของร้านที่ดูแล (ตารางเดียวกับที่ใช้ใน Customer Group × Category heatmap ของ Sales Breakdown) ผสมกับสัดส่วนจริงของแต่ละ node ภายใน Category ทั้งบริษัท เนื่องจากข้อมูลจริงไม่มี breakdown หมวดสินค้ารายร้าน แสดงสูงสุด 5 รายการต่อระดับ กด "See all" เพื่อดูรายการที่เหลือในตาราง</div>
               </span>
             </div>
-            <div class="card-sub" id="myCategorySub">This month, your stores only</div>
           </div>
           <div class="icon-toolbar" data-chart="myCategory">
             <div class="toggle-group" id="myCategoryLevelToggle">
@@ -342,10 +477,9 @@
           <div>
             <div class="card-title">CN Record
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดใบลดหนี้ (CN) รายร้าน ย้อนหลัง 6 เดือน (ถึงเดือนที่เลือก) — Customer Type คือกลุ่มลูกค้าของร้าน (เดียวกับ Customer Group Mix ด้านบน) Return Rate คือ CN รวม 6 เดือน ÷ ยอดขายก่อนหักคืน 6 เดือน เรียงตามยอด CN รวมสูงสุดก่อน แสดง Top 10 ร้าน กด "See all" เพื่อดูร้านที่เหลือ</div>
+                <div class="info-pop">ยอดใบลดหนี้ (CN) รายร้าน ย้อนหลัง 6 เดือน (ถึงเดือนที่เลือก) — Customer Type คือกลุ่มลูกค้าของร้าน (เดียวกับ Shop Group Mix ด้านบน) Return Rate คือ CN รวม 6 เดือน ÷ ยอดขายก่อนหักคืน 6 เดือน เรียงตามยอด CN รวมสูงสุดก่อน แสดง Top 10 ร้าน กด "See all" เพื่อดูร้านที่เหลือ</div>
               </span>
             </div>
-            <div class="card-sub" id="cnSummary">—</div>
           </div>
           <button class="icon-btn" id="cnDownloadBtn" type="button" title="Download data (CSV)">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 1.5v8"/><path d="M4.5 6.5L8 9.5l3.5-3"/><path d="M2 12v1.5A1 1 0 003 14.5h10a1 1 0 001-1V12"/></svg>
@@ -362,8 +496,8 @@
 <!-- ============ /.shell ============ -->
 <div class="focus-backdrop" id="focusBackdrop"></div>
 
-<script src="tt-shared.js"></script>
-<script src="nav-menu.js"></script>
+<script src="tt-shared.js?v=20260814h"></script>
+<script src="nav-menu.js?v=20260814b"></script>
 <script>
 (function(){
   "use strict";
@@ -432,6 +566,13 @@
   });
   document.getElementById("cnDownloadBtn").addEventListener("click", () => downloadTableCsv(document.getElementById("cnTable"), "cn-record"));
 
+  /* ---- Sales Ranking + Sales by Category (company-wide bar snapshot) both used to live on this
+     page (moved here from TT Executive Summary, 2026-08-14 pill=section restructure) but are now
+     fully removed/stubbed (Sales Ranking: duplicated Executive Summary's Sales Team pill; Sales by
+     Category: duplicated "My Sales by Category" below) — no toggle to wire up anymore. render()
+     is still called at the bottom of this script for its other unconditional writes (this page's
+     hidden stubs above), same dual-orchestrator pattern Executive Summary/Breakdown use. ---- */
+
   /* ---- View By (Monthly/Quarterly) toggle (2026-08-06) — currentTimeFrame/
      positionTimeFrameThumb live in tt-shared.js (shared across all 3 TT pages); this page
      re-renders via renderSalesPersonPage() (this page's own orchestrator, not the Executive
@@ -496,6 +637,10 @@
     if (e.key==="Escape"){ document.querySelectorAll(".info-pop.open").forEach(p => p.classList.remove("open")); exitFocus(); }
   });
 
+  // render() populates Sales Ranking + Sales by Category below (moved here 2026-08-14, see the
+  // HIDDEN STUBS block above) -- same shared orchestrator Executive Summary/Breakdown call,
+  // independent of renderSalesPersonPage() (this page's own Sales-Person-scoped cards).
+  render();
   renderSalesPersonPage();
 })();
 </script>

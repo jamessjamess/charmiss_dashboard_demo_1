@@ -420,6 +420,27 @@
     </div>
   </div>
 
+  <!-- ============ Monthly Sales by Customer Group (2026-08-14, moved here from Executive
+       Summary's Performance Overview — same mix/breakdown grouping as Sales by Region/Province
+       above). Rendering logic lives in tt-shared.js's render() (unconditional, same as every
+       other card on this page) — Executive Summary now only stubs these ids. ============ -->
+  <div class="grid row-gap">
+    <div class="col-12 card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Monthly Sales by Customer Group
+            <span class="info-wrap"><button class="info-btn" type="button">i</button>
+              <div class="info-pop">ยอดขายสุทธิรายเดือน (หรือรายไตรมาสถ้าเลือก View By Quarterly) แยกตาม 5 กลุ่มลูกค้าเดียวกับการ์ด "Sales by Customer Group" ในแท็บ Executive Summary — ผลรวมของแต่ละกลุ่มตลอดช่วงเวลาที่เลือกเท่ากับตัวเลขในการ์ดโดนัทนั้นเป๊ะ (เป็นตัวเลขก้อนเดียวกัน แค่แตกรายเดือน) บริษัทรวมทั้งหมดเสมอ ไม่ scope ตาม Region/Category/Sales Person</div>
+            </span>
+          </div>
+        </div>
+        <div class="icon-toolbar" data-chart="execMonthlyCustGroup"></div>
+      </div>
+      <div id="execMonthlyCustGroupChart"></div>
+      <div id="execMonthlyCustGroupTable" class="table-scroll" style="display:none;"></div>
+    </div>
+  </div>
+
   <!-- ============ Product Coverage — last of the 4 sub-sections (Round 27, Task 4.1: moved after
        Team Performance since product-mix detail is lower-priority for the Regional Manager
        audience than store/team health. Round 28, Task 10: Team Performance and Customer Coverage
