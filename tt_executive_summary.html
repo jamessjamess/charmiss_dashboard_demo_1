@@ -198,7 +198,7 @@
         <div>
           <div class="card-title">Sales by Shop Group
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">สัดส่วนยอดขายสุทธิของทั้งบริษัทตามกลุ่มร้านค้า (Shop Group) ในช่วงเวลาที่เลือก — ภาพรวมบริษัททั้งหมดเสมอ ไม่ scope ตาม Region/Category/Sales Person</div>
+              <div class="info-pop">สัดส่วนยอดขายสุทธิของ TT แยกตามกลุ่มร้านค้า (Shop Group) แสดงขนาดและสัดส่วนของแต่ละกลุ่มต่อยอดขายรวม</div>
             </span>
           </div>
         </div>
@@ -212,7 +212,7 @@
         <div>
           <div class="card-title">Target Attainment &amp; Full Year Outlook
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">Calendar YTD 2026 (Jan-Jun) เสมอ ไม่ผูกกับ Period filter ด้านบน (เหมือนการ์ดชื่อเดียวกันของ MT) — เส้นทึบ = Attainment % สะสมตั้งแต่ Jan 26 จนถึงเดือน/ไตรมาสล่าสุด (ยอดขายจริงสะสม ÷ เป้าหมายสะสม) จุดสุดท้ายตรงกับตัวเลข Target Attainment ด้านบนเป๊ะ (91% YTD) เส้นประ = ประมาณการทั้งปี โดยต่อยอดเดือนที่เหลือ (Jul-Dec) ด้วยอัตรา Attainment ของเดือนล่าสุดที่ปิดบัญชีแล้ว เส้นประดำแนวนอน 100% คือเป้าหมาย — แกนตั้งบีบเป็นช่วง ~70-120% (แบบ MT) เพื่อให้เห็นการเคลื่อนไหวชัด — เป้าหมายเป็นตัวเลขระดับบริษัทเสมอ</div>
+              <div class="info-pop">Target Attainment % ของ TT (ยอดขายจริง ÷ เป้าหมาย × 100) แสดงแนวโน้มสะสมตั้งแต่ต้นปี พร้อมประมาณการทั้งปีแบบ Run-rate</div>
             </span>
           </div>
         </div>
@@ -227,7 +227,7 @@
         <div>
           <div class="card-title">Return Rate (CN) Trend
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ต่อยอดจากอนุกรมเดียวกับ sparkline ของการ์ด Return Rate (CN) (Total CN ÷ Total Invoice ต่อเดือน) — จุดสุดท้ายตรงกับตัวเลขบนการ์ดเป๊ะ แกนคงที่ 0-5% เส้นประคือเกณฑ์ 2% ของบริษัท สรุปตัวเลขล่าสุดอยู่ใต้กราฟ บริษัทรวมทั้งหมดเสมอ ผูกกับ Period filter ด้านบนตามปกติ</div>
+              <div class="info-pop">อัตราการคืนสินค้า (Credit Note) ของ TT เทียบยอดขาย เป็นสัญญาณล่าช้าของปัญหาคุณภาพสินค้าหรือสต็อก คำนวณจากมูลค่า CN ÷ ยอดขายก่อนหักคืน × 100</div>
             </span>
           </div>
         </div>
@@ -244,7 +244,7 @@
         <div>
           <div class="card-title">Revenue Trend
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">เทียบยอดขายสุทธิรายเดือนของปีนี้กับช่วงเดียวกันของปีก่อน เส้นของปีนี้จะหยุดที่เดือนล่าสุดที่ปิดบัญชีแล้ว ส่วนปีก่อนแสดงเต็มปีเพื่อใช้อ้างอิง เส้นประ "Target" คือเป้าหมายรายเดือน (มีถึงแค่ H1 2026) เป็นเป้าระดับบริษัทเสมอ — รายละเอียดรายเดือนเทียบเป้าดูได้ที่การ์ด Target vs Actual ใน Sales Breakdown</div>
+              <div class="info-pop">ยอดขายสุทธิของ TT รายเดือน เทียบกับเป้าหมายและยอดขายปีก่อนในช่วงเดียวกัน</div>
             </span>
           </div>
         </div>
@@ -262,7 +262,7 @@
         <div>
           <div class="card-title">YoY Growth %
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">อัตราการเติบโตของยอดขายสุทธิ เทียบกับช่วงเดียวกันของปีก่อน (รายเดือนหรือรายไตรมาสตาม View By, บริษัทรวมทั้งหมดเสมอ) เส้นประคือ 0% ครอบคลุมเฉพาะช่วงที่มีข้อมูลปีนี้ปิดบัญชีแล้ว — ช่วงเวลาเดียวกับเส้น "This Year" ใน Revenue Trend ด้านซ้าย</div>
+              <div class="info-pop">อัตราการเติบโตของยอดขาย TT เทียบปีก่อน (Year-over-Year)</div>
             </span>
           </div>
         </div>
@@ -287,7 +287,7 @@
         <div>
           <div class="card-title">AR% Trend (Collection Rate)
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ต่อยอดจากอนุกรมเดียวกับ sparkline ของการ์ด AR% (Collection Rate = (Gross − Overdue) ÷ Gross ต่อเดือน) — จุดสุดท้ายตรงกับตัวเลขบนการ์ด AR% เป๊ะ แกนตั้งเริ่มที่ 0-100% เสมอ บริษัทรวมทั้งหมดเสมอ</div>
+              <div class="info-pop">Collection Rate คืออัตราการเก็บเงินได้จริง เทียบมูลค่า Invoice ทั้งหมด คำนวณจาก (Gross − Overdue) ÷ Gross × 100 ยิ่งสูงยิ่งดี</div>
             </span>
           </div>
         </div>
@@ -301,7 +301,7 @@
         <div>
           <div class="card-title">Active Stores Trend
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ต่อยอดจากอนุกรมเดียวกับ sparkline ของการ์ด Active Stores — จำนวนร้าน Active ณ จุดเวลาสิ้นเดือน/ไตรมาส (snapshot ไม่ใช่ผลรวมสะสม) จุดสุดท้ายตรงกับตัวเลขบนการ์ดเป๊ะ แกนตั้งเริ่มที่ 0-450 ร้านเสมอ</div>
+              <div class="info-pop">จำนวนร้านค้าที่มีคำสั่งซื้ออย่างน้อย 1 ครั้งในเดือนนั้น ใช้วัดขนาดฐานลูกค้าที่ยังทำธุรกรรมอยู่</div>
             </span>
           </div>
         </div>
@@ -315,7 +315,7 @@
         <div>
           <div class="card-title">Store Retention Trend
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ต่อยอดจากอนุกรมเดียวกับ sparkline ของการ์ด Store Retention — snapshot ของเดือน/ไตรมาสล่าสุดเสมอ จุดสุดท้ายตรงกับตัวเลขบนการ์ดเป๊ะ บริษัทรวมทั้งหมดเสมอ แกนตั้งเริ่มที่ 0-120% เสมอ</div>
+              <div class="info-pop">อัตราการรักษาฐานร้านค้า คือสัดส่วนร้านที่ยัง Active ต่อเนื่องจากเดือนก่อน</div>
             </span>
           </div>
         </div>
@@ -339,7 +339,7 @@
         <div>
           <div class="card-title">Sales by Sales Person
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">สัดส่วนยอดขายสุทธิของทั้งบริษัทแยกตาม Sales Person (5 คน) ในช่วงเวลาที่เลือก — ยอดต่อคนคือตัวเลขเดียวกับคอลัมน์ Net Sales ในตาราง Sales Ranking ด้านขวา center = ยอดขายรวมทั้งบริษัท</div>
+              <div class="info-pop">สัดส่วนยอดขายสุทธิของ TT แยกตามพนักงานขาย (Sales Person)</div>
             </span>
           </div>
         </div>
@@ -353,7 +353,7 @@
         <div>
           <div class="card-title">Sales Ranking
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">Sales Person ทั้ง 5 คน เรียงตามยอดขายสุทธิในช่วงเวลาที่เลือก — ตารางเดียวกับที่อยู่บนสุดของ Tab Sales Person (คนละที่ ตัวเลขเดียวกัน)</div>
+              <div class="info-pop">ตารางจัดอันดับยอดขายสุทธิของพนักงานขายแต่ละคน เรียงจากมากไปน้อย</div>
             </span>
           </div>
         </div>
@@ -380,7 +380,7 @@
         <div>
           <div class="card-title">Target vs Actual (per rep)
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิของแต่ละ rep เทียบเป้าหมาย (จัดสรรจากเป้าบริษัทตามสัดส่วนขนาดร้านที่ดูแล) รวมตลอดช่วงเวลาที่เลือกไว้ด้านบน เครื่องหมายถูก (✓) หมายถึงทำได้ถึงหรือเกินเป้า โชว์ทุกคนเรียงตามรหัสพนักงาน (ไม่ใช่เรียงผลงาน — ดู Sales Ranking ด้านบนสำหรับมุมมองเรียงผลงาน)</div>
+              <div class="info-pop">ยอดขายสุทธิของแต่ละพนักงานขาย เทียบเป้าหมายที่จัดสรรตามสัดส่วนขนาดร้านที่ดูแล</div>
             </span>
           </div>
           <div class="card-sub" id="repBulletSub">Flat list, all reps</div>
@@ -395,7 +395,7 @@
         <div>
           <div class="card-title">Active Reps vs Avg Sales / Rep
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จำนวนพนักงานขาย active ทั้งทีม (แกนซ้าย) เทียบกับยอดขายสุทธิเฉลี่ยต่อพนักงานขายหนึ่งคน (ยอดขายรวมของทีม ÷ จำนวน active reps, แกนขวา) รายเดือน — วัด productivity ต่อหัวของทีม การ์ดนี้เป็นมุมมองระดับทีมเสมอ ไม่ scope ตามตัวกรอง Sales Person (จำนวน rep ปัจจุบันเป็นค่าคงที่ใน mock data นี้ ยังไม่ได้จำลอง hire/attrition จริง)</div>
+              <div class="info-pop">จำนวนพนักงานขาย Active เทียบกับยอดขายเฉลี่ยต่อคน (ยอดขายรวมทีม ÷ จำนวนพนักงานขาย Active) ใช้วัด Productivity ต่อหัว</div>
             </span>
           </div>
           <!-- Round 33 direct feedback: repCoverageTopline was a .card-topline (big bold headline
@@ -418,7 +418,7 @@
         <div>
           <div class="card-title">Visit Compliance Trend
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">อัตราการเข้าเยี่ยมจริง ÷ แผนที่วางไว้ ของทีมทั้งหมด รายเดือน เส้นประคือ 100% (เข้าเยี่ยมครบตามแผน)</div>
+              <div class="info-pop">อัตราการเข้าเยี่ยมร้านค้าจริง เทียบกับแผนที่วางไว้ คำนวณจาก Actual ÷ Planned Visits × 100</div>
             </span>
           </div>
           <div class="card-sub">Actual ÷ Planned visits, by month</div>

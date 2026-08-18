@@ -78,7 +78,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Equity Roll-Forward Waterfall</span>
-        <button class="info-icon" data-info-title="Equity Roll-Forward" data-info-text="Opening Equity → +Net Profit (after tax) → −Dividends Paid → Closing Equity — Closing ต้องเท่ากับ Equity ใน Balance Sheet ของงวดเดียวกันเป๊ะ — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Equity Roll-Forward" data-info-text="การเปลี่ยนแปลงส่วนของผู้ถือหุ้นระหว่างงวด: ยอดต้นงวด บวกกำไรสุทธิ หักเงินปันผลจ่าย เท่ากับยอดปลายงวด">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="eqWaterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -105,7 +105,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Total Equity &amp; Retained Earnings</span>
-        <button class="info-icon" data-info-title="Total Equity & Retained Earnings" data-info-text="Total Equity ราย Quarter (ชุดเดียวกับที่ Financial Analysis's DuPont ใช้คิด Equity Multiplier — ไม่สร้างเลขใหม่) — Retained Earnings = Total Equity − ทุนที่ออกและชำระแล้ว (100) − สำรองตามกฎหมาย (10) เพราะ 2 องค์ประกอบนี้คงที่ทุกไตรมาส — Annual แสดง FY2024/FY2025/2026 YTD (2026 YTD เป็นแท่ง partial/dashed เพราะยังไม่ปิดปี) — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Total Equity & Retained Earnings" data-info-text="ส่วนของผู้ถือหุ้นรวม และกำไรสะสม (Retained Earnings = ส่วนของผู้ถือหุ้น − ทุนที่ออกและชำระแล้ว − สำรองตามกฎหมาย) ใช้ติดตามการสะสมความมั่งคั่งของกิจการ">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="eqTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -125,7 +125,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Dividends Paid &amp; Payout Ratio</span>
-        <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="Payout Ratio = เงินปันผลจ่าย ÷ Net Profit (after tax) ของไตรมาสนั้น — เงินปันผลแต่ละไตรมาสคำนวณย้อนกลับจาก Retained Earnings roll-forward (Opening RE + Net Profit − Dividends = Closing RE) จึงผูกกับตัวเลข Equity ด้านบนโดยตรง ไม่ใช่เลขสุ่มแยก — Q2'25 คำนวณย้อนกลับด้วยวิธีเดียวกัน โดยใช้ Retained Earnings ณ สิ้น Q1'25 (backfill จาก EBIT ชุดเดียวกับที่ Cash Flow ใช้) เป็นจุดตั้งต้น — Annual แสดง FY2024/FY2025/2026 YTD — Mock Data 100%">i</button>
+        <button class="info-icon" data-info-title="Dividends Paid & Payout Ratio" data-info-text="เงินปันผลจ่าย และอัตราการจ่ายปันผล (Payout Ratio = เงินปันผลจ่าย ÷ กำไรสุทธิ) สะท้อนสัดส่วนกำไรที่คืนให้ผู้ถือหุ้น เทียบกับกำไรที่เก็บไว้ในกิจการ">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="dividendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -156,7 +156,7 @@
       <div class="card table-card single-label-col" style="margin-top:10px;margin-bottom:0;">
         <div class="card-head">
           <span class="card-title">Statement of Changes in Equity (by component)</span>
-          <button class="info-icon" data-info-title="Statement of Changes in Equity" data-info-text="แยกตามองค์ประกอบ Equity — ทุนที่ออกและชำระแล้ว/สำรองตามกฎหมายไม่มีการเคลื่อนไหวในงวดนี้ (ไม่มีการเพิ่มทุน, ไม่มีการจัดสรรสำรองเพิ่ม) — กำไรสะสมเปลี่ยนแปลงจาก Net Profit (after tax) หัก เงินปันผลจ่าย เท่านั้น — ไม่มี Other Comprehensive Income (OCI) ในงวดนี้ — Mock Data 100%">i</button>
+          <button class="info-icon" data-info-title="Statement of Changes in Equity" data-info-text="งบแสดงการเปลี่ยนแปลงส่วนของผู้ถือหุ้น แยกตามองค์ประกอบ (ทุนที่ออกและชำระแล้ว สำรองตามกฎหมาย กำไรสะสม) แสดงว่าแต่ละองค์ประกอบเปลี่ยนแปลงจากอะไรระหว่างงวด">i</button>
           <div class="toolbar" style="margin-left:auto;">
             <button class="tool-btn" id="eqStatementDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
           </div>

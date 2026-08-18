@@ -223,7 +223,7 @@
           <div>
             <div class="card-title">Target Achievement
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดขายสุทธิของเดือนที่เลือก เทียบเป้าหมายที่จัดสรรให้ Sales Person คนนี้ (ตามสัดส่วนขนาดร้านค้าที่ดูแล ระบบเดียวกับ Target vs Actual (per rep) ใน Sales Breakdown) — แถบและตัวเลข % คือความคืบหน้าเทียบเป้าของเดือนนั้น ถ้าเกิน 100% แถบจะเต็มและตัวเลขขึ้นสีเขียว เส้นดำแนวตั้งบนแถบ = จำนวนวันที่ผ่านไปแล้วของเดือนนี้ (เทียบสัดส่วน) ใช้ดูว่าทำได้ทันเวลาหรือไม่</div>
+                <div class="info-pop">ยอดขายสุทธิของเดือนที่เลือก เทียบเป้าหมายที่จัดสรรให้พนักงานขายคนนี้ตามสัดส่วนขนาดร้านที่ดูแล</div>
               </span>
             </div>
           </div>
@@ -243,7 +243,7 @@
           <div class="glance-row">
             <div class="glance-row-label">Net Sales
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดขายสุทธิ (หลังหักคืนสินค้า/CN) ของเดือนที่เลือก จากร้านค้าที่ดูแลทั้งหมด</div>
+                <div class="info-pop">ยอดขายสุทธิ (หลังหักคืนสินค้า) ของเดือนที่เลือก จากร้านค้าที่ดูแลทั้งหมด</div>
               </span>
             </div>
             <div class="glance-row-figures">
@@ -254,7 +254,7 @@
           <div class="glance-row">
             <div class="glance-row-label">Active Customers
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">จำนวนร้านค้าที่ดูแล ที่มีคำสั่งซื้อในเดือนที่เลือก</div>
+                <div class="info-pop">นับร้านที่ดูแลซึ่งมี ≥1 คำสั่งซื้อในเดือนที่เลือก</div>
               </span>
             </div>
             <div class="glance-row-figures">
@@ -267,7 +267,7 @@
           <div class="glance-row">
             <div class="glance-row-label">CN%
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">มูลค่าใบลดหนี้ (CN) ÷ ยอดขายก่อนหักคืน ของเดือนที่เลือก ยิ่งต่ำยิ่งดี</div>
+                <div class="info-pop">สัดส่วนมูลค่าใบลดหนี้ (CN) ต่อยอดขายก่อนหักคืน ยิ่งต่ำยิ่งดี</div>
               </span>
             </div>
             <div class="glance-row-figures">
@@ -278,7 +278,7 @@
           <div class="glance-row">
             <div class="glance-row-label">Inactive Customers
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ร้านค้าที่เคย Active เดือนก่อน แต่เดือนนี้ไม่มีคำสั่งซื้อเลย (นิยามเดียวกับ Inactive Customers ด้านล่าง)</div>
+                <div class="info-pop">จำนวนร้านค้าที่เคย Active เดือนก่อน แต่เดือนนี้ไม่มีคำสั่งซื้อ</div>
               </span>
             </div>
             <div class="glance-row-figures">
@@ -291,7 +291,7 @@
           <div class="glance-row">
             <div class="glance-row-label">AR%
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดรับชำระหนี้ (รวมทั้งจ่ายสดและ Credit) ÷ มูลค่า Invoice ของเดือนที่เลือก ยิ่งสูงยิ่งดี (ปกติควรอยู่ราว 80–100%)</div>
+                <div class="info-pop">อัตราการเก็บเงินได้จริง (สด+เครดิต) เทียบมูลค่า Invoice ยิ่งสูงยิ่งดี</div>
               </span>
             </div>
             <div class="glance-row-figures">
@@ -302,7 +302,7 @@
           <div class="glance-row">
             <div class="glance-row-label">New Customers
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ร้านค้าที่ไม่ Active เดือนก่อน แต่มีคำสั่งซื้อครั้งแรกในเดือนที่เลือก</div>
+                <div class="info-pop">จำนวนร้านค้าที่สั่งซื้อครั้งแรกในเดือนที่เลือก</div>
               </span>
             </div>
             <div class="glance-row-figures">
@@ -324,7 +324,7 @@
           <div>
             <div class="card-title priority-card-title">Stores Needing Attention
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ร้านค้าที่ดูแลซึ่งเรียงตามอัตราคืนสินค้า (CN) จากสูงไปต่ำ (ไม่ตัดที่เกณฑ์ 2% อีกต่อไป — แสดงครบทุกร้าน กด "See all" เพื่อดูทั้งหมด) อาจสะท้อนปัญหาสต็อกล้นหรือสินค้าใกล้หมดอายุที่ควรเข้าไปพูดคุยกับร้าน</div>
+                <div class="info-pop">ร้านค้าที่ดูแล เรียงตามอัตราคืนสินค้า (CN) จากสูงไปต่ำ</div>
               </span>
             </div>
           </div>
@@ -336,7 +336,7 @@
           <div>
             <div class="card-title priority-card-title">AR By Due Date
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดลูกหนี้ของร้านค้าที่ดูแล สลับดูได้ 2 มุมมอง: "Overdue" คือยอดที่เกินกำหนดชำระแล้ว จัดกลุ่มตามจำนวนวันที่เลยกำหนด (เรียงจากเกินกำหนดนานสุดไปน้อยสุด) กับ "Within Due" คือยอดที่ยังไม่เกินกำหนด แบ่งเป็นใกล้ถึงกำหนด (≤7 วัน) และยังมีเวลาอีกพอสมควร (นิยามเดียวกับตาราง AR Aging ใน Sales Breakdown) — บัญชี Overdue ที่เกิน 30 วันควรได้รับความสำคัญก่อนระหว่างรอบเยี่ยมร้านถัดไป</div>
+                <div class="info-pop">ยอดลูกหนี้ของร้านค้าที่ดูแล แบ่งตามที่ยังไม่ถึงกำหนดชำระ (Within Due) และเกินกำหนดชำระแล้ว (Overdue)</div>
               </span>
             </div>
           </div>
@@ -356,7 +356,7 @@
           <div>
             <div class="card-title priority-card-title">Inactive Customers
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ร้านค้าที่ดูแลซึ่งมีคำสั่งซื้อในเดือนก่อน แต่ยังไม่มีคำสั่งซื้อในเดือนที่เลือก — จุดที่ควรแวะเยี่ยมเพื่อสอบถามสาเหตุก่อนที่ร้านจะหายไปถาวร</div>
+                <div class="info-pop">ร้านค้าที่ดูแลซึ่งมีคำสั่งซื้อในเดือนก่อน แต่ยังไม่มีคำสั่งซื้อในเดือนที่เลือก</div>
               </span>
             </div>
           </div>
@@ -376,7 +376,7 @@
           <div>
             <div class="card-title">Daily Sales
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดขายสุทธิรายวันของเดือนที่เลือก ประมาณการจากยอดขายรวมของเดือนนั้นจริง กระจายตามรูปแบบวันธรรมดา/วันหยุด (ผลรวมรายวันเท่ากับยอดขายสุทธิทั้งเดือนเป๊ะ ไม่ใช่ข้อมูลจำลองแยกอิสระ)</div>
+                <div class="info-pop">ยอดขายสุทธิรายวันโดยประมาณของเดือนที่เลือก</div>
               </span>
             </div>
             <div class="card-sub" id="dailySalesSub">—</div>
@@ -392,7 +392,7 @@
           <div>
             <div class="card-title">Target vs Actual vs Diff
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">เป้าหมาย ยอดขายจริง และส่วนต่าง (Actual − Target) ของ 6 เดือนล่าสุดจนถึงเดือนที่เลือก ส่วนต่างสีเขียว = เกินเป้า สีแดง = ต่ำกว่าเป้า แท่งสีเขียว = เดือนนั้นทำได้ถึงเป้า แท่งสีแดง = ต่ำกว่าเป้า ตัวเลขบรรทัดล่างสุดคือ MoM/YoY ของยอดขายเดือนนั้น</div>
+                <div class="info-pop">เป้าหมาย ยอดขายจริง และส่วนต่าง (Actual − Target) ของ 6 เดือนล่าสุด</div>
               </span>
             </div>
           </div>
@@ -415,7 +415,7 @@
           <div>
             <div class="card-title">Top &amp; Bottom Performing Stores
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ร้านค้าที่ดูแลซึ่งทำยอดขายสุทธิสูงสุด/ต่ำสุดในเดือนที่เลือก — เวอร์ชันเดียวกับการ์ดชื่อเดียวกันใน Sales Breakdown แต่ scope เฉพาะร้านที่ดูแลเอง ใช้ดูทั้งลูกค้าหลักที่ควรรักษาความสัมพันธ์ไว้ และร้านที่อาจต้องการความสนใจเพิ่ม (แทนที่ "Top Customers This Month" เดิม — ตัดออกจาก My Priority Actions เพราะเป็นมุมมอง analysis ไม่ใช่ action list)</div>
+                <div class="info-pop">ร้านค้าที่ดูแลซึ่งทำยอดขายสุทธิสูงสุด/ต่ำสุดในเดือนที่เลือก</div>
               </span>
             </div>
             <!-- myStoresSub kept in the DOM (hidden) — renderStores() in tt-shared.js writes to
@@ -438,7 +438,7 @@
           <div>
             <div class="card-title">My Shop Group Mix
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">สัดส่วนยอดขายสุทธิของร้านที่ดูแลเอง ตามกลุ่มร้านค้า (Shop Group) เดือนที่เลือก — เวอร์ชันย่อของการ์ด Sales by Shop Group ใน Sales Overview scope เฉพาะร้านที่ดูแลเอง</div>
+                <div class="info-pop">สัดส่วนยอดขายของร้านที่ดูแลเอง แยกตามกลุ่มร้านค้า (Shop Group)</div>
               </span>
             </div>
           </div>
@@ -450,7 +450,7 @@
           <div>
             <div class="card-title">My Sales by<span id="myCategoryLevelLabel" class="title-suffix">Category</span>
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดขายสุทธิของร้านที่ดูแลเอง แยกตามระดับสินค้าที่เลือกจาก dropdown เดือนที่เลือก — ประมาณการจากสัดส่วน Shop Group ของร้านที่ดูแล (ตารางเดียวกับที่ใช้ใน Customer Group × Category heatmap ของ Sales Breakdown) ผสมกับสัดส่วนจริงของแต่ละ node ภายใน Category ทั้งบริษัท เนื่องจากข้อมูลจริงไม่มี breakdown หมวดสินค้ารายร้าน แสดงสูงสุด 5 รายการต่อระดับ กด "See all" เพื่อดูรายการที่เหลือในตาราง</div>
+                <div class="info-pop">ยอดขายของร้านที่ดูแลเอง แยกตามหมวดหมู่สินค้า</div>
               </span>
             </div>
           </div>
@@ -477,7 +477,7 @@
           <div>
             <div class="card-title">CN Record
               <span class="info-wrap"><button class="info-btn" type="button">i</button>
-                <div class="info-pop">ยอดใบลดหนี้ (CN) รายร้าน ย้อนหลัง 6 เดือน (ถึงเดือนที่เลือก) — Customer Type คือกลุ่มลูกค้าของร้าน (เดียวกับ Shop Group Mix ด้านบน) Return Rate คือ CN รวม 6 เดือน ÷ ยอดขายก่อนหักคืน 6 เดือน เรียงตามยอด CN รวมสูงสุดก่อน แสดง Top 10 ร้าน กด "See all" เพื่อดูร้านที่เหลือ</div>
+                <div class="info-pop">ยอดใบลดหนี้ (CN) รายร้าน ย้อนหลัง 6 เดือน พร้อมอัตราการคืนสินค้า (มูลค่า CN ÷ ยอดขายก่อนหักคืน)</div>
               </span>
             </div>
           </div>

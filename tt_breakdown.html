@@ -171,7 +171,7 @@
         <div>
           <div class="card-title">Target vs Actual
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายจริงรายเดือน (แท่งสีชมพู) เทียบกับเป้าหมาย (Target) ที่ตั้งไว้ (ขีดสีเข้ม) ในช่วงเวลาที่เลือกไว้ด้านบน (Period filter) ตัวเลขใต้เดือนคือส่วนต่าง Actual−Target ของเดือนนั้น (เขียว = ทำได้ถึงหรือเกินเป้า) เป้าหมายเป็นตัวเลขระดับบริษัทเสมอ ไม่ได้ปรับตามตัวกรอง Region/Category — วางเมาส์ (hover) ที่แต่ละเดือนเพื่อดู MoM/YoY เพิ่มเติม หรือดูทุกเดือนพร้อมกันได้ที่ปุ่ม Table view</div>
+              <div class="info-pop">เปรียบเทียบยอดขายจริงของ TT กับเป้าหมายรายเดือน ใช้ติดตามว่าแต่ละเดือนทำได้ถึงเป้าหรือไม่</div>
             </span>
           </div>
           <div class="card-sub" id="bulletSub">Monthly, selected period</div>
@@ -189,7 +189,7 @@
         <div>
           <div class="card-title">Return Rate (CN)
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">อัตราการคืนสินค้า = Total CN (มูลค่าใบลดหนี้ที่ฝ่ายบัญชีออกให้) ÷ Total Invoice (ยอดขายก่อนหักคืน) ของเดือนเดียวกัน (ไม่ offset ข้ามเดือน) เป็นสัญญาณล่าช้า (Lagging Indicator) ของปัญหาสต็อกหรือคุณภาพสินค้าหน้าร้าน — "ล่าช้า" ในที่นี้หมายถึงสะท้อนปัญหาที่เกิดขึ้นก่อนหน้าแล้ว ไม่ใช่การหน่วงเดือนในการคำนวณ เส้นประสีแดงคือเพดานเป้าหมายที่ไม่ควรเกิน 2% (เกณฑ์เดียวกับที่การ์ด High Return Rate Stores ทางขวาใช้)</div>
+              <div class="info-pop">อัตราการคืนสินค้า (Credit Note) ของ TT รายเดือน เทียบกับเกณฑ์ที่ตั้งไว้ คำนวณจากมูลค่า CN ÷ ยอดขายก่อนหักคืน × 100</div>
             </span>
           </div>
         </div>
@@ -204,7 +204,7 @@
         <div>
           <div class="card-title">High Return Rate Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">รายชื่อร้านค้าที่มีอัตราคืนสินค้า (CN Rate) ในช่วงเวลาที่เลือก เกิน 2% (เป้าหมายเดียวกับเส้นประในกราฟ Return Rate (CN) ทางซ้าย) เรียงจากอัตราคืนสูงสุดไปต่ำสุด — เนื่องจากค่าเฉลี่ยทั้งพอร์ตตอนนี้สูงกว่า 2% อยู่แล้ว จึงอาจเห็นร้านเกือบทั้งหมดติดในลิสต์นี้ นั่นคือสัญญาณว่าปัญหาคืนสินค้าเป็นภาพรวมทั้งพอร์ต ไม่ใช่แค่บางร้าน ลำดับ (สูงสุดก่อน) ยังใช้เป็น call list ได้ตามปกติ แสดงสูงสุด 6 ร้านแรกในกราฟ ถ้ามีมากกว่านั้นกด "See all" เพื่อดูรายชื่อทั้งหมดแบบตาราง</div>
+              <div class="info-pop">จัดอันดับร้านค้าตามอัตราการคืนสินค้า (CN Rate) จากสูงไปต่ำ เทียบกับเกณฑ์ที่ตั้งไว้</div>
             </span>
           </div>
         </div>
@@ -227,7 +227,7 @@
         <div>
           <div class="card-title">AR Aging
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดลูกหนี้ของทั้งบริษัท (ไม่ scope ตาม Sales Person เพราะเป็นภาพรวมบริษัท) แบ่งเป็น 2 สถานะ (Status): "Within Due" คือยอดที่ยังไม่เกินกำหนดชำระ แบ่งย่อยเป็น "Due within 7 days" (ใกล้ถึงกำหนด ไว้ติดตามเชิงรุกก่อนจะกลายเป็นหนี้ค้างชำระจริง) และ "Due more than 7 days" (ยังมีเวลาอีกพอสมควร) กับ "Overdue" ที่เกินกำหนดชำระแล้ว แบ่งย่อยตามจำนวนวันที่เกิน (1–7 / 8–15 / 16–30 / 30+ วัน) — บัคเก็ตเดียวกับการ์ด AR By Due Date ของ Sales Person เพื่อความสอดคล้องกันทั้งระบบ วันที่เกินกำหนดคำนวณจาก store.arMultiplier เดิม (ข้อมูลจริงมีแค่ยอดค้างชำระ ไม่มี due date) — ยอด Overdue ที่เห็นในตารางนี้คือส่วนที่ทำให้ AR% (Collection Rate) ใน Sales Overview ไม่ถึง 100%</div>
+              <div class="info-pop">ยอดลูกหนี้คงค้างของบริษัท แบ่งตามที่ยังไม่ถึงกำหนดชำระ (Within Due) และเกินกำหนดชำระแล้ว (Overdue) ใช้ติดตามความเสี่ยงหนี้สูญ</div>
             </span>
           </div>
           <div class="card-sub">Receivables by due-date status (Within Due / Overdue) · company-wide</div>
@@ -264,7 +264,7 @@
         <div>
           <div class="card-title">Target vs Actual (per rep)
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิของแต่ละ rep เทียบเป้าหมาย (จัดสรรจากเป้าบริษัทตามสัดส่วนขนาดร้านที่ดูแล) รวมตลอดช่วงเวลาที่เลือกไว้ด้านบน เครื่องหมายถูก (✓) หมายถึงทำได้ถึงหรือเกินเป้า ถ้ากรอง Sales Person ไว้ จะโชว์แค่คนนั้นคนเดียว ถ้าไม่กรอง (All Reps) จะโชว์ทุกคนเรียงตามรหัสพนักงาน (ไม่ใช่เรียงผลงาน — ดู Sales Ranking ด้านล่างสุดสำหรับมุมมองเรียงผลงาน)</div>
+              <div class="info-pop">ยอดขายสุทธิของแต่ละพนักงานขาย เทียบเป้าหมายที่จัดสรรตามสัดส่วนขนาดร้านที่ดูแล</div>
             </span>
           </div>
           <div class="card-sub" id="repBulletSub">Flat list, all reps</div>
@@ -279,7 +279,7 @@
         <div>
           <div class="card-title">Active Sales Reps Compare Avg Sales per Sales Rep
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จำนวนพนักงานขาย active ทั้งทีม (แกนซ้าย) เทียบกับยอดขายสุทธิเฉลี่ยต่อพนักงานขายหนึ่งคน (ยอดขายรวมของทีม ÷ จำนวน active reps, แกนขวา) รายเดือน — วัด productivity ต่อหัวของทีม แยกจาก Avg Sales per Customer per Month ใน Executive Summary ซึ่งวัดฝั่งร้านค้าแทน การ์ดนี้เป็นมุมมองระดับทีมเสมอ ไม่ scope ตามตัวกรอง Sales Person ด้านบน (จำนวน rep ปัจจุบันเป็นค่าคงที่ใน mock data นี้ ยังไม่ได้จำลอง hire/attrition จริง — เปลี่ยนจากวัด "ต่อลูกค้า" เป็นวัด "ต่อพนักงาน" ในรอบนี้ 2026-07-26)</div>
+              <div class="info-pop">จำนวนพนักงานขาย Active เทียบกับยอดขายเฉลี่ยต่อคน (ยอดขายรวมทีม ÷ จำนวนพนักงานขาย Active) ใช้วัด Productivity ต่อหัว</div>
             </span>
           </div>
           <div class="card-sub">Monthly, selected period · company-wide, not scoped by Sales Person filter</div>
@@ -301,7 +301,7 @@
         <div>
           <div class="card-title">Visit Compliance Trend
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">อัตราการเข้าเยี่ยมจริง ÷ แผนที่วางไว้ ของขอบเขตที่เลือก (ทีมทั้งหมด หรือ Sales Person ที่กรองไว้) รายเดือน เส้นประคือ 100% (เข้าเยี่ยมครบตามแผน)</div>
+              <div class="info-pop">อัตราการเข้าเยี่ยมร้านค้าจริง เทียบกับแผนที่วางไว้ คำนวณจาก Actual ÷ Planned Visits × 100</div>
             </span>
           </div>
           <div class="card-sub">Actual ÷ Planned visits, by month</div>
@@ -330,7 +330,7 @@
         <div>
           <div class="card-title">Top &amp; Bottom Performing Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จัดอันดับร้านค้าตามยอดขายสุทธิในช่วงเวลาและภูมิภาคที่เลือก แนวโน้ม (Trend) เทียบเดือนแรกกับเดือนสุดท้ายในช่วงนั้น มุมมองนี้เป็นระดับร้านค้า จึงไม่ได้รับผลจากตัวกรอง Category ด้านบน ร้านที่มีสัญลักษณ์ ⚠ คืออัตราคืนสินค้าสูงกว่าค่าเฉลี่ยของพอร์ตอย่างมีนัยสำคัญ</div>
+              <div class="info-pop">จัดอันดับร้านค้าตามยอดขายสุทธิ สูงสุดและต่ำสุด ในช่วงเวลาและภูมิภาคที่เลือก</div>
             </span>
           </div>
           <div class="card-sub" id="storesSub">Selected period</div>
@@ -354,7 +354,7 @@
         <div>
           <div class="card-title">Active Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จำนวนร้านค้า (ลูกค้า) ที่มีคำสั่งซื้ออย่างน้อยหนึ่งครั้งในแต่ละเดือน (แกนซ้าย) พร้อมยอดขายเฉลี่ยต่อร้านค้า (แกนขวา) วางคู่กันไว้ดูว่าจำนวนร้านที่เพิ่มขึ้นมาพร้อมกับยอดขายเฉลี่ยต่อร้านที่ลดลงหรือไม่ (คนละหน่วย คนละสเกล ไม่ได้ตั้งใจให้เทียบขนาดเส้นตรงๆ)</div>
+              <div class="info-pop">จำนวนร้านค้าที่มีคำสั่งซื้ออย่างน้อย 1 ครั้งในเดือนนั้น เทียบกับยอดขายเฉลี่ยต่อร้าน</div>
             </span>
           </div>
         </div>
@@ -369,7 +369,7 @@
         <div>
           <div class="card-title">New vs Inactive Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">แท่งขึ้น (บวก) = <b>New</b> ร้านที่สั่งซื้อครั้งแรกในเดือนนั้น แท่งลง (ลบ) = <b>Inactive</b> ร้านที่เคย Active ในเดือนก่อน แต่เดือนนี้ไม่มีคำสั่งซื้อเลย เส้นประ = <b>Net Change</b> (New − Inactive) อธิบาย movement ของ Active Stores ในเดือนนั้นโดยตรง คำนวณ Inactive จาก: ฐาน Active เดือนก่อน + ร้านใหม่เดือนนี้ − Active เดือนนี้ Retention Rate = 100% − Inactive Rate · หมายเหตุ: ธุรกิจ Traditional Trade การไม่สั่งซื้อ 1 เดือนอาจแค่แปลว่าสต็อกยังไม่หมด ไม่ใช่ Churn จริงเสมอไป — Churn ที่ผ่านเกณฑ์ยืนยัน (เช่น ไม่สั่งเกิน 45 วันต่อเนื่อง) เป็นขอบเขตของ Module 2</div>
+              <div class="info-pop">จำนวนร้านค้าใหม่ (สั่งซื้อครั้งแรก) เทียบกับร้านที่หยุดสั่งซื้อ (เคย Active แต่เดือนนี้ไม่มีคำสั่งซื้อ) ใช้ดูการเปลี่ยนแปลงสุทธิของฐานร้านค้า</div>
             </span>
           </div>
           <div class="card-sub">New = first order this month · Inactive = no order this month</div>
@@ -388,7 +388,7 @@
         <div>
           <div class="card-title">Sales by Region
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จัดอันดับที่ระดับที่เลือก (Region / Province / Store) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown — คลิกแท่งกราฟเพื่อกรองทั้งหน้าตามภูมิภาคของแถวนั้น (เชื่อมกับแผนที่ Sales by Province ด้านขวาโดยอัตโนมัติ) ระดับ Store ไม่ได้รับผลจากตัวกรอง Category ด้านบน (ข้อมูลระดับร้านค้าไม่มี breakdown ตาม Category เหมือนการ์ด Top &amp; Bottom Performing Stores)</div>
+              <div class="info-pop">จัดอันดับยอดขายตามพื้นที่ (ภูมิภาค/จังหวัด/ร้านค้า) แสดงสัดส่วนต่อยอดขายรวม</div>
             </span>
           </div>
           <div class="card-sub">Region → Province → Store</div>
@@ -409,7 +409,7 @@
         <div>
           <div class="card-title">Sales by Province
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิรายจังหวัด แรเงาเข้ม-อ่อนตาม "อันดับ" ยอดขาย ไม่ใช่ตามขนาดตัวเลขตรงๆ (Quantile: แบ่งจังหวัดทั้งหมดเป็น 5 กลุ่มเท่าๆ กันตามอันดับ เข้มสุด = กลุ่ม Top ⅕) เพราะยอดขายกระจุกตัวมากในไม่กี่จังหวัด ถ้าไล่สีตามขนาดตัวเลขตรงๆ จะเห็นแค่ 1-2 จังหวัดเข้ม ที่เหลือจางเกือบเท่ากันหมด ตัวเลขจังหวัดเป็นข้อมูลจำลอง แต่รวมกันแล้วเท่ากับยอดของภูมิภาคนั้นเป๊ะ คลิกจังหวัดเพื่อกรองทั้งหน้าตามภูมิภาคที่จังหวัดนั้นสังกัด ใช้ปุ่ม +/− มุมขวาบนเพื่อซูม แล้วลากแผนที่เพื่อเลื่อนดูตำแหน่งที่ต้องการ — ซูมเข้าไปอีกจะเห็นชื่อจังหวัดและยอดขายกำกับบนแผนที่ (ซ่อนตอนไม่ซูม เพื่อไม่ให้ตัวอักษรทับกัน) ดูอันดับร้านค้ารายจังหวัดได้ที่การ์ด Sales by Region ด้านซ้าย</div>
+              <div class="info-pop">แผนที่แสดงยอดขายสุทธิรายจังหวัด ไล่เฉดสีตามอันดับยอดขาย</div>
             </span>
           </div>
         </div>
@@ -430,7 +430,7 @@
         <div>
           <div class="card-title">Monthly Sales by Customer Group
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิรายเดือน (หรือรายไตรมาสถ้าเลือก View By Quarterly) แยกตาม 5 กลุ่มลูกค้าเดียวกับการ์ด "Sales by Customer Group" ในแท็บ Executive Summary — ผลรวมของแต่ละกลุ่มตลอดช่วงเวลาที่เลือกเท่ากับตัวเลขในการ์ดโดนัทนั้นเป๊ะ (เป็นตัวเลขก้อนเดียวกัน แค่แตกรายเดือน) บริษัทรวมทั้งหมดเสมอ ไม่ scope ตาม Region/Category/Sales Person</div>
+              <div class="info-pop">ยอดขายสุทธิรายเดือน แยกตามกลุ่มร้านค้า (Shop Group)</div>
             </span>
           </div>
         </div>
@@ -453,7 +453,7 @@
         <div>
           <div class="card-title">Sales by Category
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จัดอันดับสินค้าที่ระดับที่เลือก (Category / Sub-Category / Type / Series) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown</div>
+              <div class="info-pop">จัดอันดับยอดขาย TT ตามหมวดหมู่สินค้า แสดงสัดส่วนต่อยอดขายรวม</div>
             </span>
           </div>
         </div>
@@ -474,7 +474,7 @@
         <div>
           <div class="card-title"><span id="categoryGrowthLevelLabel" class="title-prefix">Category</span>Portfolio Matrix
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">Adapted BCG Matrix ที่ระดับสินค้าเดียวกับที่กำลังดูอยู่ในการ์ด Sales by Category ทางซ้าย (Top View เลือกระดับ) — แกนนอน (X) คือยอดขาย, แกนตั้ง (Y) คือการเติบโตเทียบกับช่วงเวลาก่อนหน้าตามตัวกรอง Period ด้านบน เส้นประคือค่ามัธยฐาน (Median) ที่ใช้แบ่งเป็น 4 กลุ่ม: Stars (ขายดี+โตเร็ว), Cash Cows (ขายดีแต่โตช้า/หด), Question Marks (ขายน้อยแต่โตเร็ว), Dogs (ขายน้อย+โตช้า/หด)</div>
+              <div class="info-pop">แผนภาพจัดกลุ่มหมวดหมู่สินค้าตามยอดขาย (แกนนอน) และอัตราเติบโต (แกนตั้ง) เทียบค่ามัธยฐาน แบ่งเป็น Stars/Cash Cows/Question Marks/Dogs</div>
             </span>
           </div>
           <div class="card-sub"><span id="categoryGrowthPeriodNote">Comparing —</span> · <span id="categoryGrowthContext">All Categories</span></div>
@@ -505,7 +505,7 @@
         <div>
           <div class="card-title"><span id="productRankingLevelLabel" class="title-prefix">Category</span>Share of Sales Over Time
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">สัดส่วนยอดขาย (% share) ของ Top 10 ที่ระดับเดียวกับการ์ด Sales by Category ด้านบน (เปลี่ยนตาม dropdown ของการ์ดนั้นโดยอัตโนมัติ) ย้อนหลังเต็ม 18 เดือน (ไม่ขึ้นกับตัวกรอง Period ด้านบนสุด เพราะกราฟนี้ต้องการดู trend ระยะยาว) % คำนวณเฉพาะภายใน Top 10 ชุดปัจจุบันเท่านั้น (รวมกันได้ 100% เสมอ) ไม่เทียบกับสินค้าทั้งหมดในพอร์ต — วางเมาส์บนกราฟเพื่อดูตัวเลขที่แท้จริงเป็นบาท</div>
+              <div class="info-pop">สัดส่วน % ยอดขายของหมวดหมู่สินค้า Top 10 ต่อยอดรวม ในแต่ละเดือน</div>
             </span>
           </div>
           <div class="card-sub" id="productRankingSub">Top 10, full 18-month history</div>
@@ -529,7 +529,7 @@
         <div>
           <div class="card-title">Customer Group × <span id="customerCategoryHeatmapLevelLabel">Category</span>
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิไขว้ระหว่างกลุ่มลูกค้า (Customer Group, แถว) กับระดับสินค้าที่เลือกจาก dropdown (คอลัมน์) ในช่วงเวลาที่เลือก — สีเข้มขึ้นตามยอดขาย ใช้ดูว่ากลุ่มลูกค้าไหนซื้อหมวด/ประเภทไหนเยอะเป็นพิเศษ บริษัทรวมทั้งหมดเสมอ ไม่ scope ตาม Region/Sales Person ที่ระดับลึกกว่า Category จะแสดงเฉพาะ Top 10 คอลัมน์ (จัดอันดับจากยอดขายรวมทั้งพอร์ต) ดูรายการเต็มได้จาก Table view</div>
+              <div class="info-pop">ตารางไขว้แสดงยอดขายของแต่ละกลุ่มร้านค้าตามหมวดหมู่สินค้า สีเข้มขึ้นตามยอดขายที่สูงขึ้น</div>
             </span>
           </div>
           <div class="card-sub" id="customerCategoryHeatmapSub">Net Sales, this period · company-wide</div>

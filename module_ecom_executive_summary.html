@@ -77,7 +77,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Sales by Platform</span>
-          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วน % ยอดขาย Ecom แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) ในช่วงเวลาที่เลือก — center = ยอดขายรวม Ecom ทั้งหมด">i</button>
+          <button class="info-icon" data-info-title="Sales by Platform" data-info-text="สัดส่วนยอดขายสุทธิของ Ecom แยกตาม Platform (Lazada/Shopee/TikTok/Line Shop) แสดงขนาดและสัดส่วนของแต่ละ Platform ต่อยอดขายรวม">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="platformTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -103,7 +103,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Target Attainment &amp; Full Year Outlook</span>
-          <button class="info-icon" data-info-title="Target Attainment &amp; Full Year Outlook" data-info-text="เส้นทึบ = Attainment % รายเดือนจริงของ Ecom (ยอดขายจริง ÷ เป้าหมายยอดขาย × 100) ถึงเดือนล่าสุด — เส้นประสีเดียวกัน = ต่อยอดแบบ Run-rate อย่างง่าย (ยอดขาย YTD ÷ จำนวนเดือนที่ผ่านไปแล้ว × 12 ÷ เป้าหมายทั้งปี) ไปจนถึงปลายปี ยังไม่ปรับ Seasonality — เส้นประดำ 100% คือเป้าหมาย — Gap ทั้งสองด้านล่างคำนวณจาก Calendar YTD ของ Ecom เสมอ ไม่ผูกกับ Filter ช่วงเวลาด้านบน">i</button>
+          <button class="info-icon" data-info-title="Target Attainment &amp; Full Year Outlook" data-info-text="Target Attainment % ของ Ecom (ยอดขายจริง ÷ เป้าหมาย × 100) แสดงแนวโน้มสะสมตั้งแต่ต้นปี พร้อมประมาณการทั้งปีแบบ Run-rate">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="attainOutlookTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -120,7 +120,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Return/Cancellation Rate Trend</span>
-          <button class="info-icon" data-info-title="Return/Cancellation Rate Trend" data-info-text="เส้นทึบ = Return/Cancellation Rate รายเดือนของ Ecom ทั้ง Channel (มูลค่าออเดอร์ที่ถูกคืน/ยกเลิก ÷ ยอดขายสุทธิ) ถึงเดือนล่าสุด — ตัวเลขปลายเส้น = % และมูลค่า ฿ คู่กัน ไม่แยกเป็นราย Platform ดูราย Platform ได้ที่ Insight ด้านล่างหรือปุ่มดูเป็นตาราง (Ecom ไม่มี AR% เพราะลูกค้าจ่ายผ่าน Platform โดยตรง)">i</button>
+          <button class="info-icon" data-info-title="Return/Cancellation Rate Trend" data-info-text="อัตราการคืนสินค้า/ยกเลิกออเดอร์ของ Ecom เทียบยอดขาย คำนวณจากมูลค่าที่คืน/ยกเลิก ÷ ยอดขายสุทธิ × 100">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="retTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -140,7 +140,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Revenue Trend</span>
-          <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายจริงรายเดือนของ Ecom เทียบกับเป้าหมายและยอดขายปีก่อนในเดือนเดียวกัน เส้น This Year แสดงถึงเดือนล่าสุดที่มีข้อมูลจริงเท่านั้น">i</button>
+          <button class="info-icon" data-info-title="Revenue Trend" data-info-text="ยอดขายสุทธิของ Ecom รายเดือน เทียบกับเป้าหมายและยอดขายปีก่อนในช่วงเดียวกัน">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="revTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -162,7 +162,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">YoY Growth %</span>
-          <button class="info-icon" data-info-title="YoY Growth %" data-info-text="% การเปลี่ยนแปลงยอดขาย Ecom เทียบกับช่วงเดียวกันของปีก่อน (รายเดือนหรือรายไตรมาสตาม View By)">i</button>
+          <button class="info-icon" data-info-title="YoY Growth %" data-info-text="อัตราการเติบโตของยอดขาย Ecom เทียบปีก่อน (Year-over-Year)">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="growthTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>

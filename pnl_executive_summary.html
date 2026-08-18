@@ -104,7 +104,7 @@
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title">Income Statement</span>
-        <button class="info-icon" data-info-title="P&L Waterfall" data-info-text="Net Sales → COGS → Gross Profit → Trade Spend → Logistics → Marketing/Ads → SG&A → EBIT (Operating Profit) → Tax (20%, Mock) → Net Profit (after tax) — EBITDA แสดงเป็นแท่งอ้างอิงข้าง EBIT (= EBIT + D&A ประมาณการ) ไม่ใช่ส่วนหนึ่งของ Chain หลัก — ตัวเลขต้นทุน/ภาษีทั้งหมดเป็นสมมติฐาน Mock">i</button>
+        <button class="info-icon" data-info-title="P&L Waterfall" data-info-text="งบกำไรขาดทุนแบบขั้นบันได แสดงลำดับการหักต้นทุนและค่าใช้จ่ายจากยอดขายจนเหลือกำไรสุทธิ: Net Sales − COGS = Gross Profit − ค่าใช้จ่ายขายและบริหาร = EBIT − ภาษี = Net Profit">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="waterfallTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -128,7 +128,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">Cost of Sales-to-Sales %</span>
-        <button class="info-icon" data-info-title="Cost of Sales-to-Sales %" data-info-text="COGS ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งต่ำยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง — รวมกับ Gross Margin % ได้ 100% เสมอ">i</button>
+        <button class="info-icon" data-info-title="Cost of Sales-to-Sales %" data-info-text="สัดส่วนต้นทุนขาย (COGS) ต่อยอดขาย ยิ่งต่ำยิ่งดี สะท้อนประสิทธิภาพการผลิตหรือจัดซื้อ คำนวณจาก COGS ÷ Net Sales × 100">i</button>
       </div>
       <div id="kpiCOGSGauge" style="height:110px;"></div>
     </div>
@@ -136,7 +136,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">Gross Margin %</span>
-        <button class="info-icon" data-info-title="Gross Margin %" data-info-text="Gross Profit ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งสูงยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+        <button class="info-icon" data-info-title="Gross Margin %" data-info-text="อัตรากำไรขั้นต้น คือสัดส่วนกำไรที่เหลือหลังหักต้นทุนขาย ก่อนหักค่าใช้จ่ายอื่น คำนวณจาก Gross Profit ÷ Net Sales × 100">i</button>
       </div>
       <div id="kpiGMGauge" style="height:110px;"></div>
     </div>
@@ -144,7 +144,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">SG&A-to-Sales %</span>
-        <button class="info-icon" data-info-title="SG&A-to-Sales %" data-info-text="SG&A ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งต่ำยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+        <button class="info-icon" data-info-title="SG&A-to-Sales %" data-info-text="สัดส่วนค่าใช้จ่ายขายและบริหาร (SG&A) ต่อยอดขาย ยิ่งต่ำยิ่งดี สะท้อนการควบคุมค่าใช้จ่าย คำนวณจาก SG&A ÷ Net Sales × 100">i</button>
       </div>
       <div id="kpiSGAGauge" style="height:110px;"></div>
     </div>
@@ -152,7 +152,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">EBIT Margin %</span>
-        <button class="info-icon" data-info-title="EBIT Margin %" data-info-text="EBIT ÷ Net Sales × 100 — ยิ่งสูงยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+        <button class="info-icon" data-info-title="EBIT Margin %" data-info-text="อัตรากำไรจากการดำเนินงาน (EBIT = กำไรก่อนหักดอกเบี้ยและภาษี) ต่อยอดขาย สะท้อนความสามารถทำกำไรจากธุรกิจหลัก คำนวณจาก EBIT ÷ Net Sales × 100">i</button>
       </div>
       <div id="kpiEBITMGauge" style="height:110px;"></div>
     </div>
@@ -160,7 +160,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">EBITDA Margin % (Est.)</span>
-        <button class="info-icon" data-info-title="EBITDA Margin %" data-info-text="EBITDA ÷ Net Sales × 100 — D&A เป็นตัวเลขประมาณการ — ยิ่งสูงยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+        <button class="info-icon" data-info-title="EBITDA Margin %" data-info-text="อัตรากำไรก่อนหักดอกเบี้ย ภาษี ค่าเสื่อมราคาและค่าตัดจำหน่าย (EBITDA) ต่อยอดขาย ใช้ประเมินกระแสเงินสดจากการดำเนินงานคร่าวๆ (D&A เป็นตัวเลขประมาณการ) คำนวณจาก EBITDA ÷ Net Sales × 100">i</button>
       </div>
       <div id="kpiEBITDAMGauge" style="height:110px;"></div>
     </div>
@@ -168,7 +168,7 @@
     <div class="card">
       <div class="card-head">
         <span class="card-title">Net Margin %</span>
-        <button class="info-icon" data-info-title="Net Margin %" data-info-text="Net Profit (after tax) ÷ Net Sales × 100 ของทั้งบริษัท ในช่วงเวลาที่เลือก — ยิ่งสูงยิ่งดี — Threshold เป็นตัวอย่างประกอบ รอ Benchmark อุตสาหกรรมจริง">i</button>
+        <button class="info-icon" data-info-title="Net Margin %" data-info-text="อัตรากำไรสุทธิ คือสัดส่วนกำไรที่เหลือหลังหักต้นทุนและค่าใช้จ่ายทั้งหมดรวมภาษี คำนวณจาก Net Profit (after tax) ÷ Net Sales × 100">i</button>
       </div>
       <div id="kpiNMGauge" style="height:110px;"></div>
     </div>
@@ -195,7 +195,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Revenue by Channel</span>
-          <button class="info-icon" data-info-title="Revenue by Channel" data-info-text="Net Sales แยกตาม Channel (MT/TT/Ecom) แบบ Stacked — ผลรวมแต่ละช่วงเวลาเท่ากับ Net Sales รวมของบริษัทเป๊ะ — ตาม View By ที่เลือก (Monthly 13 เดือน/Quarterly 5 ไตรมาส/Annual 3 ปี, 2026 เป็น YTD ยังไม่ปิดปี) — คลิก Legend เพื่อซ่อน/แสดง Channel">i</button>
+          <button class="info-icon" data-info-title="Revenue by Channel" data-info-text="ยอดขายสุทธิแยกตามช่องทางจำหน่าย (MT/TT/Ecom) แสดงขนาดและสัดส่วนของแต่ละช่องทางต่อยอดขายรวมบริษัท">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="kfpRevenueTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -211,7 +211,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Gross Profit Margin by Channel</span>
-          <button class="info-icon" data-info-title="Gross Profit Margin by Channel" data-info-text="Gross Margin % ต่อ Channel (เส้นทึบ, MT/TT/Ecom) + Total (เส้นประเน้น) — Total = ค่าเฉลี่ยถ่วงน้ำหนักของ 3 Channel ในแต่ละช่วงเวลาพอดี (ไม่ใช่เลขแยก) — ตาม View By ที่เลือก — คลิก Legend เพื่อซ่อน/แสดง Channel">i</button>
+          <button class="info-icon" data-info-title="Gross Profit Margin by Channel" data-info-text="อัตรากำไรขั้นต้นแยกตามช่องทาง เปรียบเทียบว่าช่องทางใดทำกำไรขั้นต้นได้ดีกว่ากัน เทียบกับอัตรากำไรขั้นต้นรวมของบริษัท">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="kfpGmTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -230,7 +230,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">EBITDA (Est.)</span>
-          <button class="info-icon" data-info-title="EBITDA" data-info-text="แท่ง = EBITDA (แกนซ้าย) · เส้น = EBITDA Margin % (แกนขวา), Company-wide (ไม่แยก Channel) — ตาม View By ที่เลือก (Monthly 13 เดือน/Quarterly 5 ไตรมาส/Annual 3 ปี, 2026 เป็น YTD) — D&A เป็นตัวเลขประมาณการ (3% ของ Net Sales) รอ Finance ยืนยันตัวเลขจริงก่อนใช้งานจริง">i</button>
+          <button class="info-icon" data-info-title="EBITDA" data-info-text="มูลค่าและอัตรากำไร EBITDA ของบริษัทตามช่วงเวลา ใช้ติดตามแนวโน้มกำไรก่อนหักดอกเบี้ย ภาษี ค่าเสื่อม (D&A เป็นตัวเลขประมาณการ)">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="trendEbitdaTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -245,7 +245,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Net Profit</span>
-          <button class="info-icon" data-info-title="Net Profit" data-info-text="แท่ง = Net Profit after tax (แกนซ้าย) · เส้น = Net Margin % (แกนขวา), Company-wide (ไม่แยก Channel) — ตาม View By ที่เลือก (Monthly 13 เดือน/Quarterly 5 ไตรมาส/Annual 3 ปี, 2026 เป็น YTD)">i</button>
+          <button class="info-icon" data-info-title="Net Profit" data-info-text="มูลค่าและอัตรากำไรสุทธิของบริษัทตามช่วงเวลา ใช้ติดตามแนวโน้มความสามารถทำกำไรขั้นสุดท้ายหลังหักภาษี">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="trendNetProfitTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -273,7 +273,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Total Cost Trend</span>
-          <button class="info-icon" data-info-title="Total Cost Trend" data-info-text="COGS / Trade Spend / Logistics / Marketing&Ads / SG&A รายเดือน Company-wide ย้อนหลัง 18 เดือน (ไม่ขึ้นกับ Filter Period ด้านบน)">i</button>
+          <button class="info-icon" data-info-title="Total Cost Trend" data-info-text="แนวโน้มต้นทุนและค่าใช้จ่ายหลักของบริษัท (ต้นทุนขาย ค่าใช้จ่ายขายและจัดจำหน่าย ค่าใช้จ่ายบริหาร) รายเดือน">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="opexTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -290,7 +290,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Cost-to-Sales by Channel</span>
-          <button class="info-icon" data-info-title="Cost-to-Sales by Channel" data-info-text="COGS / Trade Spend / Logistics / Marketing&Ads / SG&A รวมกันเป็น % ของ Net Sales ต่อ Channel ในช่วงเวลาที่เลือก — แท่งสูง = ต้นทุนรวมสูงเทียบกับยอดขาย (ไม่คุ้ม), แท่งเตี้ย = ต้นทุนต่ำกว่ายอดขาย (คุ้มกว่า) — ไม่รวม Tax/Net Profit จึงไม่เต็ม 100%">i</button>
+          <button class="info-icon" data-info-title="Cost-to-Sales by Channel" data-info-text="สัดส่วนต้นทุนรวม (ต้นทุนขาย + ค่าใช้จ่ายขาย + บริหาร) ต่อยอดขาย แยกตามช่องทาง ใช้เทียบว่าช่องทางใดมีภาระต้นทุนหนักกว่ายอดขายมากกว่ากัน">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="costStructTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -309,7 +309,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Selling Expense Breakdown</span>
-          <button class="info-icon" data-info-title="Selling Expense Breakdown" data-info-text="แตก Marketing/Ads เป็นหมวดย่อย (Advertising &amp; Promotion, Digital/Content Marketing, People cost, Others) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ Marketing/Ads รวมเป๊ะทุกไตรมาส">i</button>
+          <button class="info-icon" data-info-title="Selling Expense Breakdown" data-info-text="ค่าใช้จ่ายด้านการตลาดและการขาย (Marketing/Ads) แตกเป็นหมวดย่อย เพื่อดูว่างบส่วนใหญ่ถูกใช้ไปกับกิจกรรมใด">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="sellingExpTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -326,7 +326,7 @@
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Administration Expense Breakdown</span>
-          <button class="info-icon" data-info-title="Administration Expense Breakdown" data-info-text="แตก SG&A เป็นหมวดย่อย (People cost, Rental &amp; Depreciation, Other Admin Expenses, Advisor &amp; Professional Fees, Service Cost) ตามสัดส่วนคงที่ — ผลรวมของทุกหมวดย่อยเท่ากับ SG&A รวมเป๊ะทุกไตรมาส">i</button>
+          <button class="info-icon" data-info-title="Administration Expense Breakdown" data-info-text="ค่าใช้จ่ายบริหาร (SG&A) แตกเป็นหมวดย่อย เพื่อดูว่างบส่วนใหญ่ถูกใช้ไปกับกิจกรรมใด">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="adminExpTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -357,7 +357,7 @@
       <div class="card table-card single-label-col" style="margin-top:10px;margin-bottom:0;">
         <div class="card-head">
           <span class="card-title">5-Quarter P&amp;L Table</span>
-          <button class="info-icon" data-info-title="5-Quarter P&L Table" data-info-text="Net Sales ถึง EBITDA ราย Quarter ย้อนหลัง 5 ไตรมาส (Q2'25 → Q2'26, Rolling ทุกครั้งที่ปิดไตรมาสใหม่) พร้อม QoQ% (Q2'26 vs Q1'26) และ YoY% (Q2'26 vs Q2'25) — SSOT ของ margin ทุกตัวที่แสดงบนหน้านี้ — ตัวเลขเดียวกับ Income Statement ของ §1 เป๊ะเมื่อรวม Q1'26+Q2'26 = H1'26 YTD">i</button>
+          <button class="info-icon" data-info-title="5-Quarter P&L Table" data-info-text="งบกำไรขาดทุนแบบละเอียดย้อนหลัง 5 ไตรมาส ตั้งแต่ยอดขายถึง EBITDA พร้อมเทียบเติบโตไตรมาสก่อน (QoQ) และปีก่อน (YoY)">i</button>
           <div class="toolbar" style="margin-left:auto;">
             <button class="tool-btn" id="fiveQDownloadBtn" title="ดาวน์โหลด (CSV)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 19h16"/></svg></button>
           </div>

@@ -170,7 +170,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     <div class="chart-card-head">
       <div class="chart-title-wrap">
         <span class="chart-title" id="scorecardTitle">DuPont ROE Decomposition</span>
-        <button class="info-icon" data-info-title="Financial Scorecard" data-info-text="สูตรมาตรฐาน 3-Step: ROE = Profit Margin × Asset Turnover × Financial Leverage — ใช้ Average Balances (ยอดต้นงวด+ยอดปลายงวด ÷ 2) ไม่ใช่ยอดสิ้นงวด — ฐานอ้างอิงตาม View By/As of ที่เลือก (ไม่ fix เป็น TTM เสมอไป) คำนวณจากชุดข้อมูลเดียวกับ Financial Ratios ด้านบน ไม่สร้างเลขใหม่ — ทิศทาง (▲/▼) เทียบช่วงก่อนหน้า · สถานะ RAG และเป้า/ช่วงปกติ (Benchmark) เป็น Mock 100% รอ Finance/industry ยืนยัน">i</button>
+        <button class="info-icon" data-info-title="Financial Scorecard" data-info-text="ROE (Return on Equity) คืออัตราผลตอบแทนต่อส่วนของผู้ถือหุ้น วัดว่าเงินทุนของผู้ถือหุ้นสร้างกำไรได้มากน้อยเพียงใด แตกตามแนวคิด DuPont เป็น 3 ส่วน: Profit Margin (ความสามารถทำกำไร) × Asset Turnover (ประสิทธิภาพใช้สินทรัพย์) × Financial Leverage (การใช้หนี้ขยายผลตอบแทน)">i</button>
       </div>
       <div class="toolbar">
         <button class="tool-btn" id="fhsExpandBtn" title="ดู DuPont ROE Tree แบบละเอียด"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M3 16v5h5"/><path d="M21 16v5h-5"/></svg></button>
@@ -237,7 +237,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Returns Trend</span>
-          <button class="info-icon" data-info-title="Returns Trend" data-info-text="ROE %, ROA % (Annualized) ตามช่วงเวลาที่เลือก — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD (annualized) ด้วย เส้น dashed — annualize ตัวเศษแล้วหาร average balance วิธีเดียวกับ DuPont Scorecard) · Quarterly แสดง 5 ไตรมาสล่าสุด — ใช้ Average Balances ชุดเดียวกับ Financial Scorecard">i</button>
+          <button class="info-icon" data-info-title="Returns Trend" data-info-text="ROE และ ROA (Return on Assets) — ROA วัดผลตอบแทนต่อสินทรัพย์รวมทั้งหมด (กำไรสุทธิ ÷ สินทรัพย์เฉลี่ย) ใช้ดูประสิทธิภาพการใช้สินทรัพย์โดยไม่ปนผลของโครงสร้างหนี้">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="returnsTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -254,7 +254,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Liquidity Trend</span>
-          <button class="info-icon" data-info-title="Liquidity Trend" data-info-text="Current Ratio = Current Assets ÷ Current Liabilities · Quick Ratio = (Current Assets − Inventory) ÷ Current Liabilities — ทั้งคู่เป็นค่า ณ สิ้นงวด (point-in-time), ไม่ต้อง annualize — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD ด้วย เส้น dashed) · Quarterly แสดง 5 ไตรมาสล่าสุด">i</button>
+          <button class="info-icon" data-info-title="Liquidity Trend" data-info-text="สภาพคล่อง วัดความสามารถชำระหนี้ระยะสั้น — Current Ratio = สินทรัพย์หมุนเวียน ÷ หนี้สินหมุนเวียน, Quick Ratio = (สินทรัพย์หมุนเวียน − สินค้าคงเหลือ) ÷ หนี้สินหมุนเวียน โดยนับเฉพาะรายการที่ครบกำหนดภายใน 1 ปีตามนิยาม">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="liquidityTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -270,7 +270,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title">Leverage Trend</span>
-          <button class="info-icon" data-info-title="Leverage Trend" data-info-text="D/E = Total Liabilities ÷ Equity · IBD/E = Interest-Bearing Debt ÷ Equity (subset ของ D/E เสมอ) — ทั้งคู่เป็นค่า ณ สิ้นงวด (point-in-time), ไม่ต้อง annualize — Annual แสดง FY2024–FY2025 (ถ้าเลือก 2026 (Current) เพิ่มจุด 2026 YTD ด้วย เส้น dashed) · Quarterly แสดง 5 ไตรมาสล่าสุด — IBD/E เป็น illustrative mock, ไม่ผูก interest expense ใน P&L">i</button>
+          <button class="info-icon" data-info-title="Leverage Trend" data-info-text="ความสามารถรองรับภาระหนี้ — D/E = หนี้สินรวม ÷ ส่วนของผู้ถือหุ้น, IBD/E = หนี้สินที่มีภาระดอกเบี้ย ÷ ส่วนของผู้ถือหุ้น (เฉพาะหนี้ที่มีดอกเบี้ยจริง ซึ่งเป็นส่วนหนึ่งของ D/E)">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="leverageTrendTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -293,7 +293,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title" id="cccTimelineTitle">Cash Conversion Cycle Timeline</span>
-          <button class="info-icon" data-info-title="Cash Conversion Cycle Timeline" data-info-text="Operating Cycle = Inventory Days + AR Days · CCC = Operating Cycle − AP Days — แถบบนคือ Operating Cycle (Inventory ต่อด้วย Receivable) แถบล่างคือ Payable (จากจุด 0) ต่อด้วย CCC ซึ่งเริ่มตรงที่ Payable จบไปจนสุด Operating Cycle — ฐานอ้างอิงตาม View By/As of ที่เลือก (ตรงกับตาราง Turnover &amp; Cycle ด้านล่างเป๊ะ) — Mock Data 100%">i</button>
+          <button class="info-icon" data-info-title="Cash Conversion Cycle Timeline" data-info-text="วงจรเงินสด (Cash Conversion Cycle) คือจำนวนวันที่เงินสดถูกตรึงอยู่ในธุรกิจ นับจากจ่ายซื้อสินค้าจนได้รับเงินจากลูกค้า คำนวณจาก Inventory Days + AR Days − AP Days">i</button>
         </div>
         <div class="toolbar">
           <button class="tool-btn" id="cccTimelineTableBtn" title="ดูเป็นตาราง"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="4" x2="9" y2="20"/></svg></button>
@@ -310,7 +310,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
       <div class="chart-card-head">
         <div class="chart-title-wrap">
           <span class="chart-title" id="cccCombinedTitle">Working Capital Cycle (Days)</span>
-          <button class="info-icon" data-info-title="Working Capital Cycle" data-info-text="Days view: Inventory/Collection/Payment Period (Avg. Days) + Cash Conversion Cycle = Inventory + Collection − Payment · Times view: A/R/Inventory/A/P Turnover = 365 ÷ Days (ไม่มี CCC เพราะเป็นหน่วยวันเท่านั้น) — คลิก legend เพื่อเปิด/ปิดเส้น — Annual แสดงเฉพาะปีที่ปิดแล้ว (FY2024–FY2025), เลือก 2026 (Current) เพิ่มจุด YTD (annualized) — Mock Data 100%">i</button>
+          <button class="info-icon" data-info-title="Working Capital Cycle" data-info-text="รอบเงินทุนหมุนเวียน แสดงได้ 2 หน่วย: จำนวนวัน (Inventory/Collection/Payment Period) หรือจำนวนรอบต่อปี (Turnover = 365 ÷ จำนวนวัน) — ยิ่งวันสั้น/รอบมาก ยิ่งหมุนเงินทุนได้เร็ว">i</button>
         </div>
         <div class="toolbar">
           <div class="timeframe-toggle timeframe-toggle-sm" id="cccUnitToggle">
@@ -339,7 +339,7 @@ td.annual-current-col{background:repeating-linear-gradient(45deg, color-mix(in s
     <div class="dpt-modal-head">
       <div class="chart-title-wrap">
         <span class="dpt-modal-title" id="dptModalTitle">DuPont ROE Tree — TTM (ending Q2'26)</span>
-        <button class="info-icon" data-info-title="DuPont ROE Tree" data-info-text="Ratios use average balances · Goals are mock (pending Finance) · Leaf values derived from the same P&amp;L 5Q + Balance Sheet Q1'26 mix">i</button>
+        <button class="info-icon" data-info-title="DuPont ROE Tree" data-info-text="แผนภาพแตกองค์ประกอบของ ROE ตามสูตร DuPont ต่อลงไปถึงตัวเลขต้นทาง (ยอดขาย ต้นทุน สินทรัพย์ ส่วนของผู้ถือหุ้น) เพื่อดูว่าปัจจัยใดเป็นตัวขับเคลื่อนหลัก">i</button>
       </div>
       <div class="dpt-modal-controls">
         <button class="dpt-zoom-btn" id="dptZoomOutBtn" title="ซูมออก">−</button>
