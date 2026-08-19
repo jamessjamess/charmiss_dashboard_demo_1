@@ -197,7 +197,7 @@
         <div>
           <div class="card-title">Sales by Shop Group Over Time
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิรายเดือน (หรือรายไตรมาสถ้าเลือก View By Quarterly) แยกตาม 5 กลุ่มร้านค้าเดียวกับการ์ด "Sales by Shop Group" ในแท็บ Executive Summary — เส้นแต่ละสีคือ 1 Shop Group พร้อมป้ายชื่อ+ยอดขายเดือนล่าสุดกำกับที่ปลายเส้น ผลรวมของแต่ละกลุ่มตลอดช่วงเวลาที่เลือกเท่ากับตัวเลขในการ์ดโดนัทนั้นเป๊ะ (เป็นตัวเลขก้อนเดียวกัน แค่แตกรายเดือน) บริษัทรวมทั้งหมดเสมอ ไม่ scope ตาม Region/Category/Sales Person</div>
+              <div class="info-pop">ยอดขายสุทธิรายเดือน แยกตามกลุ่มร้านค้า (Shop Group) เทียบกันเป็นเส้นแนวโน้ม</div>
             </span>
           </div>
         </div>
@@ -211,7 +211,7 @@
         <div>
           <div class="card-title">Shop Group Share of Sales Over Time
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">สัดส่วน % ยอดขายแยกตาม Shop Group ย้อนหลังตามช่วงเวลาที่เลือก คิดจากยอดขายจริงของแต่ละกลุ่มเดียวกับกราฟ "Sales by Shop Group Over Time" ทางซ้าย (รวมกันแล้วเท่ากับ 100% ของยอดขาย 5 กลุ่มนี้ในเดือนนั้นเสมอ) — เลื่อนเมาส์ชี้บนกราฟเพื่อดูตัวเลข %/฿ ที่แม่นยำของแต่ละเดือน แถบสรุปด้านล่างกราฟบอก Mix Shift ระหว่างเดือน/ไตรมาสแรกกับล่าสุดในช่วงที่เลือก</div>
+              <div class="info-pop">สัดส่วน % ยอดขายของแต่ละกลุ่มร้านค้าต่อยอดรวม ในแต่ละเดือน</div>
             </span>
           </div>
         </div>
@@ -233,7 +233,7 @@
         <div>
           <div class="card-title">Top &amp; Bottom Performing Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จัดอันดับร้านค้าตามยอดขายสุทธิในช่วงเวลาและภูมิภาคที่เลือก แนวโน้ม (Trend) เทียบเดือนแรกกับเดือนสุดท้ายในช่วงนั้น</div>
+              <div class="info-pop">จัดอันดับร้านค้าตามยอดขายสุทธิ สูงสุดและต่ำสุด ในช่วงเวลาและภูมิภาคที่เลือก</div>
             </span>
           </div>
           <!-- storesSub kept in the DOM (hidden) — renderStores() in tt-shared.js writes to this
@@ -254,7 +254,7 @@
         <div>
           <div class="card-title">Active Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จำนวนร้านค้า (ลูกค้า) ที่มีคำสั่งซื้ออย่างน้อยหนึ่งครั้งในแต่ละเดือน (แกนซ้าย) พร้อมยอดขายเฉลี่ยต่อร้านค้า (แกนขวา) วางคู่กันไว้ดูว่าจำนวนร้านที่เพิ่มขึ้นมาพร้อมกับยอดขายเฉลี่ยต่อร้านที่ลดลงหรือไม่ (คนละหน่วย คนละสเกล ไม่ได้ตั้งใจให้เทียบขนาดเส้นตรงๆ)</div>
+              <div class="info-pop">จำนวนร้านค้าที่มีคำสั่งซื้ออย่างน้อย 1 ครั้งในเดือนนั้น เทียบกับยอดขายเฉลี่ยต่อร้าน</div>
             </span>
           </div>
         </div>
@@ -269,7 +269,7 @@
         <div>
           <div class="card-title">New vs Inactive Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">แท่งขึ้น (บวก) = <b>New</b> ร้านที่สั่งซื้อครั้งแรกในเดือนนั้น แท่งลง (ลบ) = <b>Inactive</b> ร้านที่เคย Active ในเดือนก่อน แต่เดือนนี้ไม่มีคำสั่งซื้อเลย เส้นประ = <b>Net Change</b> (New − Inactive) อธิบาย movement ของ Active Stores ในเดือนนั้นโดยตรง คำนวณ Inactive จาก: ฐาน Active เดือนก่อน + ร้านใหม่เดือนนี้ − Active เดือนนี้ Retention Rate = 100% − Inactive Rate · หมายเหตุ: ธุรกิจ Traditional Trade การไม่สั่งซื้อ 1 เดือนอาจแค่แปลว่าสต็อกยังไม่หมด ไม่ใช่ Churn จริงเสมอไป — Churn ที่ผ่านเกณฑ์ยืนยัน (เช่น ไม่สั่งเกิน 45 วันต่อเนื่อง) เป็นขอบเขตของ Module 2</div>
+              <div class="info-pop">จำนวนร้านค้าใหม่ (สั่งซื้อครั้งแรก) เทียบกับร้านที่หยุดสั่งซื้อ (เคย Active แต่เดือนนี้ไม่มีคำสั่งซื้อ) ใช้ดูการเปลี่ยนแปลงสุทธิของฐานร้านค้า</div>
             </span>
           </div>
           <div class="card-sub">New = first order this month · Inactive = no order this month</div>
@@ -291,7 +291,7 @@
         <div>
           <div class="card-title">Sales by Region
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">จัดอันดับที่ระดับที่เลือก (Region / Province / Store) ข้ามทั้งพอร์ต พร้อม % สัดส่วนต่อยอดขายรวม เปลี่ยนระดับได้จาก dropdown — คลิกแท่งกราฟเพื่อกรองทั้งหน้าตามภูมิภาคของแถวนั้น (เชื่อมกับแผนที่ Sales by Province ด้านขวาโดยอัตโนมัติ) ระดับ Store ไม่ได้รับผลจากตัวกรอง Category ด้านบน (ข้อมูลระดับร้านค้าไม่มี breakdown ตาม Category เหมือนการ์ด Top &amp; Bottom Performing Stores)</div>
+              <div class="info-pop">จัดอันดับยอดขายตามพื้นที่ (ภูมิภาค/จังหวัด/ร้านค้า) แสดงสัดส่วนต่อยอดขายรวม</div>
             </span>
           </div>
           <div class="card-sub">Region → Province → Store</div>
@@ -312,7 +312,7 @@
         <div>
           <div class="card-title">Sales by Province
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดขายสุทธิรายจังหวัด แรเงาเข้ม-อ่อนตาม "อันดับ" ยอดขาย ไม่ใช่ตามขนาดตัวเลขตรงๆ (Quantile: แบ่งจังหวัดทั้งหมดเป็น 5 กลุ่มเท่าๆ กันตามอันดับ เข้มสุด = กลุ่ม Top ⅕) เพราะยอดขายกระจุกตัวมากในไม่กี่จังหวัด ถ้าไล่สีตามขนาดตัวเลขตรงๆ จะเห็นแค่ 1-2 จังหวัดเข้ม ที่เหลือจางเกือบเท่ากันหมด ตัวเลขจังหวัดเป็นข้อมูลจำลอง แต่รวมกันแล้วเท่ากับยอดของภูมิภาคนั้นเป๊ะ คลิกจังหวัดเพื่อกรองทั้งหน้าตามภูมิภาคที่จังหวัดนั้นสังกัด ใช้ปุ่ม +/− มุมขวาบนเพื่อซูม แล้วลากแผนที่เพื่อเลื่อนดูตำแหน่งที่ต้องการ — ซูมเข้าไปอีกจะเห็นชื่อจังหวัดและยอดขายกำกับบนแผนที่ (ซ่อนตอนไม่ซูม เพื่อไม่ให้ตัวอักษรทับกัน) ดูอันดับร้านค้ารายจังหวัดได้ที่การ์ด Sales by Region ด้านซ้าย</div>
+              <div class="info-pop">แผนที่แสดงยอดขายสุทธิรายจังหวัด ไล่เฉดสีตามอันดับยอดขาย</div>
             </span>
           </div>
         </div>
@@ -334,7 +334,7 @@
         <div>
           <div class="card-title">High Return Rate Stores
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">รายชื่อร้านค้าที่มีอัตราคืนสินค้า (CN Rate) ในช่วงเวลาที่เลือก เกิน 2% (เป้าหมายเดียวกับเส้นประในกราฟ Return Rate (CN) Trend ของ Executive Summary) เรียงจากอัตราคืนสูงสุดไปต่ำสุด — เนื่องจากค่าเฉลี่ยทั้งพอร์ตตอนนี้สูงกว่า 2% อยู่แล้ว จึงอาจเห็นร้านเกือบทั้งหมดติดในลิสต์นี้ นั่นคือสัญญาณว่าปัญหาคืนสินค้าเป็นภาพรวมทั้งพอร์ต ไม่ใช่แค่บางร้าน ลำดับ (สูงสุดก่อน) ยังใช้เป็น call list ได้ตามปกติ แสดงสูงสุด 6 ร้านแรกในกราฟ ถ้ามีมากกว่านั้นกด "See all" เพื่อดูรายชื่อทั้งหมดแบบตาราง</div>
+              <div class="info-pop">จัดอันดับร้านค้าตามอัตราการคืนสินค้า (CN Rate) จากสูงไปต่ำ เทียบกับเกณฑ์ที่ตั้งไว้</div>
             </span>
           </div>
         </div>
@@ -348,7 +348,7 @@
         <div>
           <div class="card-title">AR Aging
             <span class="info-wrap"><button class="info-btn" type="button">i</button>
-              <div class="info-pop">ยอดลูกหนี้ของทั้งบริษัท (ไม่ scope ตาม Sales Person เพราะเป็นภาพรวมบริษัท) แบ่งเป็น 2 สถานะ (Status): "Within Due" คือยอดที่ยังไม่เกินกำหนดชำระ แบ่งย่อยเป็น "Due within 7 days" (ใกล้ถึงกำหนด ไว้ติดตามเชิงรุกก่อนจะกลายเป็นหนี้ค้างชำระจริง) และ "Due more than 7 days" (ยังมีเวลาอีกพอสมควร) กับ "Overdue" ที่เกินกำหนดชำระแล้ว แบ่งย่อยตามจำนวนวันที่เกิน (1–7 / 8–15 / 16–30 / 30+ วัน) — บัคเก็ตเดียวกับการ์ด AR By Due Date ของ Sales Person เพื่อความสอดคล้องกันทั้งระบบ วันที่เกินกำหนดคำนวณจาก store.arMultiplier เดิม (ข้อมูลจริงมีแค่ยอดค้างชำระ ไม่มี due date) — ยอด Overdue ที่เห็นในตารางนี้คือส่วนที่ทำให้ AR% (Collection Rate) ใน Executive Summary ไม่ถึง 100%</div>
+              <div class="info-pop">ยอดลูกหนี้คงค้างของบริษัท แบ่งตามที่ยังไม่ถึงกำหนดชำระ (Within Due) และเกินกำหนดชำระแล้ว (Overdue) ใช้ติดตามความเสี่ยงหนี้สูญ</div>
             </span>
           </div>
         </div>
